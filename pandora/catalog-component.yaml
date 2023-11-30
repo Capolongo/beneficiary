@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: order-flight
+  description: Microservice that encompasses the database and management of flight orders.
+  tags:
+    - java
+    - springboot
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+#    leanix.net/fact-sheet-id: 
+spec:
+  type: service
+  owner: group:default/viagem
+  lifecycle: experimental

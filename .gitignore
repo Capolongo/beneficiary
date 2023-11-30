@@ -1,0 +1,63 @@
+### Eclipse
+.metadata/
+
+### Folders ###
+**/.DS_Store
+
+### IntelliJ IDEA ###
+**/.idea
+*.iws
+*.iml
+*.ipr
+out/
+.idea_modules/
+
+## JAVA ##
+HELP.md
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+.mtj.tmp/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+
+### Maven ###
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+pom.xml.bak
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### STS - Spring ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### Vagrant ###
+.vagrant
+
+### VS Code ###
+.vscode/
+.code-workspace

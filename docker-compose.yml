@@ -1,0 +1,22 @@
+version: "3.9"
+
+
+x-service_defaults: &service_defaults
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  labels:
+    org.springframework.boot.ignore: true
+
+services:
+
+  rabbitmq:
+    << : *service_defaults
+    container_name: rabbitmq
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+
+
+

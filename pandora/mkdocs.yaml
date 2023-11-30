@@ -1,0 +1,5 @@
+site_name:  # nome do projeto
+site_url:  # url do projeto
+nav: # array de objetos - menu de navegacao
+    - Home: index.md # homepage da documentação
+theme: readthedocs
