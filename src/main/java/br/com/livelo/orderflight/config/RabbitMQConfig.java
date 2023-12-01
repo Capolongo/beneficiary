@@ -1,4 +1,4 @@
-package br.com.livelo.br.com.livelo.config;
+package br.com.livelo.orderflight.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

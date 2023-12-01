@@ -1,7 +1,6 @@
-package br.com.livelo.br.com.livelo.services.impl;
+package br.com.livelo.orderflight.services.impl;
 
-import br.com.livelo.br.com.livelo.dto.ProductDTO;
-import br.com.livelo.br.com.livelo.services.RabbitMQService;
+import br.com.livelo.orderflight.services.RabbitMQService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;

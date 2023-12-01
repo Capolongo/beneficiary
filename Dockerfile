@@ -1,4 +1,4 @@
-FROM 840472296963.dkr.ecr.sa-east-1.amazonaws.com/livelo_alpine_eclipse_jre17:prd-latest
+FROM 840472296963.dkr.ecr.sa-east-1.amazonaws.com/livelo-jre21:prd-latest
 VOLUME /tmp
 ARG JAR_FILE
 COPY ${JAR_FILE} app.jar

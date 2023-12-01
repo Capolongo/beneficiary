@@ -1,20 +1,14 @@
-package br.com.livelo.br.com.livelo;
+package br.com.livelo.orderflight;
 
-import br.com.livelo.log.annotation.EnableLiveloLogAround;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-
-@EnableLiveloLogAround
-
 @EnableFeignClients
-
 @SpringBootApplication
-public class LiveloDemoApplication {
-
+public class OrderFlightApplication {
     public static void main(String[] args) {
-        SpringApplication.run(LiveloDemoApplication.class, args);
+        SpringApplication.run(OrderFlightApplication.class, args);
     }
 }

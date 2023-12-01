@@ -1,6 +1,5 @@
-package br.com.livelo.br.com.livelo.components;
+package br.com.livelo.orderflight.components;
 
-import br.com.livelo.br.com.livelo.dto.ProductDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
