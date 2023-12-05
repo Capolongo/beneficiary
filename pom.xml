@@ -7,13 +7,13 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.1.1</version>
     </parent>
+    <artifactId>order-flight<artifactId/>
     <modelVersion>4.0.0</modelVersion>
     <groupId>br.com.livelo</groupId>
-    <artifactId>archetype-base-java17</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>archetype-base-java17</name>
-    <description>archetype-base-java17</description>
+    <name>order-flight</name>
+
 
     <properties>
         <annotation.version>0.0.2</annotation.version>
@@ -37,17 +37,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>br.com.livelo.log</groupId>
-            <artifactId>annotation</artifactId>
-            <version>${annotation.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>br.com.livelo</groupId>
-            <artifactId>log</artifactId>
-            <version>${log.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
