@@ -1,16 +1,4 @@
 spring:
-  cloud:
-    openfeign:
-      micrometer:
-        enabled: true
-
-  main:
-    lazy-initialization: false
-    allow-bean-definition-overriding: true
-
-  config:
-    import: "optional:configserver:https://fake-url.com?max-attempts=1"
-
   # rabbitmq:
   #   enabled: true
   #   host: ${RABBIT_HOST:localhost}
@@ -23,35 +11,16 @@ spring:
 
   datasource:
     # Configurar com credenciais do serviço
-    url: jdbc:oracle:thin:@//${ORACLEDB_HOST:localhost}:${ORACLEDB_PORT:1521}/${ORACLEDB_SERVICENAME:xe.localdomain}
+    url: jdbc:h2:mem:testdb;Mode=Oracle
     username: ${ORACLEDB_USERNAME:order-flight}
     password: ${ORACLEDB_PASSWORD:order-flight}
-    driver-class-name: oracle.jdbc.OracleDriver
+    driver-class-name: org.h2.Driver
 
   application:
     name: order-flight
   jpa:
     open-in-view: false
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include:
-          - health
-
-  endpoint:
-    health:
-      show-details: always
-      show-components: always
-      probes:
-        enabled: true
-      group:
-        readiness:
-          include:
-            - readinessState
+    database-platform: org.hibernate.dialect.Oracle10gDialect
 
 server:
   port: 8080
-  servlet:
-    contextPath: order-flight
