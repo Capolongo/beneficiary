@@ -21,21 +21,15 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
       
-  orcldb_new:
-    image: cabelininmetrics/oracledb:latest
+  oracle:
+    image: container-registry.oracle.com/database/enterprise:19.3.0.0
+    container_name: "oracle-container"
+    expose:
+      - 1521
     ports:
       - 1521:1521
       - 5500:5500
     environment:
+      ORACLE_PWD: admin
+      ORACLE_SID: xe
       DB_SID: "xe"
-    deploy:
-      resources:
-        limits:
-          memory: 4GB
-        reservations:
-          memory: 4GB
-    volumes:
-      - 'oracle_data:/opt/oracle/oradata'
-volumes:
-  oracle_data:
-    driver: local
