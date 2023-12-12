@@ -65,6 +65,6 @@ public class OrderEntity {
     @Column(name = "STATUS")
     private Integer status;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "ORDER_PRICE_ID")
+    @JoinColumn(name = "ID")
     private OrderPriceEntity orderPriceEntity;
 }
