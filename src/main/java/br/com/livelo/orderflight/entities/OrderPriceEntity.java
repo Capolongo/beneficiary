@@ -1,7 +1,7 @@
 package br.com.livelo.orderflight.entities;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Data
 @Entity
@@ -39,9 +40,9 @@ public class OrderPriceEntity {
     private String priceListDescription;
     @CreationTimestamp
     @Column(name = "CREATE_DATE")
-    private Date createDate;
-    @CreationTimestamp
+    private LocalDateTime createDate;
+    @UpdateTimestamp
     @Column(name = "LAST_MODIFIED_DATE")
-    private Date lastModifiedDate;
+    private LocalDateTime lastModifiedDate;
 
 }

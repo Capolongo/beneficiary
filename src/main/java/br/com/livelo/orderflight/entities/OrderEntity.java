@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.entities;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Data
 @Entity
@@ -23,7 +24,7 @@ public class OrderEntity {
     @Column(name = "ID")
     @Id
     private Integer id;
-    
+
     @Column(name = "COMMERCE_ORDER_ID")
     private String commerceOrderId;
 
@@ -36,7 +37,7 @@ public class OrderEntity {
 
     @CreationTimestamp
     @Column(name = "SUBMITTED_DATE")
-    private Date submittedDate;
+    private LocalDateTime submittedDate;
 
     @Column(name = "CHANNEL")
     private String channel;
@@ -52,11 +53,11 @@ public class OrderEntity {
 
     @CreationTimestamp
     @Column(name = "CREATE_DATE")
-    private Date createDate;
+    private LocalDateTime createDate;
 
-    @CreationTimestamp
+    @UpdateTimestamp
     @Column(name = "LAST_MODIFIED_DATE")
-    private Date lastModifiedDate;
+    private LocalDateTime lastModifiedDate;
 
     @Column(name = "STATUS")
     private Integer status;
