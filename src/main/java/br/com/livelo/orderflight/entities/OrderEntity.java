@@ -23,10 +23,7 @@ public class OrderEntity {
     @Column(name = "ID")
     @Id
     private Integer id;
-
-    @Column(name = "ORDER_PRICE_ID")
-    private Integer orderPriceId;
-
+    
     @Column(name = "COMMERCE_ORDER_ID")
     private String commerceOrderId;
 
@@ -61,10 +58,12 @@ public class OrderEntity {
     @Column(name = "LAST_MODIFIED_DATE")
     private Date lastModifiedDate;
 
-    @CreationTimestamp
     @Column(name = "STATUS")
     private Integer status;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "ID")
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumns({
+            @JoinColumn(name = "ORDER_PRICE_ID", referencedColumnName = "ID"),
+    })
     private OrderPriceEntity orderPriceEntity;
 }

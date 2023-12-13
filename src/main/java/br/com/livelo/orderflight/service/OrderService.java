@@ -1,7 +1,6 @@
 package br.com.livelo.orderflight.service;
 
 import br.com.livelo.orderflight.entities.OrderEntity;
-import br.com.livelo.orderflight.entities.OrderPriceEntity;
 import br.com.livelo.orderflight.repository.OrderPriceRepository;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import jakarta.transaction.Transactional;
@@ -21,13 +20,8 @@ public class OrderService {
 
     @Transactional
     public void save(OrderEntity orderEntity) {
-        OrderPriceEntity orderPriceEntity = orderEntity.getOrderPriceEntity();
-
-        var orderPrice = orderPriceRepository.save(orderPriceEntity);
-
-        orderPriceEntity.setId(null);
-        orderEntity.setOrderPriceEntity(orderPrice);
-        orderEntity.setId(null);
+        var orderPriceEntity = orderPriceRepository.save(orderEntity.getOrderPriceEntity());
+        orderEntity.setOrderPriceEntity(orderPriceEntity);
         orderRepository.save(orderEntity);
     }
 
