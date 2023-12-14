@@ -22,6 +22,7 @@ public class OrderService {
     public void save(OrderEntity orderEntity) {
         var orderPriceEntity = orderPriceRepository.save(orderEntity.getOrderPriceEntity());
         orderEntity.setOrderPriceEntity(orderPriceEntity);
+        orderEntity.setId("1");
         orderRepository.save(orderEntity);
     }
 

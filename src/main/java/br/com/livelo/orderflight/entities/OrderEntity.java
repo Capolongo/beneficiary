@@ -19,11 +19,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Table(name = "ORDERS")
 public class OrderEntity {
 
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_SEQ")
-    @SequenceGenerator(name = "ORDER_SEQ", sequenceName = "ORDER_SEQ", allocationSize = 1)
+    //    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")
+//    @SequenceGenerator(name = "ORDERS_SEQ", sequenceName = "ORDERS_SEQ", allocationSize = 1)
     @Column(name = "ID")
     @Id
-    private Integer id;
+    private String id;
 
     @Column(name = "COMMERCE_ORDER_ID")
     private String commerceOrderId;
