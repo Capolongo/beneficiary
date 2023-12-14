@@ -2,6 +2,7 @@ package br.com.livelo.orderflight.entities;
 
 import java.time.LocalDateTime;
 
+import br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Data
@@ -20,7 +22,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 public class OrderEntity {
 
     //    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")
-//    @SequenceGenerator(name = "ORDERS_SEQ", sequenceName = "ORDERS_SEQ", allocationSize = 1)
+//    @GenericGenerator(name = "ORDERS_SEQ",
+//            strategy = "br.com.livelo.partnerstransfer.utils.StringPrefixedSequenceIdGenerator",
+//            parameters = {@org.hibernate.annotations.Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "trf")})
     @Column(name = "ID")
     @Id
     private String id;
