@@ -1,17 +1,29 @@
 package br.com.livelo.orderflight.entities;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Set;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -20,53 +32,57 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "ORDERS")
 public class OrderEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")
-    @GenericGenerator(name = "ORDERS_SEQ",
-            strategy = "br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator",
-            parameters = {@Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "trf"), @Parameter(name = "increment_size", value = "1")})
-    private String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")
+	@GenericGenerator(name = "ORDERS_SEQ", strategy = "br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator", parameters = {
+			@Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "trf"),
+			@Parameter(name = "increment_size", value = "1") })
+	private String id;
 
-    @Column(name = "COMMERCE_ORDER_ID")
-    private String commerceOrderId;
+	@Column(name = "COMMERCE_ORDER_ID")
+	private String commerceOrderId;
 
-    //TODO -- verificar com relação ao token da cvc - Defini como text, pois pode haver uma quantidade não previsível para outros parceiros
-    @Column(name = "PARTNER_ORDER_ID")
-    private String partnerOrderId;
+	// TODO -- verificar com relação ao token da cvc - Defini como text, pois pode
+	// haver uma quantidade não previsível para outros parceiros
+	@Column(name = "PARTNER_ORDER_ID")
+	private String partnerOrderId;
 
-    @Column(name = "PARTNER_CODE")
-    private String partnerCode;
+	@Column(name = "PARTNER_CODE")
+	private String partnerCode;
 
-    @CreationTimestamp
-    @Column(name = "SUBMITTED_DATE")
-    private LocalDateTime submittedDate;
+	@CreationTimestamp
+	@Column(name = "SUBMITTED_DATE")
+	private LocalDateTime submittedDate;
 
-    @Column(name = "CHANNEL")
-    private String channel;
+	@Column(name = "CHANNEL")
+	private String channel;
 
-    @Column(name = "TIER_CODE")
-    private String tierCode;
+	@Column(name = "TIER_CODE")
+	private String tierCode;
 
-    @Column(name = "ORIGIN_ORDER")
-    private String originOrder;
+	@Column(name = "ORIGIN_ORDER")
+	private String originOrder;
 
-    @Column(name = "CUSTOMER_IDENTIFIER")
-    private String customerIdentifier;
+	@Column(name = "CUSTOMER_IDENTIFIER")
+	private String customerIdentifier;
 
-    @CreationTimestamp
-    @Column(name = "CREATE_DATE")
-    private LocalDateTime createDate;
+	@CreationTimestamp
+	@Column(name = "CREATE_DATE")
+	private LocalDateTime createDate;
 
-    @UpdateTimestamp
-    @Column(name = "LAST_MODIFIED_DATE")
-    private LocalDateTime lastModifiedDate;
+	@UpdateTimestamp
+	@Column(name = "LAST_MODIFIED_DATE")
+	private LocalDateTime lastModifiedDate;
 
-    @Column(name = "STATUS")
-    private Integer status;
+	@Column(name = "STATUS")
+	private Integer status;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumns({
-            @JoinColumn(name = "ORDER_PRICE_ID", referencedColumnName = "ID"),
-    })
-    private OrderPriceEntity orderPriceEntity;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumns({ @JoinColumn(name = "ORDER_PRICE_ID", referencedColumnName = "ID"), })
+	private OrderPriceEntity orderPriceEntity;
+	
+	@OneToMany(mappedBy="orderEntity")
+    private Set<OrderItemEntity> orderItemEntities;
+	
+	
 }
