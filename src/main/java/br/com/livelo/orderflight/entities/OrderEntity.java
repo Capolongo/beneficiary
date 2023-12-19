@@ -12,6 +12,7 @@ import br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -81,8 +82,9 @@ public class OrderEntity {
 	@JoinColumns({ @JoinColumn(name = "ORDER_PRICE_ID", referencedColumnName = "ID"), })
 	private OrderPriceEntity orderPriceEntity;
 	
-	@OneToMany(mappedBy="orderEntity")
-    private Set<OrderItemEntity> orderItemEntities;
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@JoinColumn(name = "ORDER_ID")
+	private Set<OrderItemEntity> items;
 	
 	
 }

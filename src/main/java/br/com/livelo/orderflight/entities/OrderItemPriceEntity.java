@@ -3,10 +3,17 @@ package br.com.livelo.orderflight.entities;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,24 +31,33 @@ public class OrderItemPriceEntity {
     @Column(name = "ID")
     @Id
     private Integer id;
+    
     @Column(name = "LIST_PRICE")
     private String listPrice;
+    
     @Column(name = "AMOUNT")
-    private Integer amount;
+    private BigDecimal amount;
+    
     @Column(name = "POINTS_AMOUNT")
     private BigDecimal pointsAmount;
+    
     @Column(name = "ACCRUAL_POINTS")
     private BigDecimal accrualPoints;
+    
     @Column(name = "PARTNER_AMOUNT")
     private BigDecimal partnerAmount;
+    
     @Column(name = "PRICE_LIST_ID")
     private String priceListId;
+    
     @Lob
     @Column(name = "PRICE_RULE")
     private String priceRule;
+    
     @CreationTimestamp
     @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;
+    
     @UpdateTimestamp
     @Column(name = "LAST_MODIFIED_DATE")
     private LocalDateTime lastModifiedDate;

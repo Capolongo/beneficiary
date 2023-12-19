@@ -1,10 +1,12 @@
 package br.com.livelo.orderflight.utils;
 
+import org.springframework.util.Assert;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
 
 @Slf4j
 @UtilityClass
