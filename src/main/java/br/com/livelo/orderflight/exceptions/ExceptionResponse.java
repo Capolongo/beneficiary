@@ -1,13 +1,13 @@
 package br.com.livelo.orderflight.exceptions;
 
 
-import br.com.livelo.orderflight.contants.ErrorCodes;
-import lombok.Getter;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+
+import br.com.livelo.orderflight.contants.ErrorCodes;
+import lombok.Getter;
 
 @Getter
 public class ExceptionResponse implements Serializable {

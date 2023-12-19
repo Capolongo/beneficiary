@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "TRAVEL_INFO")
 public class TravelInfoEntity {
 
-	 @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRAVEL_INFO_SEQ")
+		@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRAVEL_INFO_SEQ")
 	    @SequenceGenerator(name = "TRAVEL_INFO_SEQ", sequenceName = "TRAVEL_INFO_SEQ", allocationSize = 1)
 	    @Column(name = "ID")
 	    @Id

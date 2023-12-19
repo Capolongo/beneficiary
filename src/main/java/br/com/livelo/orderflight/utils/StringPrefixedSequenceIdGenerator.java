@@ -1,17 +1,16 @@
 package br.com.livelo.orderflight.utils;
 
+import java.io.Serializable;
+import java.util.Properties;
+
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.internal.util.config.ConfigurationHelper;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.type.*;
 import org.hibernate.type.Type;
 import org.hibernate.type.spi.TypeConfiguration;
-
-import java.io.Serializable;
-import java.util.Properties;
 
 public class StringPrefixedSequenceIdGenerator extends SequenceStyleGenerator {
     public static final String VALUE_PREFIX_PARAMETER = "valuePrefix";
