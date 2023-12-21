@@ -29,9 +29,6 @@ public class ChangeRulesEntity {
     @Column(name = "TYPE")
     private String type;
 
-    @Column(name = "SEGMENT_ID")
-    private Integer segmentId;
-
     @CreationTimestamp
     @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;

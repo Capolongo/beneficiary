@@ -2,17 +2,12 @@ package br.com.livelo.orderflight.entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,13 +37,14 @@ public class OrderPriceEntity {
     private BigDecimal partnerAmount;
     @Column(name = "PRICE_LIST_ID")
     private String priceListId;
-    @Column(name = "PRICE_LIST_DESCRIPTION")
-    private String priceListDescription;
     @CreationTimestamp
     @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;
     @UpdateTimestamp
     @Column(name = "LAST_MODIFIED_DATE")
     private LocalDateTime lastModifiedDate;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "ORDER_PRICE_ID")
+    private Set<OrderPriceDescriptionEntity> priceListDescription;
 
 }

@@ -1,6 +1,7 @@
 package br.com.livelo.orderflight.entities;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -57,9 +58,6 @@ public class SegmentEntity {
     @Column(name = "ARRIVAL_DATE")
     private LocalDateTime arrivalDate;
 
-    @Column(name = "ORDER_ITEM_ID")
-    private String orderItemId;
-
     @CreationTimestamp
     @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;
@@ -67,5 +65,21 @@ public class SegmentEntity {
     @UpdateTimestamp
     @Column(name = "LAST_MODIFIED_DATE")
     private LocalDateTime lastModifiedDate;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "SEGMENT_ID")
+    private Set<LuggageEntity> luggage;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "SEGMENT_ID")
+    private Set<CancelationRulesEntity> cancelationRules;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "SEGMENT_ID")
+    private Set<ChangeRulesEntity> changeRules;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "SEGMENT_ID")
+    private Set<FlightLegEntity> flightLeg;
 
 }

@@ -56,9 +56,6 @@ public class PaxEntity {
     @Column(name = "DOCUMENT_TYPE")
     private String documentType;
 
-    @Column(name = "TRAVEL_INFO_ID")
-    private String travelInfoId;
-    
     @CreationTimestamp
     @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;

@@ -37,9 +37,6 @@ public class OrderPriceDescriptionEntity {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "ORDER_PRICE_ID")
-    private Integer orderPriceId;
-
     @CreationTimestamp
     @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;

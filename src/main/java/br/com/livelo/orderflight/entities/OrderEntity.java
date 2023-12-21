@@ -33,58 +33,59 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "ORDERS")
 public class OrderEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")
-	@GenericGenerator(name = "ORDERS_SEQ", strategy = "br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator", parameters = {
-			@Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "trf"),
-			@Parameter(name = "increment_size", value = "1") })
-	private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")
+    @GenericGenerator(name = "ORDERS_SEQ", strategy = "br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator", parameters = {
+            @Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "trf"),
+            @Parameter(name = "increment_size", value = "1")})
+    private String id;
 
-	@Column(name = "COMMERCE_ORDER_ID")
-	private String commerceOrderId;
+    @Column(name = "COMMERCE_ORDER_ID")
+    private String commerceOrderId;
 
-	// TODO -- verificar com relação ao token da cvc - Defini como text, pois pode
-	// haver uma quantidade não previsível para outros parceiros
-	@Column(name = "PARTNER_ORDER_ID")
-	private String partnerOrderId;
+    // TODO -- verificar com relação ao token da cvc - Defini como text, pois pode
+    // haver uma quantidade não previsível para outros parceiros
+    @Column(name = "PARTNER_ORDER_ID")
+    private String partnerOrderId;
 
-	@Column(name = "PARTNER_CODE")
-	private String partnerCode;
+    @Column(name = "PARTNER_CODE")
+    private String partnerCode;
 
-	@CreationTimestamp
-	@Column(name = "SUBMITTED_DATE")
-	private LocalDateTime submittedDate;
+    @CreationTimestamp
+    @Column(name = "SUBMITTED_DATE")
+    private LocalDateTime submittedDate;
 
-	@Column(name = "CHANNEL")
-	private String channel;
+    @Column(name = "CHANNEL")
+    private String channel;
 
-	@Column(name = "TIER_CODE")
-	private String tierCode;
+    @Column(name = "TIER_CODE")
+    private String tierCode;
 
-	@Column(name = "ORIGIN_ORDER")
-	private String originOrder;
+    @Column(name = "ORIGIN_ORDER")
+    private String originOrder;
 
-	@Column(name = "CUSTOMER_IDENTIFIER")
-	private String customerIdentifier;
+    @Column(name = "CUSTOMER_IDENTIFIER")
+    private String customerIdentifier;
 
-	@CreationTimestamp
-	@Column(name = "CREATE_DATE")
-	private LocalDateTime createDate;
+    @CreationTimestamp
+    @Column(name = "CREATE_DATE")
+    private LocalDateTime createDate;
 
-	@UpdateTimestamp
-	@Column(name = "LAST_MODIFIED_DATE")
-	private LocalDateTime lastModifiedDate;
+    @UpdateTimestamp
+    @Column(name = "LAST_MODIFIED_DATE")
+    private LocalDateTime lastModifiedDate;
 
-	@Column(name = "STATUS")
-	private Integer status;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumns({ @JoinColumn(name = "ORDER_PRICE_ID", referencedColumnName = "ID"), })
-	private OrderPriceEntity orderPriceEntity;
-	
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	@JoinColumn(name = "ORDER_ID")
-	private Set<OrderItemEntity> items;
-	
-	
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumns({@JoinColumn(name = "ORDER_PRICE_ID", referencedColumnName = "ID"),})
+    private OrderPriceEntity orderPriceEntity;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "ORDER_ID")
+    private Set<OrderItemEntity> items;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "ORDER_ID")
+    private Set<OrderStatusEntity> status;
+
 }

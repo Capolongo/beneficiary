@@ -36,9 +36,6 @@ public class OrderStatusEntity {
     @Column(name = "PARTNER_DESCRIPTION")
     private String partnerDescription;
 
-    @Column(name = "ORDER_ID")
-    private String orderId;
-
     @Lob
     @Column(name = "PARTNER_RESPONSE")
     private String partnerResponse;
@@ -48,8 +45,8 @@ public class OrderStatusEntity {
     private LocalDateTime statusDate;
 
     @CreationTimestamp
-    @Column(name = "CREATE_DATE")
-    private LocalDateTime createDate;
+    @Column(name = "CREATED_DATE")
+    private LocalDateTime createdDate;
 
     @UpdateTimestamp
     @Column(name = "LAST_MODIFIED_DATE")

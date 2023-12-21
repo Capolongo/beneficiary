@@ -7,7 +7,7 @@ spring:
   flyway:
     enabled: false
     baseline-on-migrate: false
-    
+
   config:
     import: "optional:configserver:https://fake-url.com?max-attempts=1"
 
