@@ -1,6 +1,5 @@
 package br.com.livelo.orderflight.entities;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -18,33 +17,40 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ORDER_PRICE")
-public class OrderPriceEntity {
+@Table(name = "TRAVEL_INFO")
+public class TravelInfoEntity {
 
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_PRICE_SEQ")
-    @SequenceGenerator(name = "ORDER_PRICE_SEQ", sequenceName = "ORDER_PRICE_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRAVEL_INFO_SEQ")
+    @SequenceGenerator(name = "TRAVEL_INFO_SEQ", sequenceName = "TRAVEL_INFO_SEQ", allocationSize = 1)
     @Column(name = "ID")
     @Id
     private Integer id;
 
-    @Column(name = "ACCRUAL_POINTS")
-    private Integer accuralPoints;
-    @Column(name = "AMOUNT")
-    private BigDecimal amount;
-    @Column(name = "POINTS_AMOUNT")
-    private BigDecimal pointsAmount;
-    @Column(name = "PARTNER_AMOUNT")
-    private BigDecimal partnerAmount;
-    @Column(name = "PRICE_LIST_ID")
-    private String priceListId;
+    @Column(name = "TYPE")
+    private Integer type;
+
+    @Column(name = "RESERVATION_CODE")
+    private String reservationCode;
+
+    @Column(name = "ADULT_QUANTITY")
+    private Integer adultQuantity;
+
+    @Column(name = "CHILD_QUANTITY")
+    private Integer childQuantity;
+
+    @Column(name = "BABY_QUANTITY")
+    private Integer babyQuantity;
+
     @CreationTimestamp
     @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;
+
     @UpdateTimestamp
     @Column(name = "LAST_MODIFIED_DATE")
     private LocalDateTime lastModifiedDate;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "ORDER_PRICE_ID")
-    private Set<OrderPriceDescriptionEntity> priceListDescription;
+    @JoinColumn(name = "TRAVEL_INFO_ID")
+    private Set<PaxEntity> pax;
 
 }

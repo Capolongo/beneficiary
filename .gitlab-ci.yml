@@ -5,5 +5,5 @@ variables:
 
 include:
   - project: 'g5156/library-pipeline/pipeline-livelo-general'
-    ref: java21
+    ref: master
     file: '.gitlab-ci.yml'

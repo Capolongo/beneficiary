@@ -1,26 +1,47 @@
 spring:
-  # rabbitmq:
-  #   enabled: true
-  #   host: ${RABBIT_HOST:localhost}
-  #   port: ${RABBIT_PORT:5672}
-  #   username: ${RABBIT_USERNAME:guest}
-  #   password: ${RABBIT_PASSWORD:guest}
-  #   exchange: product.exchange
-  #   queue: product.queue
-  #   routingkey: product.routingkey
+  cloud:
+    openfeign:
+      micrometer:
+        enabled: true
+
+  flyway:
+    enabled: false
+    baseline-on-migrate: false
+
+  config:
+    import: "optional:configserver:https://fake-url.com?max-attempts=1"
+
 
   datasource:
     # Configurar com credenciais do serviço
-    url: jdbc:h2:mem:testdb;Mode=Oracle
-    username: ${ORACLEDB_USERNAME:order-flight}
-    password: ${ORACLEDB_PASSWORD:order-flight}
-    driver-class-name: org.h2.Driver
+    url: jdbc:oracle:thin:@//localhost:1521/xe
+    username: ${ORACLEDB_USERNAME:order_flight}
+    password: ${ORACLEDB_PASSWORD:order_flight}
+    driver-class-name: oracle.jdbc.OracleDriver
 
   application:
     name: order-flight
   jpa:
-    open-in-view: false
-    database-platform: org.hibernate.dialect.Oracle10gDialect
+    show-sql: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include:
+            - readinessState
 
 server:
-  port: 8080
+  servlet:
+    contextPath: /order-flight
