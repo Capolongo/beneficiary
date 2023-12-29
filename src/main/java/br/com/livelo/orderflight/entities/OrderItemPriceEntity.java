@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ORDER_ITEM_PRICE")
-public class OrderItemPriceEntity {
+public class OrderItemPriceEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_ITEM_PRICE_SEQ")
     @SequenceGenerator(name = "ORDER_ITEM_PRICE_SEQ", sequenceName = "ORDER_ITEM_PRICE_SEQ", allocationSize = 1)
     @Id
@@ -42,10 +42,4 @@ public class OrderItemPriceEntity {
 
     @Lob
     private String priceRule;
-
-
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
 }

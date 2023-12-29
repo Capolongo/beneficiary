@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "TRAVEL_INFO")
-public class TravelInfoEntity {
+public class TravelInfoEntity extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRAVEL_INFO_SEQ")
     @SequenceGenerator(name = "TRAVEL_INFO_SEQ", sequenceName = "TRAVEL_INFO_SEQ", allocationSize = 1)
@@ -43,13 +43,11 @@ public class TravelInfoEntity {
 
     private Integer babyQuantity;
 
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "TRAVEL_INFO_ID")
     private Set<PaxEntity> pax;
 
+    private String voucher;
+
+    private String typeClass;
 }

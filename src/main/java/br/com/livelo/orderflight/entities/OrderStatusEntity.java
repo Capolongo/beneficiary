@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ORDER_STATUS")
-public class OrderStatusEntity {
+public class OrderStatusEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_STATUS_SEQ")
     @SequenceGenerator(name = "ORDER_STATUS_SEQ", sequenceName = "ORDER_STATUS_SEQ", allocationSize = 1)
     @Id
@@ -36,14 +36,7 @@ public class OrderStatusEntity {
 
     private String partnerDescription;
 
-    @Lob
     private String partnerResponse;
 
     private LocalDateTime statusDate;
-
-    private LocalDateTime createdDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
-
 }

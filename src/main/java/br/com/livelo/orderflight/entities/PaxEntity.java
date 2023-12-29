@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "PAX")
 
-public class PaxEntity {
+public class PaxEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PAX_SEQ")
     @SequenceGenerator(name = "PAX_SEQ", sequenceName = "PAX_SEQ", allocationSize = 1)
     @Id
@@ -42,15 +42,10 @@ public class PaxEntity {
 
     private String gender;
 
-    private LocalDateTime birthDate;
+    private String birthDate;
 
     private String document;
 
     private String documentType;
-
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
 
 }

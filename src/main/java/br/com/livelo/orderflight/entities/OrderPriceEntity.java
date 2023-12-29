@@ -27,14 +27,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ORDER_PRICE")
-public class OrderPriceEntity {
+public class OrderPriceEntity extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_PRICE_SEQ")
     @SequenceGenerator(name = "ORDER_PRICE_SEQ", sequenceName = "ORDER_PRICE_SEQ", allocationSize = 1)
     @Id
     private Long id;
 
-    private Integer accrualPoints;
+    private Double accrualPoints;
 
     private BigDecimal amount;
 
@@ -43,11 +43,6 @@ public class OrderPriceEntity {
     private BigDecimal partnerAmount;
 
     private String priceListId;
-
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_PRICE_ID")

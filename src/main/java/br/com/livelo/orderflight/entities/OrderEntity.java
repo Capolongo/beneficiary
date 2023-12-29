@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ORDERS")
-public class OrderEntity {
+public class OrderEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")
     @GenericGenerator(name = "ORDERS_SEQ", strategy = "br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator", parameters = {
@@ -54,14 +54,8 @@ public class OrderEntity {
 
     private String customerIdentifier;
 
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
-
-
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumns({@JoinColumn(name = "ORDER_PRICE_ID", referencedColumnName = "ID"),})
+    @JoinColumn(name = "ORDER_PRICE_ID")
     private OrderPriceEntity price;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

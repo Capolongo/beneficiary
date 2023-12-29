@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "SEGMENT")
 
-public class SegmentEntity {
+public class SegmentEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEGMENT_SEQ")
     @SequenceGenerator(name = "SEGMENT_SEQ", sequenceName = "SEGMENT_SEQ", allocationSize = 1)
     @Id
@@ -35,7 +35,7 @@ public class SegmentEntity {
 
     private String partnerId;
 
-    private Integer step;
+    private String step;
 
     private Integer stops;
 
@@ -52,12 +52,6 @@ public class SegmentEntity {
     private LocalDateTime departureDate;
 
     private LocalDateTime arrivalDate;
-
-
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "SEGMENT_ID")

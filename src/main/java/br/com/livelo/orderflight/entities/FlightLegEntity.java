@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "FLIGHT_LEG")
-public class FlightLegEntity {
+public class FlightLegEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLIGHT_LEG_SEQ")
     @SequenceGenerator(name = "FLIGHT_LEG_SEQ", sequenceName = "FLIGHT_LEG_SEQ", allocationSize = 1)
     @Id
@@ -29,7 +29,7 @@ public class FlightLegEntity {
 
     private String flightNumber;
 
-    private String flightDuration;
+    private Integer flightDuration;
 
     private String airline;
 
@@ -52,9 +52,4 @@ public class FlightLegEntity {
     private LocalDateTime arrivalDate;
 
     private String type;
-
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
 }

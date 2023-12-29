@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ORDER_ITEM")
-public class OrderItemEntity {
+public class OrderItemEntity extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_ITEM_SEQ")
     @SequenceGenerator(name = "ORDER_ITEM_SEQ", sequenceName = "ORDER_ITEM_SEQ", allocationSize = 1)
@@ -44,21 +44,16 @@ public class OrderItemEntity {
 
     private String externalCoupon;
 
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ORDER_ITEM_PRICE_ID")
+    private OrderItemPriceEntity price;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumns({@JoinColumn(name = "ORDER_ITEM_PRICE_ID", referencedColumnName = "ID")})
-    private OrderItemPriceEntity orderItemPriceEntity;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumns({@JoinColumn(name = "TRAVEL_INFO_ID", referencedColumnName = "ID")})
+    @JoinColumn(name = "TRAVEL_INFO_ID")
     private TravelInfoEntity travelInfoEntity;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_ITEM_ID")
-    private Set<SegmentEntity> segment;
+    private Set<SegmentEntity> segments;
 
 }

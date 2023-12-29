@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "CANCELATION_RULES")
-public class CancelationRulesEntity {
+public class CancelationRulesEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CANCELATION_RULES_SEQ")
     @SequenceGenerator(name = "CANCELATION_RULES_SEQ", sequenceName = "CANCELATION_RULES_SEQ", allocationSize = 1)
     @Id
@@ -29,9 +29,4 @@ public class CancelationRulesEntity {
     private String description;
 
     private String type;
-
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
 }

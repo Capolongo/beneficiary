@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "CHANGE_RULES")
-public class ChangeRulesEntity {
+public class ChangeRulesEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CHANGE_RULES_SEQ")
     @SequenceGenerator(name = "CHANGE_RULES_SEQ", sequenceName = "CHANGE_RULES_SEQ", allocationSize = 1)
     @Id
@@ -31,10 +31,4 @@ public class ChangeRulesEntity {
     private String description;
 
     private String type;
-
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
-
 }

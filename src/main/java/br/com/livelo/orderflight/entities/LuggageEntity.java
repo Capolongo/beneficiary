@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "LUGGAGE")
-public class LuggageEntity {
+public class LuggageEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LUGGAGE_SEQ")
     @SequenceGenerator(name = "LUGGAGE_SEQ", sequenceName = "LUGGAGE_SEQ", allocationSize = 1)
     @Id
@@ -30,9 +30,4 @@ public class LuggageEntity {
     private String description;
 
     private String type;
-
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
 }

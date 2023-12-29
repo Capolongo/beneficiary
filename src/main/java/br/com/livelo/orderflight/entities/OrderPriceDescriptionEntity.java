@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ORDER_PRICE_DESCRIPTION")
-public class OrderPriceDescriptionEntity {
+public class OrderPriceDescriptionEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_PRICE_DESCRIPTION_SEQ")
     @SequenceGenerator(name = "ORDER_PRICE_DESCRIPTION_SEQ", sequenceName = "ORDER_PRICE_DESCRIPTION_SEQ", allocationSize = 1)
     @Id
@@ -35,9 +35,4 @@ public class OrderPriceDescriptionEntity {
     private String type;
 
     private String description;
-
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
 }
