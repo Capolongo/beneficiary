@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import br.com.livelo.orderflight.contants.ErrorCodes;
+import br.com.livelo.orderflight.enuns.ErrorCodes;
 import lombok.Getter;
 
 @Getter

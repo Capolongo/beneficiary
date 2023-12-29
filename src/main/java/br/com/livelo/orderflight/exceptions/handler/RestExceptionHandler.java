@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import br.com.livelo.orderflight.contants.ErrorCodes;
+import br.com.livelo.orderflight.enuns.ErrorCodes;
 import br.com.livelo.orderflight.exceptions.ExceptionResponse;
 
 @ControllerAdvice

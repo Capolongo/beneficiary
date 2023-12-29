@@ -1,4 +1,4 @@
-package br.com.livelo.orderflight.contants;
+package br.com.livelo.orderflight.enuns;
 
 public enum ErrorCodes {
     INTERNAL_SERVER_ERROR("Internal server error"),

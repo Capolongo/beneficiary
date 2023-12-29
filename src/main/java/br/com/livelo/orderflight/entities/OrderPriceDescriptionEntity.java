@@ -1,12 +1,16 @@
 package br.com.livelo.orderflight.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
@@ -21,27 +25,19 @@ import java.time.LocalDateTime;
 public class OrderPriceDescriptionEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_PRICE_DESCRIPTION_SEQ")
     @SequenceGenerator(name = "ORDER_PRICE_DESCRIPTION_SEQ", sequenceName = "ORDER_PRICE_DESCRIPTION_SEQ", allocationSize = 1)
-    @Column(name = "ID")
     @Id
-    private Integer id;
+    private Long id;
 
-    @Column(name = "AMOUNT")
     private BigDecimal amount;
 
-    @Column(name = "POINTS_AMOUNT")
     private BigDecimal pointsAmount;
 
-    @Column(name = "TYPE")
     private String type;
 
-    @Column(name = "DESCRIPTION")
     private String description;
 
-    @CreationTimestamp
-    @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;
 
     @UpdateTimestamp
-    @Column(name = "LAST_MODIFIED_DATE")
     private LocalDateTime lastModifiedDate;
 }
