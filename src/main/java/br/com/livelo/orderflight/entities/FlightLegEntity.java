@@ -36,9 +36,7 @@ public class FlightLegEntity extends BaseEntity {
     private String managedBy;
 
     private Integer timeToWait;
-
-    private LocalDateTime operatedDate;
-
+    
     private String originIata;
 
     private String originDescription;
