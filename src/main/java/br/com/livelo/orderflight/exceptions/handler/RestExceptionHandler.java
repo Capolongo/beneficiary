@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import br.com.livelo.orderflight.enuns.ErrorCodes;
 import br.com.livelo.orderflight.exceptions.ExceptionResponse;
 
 @ControllerAdvice
@@ -18,9 +17,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         logger.error("An unexpected error occur", ex);
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                ErrorCodes.INTERNAL_SERVER_ERROR, ex.getMessage());
+                HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 
-        request.getDescription(false);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
     }
@@ -29,7 +27,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
         logger.error("Invalid Arguments ", ex);
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse(ErrorCodes.INVALID_REQUEST,
+        ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST,
                 ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);

@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 public class InternalOrdersController {
 
     @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
 
     @GetMapping
