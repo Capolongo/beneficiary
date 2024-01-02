@@ -14,6 +14,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Optional;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -30,9 +33,26 @@ public class InternalOrdersControllerTest {
     public void createOrderSuccess() throws Exception {
         final String createOrderRequest = BaseTest.readFile("json/InternalOrdersController.json");
 
-        Mockito.when(orderRepository.save(Mockito.any())).thenReturn(new OrderEntity());
+        Mockito.when(orderRepository.save(Mockito.any())).thenReturn(order(null).get());
 
         mockMvc.perform(MockMvcRequestBuilders.post(path).content(createOrderRequest).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    public void getOrderSuccess() throws Exception {
+        final String id = "lf1";
+        final String pathToGetOrder = path + "/" + id;
+        final Optional<OrderEntity> expectedResponseFromService = order(id);
+
+        Mockito.when(orderRepository.findById(Mockito.any())).thenReturn(order(id));
+
+        mockMvc.perform(get(pathToGetOrder).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    private Optional<OrderEntity> order(String id) {
+        return Optional.of(OrderEntity.builder().commerceOrderId("1").originOrder("1").id(id).partnerOrderId("1").channel("1").customerIdentifier("1")
+                .build());
     }
 }
