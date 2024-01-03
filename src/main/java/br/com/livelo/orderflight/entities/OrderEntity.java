@@ -3,14 +3,12 @@ package br.com.livelo.orderflight.entities;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -32,53 +30,37 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ORDERS")
-public class OrderEntity {
+public class OrderEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")
     @GenericGenerator(name = "ORDERS_SEQ", strategy = "br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator", parameters = {
-            @Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "trf"),
+            @Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "lf"),
             @Parameter(name = "increment_size", value = "1")})
     private String id;
 
-    @Column(name = "COMMERCE_ORDER_ID")
     private String commerceOrderId;
 
-    // TODO -- verificar com relação ao token da cvc - Defini como text, pois pode
-    // haver uma quantidade não previsível para outros parceiros
-    @Column(name = "PARTNER_ORDER_ID")
     private String partnerOrderId;
 
-    @Column(name = "PARTNER_CODE")
     private String partnerCode;
 
-    @CreationTimestamp
-    @Column(name = "SUBMITTED_DATE")
     private LocalDateTime submittedDate;
 
-    @Column(name = "CHANNEL")
     private String channel;
 
-    @Column(name = "TIER_CODE")
     private String tierCode;
 
-    @Column(name = "ORIGIN_ORDER")
     private String originOrder;
 
-    @Column(name = "CUSTOMER_IDENTIFIER")
     private String customerIdentifier;
 
-    @CreationTimestamp
-    @Column(name = "CREATE_DATE")
-    private LocalDateTime createDate;
+    private String transactionId;
 
-    @UpdateTimestamp
-    @Column(name = "LAST_MODIFIED_DATE")
-    private LocalDateTime lastModifiedDate;
-
+    private LocalDateTime expirationDate;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumns({@JoinColumn(name = "ORDER_PRICE_ID", referencedColumnName = "ID"),})
-    private OrderPriceEntity orderPriceEntity;
+    @JoinColumn(name = "ORDER_PRICE_ID")
+    private OrderPriceEntity price;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_ID")
@@ -86,6 +68,10 @@ public class OrderEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_ID")
-    private Set<OrderStatusEntity> status;
+    private Set<OrderStatusEntity> statusHistory;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "STATUS")
+    private OrderStatusEntity currentStatus;
 
 }

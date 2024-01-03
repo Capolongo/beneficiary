@@ -1,0 +1,152 @@
+{
+    "expirationDate": "2023-12-29T14:23:08.319862",
+    "transactionId": "1",
+    "commerceOrderId": "1",
+    "partnerOrderId": "1",
+    "partnerCode": "1",
+    "submittedDate": null,
+    "channel": "1",
+    "tierCode": "1",
+    "originOrder": "1",
+    "customerIdentifier": "1",
+    "createDate": null,
+    "lastModifiedDate": null,
+    "price": {
+        "accuralPoints": 1,
+        "amount": 1,
+        "pointsAmount": 1,
+        "partnerAmount": 1,
+        "priceListId": "1",
+        "createDate": null,
+        "lastModifiedDate": null,
+        "ordersPriceDescription": [
+            {
+                "amount": 1,
+                "pointsAmount": 1,
+                "type": "1",
+                "description": "1",
+                "createDate": null,
+                "lastModifiedDate": null
+            }
+        ]
+    },
+    "items": [
+        {
+            "commerceItemId": "1",
+            "skuId": "1",
+            "productId": "1",
+            "quantity": 1,
+            "externalCoupon": "1",
+            "createDate": null,
+            "lastModifiedDate": null,
+            "price": {
+                "listPrice": "1",
+                "amount": 1,
+                "pointsAmount": 1,
+                "accrualPoints": 1,
+                "partnerAmount": 1,
+                "priceListId": "1",
+                "priceRule": "1",
+                "createDate": null,
+                "lastModifiedDate": null
+            },
+            "travelInfoEntity": {
+                "typeClass": "1",
+                "voucher": "1",
+                "type": 1,
+                "reservationCode": "1",
+                "adultQuantity": 1,
+                "childQuantity": 1,
+                "babyQuantity": 1,
+                "createDate": null,
+                "lastModifiedDate": null,
+                "pax": [
+                    {
+                        "type": "1",
+                        "firstName": "1",
+                        "lastName": "1",
+                        "email": "1",
+                        "areaCode": "1",
+                        "phoneNumber": "1",
+                        "gender": "1",
+                        "birthDate": null,
+                        "document": "1",
+                        "documentType": "1",
+                        "createDate": null,
+                        "lastModifiedDate": null
+                    }
+                ]
+            },
+            "segments": [
+                {
+                    "partnerId": "1",
+                    "step": "1",
+                    "stops": 1,
+                    "flightDuration": 1,
+                    "originIata": "1",
+                    "originDescription": "1",
+                    "destinationIata": "1",
+                    "destinationDescription": "1",
+                    "derpatureDate": null,
+                    "arrivalDate": null,
+                    "createDate": null,
+                    "lastModifiedDate": null,
+                    "luggage": [
+                        {
+                            "description": "1",
+                            "type": "1",
+                            "createDate": null,
+                            "lastModifiedDate": null
+                        }
+                    ],
+                    "cancelationRules": [
+                        {
+                            "description": "1",
+                            "type": "1",
+                            "createDate": null,
+                            "lastModifiedDate": null
+                        }
+                    ],
+                    "changeRules": [
+                        {
+                            "description": "1",
+                            "type": "1",
+                            "createDate": null,
+                            "lastModifiedDate": null
+                        }
+                    ],
+                    "flightLeg": [
+                        {
+                            "flightNumber": "1",
+                            "flightDuration": 1,
+                            "airline": "1",
+                            "managedBy": "1",
+                            "timeToWait": 1,
+                            "originIata": "1",
+                            "originDescription": "1",
+                            "destinationIata": "1",
+                            "destinationDescription": "1",
+                            "derpatureDate": null,
+                            "arrivalDate": null,
+                            "type": "1",
+                            "createDate": null,
+                            "lastModifiedDate": null
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "statusHistory": [
+        {
+            "code": "1",
+            "description": "1",
+            "partnerCode": "1",
+            "partnerDescription": "1",
+            "partnerResponse": "1",
+            "statusDate": null,
+            "createdDate": null,
+            "lastModifiedDate": null
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    openfeign:
+      micrometer:
+        enabled: true
+
+  datasource:
+    # Configurar com credenciais do serviço
+    url: jdbc:oracle:thin:@//${ORACLEDB_HOST}:${ORACLEDB_PORT}/${ORACLEDB_SERVICENAME}
+    username: ${ORACLEDB_USERNAME}
+    password: ${ORACLEDB_PASSWORD}
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  application:
+    name: order-flight

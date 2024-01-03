@@ -5,8 +5,8 @@ spring:
         enabled: true
 
   flyway:
-    enabled: false
-    baseline-on-migrate: false
+    enabled: true
+    baseline-on-migrate: true
 
   config:
     import: "optional:configserver:https://fake-url.com?max-attempts=1"
@@ -14,15 +14,13 @@ spring:
 
   datasource:
     # Configurar com credenciais do serviço
-    url: jdbc:oracle:thin:@//localhost:1521/xe
+    url: jdbc:oracle:thin:@//${ORACLEDB_HOST:localhost}:${ORACLEDB_PORT:1521}/${ORACLEDB_SERVICENAME:xe}
     username: ${ORACLEDB_USERNAME:order_flight}
     password: ${ORACLEDB_PASSWORD:order_flight}
     driver-class-name: oracle.jdbc.OracleDriver
 
   application:
     name: order-flight
-  jpa:
-    show-sql: false
 
 management:
   endpoints:

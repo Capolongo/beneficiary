@@ -3,8 +3,16 @@ package br.com.livelo.orderflight.entities;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.AllArgsConstructor;
@@ -18,39 +26,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "TRAVEL_INFO")
-public class TravelInfoEntity {
+public class TravelInfoEntity extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRAVEL_INFO_SEQ")
     @SequenceGenerator(name = "TRAVEL_INFO_SEQ", sequenceName = "TRAVEL_INFO_SEQ", allocationSize = 1)
-    @Column(name = "ID")
     @Id
-    private Integer id;
+    private Long id;
 
-    @Column(name = "TYPE")
-    private Integer type;
+    private String type;
 
-    @Column(name = "RESERVATION_CODE")
     private String reservationCode;
 
-    @Column(name = "ADULT_QUANTITY")
     private Integer adultQuantity;
 
-    @Column(name = "CHILD_QUANTITY")
     private Integer childQuantity;
 
-    @Column(name = "BABY_QUANTITY")
     private Integer babyQuantity;
 
-    @CreationTimestamp
-    @Column(name = "CREATE_DATE")
-    private LocalDateTime createDate;
+    private String voucher;
 
-    @UpdateTimestamp
-    @Column(name = "LAST_MODIFIED_DATE")
-    private LocalDateTime lastModifiedDate;
+    private String typeClass;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "TRAVEL_INFO_ID")
-    private Set<PaxEntity> pax;
-
+    private Set<PaxEntity> paxs;
 }
