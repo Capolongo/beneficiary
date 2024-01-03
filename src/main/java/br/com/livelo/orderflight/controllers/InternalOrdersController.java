@@ -1,7 +1,6 @@
 package br.com.livelo.orderflight.controllers;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 import br.com.livelo.orderflight.repository.OrderRepository;
@@ -20,7 +19,6 @@ import jakarta.validation.Valid;
 @RequestMapping("/v1/internal/orders")
 public class InternalOrdersController {
 
-    @Autowired
     private final OrderRepository orderRepository;
 
     @GetMapping("/{id}")
