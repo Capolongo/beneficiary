@@ -21,10 +21,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ORDER_ITEM_PRICE")
+@Table(name = "ORDERS_ITEM_PRICE")
 public class OrderItemPriceEntity extends BaseEntity {
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_ITEM_PRICE_SEQ")
-    @SequenceGenerator(name = "ORDER_ITEM_PRICE_SEQ", sequenceName = "ORDER_ITEM_PRICE_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_ITEM_PRICE_SEQ")
+    @SequenceGenerator(name = "ORDERS_ITEM_PRICE_SEQ", sequenceName = "ORDERS_ITEM_PRICE_SEQ", allocationSize = 1)
     @Id
     private Long id;
 

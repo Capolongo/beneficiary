@@ -21,10 +21,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ORDER_PRICE_DESCRIPTION")
+@Table(name = "ORDERS_PRICE_DESCRIPTION")
 public class OrderPriceDescriptionEntity extends BaseEntity {
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_PRICE_DESCRIPTION_SEQ")
-    @SequenceGenerator(name = "ORDER_PRICE_DESCRIPTION_SEQ", sequenceName = "ORDER_PRICE_DESCRIPTION_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_PRICE_DESCRIPTION_SEQ")
+    @SequenceGenerator(name = "ORDERS_PRICE_DESCRIPTION_SEQ", sequenceName = "ORDERS_PRICE_DESCRIPTION_SEQ", allocationSize = 1)
     @Id
     private Long id;
 
