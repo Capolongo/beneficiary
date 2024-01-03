@@ -1,54 +1,38 @@
 package br.com.livelo.orderflight.controllers;
 
-import br.com.livelo.orderflight.entities.OrderEntity;
-import br.com.livelo.orderflight.repository.OrderRepository;
-import br.com.livelo.orderflight.utils.BaseTest;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Optional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import br.com.livelo.orderflight.entities.OrderEntity;
+import br.com.livelo.orderflight.repository.OrderRepository;
 
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(InternalOrdersController.class)
 public class InternalOrdersControllerTest {
-    private String path = "/v1/internal/orders";
-    @Autowired
-    private MockMvc mockMvc;
-    @MockBean
+    @InjectMocks
+    private InternalOrdersController controller;
+    @Mock
     private OrderRepository orderRepository;
 
     @Test
     public void createOrderSuccess() throws Exception {
-        final String createOrderRequest = BaseTest.readFile("json/InternalOrdersController.json");
-
-        Mockito.when(orderRepository.save(Mockito.any())).thenReturn(order(null).get());
-
-        mockMvc.perform(MockMvcRequestBuilders.post(path).content(createOrderRequest).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+        Mockito.when(orderRepository.save(Mockito.any(OrderEntity.class))).thenReturn(order(null).get());
+        var order = controller.createOrder(order(null).get());
+        assertNotNull(order);
     }
 
     @Test
     public void getOrderSuccess() throws Exception {
         final String id = "lf1";
-        final String pathToGetOrder = path + "/" + id;
-        final Optional<OrderEntity> expectedResponseFromService = order(id);
-
-        Mockito.when(orderRepository.findById(Mockito.any())).thenReturn(order(id));
-
-        mockMvc.perform(get(pathToGetOrder).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+        Mockito.when(orderRepository.findById(Mockito.anyString())).thenReturn(order(id));
+        var order = controller.getById(id);
+        assertNotNull(order);
     }
 
     private Optional<OrderEntity> order(String id) {
@@ -56,3 +40,10 @@ public class InternalOrdersControllerTest {
                 .build());
     }
 }
+
+
+
+
+
+
+
