@@ -18,7 +18,7 @@
 		<oracle-db.version>12.1.0.2</oracle-db.version>
         <annotation.version>0.0.2</annotation.version>
 
-        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
         <janino.version>3.1.9</janino.version>
         <java.version>21</java.version>
  
@@ -35,6 +35,27 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
     </properties>
+
+    <scm>
+        <connection>
+            scm:git:ssh://git@stash.pontoslivelo.com.br:7999/livtravel/order-flight.git</connection>
+        <developerConnection>
+            scm:git:ssh://git@stash.pontoslivelo.com.br:7999/livtravel/order-flight.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus-central</id>
+            <name>Nexus Internal Releases</name>
+            <url>https://nexus-central.pontoslivelo.com.br/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-central</id>
+            <name>Nexus Internal Snapshots</name>
+            <url>https://nexus-central.pontoslivelo.com.br/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>

@@ -54,6 +54,10 @@ public class OrderEntity extends BaseEntity {
 
     private String customerIdentifier;
 
+    private String transactionId;
+
+    private LocalDateTime expirationDate;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ORDER_PRICE_ID")
     private OrderPriceEntity price;
@@ -69,9 +73,5 @@ public class OrderEntity extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "STATUS")
     private OrderStatusEntity currentStatus;
-
-    private String transactionId;
-
-    private LocalDateTime expirationDate;
 
 }

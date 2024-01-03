@@ -26,11 +26,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ORDER_ITEM")
+@Table(name = "ORDERS_ITEM")
 public class OrderItemEntity extends BaseEntity {
 
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_ITEM_SEQ")
-    @SequenceGenerator(name = "ORDER_ITEM_SEQ", sequenceName = "ORDER_ITEM_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_ITEM_SEQ")
+    @SequenceGenerator(name = "ORDERS_ITEM_SEQ", sequenceName = "ORDERS_ITEM_SEQ", allocationSize = 1)
     @Id
     private Long id;
 
@@ -50,7 +50,7 @@ public class OrderItemEntity extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "TRAVEL_INFO_ID")
-    private TravelInfoEntity travelInfoEntity;
+    private TravelInfoEntity travelInfo;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_ITEM_ID")

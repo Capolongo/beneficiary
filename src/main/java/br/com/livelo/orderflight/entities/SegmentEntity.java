@@ -13,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,18 +54,18 @@ public class SegmentEntity extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "SEGMENT_ID")
-    private Set<LuggageEntity> luggage;
+    private Set<LuggageEntity> luggages;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "SEGMENT_ID")
-    private Set<CancelationRulesEntity> cancelationRules;
+    private Set<CancelationRuleEntity> cancelationRules;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "SEGMENT_ID")
-    private Set<ChangeRulesEntity> changeRules;
+    private Set<ChangeRuleEntity> changeRules;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "SEGMENT_ID")
-    private Set<FlightLegEntity> flightLeg;
+    private Set<FlightLegEntity> flightsLegs;
 
 }
