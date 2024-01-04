@@ -34,6 +34,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
+
+
+        <sonar.exclusions>
+            **/OrderFlightApplication.java,
+            **/utils/*.java
+        </sonar.exclusions>
     </properties>
 
     <scm>
