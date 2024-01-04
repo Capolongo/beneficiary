@@ -31,7 +31,7 @@ class InternalOrdersControllerTest {
     }
 
     @Test
-    public void shouldCreateOrder() throws Exception {
+    void shouldCreateOrder() throws Exception {
         var expected = mock(OrderEntity.class);
         Mockito.when(orderRepository.save(Mockito.any(OrderEntity.class))).thenReturn(expected);
 
@@ -46,7 +46,7 @@ class InternalOrdersControllerTest {
     //TODO ESCREVER TESTES PARA CENÁRIOS DE ERRO
 
     @Test
-    public void shouldRetrieveOrder() {
+    void shouldRetrieveOrder() {
         Mockito.when(orderRepository.findById(Mockito.anyString())).thenReturn(Optional.of(order));
 
         var response = controller.getById(order.getId());
