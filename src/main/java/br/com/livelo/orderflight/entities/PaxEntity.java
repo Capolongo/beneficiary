@@ -1,15 +1,17 @@
 package br.com.livelo.orderflight.entities;
 
-import java.time.LocalDateTime;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +34,7 @@ public class PaxEntity extends BaseEntity {
 
     private String firstName;
 
-    private String lastName;
+	private String lastName;
 
     private String email;
 
@@ -44,8 +46,9 @@ public class PaxEntity extends BaseEntity {
 
     private String birthDate;
 
-    private String document;
-
-    private String documentType;
+    
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "PAX_ID")
+    private Set<DocumentEntity> document;
 
 }
