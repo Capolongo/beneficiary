@@ -1,4 +1,4 @@
-package br.com.livelo.orderflight.entities;
+package br.com.livelo.orderflight.domain.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.SequenceGenerator;
@@ -11,10 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 @Entity

@@ -1,4 +1,4 @@
-package br.com.livelo.orderflight.entities;
+package br.com.livelo.orderflight.domain.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

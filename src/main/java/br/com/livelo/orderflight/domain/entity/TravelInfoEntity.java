@@ -1,6 +1,5 @@
-package br.com.livelo.orderflight.entities;
+package br.com.livelo.orderflight.domain.entity;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 import jakarta.persistence.Entity;
@@ -13,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

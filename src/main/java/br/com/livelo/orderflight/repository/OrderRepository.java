@@ -2,7 +2,7 @@ package br.com.livelo.orderflight.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import br.com.livelo.orderflight.entities.OrderEntity;
+import br.com.livelo.orderflight.domain.entity.OrderEntity;
 
 public interface OrderRepository extends JpaRepository<OrderEntity, String> {
 

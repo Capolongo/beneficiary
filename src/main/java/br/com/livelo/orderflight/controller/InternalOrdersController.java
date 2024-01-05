@@ -1,17 +1,15 @@
-package br.com.livelo.orderflight.controllers;
+package br.com.livelo.orderflight.controller;
 
-import java.io.IOException;
-import java.util.Optional;
-
+import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.repository.OrderRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import br.com.livelo.orderflight.entities.OrderEntity;
-import jakarta.validation.Valid;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +26,7 @@ public class InternalOrdersController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderEntity> createOrder(@RequestBody @Valid OrderEntity orderEntity) throws IOException {
+    public ResponseEntity<OrderEntity> createOrder(@RequestBody @Valid OrderEntity orderEntity) {
         return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(orderRepository.save(orderEntity));
     }
 }

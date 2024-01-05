@@ -1,11 +1,10 @@
-package br.com.livelo.orderflight.entities;
+package br.com.livelo.orderflight.domain.entity;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator;
 import jakarta.persistence.CascadeType;
@@ -15,7 +14,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
