@@ -43,3 +43,7 @@ management:
 server:
   servlet:
     contextPath: /order-flight
+
+client:
+  partnersconfigflight:
+    endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/partners-config-flight
