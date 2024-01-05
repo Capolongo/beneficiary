@@ -130,6 +130,12 @@
 			<artifactId>flyway-core</artifactId>
 			<version>9.16.3</version>
 		</dependency>
+        <dependency>
+            <groupId>br.com.livelo</groupId>
+            <artifactId>partners-config-flight-library</artifactId>
+            <version>1.0</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
