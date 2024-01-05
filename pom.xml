@@ -21,7 +21,7 @@
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
         <janino.version>3.1.9</janino.version>
         <java.version>21</java.version>
- 
+
         <livelo-models.version>0.0.9</livelo-models.version>
         <log.version>1.0.0</log.version>
         <logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
