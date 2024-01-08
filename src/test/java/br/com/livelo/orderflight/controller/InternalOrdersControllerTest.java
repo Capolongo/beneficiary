@@ -35,7 +35,7 @@ class InternalOrdersControllerTest {
                 () -> assertEquals(expected, response.getBody())
         );
     }
-    
+
     @Test
     void shouldRetrieveOrder() {
         Mockito.when(orderRepository.findById(anyString())).thenReturn(Optional.of(new OrderEntity()));
