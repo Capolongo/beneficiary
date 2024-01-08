@@ -1,26 +1,16 @@
 package br.com.livelo.orderflight.domain.entity;
 
-import java.time.LocalDateTime;
-import java.util.Set;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-
 import br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Entity
@@ -35,7 +25,6 @@ public class OrderEntity extends BaseEntity {
             @Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "lf"),
             @Parameter(name = "increment_size", value = "1")})
     private String id;
-
     private String commerceOrderId;
 
     private String partnerOrderId;
