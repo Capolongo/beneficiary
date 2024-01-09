@@ -27,7 +27,7 @@ public class CheckoutService {
 
     public OrderEntity confirmOrder(String id, OrderEntity order) throws Exception {
         OrderEntity foundOrder = orderService.getOrderById(id);
-        validateRequest(order, foundOrder);
+//        validateRequest(order, foundOrder);
 
 
         ConnectorPartnerConfirmationDTO connectorPartnerConfirmation = confirmOnPartner(order.getPartnerCode(), order.getPartnerOrderId());
@@ -61,12 +61,7 @@ public class CheckoutService {
         WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
         URI url = URI.create(webhook.getConnectorUrl().replace("{id}", orderId));
 
-        var test = partnerClient.partnerConnectorUrl(url);
-        System.out.println("test" + test);
-
-        return test.getBody();
-
-
+        return partnerClient.partnerConnectorUrl(url);
         // chama proxy de confirmação
         // retorna resultado por meio do status
     }

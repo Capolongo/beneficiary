@@ -12,8 +12,8 @@ import java.time.ZonedDateTime;
 public class ConnectorPartnerConfirmationDTO {
     private String partnerOrderId;
     private String partnerCode;
-    private ZonedDateTime submittedDate;
-    private ZonedDateTime expirationDate;
+    private String submittedDate;
+    private String expirationDate;
     private String transactionId;
     private OrderStatusEntity currentStatus;
     private String voucher;

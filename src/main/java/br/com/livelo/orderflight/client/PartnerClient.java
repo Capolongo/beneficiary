@@ -10,5 +10,5 @@ import org.springframework.web.bind.annotation.GetMapping;
 @FeignClient(value = "partner-client", url = "http://test")
 public interface PartnerClient {
   @GetMapping
-  ResponseEntity<ConnectorPartnerConfirmationDTO> partnerConnectorUrl(URI baseUrl);
+  ConnectorPartnerConfirmationDTO partnerConnectorUrl(URI baseUrl);
 }
