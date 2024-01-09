@@ -22,9 +22,10 @@ public class CheckoutController {
     private final CheckoutService checkoutService;
 
     @PostMapping("{id}/confirm")
-    public ResponseEntity<OrderEntity> confirmOrder(@PathVariable("id") String id, @RequestBody Object body)
+    public ResponseEntity<OrderEntity> confirmOrder(@PathVariable("id") String id, @RequestBody OrderEntity order)
             throws Exception {
-        return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON)
-                .body(checkoutService.confirmOrder(id));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(checkoutService.confirmOrder(id, order));
     }
 }
