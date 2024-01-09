@@ -27,7 +27,7 @@ public class CheckoutService {
 
     public OrderEntity confirmOrder(String id, OrderEntity order) throws Exception {
         OrderEntity foundOrder = orderService.getOrderById(id);
-//        validateRequest(order, foundOrder);
+        validateRequest(order, foundOrder);
 
 
         ConnectorPartnerConfirmationDTO connectorPartnerConfirmation = confirmOnPartner(order.getPartnerCode(), order.getPartnerOrderId());
