@@ -11,12 +11,15 @@ import java.util.Optional;
 @AllArgsConstructor
 public class OrderService {
 
-    private OrderRepository orderRepository;
-    public OrderEntity getOrder(String id) throws Exception {
-        Optional<OrderEntity> op = orderRepository.findById(id);
-        if(op.isPresent()){
-            return op.get();
+    private final OrderRepository orderRepository;
+
+    public OrderEntity getOrderById(String id) throws Exception {
+        Optional<OrderEntity> order = orderRepository.findById(id);
+
+        if (order.isEmpty()) {
+            throw new Exception("Order NotFount");
         }
-        throw new Exception("Order NotFount");
+
+        return order.get();
     }
 }
