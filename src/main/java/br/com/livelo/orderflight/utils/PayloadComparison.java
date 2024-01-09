@@ -12,9 +12,15 @@ public class PayloadComparison {
 
         for (int i = 0; i < itemsOrder.size(); i++) {
             String commerceItemOrder = itemsOrder.stream().toList().get(i).getCommerceItemId();
-            String commerceItemFoundOrder = itemsFoundOrder.stream().toList().get(i).getCommerceItemId();
+            var ItemFoundOrder = itemsFoundOrder.stream().filter(
+                    item -> item.getCommerceItemId().equals(commerceItemOrder)
+            ).findFirst();
 
-            if (!commerceItemOrder.equals(commerceItemFoundOrder)) {
+            if (ItemFoundOrder.isEmpty()) {
+                return false;
+            }
+
+            if (!commerceItemOrder.equals(ItemFoundOrder.get().getCommerceItemId())) {
                 return false;
             }
         }
