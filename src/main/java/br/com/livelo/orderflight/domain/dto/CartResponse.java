@@ -2,6 +2,7 @@ package br.com.livelo.orderflight.domain.dto;
 
 import java.time.LocalDateTime;
 
+//TODO FINALIZAR DTO BASEADO NO ORDERENTITY
 public record CartResponse(String commerceOrderId,
                            String partnerOrderId,
                            String partnerCode,

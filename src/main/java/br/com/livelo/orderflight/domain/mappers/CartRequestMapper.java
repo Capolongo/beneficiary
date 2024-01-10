@@ -16,6 +16,7 @@ import br.com.livelo.orderflight.domain.entity.OrderPriceDescriptionEntity;
 import br.com.livelo.orderflight.domain.entity.OrderPriceEntity;
 import lombok.AllArgsConstructor;
 
+//TODO UTILIZAR O MAPSTRUCT PARA CRIAÇÃO DOS MAPPERS
 @Component
 @AllArgsConstructor
 public class CartRequestMapper {
@@ -75,7 +76,4 @@ public class CartRequestMapper {
 						.collect(Collectors.toSet()))
 				.build();
 	}
-	
-
-
 }
