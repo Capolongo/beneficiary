@@ -6,13 +6,11 @@ import lombok.Getter;
 @Getter
 public class CartException extends RuntimeException {
     private final String args;
-    private final Exception e;
     private final CartErrorType cartErrorType;
 
-    public CartException(CartErrorType cartErrorType, String message, String args, Exception e) {
-        super(message);
+    public CartException(CartErrorType cartErrorType, String message, String args, Throwable cause) {
+        super(message, cause);
         this.args = args;
-        this.e = e;
         this.cartErrorType = cartErrorType;
     }
 }
