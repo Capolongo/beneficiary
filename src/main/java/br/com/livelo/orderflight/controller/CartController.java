@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/cart")
+@RequestMapping("/v1/orders")
 public class CartController {
 }

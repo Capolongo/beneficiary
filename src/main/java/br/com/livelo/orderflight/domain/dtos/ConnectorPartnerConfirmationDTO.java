@@ -3,9 +3,6 @@ package br.com.livelo.orderflight.domain.dtos;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
-
-import java.time.ZonedDateTime;
 
 @Data
 @Builder

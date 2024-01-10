@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.service.checkout;
 
-import br.com.livelo.orderflight.client.PartnerClient;
+import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.domain.dtos.ConnectorPartnerConfirmationDTO;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.repository.OrderRepository;
@@ -11,7 +11,6 @@ import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import lombok.AllArgsConstructor;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ import br.com.livelo.partnersconfigflightlibrary.services.PartnersConfigService;
 @Service
 @AllArgsConstructor
 public class CheckoutService {
-    private final PartnerClient partnerClient;
+    private final PartnerConnectorClient partnerConnectorClient;
     private final OrderService orderService;
     private final PartnersConfigService partnersConfigService;
     private final OrderRepository orderRepository;
@@ -45,6 +44,7 @@ public class CheckoutService {
     }
 
     private void validateRequest(OrderEntity order, OrderEntity foundOrder) throws Exception {
+//        TODO mudar nome
         boolean validationList = List.of(
                 order.getCommerceOrderId().equals(foundOrder.getCommerceOrderId()),
                 order.getPrice().getAmount().equals(foundOrder.getPrice().getAmount()),
@@ -56,12 +56,12 @@ public class CheckoutService {
         }
     }
 
-//    private ConnectorPartnerConfirmationDTO confirmOnPartner(String partnerCode, String orderId) {
     private ConnectorPartnerConfirmationDTO confirmOnPartner(String partnerCode, String orderId) {
         WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
         URI url = URI.create(webhook.getConnectorUrl().replace("{id}", orderId));
 
-        return partnerClient.partnerConnectorUrl(url);
+//        return partnerConnectorClient.partnerConnectorUrl(url).getBody();
+        return partnerConnectorClient.partnerConnectorConfirm(url).getBody();
         // chama proxy de confirmação
         // retorna resultado por meio do status
     }

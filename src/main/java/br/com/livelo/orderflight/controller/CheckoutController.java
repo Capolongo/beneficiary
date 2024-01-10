@@ -16,12 +16,12 @@ import br.com.livelo.orderflight.service.checkout.CheckoutService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/checkout")
+@RequestMapping("/v1/orders")
 public class CheckoutController {
 
     private final CheckoutService checkoutService;
 
-    @PostMapping("{id}/confirm")
+    @PostMapping("{id}/confirmation")
     public ResponseEntity<OrderEntity> confirmOrder(@PathVariable("id") String id, @RequestBody OrderEntity order)
             throws Exception {
         return ResponseEntity.status(HttpStatus.CREATED)
