@@ -13,6 +13,6 @@ public class CartRequest {
     private String partnerOrderId;
     private String partnerCode;
     private List<String> segmentsPartnerIds;
-//    private List<Item> items;
-//    private List<Pax> paxs;
+    private List<CartItem> items;
+    private List<CartPax> paxs;
 }
