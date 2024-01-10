@@ -26,39 +26,31 @@ public class OrderEntity extends BaseEntity {
             @Parameter(name = "increment_size", value = "1")})
     private String id;
     private String commerceOrderId;
-
     private String partnerOrderId;
-
     private String partnerCode;
-
     private LocalDateTime submittedDate;
-
     private String channel;
-
     private String tierCode;
-
     private String originOrder;
-
     private String customerIdentifier;
-
     private String transactionId;
-
     private LocalDateTime expirationDate;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ORDER_PRICE_ID")
     private OrderPriceEntity price;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_ID")
     private Set<OrderItemEntity> items;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_ID")
     private Set<OrderStatusEntity> statusHistory;
+    @Transient
+    private OrderStatusEntity status;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "STATUS")
-    private OrderStatusEntity currentStatus;
-
+    public void setStatus(Set<OrderStatusEntity> statusHistory) {
+        this.status = statusHistory.stream()
+                .reduce((a, b) ->
+                        a.getStatusDate().isAfter(b.getStatusDate()) ? a : b
+                ).orElse(null);
+    }
 }
