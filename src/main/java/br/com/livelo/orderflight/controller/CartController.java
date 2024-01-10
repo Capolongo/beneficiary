@@ -22,7 +22,7 @@ public class CartController {
             @RequestHeader(value = "channel") String channel,
             @RequestBody CartRequest cartRequest
     ) {
-        var response = cartService.createOrder(cartRequest);
+        var response = cartService.createOrder(cartRequest,transacationId,customerId,channel);
         return ResponseEntity.ok(response);
     }
 }
