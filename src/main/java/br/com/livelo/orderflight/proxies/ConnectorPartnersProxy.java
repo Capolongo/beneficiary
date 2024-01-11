@@ -20,7 +20,7 @@ public class ConnectorPartnersProxy {
         WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.CONFIRMATION);
         final URI connectorUri = URI.create(webhook.getConnectorUrl());
 
-        var test = partnerConnectorClient.partnerConnectorConfirm(connectorUri);
+        // var test = partnerConnectorClient.partnerConnectorConfirm(connectorUri);
 
     }
 }

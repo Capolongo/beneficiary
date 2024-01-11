@@ -2,6 +2,7 @@ package br.com.livelo.orderflight.service.checkout;
 
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.domain.dtos.ConnectorPartnerConfirmationDTO;
+import br.com.livelo.orderflight.domain.dtos.connector.ConnectorRequestDTO;
 import br.com.livelo.orderflight.domain.dtos.request.ConfirmRequestDTO;
 import br.com.livelo.orderflight.domain.dtos.response.ConfirmResponseDTO;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
@@ -32,9 +33,10 @@ public class CheckoutService {
         OrderEntity foundOrder = orderService.getOrderById(id);
         validateRequest(order, foundOrder);
 
-        ConnectorPartnerConfirmationDTO connectorPartnerConfirmation = confirmOnPartner(order.getPartnerCode());
+        ConnectorPartnerConfirmationDTO connectorPartnerConfirmation = confirmOnPartner(order.getPartnerCode(),
+                confirmOrderMapper.orderEntityToConnectorRequestDTO(foundOrder));
 
-        if (connectorPartnerConfirmation.getPartnerOrderId() != foundOrder.getPartnerOrderId()) {
+        if (!connectorPartnerConfirmation.getPartnerOrderId().equals(foundOrder.getPartnerOrderId())) {
             throw new Exception("partnerOrderIds are different");
         }
 
@@ -51,20 +53,19 @@ public class CheckoutService {
         List<Boolean> validationList = List.of(
                 order.getCommerceOrderId().equals(foundOrder.getCommerceOrderId()),
                 order.getAmount().getPointsAmount().equals(foundOrder.getPrice().getPointsAmount()),
-                PayloadComparison.compareItems(order.getItems(), foundOrder.getItems())
-        );
+                PayloadComparison.compareItems(order.getItems(), foundOrder.getItems()));
 
         if (validationList.contains(false)) {
             throw new Exception("Objects are not equal");
         }
     }
 
-    private ConnectorPartnerConfirmationDTO confirmOnPartner(String partnerCode) {
+    private ConnectorPartnerConfirmationDTO confirmOnPartner(String partnerCode,
+            ConnectorRequestDTO connectorRequestDTO) {
         WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
         URI url = URI.create(webhook.getConnectorUrl().replace("{id}/", ""));
 
-//        return partnerConnectorClient.partnerConnectorUrl(url).getBody();
-        return partnerConnectorClient.partnerConnectorConfirm(url).getBody();
+        return partnerConnectorClient.partnerConnectorConfirm(url, connectorRequestDTO).getBody();
         // chama proxy de confirmação
         // retorna resultado por meio do status
     }
