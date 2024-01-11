@@ -17,6 +17,6 @@ public class ConfirmRequestDTO {
     private String submittedDate;
     private String channel;
     private String originOfOrder;
-//    private AmountDTO amount;
+    private AmountDTO amount;
     private Set<ItemRequestDTO> items;
 }

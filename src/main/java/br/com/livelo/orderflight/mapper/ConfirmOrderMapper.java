@@ -7,7 +7,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ConfirmOrderMapper {
-//    @Mapping(source = "currentStatus.code", target = "status.code")
     @Mapping(source = "currentStatus.partnerDescription", target = "status.details")
-     ConfirmResponseDTO entityToResponseDTO(OrderEntity orderEntity);
+    ConfirmResponseDTO entityToResponseDTO(OrderEntity orderEntity);
 }

@@ -32,18 +32,14 @@ public class CheckoutService {
         OrderEntity foundOrder = orderService.getOrderById(id);
         validateRequest(order, foundOrder);
 
-
         ConnectorPartnerConfirmationDTO connectorPartnerConfirmation = confirmOnPartner(order.getPartnerCode());
 
-//        podemos ter ou nao o partnerOrderId...
-//        if (!connectorPartnerConfirmation.getPartnerOrderId().equals(foundOrder.getPartnerOrderId())) {
-//            System.out.println();
-//            throw new Exception("hello");
-//        }
+        if (connectorPartnerConfirmation.getPartnerOrderId() != foundOrder.getPartnerOrderId()) {
+            throw new Exception("partnerOrderIds are different");
+        }
 
         foundOrder.getStatusHistory().add(connectorPartnerConfirmation.getCurrentStatus());
         foundOrder.setCurrentStatus(connectorPartnerConfirmation.getCurrentStatus());
-
 
         OrderEntity updatedOrder = orderRepository.save(foundOrder);
         ConfirmResponseDTO confirmResponseDTO = confirmOrderMapper.entityToResponseDTO(updatedOrder);
@@ -54,7 +50,7 @@ public class CheckoutService {
     private void validateRequest(ConfirmRequestDTO order, OrderEntity foundOrder) throws Exception {
         List<Boolean> validationList = List.of(
                 order.getCommerceOrderId().equals(foundOrder.getCommerceOrderId()),
-//                order.getAmount().getPointsAmount() == (foundOrder.getPrice().getPointsAmount()),
+                order.getAmount().getPointsAmount().equals(foundOrder.getPrice().getPointsAmount()),
                 PayloadComparison.compareItems(order.getItems(), foundOrder.getItems())
         );
 
