@@ -3,8 +3,10 @@ package br.com.livelo.orderflight.domain.dtos.request;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 public class AmountDTO {
-    public int pointsAmount;
+    private BigDecimal pointsAmount;
 }

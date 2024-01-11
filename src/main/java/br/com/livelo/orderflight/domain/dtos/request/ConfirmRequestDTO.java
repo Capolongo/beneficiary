@@ -8,15 +8,15 @@ import java.util.Set;
 @Data
 @Builder
 public class ConfirmRequestDTO {
-    public String id;
-    public String commerceOrderId;
-    public String commerceItemId;
-    public String partnerCode;
-    public String customerId;
-    public String partnerOrderId;
-    public String submittedDate;
-    public String channel;
-    public String originOfOrder;
-    public AmountDTO amount;
-    public Set<ItemRequestDTO> items;
+    private String id;
+    private String commerceOrderId;
+    private String commerceItemId;
+    private String partnerCode;
+    private String customerId;
+    private String partnerOrderId;
+    private String submittedDate;
+    private String channel;
+    private String originOfOrder;
+//    private AmountDTO amount;
+    private Set<ItemRequestDTO> items;
 }

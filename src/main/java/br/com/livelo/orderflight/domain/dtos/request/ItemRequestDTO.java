@@ -3,13 +3,15 @@ package br.com.livelo.orderflight.domain.dtos.request;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 public class ItemRequestDTO {
-    public String commerceItemId;
-    public String skuId;
-    public String productId;
-    public String externalCoupon;
-    public int quantity;
-    public int pointsAmount;
+    private String commerceItemId;
+    private String skuId;
+    private String productId;
+    private String externalCoupon;
+    private int quantity;
+    private BigDecimal pointsAmount;
 }

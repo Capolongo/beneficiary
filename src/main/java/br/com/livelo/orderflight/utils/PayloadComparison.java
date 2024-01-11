@@ -1,11 +1,12 @@
 package br.com.livelo.orderflight.utils;
 
+import br.com.livelo.orderflight.domain.dtos.request.ItemRequestDTO;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import java.util.Set;
 
 public class PayloadComparison {
     private PayloadComparison() {}
-    public static boolean compareItems(Set<OrderItemEntity> itemsOrder, Set<OrderItemEntity> itemsFoundOrder) {
+    public static boolean compareItems(Set<ItemRequestDTO> itemsOrder, Set<OrderItemEntity> itemsFoundOrder) {
         if (itemsOrder.size() != itemsFoundOrder.size()) {
             return false;
         }

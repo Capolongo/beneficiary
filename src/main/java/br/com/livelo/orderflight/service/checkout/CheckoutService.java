@@ -2,7 +2,10 @@ package br.com.livelo.orderflight.service.checkout;
 
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.domain.dtos.ConnectorPartnerConfirmationDTO;
+import br.com.livelo.orderflight.domain.dtos.request.ConfirmRequestDTO;
+import br.com.livelo.orderflight.domain.dtos.response.ConfirmResponseDTO;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
+import br.com.livelo.orderflight.mapper.ConfirmOrderMapper;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.OrderService;
 import br.com.livelo.orderflight.utils.PayloadComparison;
@@ -23,42 +26,46 @@ public class CheckoutService {
     private final OrderService orderService;
     private final PartnersConfigService partnersConfigService;
     private final OrderRepository orderRepository;
+    private final ConfirmOrderMapper confirmOrderMapper;
 
-    public OrderEntity confirmOrder(String id, OrderEntity order) throws Exception {
+    public ConfirmResponseDTO confirmOrder(String id, ConfirmRequestDTO order) throws Exception {
         OrderEntity foundOrder = orderService.getOrderById(id);
         validateRequest(order, foundOrder);
 
 
-        ConnectorPartnerConfirmationDTO connectorPartnerConfirmation = confirmOnPartner(order.getPartnerCode(), order.getPartnerOrderId());
+        ConnectorPartnerConfirmationDTO connectorPartnerConfirmation = confirmOnPartner(order.getPartnerCode());
 
-        if (!connectorPartnerConfirmation.getPartnerOrderId().equals(foundOrder.getPartnerOrderId())) {
-            throw new Exception("hello");
-        }
+//        podemos ter ou nao o partnerOrderId...
+//        if (!connectorPartnerConfirmation.getPartnerOrderId().equals(foundOrder.getPartnerOrderId())) {
+//            System.out.println();
+//            throw new Exception("hello");
+//        }
 
         foundOrder.getStatusHistory().add(connectorPartnerConfirmation.getCurrentStatus());
         foundOrder.setCurrentStatus(connectorPartnerConfirmation.getCurrentStatus());
 
-        return orderRepository.save(foundOrder);
-        // salva informacoes no OrderService
-        // retorna resultado
+
+        OrderEntity updatedOrder = orderRepository.save(foundOrder);
+        ConfirmResponseDTO confirmResponseDTO = confirmOrderMapper.entityToResponseDTO(updatedOrder);
+
+        return confirmResponseDTO;
     }
 
-    private void validateRequest(OrderEntity order, OrderEntity foundOrder) throws Exception {
-//        TODO mudar nome
-        boolean validationList = List.of(
+    private void validateRequest(ConfirmRequestDTO order, OrderEntity foundOrder) throws Exception {
+        List<Boolean> validationList = List.of(
                 order.getCommerceOrderId().equals(foundOrder.getCommerceOrderId()),
-                order.getPrice().getAmount().equals(foundOrder.getPrice().getAmount()),
+//                order.getAmount().getPointsAmount() == (foundOrder.getPrice().getPointsAmount()),
                 PayloadComparison.compareItems(order.getItems(), foundOrder.getItems())
-        ).contains(false);
+        );
 
-        if (validationList) {
+        if (validationList.contains(false)) {
             throw new Exception("Objects are not equal");
         }
     }
 
-    private ConnectorPartnerConfirmationDTO confirmOnPartner(String partnerCode, String orderId) {
+    private ConnectorPartnerConfirmationDTO confirmOnPartner(String partnerCode) {
         WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
-        URI url = URI.create(webhook.getConnectorUrl().replace("{id}", orderId));
+        URI url = URI.create(webhook.getConnectorUrl().replace("{id}/", ""));
 
 //        return partnerConnectorClient.partnerConnectorUrl(url).getBody();
         return partnerConnectorClient.partnerConnectorConfirm(url).getBody();

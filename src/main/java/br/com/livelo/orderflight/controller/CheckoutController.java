@@ -1,5 +1,7 @@
 package br.com.livelo.orderflight.controller;
 
+import br.com.livelo.orderflight.domain.dtos.request.ConfirmRequestDTO;
+import br.com.livelo.orderflight.domain.dtos.response.ConfirmResponseDTO;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,7 @@ public class CheckoutController {
     private final CheckoutService checkoutService;
 
     @PostMapping("{id}/confirmation")
-    public ResponseEntity<OrderEntity> confirmOrder(@PathVariable("id") String id, @RequestBody OrderEntity order)
+    public ResponseEntity<ConfirmResponseDTO> confirmOrder(@PathVariable("id") String id, @RequestBody ConfirmRequestDTO order)
             throws Exception {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
