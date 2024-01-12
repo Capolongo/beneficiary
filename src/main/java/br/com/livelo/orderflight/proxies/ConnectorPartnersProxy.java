@@ -20,7 +20,7 @@ public class ConnectorPartnersProxy {
 
     public ConnectorPartnerConfirmationDTO confirmOnPartner(String partnerCode, ConnectorRequestDTO connectorRequestDTO) {
         try {
-            WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.CONFIRMATION);
+            WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
             final URI connectorUri = URI.create(webhook.getConnectorUrl());
             return partnerConnectorClient.confirmOrder(connectorUri, connectorRequestDTO).getBody();
         } catch (FeignException exception) {
