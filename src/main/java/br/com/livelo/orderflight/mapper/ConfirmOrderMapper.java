@@ -1,8 +1,8 @@
 package br.com.livelo.orderflight.mapper;
 
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequestDTO;
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequestDTO;
-import br.com.livelo.orderflight.domain.dtos.connector.response.OrderStatusDTO;
+import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 
@@ -16,30 +16,30 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ConfirmOrderMapper {
     @Mapping(source = "currentStatus.partnerDescription", target = "status.details")
-    ConfirmOrderResponse entityToResponseDTO(OrderEntity orderEntity);
+    ConfirmOrderResponse orderEntityToConfirmOrderResponse(OrderEntity orderEntity);
 
     @Mapping(target = "commerceItemId", expression = "java(getFlightItemCommerceItemId(orderEntity))")
     @Mapping(target = "paxs", expression = "java(reducePaxs(orderEntity))")
-    ConnectorConfirmOrderRequestDTO orderEntityToConnectorRequestDTO(OrderEntity orderEntity);
+    ConnectorConfirmOrderRequest orderEntityToConnectorConfirmOrderRequest(OrderEntity orderEntity);
 
     @Mapping(target = "phone", source = "phoneNumber")
-    ConnectorConfirmOrderPaxRequestDTO paxEntityToPaxsConnectorRequestDTO(PaxEntity pax);
+    ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
-    OrderStatusEntity statusDtoToStatusEntity(OrderStatusDTO orderStatusDTO);
+    OrderStatusEntity ConnectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
 
     default String getFlightItemCommerceItemId(OrderEntity orderEntity) {
         return orderEntity.getItems().stream().filter(item -> !item.getSkuId().toUpperCase().contains("TAX")).findFirst()
                 .get().getCommerceItemId();
     }
 
-    default List<ConnectorConfirmOrderPaxRequestDTO> reducePaxs(OrderEntity orderEntity) {
+    default List<ConnectorConfirmOrderPaxRequest> reducePaxs(OrderEntity orderEntity) {
         return orderEntity.getItems().stream()
                 .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
                 .findFirst()
                 .get()
                 .getTravelInfo()
                 .getPaxs()
-                .stream().map(this::paxEntityToPaxsConnectorRequestDTO)
+                .stream().map(this::paxEntityToConnectorConfirmOrderPaxRequest)
                 .toList();
     }
 }

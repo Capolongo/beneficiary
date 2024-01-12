@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ConnectorConfirmOrderPaxRequestDTO {
+public class ConnectorConfirmOrderPaxRequest {
 	private String type;
 	private String firstName;
 	private String lastName;

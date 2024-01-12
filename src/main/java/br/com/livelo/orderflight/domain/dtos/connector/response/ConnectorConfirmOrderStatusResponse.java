@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class OrderStatusDTO {
+public class ConnectorConfirmOrderStatusResponse {
     private Long id;
     private String code;
     private String description;

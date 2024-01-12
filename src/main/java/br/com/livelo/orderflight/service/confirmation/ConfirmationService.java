@@ -33,15 +33,19 @@ public class ConfirmationService {
         validateRequestPayload(order, foundOrder);
 
         ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(order.getPartnerCode(),
-                confirmOrderMapper.orderEntityToConnectorRequestDTO(foundOrder));
+                confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(foundOrder));
 
         validatePartnerOrderIds(foundOrder.getPartnerOrderId(), connectorPartnerConfirmation.getPartnerOrderId());
 
-        foundOrder.getStatusHistory().add(confirmOrderMapper.statusDtoToStatusEntity(connectorPartnerConfirmation.getCurrentStatus()));
-        foundOrder.setCurrentStatus(confirmOrderMapper.statusDtoToStatusEntity(connectorPartnerConfirmation.getCurrentStatus()));
+        foundOrder.getStatusHistory().add(
+                confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(connectorPartnerConfirmation.getCurrentStatus())
+        );
+        foundOrder.setCurrentStatus(
+                confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(connectorPartnerConfirmation.getCurrentStatus())
+        );
         OrderEntity updatedOrder = orderRepository.save(foundOrder);
 
-        return confirmOrderMapper.entityToResponseDTO(updatedOrder);
+        return confirmOrderMapper.orderEntityToConfirmOrderResponse(updatedOrder);
     }
 
     private void validateRequestPayload(ConfirmOrderRequest order, OrderEntity foundOrder) throws Exception {

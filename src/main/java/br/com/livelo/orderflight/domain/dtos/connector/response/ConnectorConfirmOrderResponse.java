@@ -1,6 +1,5 @@
 package br.com.livelo.orderflight.domain.dtos.connector.response;
 
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,6 +11,6 @@ public class ConnectorConfirmOrderResponse {
     private String submittedDate;
     private String expirationDate;
     private String transactionId;
-    private OrderStatusDTO currentStatus;
+    private ConnectorConfirmOrderStatusResponse currentStatus;
     private String voucher;
 }
