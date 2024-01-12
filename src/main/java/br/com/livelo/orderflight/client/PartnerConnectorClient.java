@@ -13,6 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(value = "partner-client", url = "http://test")
 public interface PartnerConnectorClient {
   @PostMapping
-  ResponseEntity<ConnectorPartnerConfirmationDTO> partnerConnectorConfirm(URI baseUrl,
+  ResponseEntity<ConnectorPartnerConfirmationDTO> confirmOrder(URI baseUrl,
       @RequestBody ConnectorRequestDTO ConnectorRequestDTO);
 }

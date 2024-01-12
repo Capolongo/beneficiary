@@ -24,13 +24,13 @@ public interface ConfirmOrderMapper {
     PaxsConnectorRequestDTO paxEntityToPaxsConnectorRequestDTO(PaxEntity pax);
 
     default String getFirstItemCommerceItemId(OrderEntity orderEntity) {
-        return orderEntity.getItems().stream().filter(item -> item.getSkuId().equals("cvc_flight")).findFirst()
+        return orderEntity.getItems().stream().filter(item -> !item.getSkuId().toUpperCase().contains("TAX")).findFirst()
                 .get().getCommerceItemId();
     }
 
     default List<PaxsConnectorRequestDTO> reducePaxs(OrderEntity orderEntity) {
         return orderEntity.getItems().stream()
-                .filter(item -> item.getSkuId().equals("cvc_flight"))
+                .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
                 .findFirst()
                 .get()
                 .getTravelInfo()

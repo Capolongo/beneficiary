@@ -7,6 +7,7 @@ import br.com.livelo.orderflight.domain.dtos.request.ConfirmRequestDTO;
 import br.com.livelo.orderflight.domain.dtos.response.ConfirmResponseDTO;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.mapper.ConfirmOrderMapper;
+import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.OrderService;
 import br.com.livelo.orderflight.utils.PayloadComparison;
@@ -28,12 +29,13 @@ public class CheckoutService {
     private final PartnersConfigService partnersConfigService;
     private final OrderRepository orderRepository;
     private final ConfirmOrderMapper confirmOrderMapper;
+    private final ConnectorPartnersProxy connectorPartnersProxy;
 
     public ConfirmResponseDTO confirmOrder(String id, ConfirmRequestDTO order) throws Exception {
         OrderEntity foundOrder = orderService.getOrderById(id);
         validateRequest(order, foundOrder);
 
-        ConnectorPartnerConfirmationDTO connectorPartnerConfirmation = confirmOnPartner(order.getPartnerCode(),
+        ConnectorPartnerConfirmationDTO connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(order.getPartnerCode(),
                 confirmOrderMapper.orderEntityToConnectorRequestDTO(foundOrder));
 
         if (!connectorPartnerConfirmation.getPartnerOrderId().equals(foundOrder.getPartnerOrderId())) {
@@ -58,15 +60,5 @@ public class CheckoutService {
         if (validationList.contains(false)) {
             throw new Exception("Objects are not equal");
         }
-    }
-
-    private ConnectorPartnerConfirmationDTO confirmOnPartner(String partnerCode,
-            ConnectorRequestDTO connectorRequestDTO) {
-        WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
-        URI url = URI.create(webhook.getConnectorUrl().replace("{id}/", ""));
-
-        return partnerConnectorClient.partnerConnectorConfirm(url, connectorRequestDTO).getBody();
-        // chama proxy de confirmação
-        // retorna resultado por meio do status
     }
 }

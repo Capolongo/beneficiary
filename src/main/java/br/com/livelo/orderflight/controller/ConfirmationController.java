@@ -13,13 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.service.checkout.CheckoutService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/orders")
-public class CheckoutController {
+public class ConfirmationController {
 
     private final CheckoutService checkoutService;
 
