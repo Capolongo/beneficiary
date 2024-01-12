@@ -17,6 +17,6 @@ public class ConfirmOrderRequest {
     private String submittedDate;
     private String channel;
     private String originOfOrder;
-    private ConfirmOrderPriceRequest amount;
+    private ConfirmOrderPriceRequest price;
     private Set<ConfirmOrderItemRequest> items;
 }

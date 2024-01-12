@@ -51,7 +51,7 @@ public class ConfirmationService {
     private void validateRequestPayload(ConfirmOrderRequest order, OrderEntity foundOrder) throws Exception {
         List<Boolean> validationList = List.of(
                 order.getCommerceOrderId().equals(foundOrder.getCommerceOrderId()),
-                order.getAmount().getPointsAmount().equals(foundOrder.getPrice().getPointsAmount()),
+                order.getPrice().getPointsAmount().equals(foundOrder.getPrice().getPointsAmount()),
                 PayloadComparison.compareItems(order.getItems(), foundOrder.getItems()));
 
         if (validationList.contains(false)) {
