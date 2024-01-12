@@ -1,14 +1,13 @@
-package br.com.livelo.orderflight.domain.dtos.connector;
+package br.com.livelo.orderflight.domain.dtos.connector.request;
 
 import java.util.List;
-import java.util.Set;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class ConnectorRequestDTO {
+public class ConnectorConfirmOrderRequestDTO {
   private String id;
   private String commerceOrderId;
   private String commerceItemId;
@@ -17,5 +16,5 @@ public class ConnectorRequestDTO {
   private String submittedDate;
   private String expirationDate;
   // private Set<String> segmentsPartnerIds;
-  private List<PaxsConnectorRequestDTO> paxs;
+  private List<ConnectorConfirmOrderPaxRequestDTO> paxs;
 }

@@ -1,11 +1,11 @@
-package br.com.livelo.orderflight.domain.dtos.connector;
+package br.com.livelo.orderflight.domain.dtos.connector.request;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class PaxsConnectorRequestDTO {
+public class ConnectorConfirmOrderPaxRequestDTO {
 	private String type;
 	private String firstName;
 	private String lastName;

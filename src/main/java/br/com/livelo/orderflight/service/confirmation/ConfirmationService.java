@@ -1,8 +1,8 @@
-package br.com.livelo.orderflight.service.checkout;
+package br.com.livelo.orderflight.service.confirmation;
 
-import br.com.livelo.orderflight.domain.dtos.ConnectorPartnerConfirmationDTO;
-import br.com.livelo.orderflight.domain.dtos.request.ConfirmRequestDTO;
-import br.com.livelo.orderflight.domain.dtos.response.ConfirmResponseDTO;
+import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.mapper.ConfirmOrderMapper;
@@ -20,31 +20,31 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class CheckoutService {
+public class ConfirmationService {
     private final OrderService orderService;
     private final OrderRepository orderRepository;
     private final ConfirmOrderMapper confirmOrderMapper;
     private final ConnectorPartnersProxy connectorPartnersProxy;
 
-    public ConfirmResponseDTO confirmOrder(String id, ConfirmRequestDTO order) throws Exception {
+    public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest order) throws Exception {
         OrderEntity foundOrder = orderService.getOrderById(id);
 
         validateIfAlreadyIsConfirmed(foundOrder.getStatusHistory());
         validateRequestPayload(order, foundOrder);
 
-        ConnectorPartnerConfirmationDTO connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(order.getPartnerCode(),
+        ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(order.getPartnerCode(),
                 confirmOrderMapper.orderEntityToConnectorRequestDTO(foundOrder));
 
         validatePartnerOrderIds(foundOrder.getPartnerOrderId(), connectorPartnerConfirmation.getPartnerOrderId());
 
-        foundOrder.getStatusHistory().add(connectorPartnerConfirmation.getCurrentStatus());
-        foundOrder.setCurrentStatus(connectorPartnerConfirmation.getCurrentStatus());
+        foundOrder.getStatusHistory().add(confirmOrderMapper.statusDtoToStatusEntity(connectorPartnerConfirmation.getCurrentStatus()));
+        foundOrder.setCurrentStatus(confirmOrderMapper.statusDtoToStatusEntity(connectorPartnerConfirmation.getCurrentStatus()));
         OrderEntity updatedOrder = orderRepository.save(foundOrder);
 
         return confirmOrderMapper.entityToResponseDTO(updatedOrder);
     }
 
-    private void validateRequestPayload(ConfirmRequestDTO order, OrderEntity foundOrder) throws Exception {
+    private void validateRequestPayload(ConfirmOrderRequest order, OrderEntity foundOrder) throws Exception {
         List<Boolean> validationList = List.of(
                 order.getCommerceOrderId().equals(foundOrder.getCommerceOrderId()),
                 order.getAmount().getPointsAmount().equals(foundOrder.getPrice().getPointsAmount()),
@@ -59,7 +59,7 @@ public class CheckoutService {
         Optional<OrderStatusEntity> confirmedStatus = orderStatus.stream().filter(status -> "LIVPNR-1007".equals(status.getCode())).findFirst();
 
         if (confirmedStatus.isPresent()) {
-            throw new Exception("Order already confirmed");
+            throw new Exception("Order is already confirmed");
         }
     }
 

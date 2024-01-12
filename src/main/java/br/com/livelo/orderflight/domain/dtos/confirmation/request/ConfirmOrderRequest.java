@@ -1,4 +1,4 @@
-package br.com.livelo.orderflight.domain.dtos.request;
+package br.com.livelo.orderflight.domain.dtos.confirmation.request;
 
 import lombok.Builder;
 import lombok.Data;
@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Data
 @Builder
-public class ConfirmRequestDTO {
+public class ConfirmOrderRequest {
     private String id;
     private String commerceOrderId;
     private String commerceItemId;
@@ -17,6 +17,6 @@ public class ConfirmRequestDTO {
     private String submittedDate;
     private String channel;
     private String originOfOrder;
-    private AmountDTO amount;
-    private Set<ItemRequestDTO> items;
+    private ConfirmOrderPriceRequest amount;
+    private Set<ConfirmOrderItemRequest> items;
 }

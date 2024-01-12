@@ -1,4 +1,4 @@
-package br.com.livelo.orderflight.domain.dtos.response;
+package br.com.livelo.orderflight.domain.dtos.confirmation.response;
 
 import java.math.BigDecimal;
 
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PriceResponseDTO {
+public class ConfirmOrderPriceResponse {
     public BigDecimal amount;
     public BigDecimal pointsAmount;
 }

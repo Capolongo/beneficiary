@@ -1,11 +1,11 @@
-package br.com.livelo.orderflight.domain.dtos.response;
+package br.com.livelo.orderflight.domain.dtos.confirmation.response;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class StatusResponseDTO {
+public class ConfirmOrderStatusResponse {
     public String code;
     public String description;
     public String details;

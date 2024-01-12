@@ -1,7 +1,7 @@
 package br.com.livelo.orderflight.controller;
 
-import br.com.livelo.orderflight.domain.dtos.request.ConfirmRequestDTO;
-import br.com.livelo.orderflight.domain.dtos.response.ConfirmResponseDTO;
+import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -13,20 +13,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.livelo.orderflight.service.checkout.CheckoutService;
+import br.com.livelo.orderflight.service.confirmation.ConfirmationService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/orders")
 public class ConfirmationController {
 
-    private final CheckoutService checkoutService;
+    private final ConfirmationService confirmationService;
 
     @PostMapping("{id}/confirmation")
-    public ResponseEntity<ConfirmResponseDTO> confirmOrder(@PathVariable("id") String id, @RequestBody ConfirmRequestDTO order)
+    public ResponseEntity<ConfirmOrderResponse> confirmOrder(@PathVariable("id") String id, @RequestBody ConfirmOrderRequest order)
             throws Exception {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(checkoutService.confirmOrder(id, order));
+                .body(confirmationService.confirmOrder(id, order));
     }
 }
