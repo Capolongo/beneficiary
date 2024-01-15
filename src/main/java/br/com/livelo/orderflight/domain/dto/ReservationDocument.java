@@ -9,10 +9,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class CartItem {
-    private String skuId;
-    private String productId;
-    private String commerceItemId;
-    private Integer quantity;
-    private String productType;
+public class ReservationDocument {
+	private String number;
+    private String type;
 }

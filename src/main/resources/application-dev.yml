@@ -4,6 +4,10 @@ spring:
       micrometer:
         enabled: true
 
+  flyway:
+    enabled: false
+    baseline-on-migrate: false
+
   datasource:
     # Configurar com credenciais do serviço
     url: jdbc:oracle:thin:@//${ORACLEDB_HOST}:${ORACLEDB_PORT}/${ORACLEDB_SERVICENAME}
@@ -11,5 +15,7 @@ spring:
     password: ${ORACLEDB_PASSWORD}
     driver-class-name: oracle.jdbc.OracleDriver
 
-  application:
-    name: order-flight
+partner:
+  urls:
+    cvc: "https://9vr26.wiremockapi.cloud/partner01"
+    teste: "https://9vr26.wiremockapi.cloud/partner02"

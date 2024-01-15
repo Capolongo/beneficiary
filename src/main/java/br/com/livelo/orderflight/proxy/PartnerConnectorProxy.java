@@ -1,16 +1,17 @@
-package br.com.livelo.orderflight.service;
+package br.com.livelo.orderflight.proxy;
 
-import br.com.livelo.orderflight.client.PartnerClient;
+import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.domain.dto.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.PartnerReservationResponse;
-import br.com.livelo.orderflight.exception.CartException;
-import br.com.livelo.orderflight.exception.enuns.CartErrorType;
+import br.com.livelo.orderflight.exception.ReservationException;
+import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.utils.Constants;
 import br.com.livelo.orderflight.utils.PartnerProperties;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,29 +20,34 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 
+import static java.util.Optional.ofNullable;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PartnerService {
-    private final PartnerClient partnerClient;
+public class PartnerConnectorProxy {
+    private final PartnerConnectorClient partnerConnectorClient;
     private final PartnerProperties partnerProperties;
 
     public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
         try {
-            return partnerClient.reservation(
+            var response = partnerConnectorClient.reservation(
                     getUrlByPartnerCode(request.getPartnerCode()),
                     request,
                     getHeaders(Collections.singletonMap(Constants.TRANSACTION_ID, transactionId)));
+            return this.handleResponse(response);
+        } catch (ReservationException e) {
+            throw e;
         } catch (FeignException e) {
             var status = HttpStatus.valueOf(e.status());
             if (status.is5xxServerError()) {
-                throw new CartException(CartErrorType.CONNECTOR_INTERNAL_ERROR, "", "", e);
+                throw new ReservationException(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, "", "Erro ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(), e);
             } else {
                 //TODO PENSAR NUMA FORMA DO CONECTOR NOS RESPONDER COM CLAREZA OS ERROS DE NEGÓCIO
-                throw new CartException(CartErrorType.CONNECTOR_ERROR, "", e.responseBody().toString(), e);
+                throw new ReservationException(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, "", e.responseBody().toString(), e);
             }
         } catch (Exception e) {
-            throw new CartException(CartErrorType.INTERNAL_ERROR, "", "", e);
+            throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, "Erro ao realizar chamada para o conector", null, e);
         }
     }
 
@@ -51,6 +57,18 @@ public class PartnerService {
         return headers;
     }
 
+    public PartnerReservationResponse handleResponse(ResponseEntity<PartnerReservationResponse> response) {
+        var body = ofNullable(response.getBody()).map(Object::toString).orElse(null);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return response.getBody();
+        } else if (response.getStatusCode().is4xxClientError()) {
+            throw new ReservationException(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, null, body);
+        } else {
+            throw new ReservationException(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, null, body);
+        }
+    }
+
+    //TODO BUSCAR DA LIB
     private URI getUrlByPartnerCode(String partnerCode) {
         return URI.create(partnerProperties.getUrlByPartnerCode(partnerCode));
     }

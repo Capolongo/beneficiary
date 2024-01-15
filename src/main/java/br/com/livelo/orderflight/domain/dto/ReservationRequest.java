@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Validated
-public class CartRequest {
+public class ReservationRequest {
     @NotNull
     private String commerceOrderId;
     @NotNull
@@ -21,7 +21,7 @@ public class CartRequest {
     @NotNull
     private List<String> segmentsPartnerIds;
     @NotNull
-    private List<CartItem> items;
+    private List<ReservationItem> items;
     @NotNull
-    private List<CartPax> paxs;
+    private List<ReservationPax> paxs;
 }

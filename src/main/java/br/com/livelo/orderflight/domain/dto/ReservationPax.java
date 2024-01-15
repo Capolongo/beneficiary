@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class CartPax {
+public class ReservationPax {
     private String type;
     private String firstName;
     private String lastName;
@@ -20,5 +20,5 @@ public class CartPax {
     private String email;
     private String areaCode;
     private String phone;
-    private List<CartDocument> documents;
+    private List<ReservationDocument> documents;
 }

@@ -1,8 +1,8 @@
 package br.com.livelo.orderflight.exception.handler;
 
-import br.com.livelo.orderflight.exception.CartException;
+import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.ErrorResponse;
-import br.com.livelo.orderflight.exception.enuns.CartErrorType;
+import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,12 +15,12 @@ import static java.util.Optional.ofNullable;
 public class RestExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(CartException ex) {
+    public ResponseEntity<ErrorResponse> handleException(ReservationException ex) {
         ofNullable(ex.getArgs()).ifPresent(log::error);
-        return ResponseEntity.status(ex.getCartErrorType().getStatus()).body(this.buildError(ex.getCartErrorType()));
+        return ResponseEntity.status(ex.getReservationErrorType().getStatus()).body(this.buildError(ex.getReservationErrorType()));
     }
 
-    private ErrorResponse buildError(CartErrorType cartErrorType) {
-        return new ErrorResponse(cartErrorType.getCode(), cartErrorType.getTitle(), cartErrorType.getDescription());
+    private ErrorResponse buildError(ReservationErrorType reservationErrorType) {
+        return new ErrorResponse(reservationErrorType.getCode(), reservationErrorType.getTitle(), reservationErrorType.getDescription());
     }
 }
