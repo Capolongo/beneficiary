@@ -53,7 +53,7 @@ class ReservationServiceTest {
         when(orderRepository.save(any())).thenReturn(orderMock);
         var transactionId = "123";
 
-        var response = reservationService.createOrder(requestMock, transactionId, "123", "WEB");
+        var response = reservationService.createOrder(requestMock, transactionId, "123", "WEB", "price");
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertEquals(transactionId, response.transactionId())
@@ -80,7 +80,7 @@ class ReservationServiceTest {
                 ).build();
 
         when(orderRepository.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
-        var exception = assertThrows(ReservationException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB"));
+        var exception = assertThrows(ReservationException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price"));
         assertEquals(ReservationErrorType.ORDER_FLIGHT_DIVERGENT_QUANTITY_ITEMS_BUSINESS_ERROR, exception.getReservationErrorType());
     }
 

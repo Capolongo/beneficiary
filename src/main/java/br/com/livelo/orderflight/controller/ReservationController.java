@@ -20,9 +20,10 @@ public class ReservationController {
             @RequestHeader(value = "transactionId") String transacationId,
             @RequestHeader(value = "customerId", required = false) String customerId,
             @RequestHeader(value = "channel") String channel,
+            @RequestHeader(value = "listPrice") String listPrice,
             @RequestBody @Valid ReservationRequest reservationRequest
     ) {
-        var response = reservationService.createOrder(reservationRequest, transacationId, customerId, channel);
+        var response = reservationService.createOrder(reservationRequest, transacationId, customerId, channel, listPrice);
         return ResponseEntity.ok(response);
     }
 }

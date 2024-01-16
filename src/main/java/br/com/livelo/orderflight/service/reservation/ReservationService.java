@@ -33,7 +33,7 @@ public class ReservationService {
 
     private final OrderEntityMapper orderEntityMapper;
 
-    public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel) {
+    public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPrice) {
         try {
             var orderOptional = this.orderRepository.findByCommerceOrderId(request.getCommerceOrderId());
             if (this.isSameOrderItems(request, orderOptional)) {
