@@ -12,7 +12,7 @@ import br.com.livelo.orderflight.mappers.CartMapper;
 import br.com.livelo.orderflight.mappers.CartRequestMapper;
 import br.com.livelo.orderflight.mappers.OrderEntityMapper;
 import br.com.livelo.orderflight.proxy.PartnerConnectorProxy;
-import br.com.livelo.orderflight.repository.OrderRepository;
+import br.com.livelo.orderflight.service.OrderService;
 import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
-    private final OrderRepository orderRepository;
+    private final OrderService orderService;
 
     private final PartnerConnectorProxy partnerConnectorProxy;
     private final CartMapper cartMapper;
@@ -35,20 +35,18 @@ public class ReservationService {
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPrice) {
         try {
-            var orderOptional = this.orderRepository.findByCommerceOrderId(request.getCommerceOrderId());
+            var orderOptional = this.orderService.findByCommerceOrderId(request.getCommerceOrderId());
             if (this.isSameOrderItems(request, orderOptional)) {
-                orderOptional.ifPresent(orderRepository::delete);
+                orderOptional.ifPresent(this.orderService::delete);
             }
             var partnerReservationResponse = partnerConnectorProxy.reservation(cartRequestMapper.toPartnerReservationRequest(request), transactionId);
             OrderEntity orderEntity = cartMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel);
-            //TODO CHAMAR O SAVE VIA ORDERSERVICE
-            this.orderRepository.save(cartRequestMapper.toOrderEntity(request, transactionId, customerId, channel, partnerReservationResponse));
+            this.orderService.save(cartRequestMapper.toOrderEntity(request, transactionId, customerId, channel, partnerReservationResponse));
             //TODO UTILIZAR MAPSTRUCT (BRUNO e RENAN)
             return orderEntityMapper.toCartResponse(orderEntity);
         } catch (ReservationException e) {
             throw e;
         } catch (PersistenceException e) {
-            //TODO TRATAR EXCEÇÕES DE SQL
             throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         } catch (Exception e) {
             //TODO TRATAR EXCEÇÕES DE MAPPER
