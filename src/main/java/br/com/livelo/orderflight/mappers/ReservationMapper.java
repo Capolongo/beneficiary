@@ -1,7 +1,6 @@
 package br.com.livelo.orderflight.mappers;
 
-import br.com.livelo.orderflight.domain.dto.PartnerReservationResponse;
-import br.com.livelo.orderflight.domain.dto.ReservationRequest;
+import br.com.livelo.orderflight.domain.dto.*;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderPriceEntity;
@@ -13,8 +12,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Mapper(componentModel = "spring", uses = {CartItemMapper.class, CartPriceMapper.class})
-public interface CartMapper {
+@Mapper(componentModel = "spring", uses = {ReservationItemMapper.class, ReservationPriceMapper.class})
+public interface ReservationMapper {
+    ReservationMapper INSTANCE = Mappers.getMapper(ReservationMapper.class);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "submittedDate", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "items", expression = "java(mapItems(cartRequest, partnerReservationResponse))")
@@ -28,33 +29,31 @@ public interface CartMapper {
     //    TODO entender o status e o statusHistory
     @Mapping(target = "statusHistory", ignore = true)
     @Mapping(target = "status", ignore = true)
-    @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse))")
-    OrderEntity toOrderEntity(ReservationRequest cartRequest, PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId, String channel);
+    @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice))")
+    OrderEntity toOrderEntity(ReservationRequest cartRequest, PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId, String channel, String listPrice);
 
+    default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse, String listPrice) {
+        ReservationPriceMapper reservationPriceMapper = Mappers.getMapper(ReservationPriceMapper.class);
 
-    default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse) {
-        CartPriceMapper cartPriceMapper = Mappers.getMapper(CartPriceMapper.class);
-
-        return cartPriceMapper.toOrderPriceEntity(partnerReservationResponse);
+        return reservationPriceMapper.toOrderPriceEntity(partnerReservationResponse, listPrice);
     }
 
-    default Set<OrderItemEntity> mapItems(ReservationRequest reservationRequest, PartnerReservationResponse partnerReservationResponse) {
-        CartItemMapper cartItemMapper = Mappers.getMapper(CartItemMapper.class);
+    default Set<OrderItemEntity> mapItems(ReservationRequest cartRequest, PartnerReservationResponse partnerReservationResponse) {
+        ReservationItemMapper reservationItemMapper = Mappers.getMapper(ReservationItemMapper.class);
 
-        return reservationRequest.getItems()
+        return cartRequest.getItems()
                 .stream()
-                .map(currentRequestItem -> cartItemMapper.toOrderItemEntity(currentRequestItem,
+                .map(currentRequestItem -> reservationItemMapper.toOrderItemEntity(currentRequestItem,
                         partnerReservationResponse.getItems().stream().filter(currentPartnerReservation -> currentPartnerReservation.getType().equals(currentRequestItem.getProductType())).toList().getFirst())
                 )
                 .collect(Collectors.toSet());
-        }
     }
 
+    PartnerReservationRequest toPartnerReservationRequest(ReservationRequest request);
+
+    PartnerReservationDocument toPartnerReservationDocument(ReservationDocument reservationDocument);
 
 
 
-
-
-
-
-
+    ReservationResponse toCartResponse(OrderEntity orderEntity);
+}

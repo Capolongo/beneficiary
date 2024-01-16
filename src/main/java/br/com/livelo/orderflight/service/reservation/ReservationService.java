@@ -8,9 +8,7 @@ import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
-import br.com.livelo.orderflight.mappers.CartMapper;
-import br.com.livelo.orderflight.mappers.CartRequestMapper;
-import br.com.livelo.orderflight.mappers.OrderEntityMapper;
+import br.com.livelo.orderflight.mappers.ReservationMapper;
 import br.com.livelo.orderflight.proxy.PartnerConnectorProxy;
 import br.com.livelo.orderflight.service.OrderService;
 import jakarta.persistence.PersistenceException;
@@ -22,28 +20,31 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
+
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
     private final OrderService orderService;
 
     private final PartnerConnectorProxy partnerConnectorProxy;
-    private final CartMapper cartMapper;
-    private final CartRequestMapper cartRequestMapper;
+    private final ReservationMapper reservationMapper;
 
-    private final OrderEntityMapper orderEntityMapper;
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPrice) {
         try {
             var orderOptional = this.orderService.findByCommerceOrderId(request.getCommerceOrderId());
+
             if (this.isSameOrderItems(request, orderOptional)) {
                 orderOptional.ifPresent(this.orderService::delete);
             }
-            var partnerReservationResponse = partnerConnectorProxy.reservation(cartRequestMapper.toPartnerReservationRequest(request), transactionId);
-            OrderEntity orderEntity = cartMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel);
-            this.orderService.save(cartRequestMapper.toOrderEntity(request, transactionId, customerId, channel, partnerReservationResponse));
-            //TODO UTILIZAR MAPSTRUCT (BRUNO e RENAN)
-            return orderEntityMapper.toCartResponse(orderEntity);
+
+            var partnerReservationResponse = partnerConnectorProxy.reservation(reservationMapper.toPartnerReservationRequest(request), transactionId);
+            OrderEntity orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
+
+            this.orderService.save(orderEntity);
+
+            return reservationMapper.toCartResponse(orderEntity);
         } catch (ReservationException e) {
             throw e;
         } catch (PersistenceException e) {
