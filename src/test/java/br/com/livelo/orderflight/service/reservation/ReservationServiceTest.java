@@ -9,7 +9,7 @@ import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.mappers.*;
 import br.com.livelo.orderflight.proxy.PartnerConnectorProxy;
-import br.com.livelo.orderflight.repository.OrderRepository;
+import br.com.livelo.orderflight.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 class ReservationServiceTest {
     private ReservationService reservationService;
     @Mock
-    private OrderRepository orderRepository;
+    private OrderService orderService;
     @Mock
     private PartnerConnectorProxy partnerConnectorProxy;
 
@@ -40,7 +40,7 @@ class ReservationServiceTest {
         var cartRequestMapper = new CartRequestMapper(new CartPaxMapper(new CartDocumentMapper()));
         var orderEntityMapper = new OrderEntityMapper();
 
-        this.reservationService = new ReservationService(orderRepository, partnerConnectorProxy, cartMapper, cartRequestMapper, orderEntityMapper);
+        this.reservationService = new ReservationService(orderService, partnerConnectorProxy, cartMapper, cartRequestMapper, orderEntityMapper);
     }
 
     @Test
@@ -48,9 +48,9 @@ class ReservationServiceTest {
         var partnerReservationResponseMock = mock(PartnerReservationResponse.class);
         var orderMock = mock(OrderEntity.class);
         var requestMock = mock(ReservationRequest.class);
-        when(orderRepository.findByCommerceOrderId(requestMock.getCommerceOrderId())).thenReturn(Optional.empty());
+        when(orderService.findByCommerceOrderId(requestMock.getCommerceOrderId())).thenReturn(Optional.empty());
         when(partnerConnectorProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponseMock);
-        when(orderRepository.save(any())).thenReturn(orderMock);
+        when(orderService.save(any())).thenReturn(orderMock);
         var transactionId = "123";
 
         var response = reservationService.createOrder(requestMock, transactionId, "123", "WEB", "price");
@@ -79,7 +79,7 @@ class ReservationServiceTest {
                         )
                 ).build();
 
-        when(orderRepository.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
+        when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
         var exception = assertThrows(ReservationException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price"));
         assertEquals(ReservationErrorType.ORDER_FLIGHT_DIVERGENT_QUANTITY_ITEMS_BUSINESS_ERROR, exception.getReservationErrorType());
     }
