@@ -47,7 +47,7 @@ public class PartnerConnectorProxy {
                 throw new ReservationException(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, "", e.responseBody().toString(), e);
             }
         } catch (Exception e) {
-            throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, "Erro ao realizar chamada para o conector", null, e);
+            throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
 
