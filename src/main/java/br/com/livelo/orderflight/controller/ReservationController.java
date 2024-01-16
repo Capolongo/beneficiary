@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.*;
 public class ReservationController {
     private final ReservationService reservationService;
 
-    //TODO PENSAR NOS LOGS QUE PODEM SER ADICIONADOS PARA CONSEGUIRMOS REALIZAR ANÁLISES EM PRD
     @PostMapping
-    public ResponseEntity<ReservationResponse> createCart(
+    public ResponseEntity<ReservationResponse> createReservation(
             @RequestHeader(value = "transactionId") String transacationId,
             @RequestHeader(value = "customerId", required = false) String customerId,
             @RequestHeader(value = "channel") String channel,
