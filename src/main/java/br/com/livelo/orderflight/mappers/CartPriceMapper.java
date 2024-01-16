@@ -1,4 +1,4 @@
-package br.com.livelo.orderflight.domain.mappers;
+package br.com.livelo.orderflight.mappers;
 
 
 import br.com.livelo.orderflight.domain.dto.PartnerReservationResponse;

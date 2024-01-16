@@ -11,7 +11,8 @@ public enum ReservationErrorType {
 
     //BUSINESS
     FLIGHT_CONNECTOR_BUSINESS_ERROR("OFCART500", "Parceiro não disponível", "Parceiro não está disponível para realização desta ação no momento", HttpStatus.BAD_REQUEST),
-    ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR("OFCART501", "Erro ao adicionar pedido ao carrinho", "Favor tente novamento", HttpStatus.BAD_REQUEST);
+    ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR("OFCART501", "Erro ao adicionar pedido ao carrinho", "Favor tente novamente", HttpStatus.BAD_REQUEST),
+    ORDER_FLIGHT_DIVERGENT_QUANTITY_ITEMS_BUSINESS_ERROR("OFCART502", "Erro ao adicionar pedido ao carrinho", "Favor tente novamente", HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String title;

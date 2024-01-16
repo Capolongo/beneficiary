@@ -1,6 +1,6 @@
-package br.com.livelo.orderflight.domain.mappers;
+package br.com.livelo.orderflight.mappers;
 
-import br.com.livelo.orderflight.domain.dto.CartItem;
+import br.com.livelo.orderflight.domain.dto.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.PartnerReservationItem;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemPriceEntity;
@@ -10,13 +10,11 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", uses = CartItemPriceMapper.class)
 public interface CartItemMapper {
-    CartItemMapper INSTANCE = Mappers.getMapper(CartItemMapper.class);
-
     @Mapping(target = "commerceItemId", source = "cartItem.commerceItemId")
     @Mapping(target = "productId", source = "cartItem.productId")
     @Mapping(target = "quantity", source = "partnerReservationItem.quantity")
     @Mapping(target = "price", expression = "java(mapPrice(partnerReservationItem))")
-    OrderItemEntity toOrderItemEntity(CartItem cartItem, PartnerReservationItem partnerReservationItem);
+    OrderItemEntity toOrderItemEntity(ReservationItem cartItem, PartnerReservationItem partnerReservationItem);
 
 
     default OrderItemPriceEntity mapPrice(PartnerReservationItem partnerReservationItem) {

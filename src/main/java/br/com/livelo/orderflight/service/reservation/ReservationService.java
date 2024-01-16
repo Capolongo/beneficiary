@@ -8,6 +8,7 @@ import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
+import br.com.livelo.orderflight.mappers.CartMapper;
 import br.com.livelo.orderflight.mappers.CartRequestMapper;
 import br.com.livelo.orderflight.mappers.OrderEntityMapper;
 import br.com.livelo.orderflight.proxy.PartnerConnectorProxy;
@@ -27,25 +28,23 @@ public class ReservationService {
     private final OrderRepository orderRepository;
 
     private final PartnerConnectorProxy partnerConnectorProxy;
-
+    private final CartMapper cartMapper;
     private final CartRequestMapper cartRequestMapper;
 
     private final OrderEntityMapper orderEntityMapper;
 
-    public ReservationResponse createOrder(ReservationRequest request, String transacationId, String customerId, String channel) {
+    public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel) {
         try {
             var orderOptional = this.orderRepository.findByCommerceOrderId(request.getCommerceOrderId());
             if (this.isSameOrderItems(request, orderOptional)) {
                 orderOptional.ifPresent(orderRepository::delete);
             }
-            var partnerReservationResponse = partnerConnectorProxy.reservation(cartRequestMapper.toPartnerReservationRequest(request), transacationId);
-            //TODO UTILIZAR O MAPSTRUCT
-            var order = cartRequestMapper.toOrderEntity(request, transacationId, customerId, channel, partnerReservationResponse);
-            //TODO REALIZAR A PERSISTENCIA DA ORDER COM SUCESSO
+            var partnerReservationResponse = partnerConnectorProxy.reservation(cartRequestMapper.toPartnerReservationRequest(request), transactionId);
+            OrderEntity orderEntity = cartMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel);
             //TODO CHAMAR O SAVE VIA ORDERSERVICE
-            this.orderRepository.save(cartRequestMapper.toOrderEntity(request, transacationId, customerId, channel, partnerReservationResponse));
+            this.orderRepository.save(cartRequestMapper.toOrderEntity(request, transactionId, customerId, channel, partnerReservationResponse));
             //TODO UTILIZAR MAPSTRUCT (BRUNO e RENAN)
-            return orderEntityMapper.toCartResponse(order);
+            return orderEntityMapper.toCartResponse(orderEntity);
         } catch (ReservationException e) {
             throw e;
         } catch (PersistenceException e) {
@@ -57,7 +56,7 @@ public class ReservationService {
         }
     }
 
-    private Boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional) {
+    private boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional) {
         return orderOptional.map(order -> {
             if (order.getItems().size() == request.getItems().size()) {
                 var orderItemsIds = this.getOrderItemsIds(order);
@@ -68,7 +67,7 @@ public class ReservationService {
                 this.hasSameTokens(orderTokens, requestTokens);
                 return requestItemsIds.containsAll(orderItemsIds);
             }
-            return false;
+            throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_DIVERGENT_QUANTITY_ITEMS_BUSINESS_ERROR, "Quantidades de itens diferentes", null);
         }).orElse(false);
     }
 
