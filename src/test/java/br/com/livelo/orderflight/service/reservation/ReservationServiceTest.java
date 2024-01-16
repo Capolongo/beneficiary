@@ -36,11 +36,8 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setup() {
-        var cartMapper = new CartMapperImpl();
-        var cartRequestMapper = new CartRequestMapper(new CartPaxMapper(new CartDocumentMapper()));
-        var orderEntityMapper = new OrderEntityMapper();
-
-        this.reservationService = new ReservationService(orderService, partnerConnectorProxy, cartMapper, cartRequestMapper, orderEntityMapper);
+        var cartMapper = new ReservationMapperImpl();
+        this.reservationService = new ReservationService(orderService, partnerConnectorProxy, cartMapper);
     }
 
     @Test

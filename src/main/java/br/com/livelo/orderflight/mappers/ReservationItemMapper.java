@@ -8,8 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring", uses = CartItemPriceMapper.class)
-public interface CartItemMapper {
+@Mapper(componentModel = "spring", uses = ReservationItemPriceMapper.class)
+public interface ReservationItemMapper {
     @Mapping(target = "commerceItemId", source = "cartItem.commerceItemId")
     @Mapping(target = "productId", source = "cartItem.productId")
     @Mapping(target = "quantity", source = "partnerReservationItem.quantity")
@@ -18,9 +18,9 @@ public interface CartItemMapper {
 
 
     default OrderItemPriceEntity mapPrice(PartnerReservationItem partnerReservationItem) {
-        CartItemPriceMapper cartItemPriceMapper = Mappers.getMapper(CartItemPriceMapper.class);
+        ReservationItemPriceMapper reservationItemPriceMapper = Mappers.getMapper(ReservationItemPriceMapper.class);
 
-        return cartItemPriceMapper.toOrderItemPriceEntity(partnerReservationItem);
+        return reservationItemPriceMapper.toOrderItemPriceEntity(partnerReservationItem);
     }
 
 

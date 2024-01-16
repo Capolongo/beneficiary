@@ -8,8 +8,8 @@ import org.mapstruct.Mapping;
 
 
 @Mapper(componentModel = "spring")
-public interface CartPriceMapper {
+public interface ReservationPriceMapper {
 
-    @Mapping(target = "priceListId", ignore = true)
-    OrderPriceEntity toOrderPriceEntity(PartnerReservationResponse partnerReservationResponse);
+    @Mapping(target = "priceListId", source = "listPrice")
+    OrderPriceEntity toOrderPriceEntity(PartnerReservationResponse partnerReservationResponse, String listPrice);
 }
