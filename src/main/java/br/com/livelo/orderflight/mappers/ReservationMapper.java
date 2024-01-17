@@ -24,8 +24,7 @@ public interface ReservationMapper {
     @Mapping(target = "channel", source = "channel")
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "customerIdentifier", source = "customerId")
-    //    TODO entender o status e o statusHistory
-    @Mapping(target = "statusHistory", ignore = true)
+    @Mapping(target = "statusHistory",  expression = "java(Set.of(mapStatus(partnerReservationResponse)))")
     @Mapping(target = "status", expression = "java(mapStatus(partnerReservationResponse))")
     @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice))")
     OrderEntity toOrderEntity(ReservationRequest reservationRequest, PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId, String channel, String listPrice);

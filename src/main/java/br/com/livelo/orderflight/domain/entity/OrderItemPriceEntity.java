@@ -28,11 +28,11 @@ public class OrderItemPriceEntity extends BaseEntity {
 
     private String listPrice;
 
-    private BigDecimal amount;
+    private BigDecimal amount; //TODO RECUPERAR NA PRECIFICAÇÃO
 
-    private BigDecimal pointsAmount;
+    private BigDecimal pointsAmount; //TODO RECUPEAR NA PRECIFICAÇÃO
 
-    private BigDecimal accrualPoints;
+    private BigDecimal accrualPoints; //TODO RECUPERAR NA PRECIFICAÇÃO
 
     private BigDecimal partnerAmount;
 

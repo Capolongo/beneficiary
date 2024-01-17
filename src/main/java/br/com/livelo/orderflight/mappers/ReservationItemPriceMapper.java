@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 public interface ReservationItemPriceMapper {
 
     @Mapping(target = "listPrice", source = "listPrice")
+    @Mapping(target = "partnerAmount", source = "partnerReservationItem.amount")
     OrderItemPriceEntity toOrderItemPriceEntity(PartnerReservationItem partnerReservationItem, String listPrice);
 }
 
