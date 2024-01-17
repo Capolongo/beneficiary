@@ -26,9 +26,9 @@ public class OrderPriceDescriptionEntity extends BaseEntity {
     @Id
     private Long id;
 
-    private BigDecimal amount;
+    private BigDecimal amount; //TODO RECUPERAR DA PRECIFICAÇÃO
 
-    private BigDecimal pointsAmount;
+    private BigDecimal pointsAmount; //TODO RECUPERAR DA PRECIFICAÇÃO
 
     private String type;
 

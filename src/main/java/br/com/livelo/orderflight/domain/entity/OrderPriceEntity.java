@@ -32,13 +32,13 @@ public class OrderPriceEntity extends BaseEntity {
     @Id
     private Long id;
 
-    private Double accrualPoints;
+    private Double accrualPoints; //TODO RECUPERAR DA PRECIFICAÇÃO
 
-    private BigDecimal amount;
+    private BigDecimal amount; //TODO RECUPERAR DA PRECIFICAÇÃO
 
-    private BigDecimal pointsAmount;
+    private BigDecimal pointsAmount; //TODO RECUPERAR DA PRECIFICAÇÃO
 
-    private BigDecimal partnerAmount;
+    private BigDecimal partnerAmount; //TODO RECUPERAR DO RESPONSE DO CONECTOR
 
     private String priceListId;
 

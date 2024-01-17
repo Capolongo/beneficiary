@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ReservationItemPriceMapper {
 
-    @Mapping(target = "listPrice", source = "amount")
-    OrderItemPriceEntity toOrderItemPriceEntity(PartnerReservationItem partnerReservationItem);
+    @Mapping(target = "listPrice", source = "listPrice")
+    OrderItemPriceEntity toOrderItemPriceEntity(PartnerReservationItem partnerReservationItem, String listPrice);
 }
 

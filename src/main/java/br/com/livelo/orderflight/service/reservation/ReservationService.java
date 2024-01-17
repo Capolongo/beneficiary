@@ -44,7 +44,7 @@ public class ReservationService {
 
             this.orderService.save(orderEntity);
 
-            return reservationMapper.toCartResponse(orderEntity);
+            return reservationMapper.toReservationResponse(orderEntity);
         } catch (ReservationException e) {
             throw e;
         } catch (PersistenceException e) {
