@@ -50,8 +50,8 @@ public class ReservationService {
         } catch (PersistenceException e) {
             throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         } catch (Exception e) {
-            //TODO TRATAR EXCEÇÕES DE MAPPER
-            throw e;
+        	 throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
+     
         }
     }
 
