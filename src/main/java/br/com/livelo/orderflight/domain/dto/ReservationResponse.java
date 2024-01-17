@@ -1,8 +1,8 @@
 package br.com.livelo.orderflight.domain.dto;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
-//TODO FINALIZAR DTO BASEADO NO ORDERENTITY
 public record ReservationResponse(String commerceOrderId,
                                   String partnerOrderId,
                                   String partnerCode,
@@ -12,5 +12,9 @@ public record ReservationResponse(String commerceOrderId,
                                   String originOrder,
                                   String customerIdentifier,
                                   String transactionId,
-                                  LocalDateTime expirationDate) {
+                                  LocalDateTime expirationDate,
+                                  ReservationResponsePrice price,
+                                  Set<ReservationResponseItem> items,
+                                  Set<ReservationResponseOrderStatus> statusHistory,
+                                  ReservationResponseOrderStatus status) {
 }

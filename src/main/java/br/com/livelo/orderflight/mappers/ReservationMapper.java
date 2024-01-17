@@ -32,7 +32,6 @@ public interface ReservationMapper {
 
     default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse, String listPrice) {
         ReservationPriceMapper reservationPriceMapper = Mappers.getMapper(ReservationPriceMapper.class);
-
         return reservationPriceMapper.toOrderPriceEntity(partnerReservationResponse, listPrice);
     }
 
@@ -62,6 +61,6 @@ public interface ReservationMapper {
 
     PartnerReservationDocument toPartnerReservationDocument(ReservationDocument reservationDocument);
 
-
     ReservationResponse toReservationResponse(OrderEntity orderEntity);
+
 }
