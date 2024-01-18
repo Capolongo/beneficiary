@@ -11,5 +11,6 @@ import org.mapstruct.Mapping;
 public interface ReservationPriceMapper {
 
     @Mapping(target = "priceListId", source = "listPrice")
+    @Mapping(target = "partnerAmount", source = "partnerReservationResponse.amount")
     OrderPriceEntity toOrderPriceEntity(PartnerReservationResponse partnerReservationResponse, String listPrice);
 }

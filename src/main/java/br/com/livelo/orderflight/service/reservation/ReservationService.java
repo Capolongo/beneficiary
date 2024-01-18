@@ -11,6 +11,7 @@ import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
 import br.com.livelo.orderflight.proxy.PartnerConnectorProxy;
 import br.com.livelo.orderflight.service.OrderService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class ReservationService {
     private final PartnerConnectorProxy partnerConnectorProxy;
     private final ReservationMapper reservationMapper;
 
-
+    @Transactional
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPrice) {
         try {
             var orderOptional = this.orderService.findByCommerceOrderId(request.getCommerceOrderId());

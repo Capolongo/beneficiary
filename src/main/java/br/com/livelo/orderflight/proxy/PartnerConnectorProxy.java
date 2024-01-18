@@ -41,10 +41,19 @@ public class PartnerConnectorProxy {
         } catch (FeignException e) {
             var status = HttpStatus.valueOf(e.status());
             if (status.is5xxServerError()) {
-                throw new ReservationException(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, "", "Erro ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(), e);
+                throw new ReservationException(
+                        ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR,
+                        null,
+                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(),
+                        e
+                );
             } else {
-                //TODO PENSAR NUMA FORMA DO CONECTOR NOS RESPONDER COM CLAREZA OS ERROS DE NEGÓCIO
-                throw new ReservationException(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, "", e.responseBody().toString(), e);
+                throw new ReservationException(
+                        ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR,
+                        null,
+                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(),
+                        e
+                );
             }
         } catch (Exception e) {
             throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
