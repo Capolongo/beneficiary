@@ -10,17 +10,16 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", uses = ReservationItemPriceMapper.class)
 public interface ReservationItemMapper {
-    @Mapping(target = "commerceItemId", source = "cartItem.commerceItemId")
-    @Mapping(target = "productId", source = "cartItem.productId")
+    @Mapping(target = "commerceItemId", source = "reservationItem.commerceItemId")
+    @Mapping(target = "productId", source = "reservationItem.productId")
     @Mapping(target = "quantity", source = "partnerReservationItem.quantity")
-    @Mapping(target = "price", expression = "java(mapPrice(partnerReservationItem))")
-    OrderItemEntity toOrderItemEntity(ReservationItem cartItem, PartnerReservationItem partnerReservationItem);
+    @Mapping(target = "price", expression = "java(mapPrice(partnerReservationItem, listPrice))")
+    OrderItemEntity toOrderItemEntity(ReservationItem reservationItem, PartnerReservationItem partnerReservationItem, String listPrice);
 
-
-    default OrderItemPriceEntity mapPrice(PartnerReservationItem partnerReservationItem) {
+    default OrderItemPriceEntity mapPrice(PartnerReservationItem partnerReservationItem, String listPrice) {
         ReservationItemPriceMapper reservationItemPriceMapper = Mappers.getMapper(ReservationItemPriceMapper.class);
 
-        return reservationItemPriceMapper.toOrderItemPriceEntity(partnerReservationItem);
+        return reservationItemPriceMapper.toOrderItemPriceEntity(partnerReservationItem, listPrice);
     }
 
 

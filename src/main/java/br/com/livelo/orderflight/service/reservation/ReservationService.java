@@ -11,7 +11,6 @@ import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
 import br.com.livelo.orderflight.proxy.PartnerConnectorProxy;
 import br.com.livelo.orderflight.service.OrderService;
-import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 
 
 @Service
@@ -43,34 +41,34 @@ public class ReservationService {
             OrderEntity orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
 
             this.orderService.save(orderEntity);
-
-            return reservationMapper.toCartResponse(orderEntity);
+            return reservationMapper.toReservationResponse(orderEntity);
         } catch (ReservationException e) {
             throw e;
-        } catch (PersistenceException e) {
-            throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         } catch (Exception e) {
-        	 throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
-     
+            throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
 
     private boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional) {
         return orderOptional.map(order -> {
             if (order.getItems().size() == request.getItems().size()) {
-                var orderItemsIds = this.getOrderItemsIds(order);
+                var orderCommerceItemsIds = this.getOrderCommerceItemsIds(order);
                 var requestItemsIds = this.getRequestItemsIds(request);
 
                 var orderTokens = this.getOrderTokens(order);
                 var requestTokens = new HashSet<>(request.getSegmentsPartnerIds());
-                this.hasSameTokens(orderTokens, requestTokens);
-                return requestItemsIds.containsAll(orderItemsIds);
+                var isSameCommerceItemsId = requestItemsIds.containsAll(orderCommerceItemsIds);
+
+                if(isSameCommerceItemsId) {
+                    this.hasSameTokens(orderTokens, requestTokens);
+                }
+                return isSameCommerceItemsId;
             }
             throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_DIVERGENT_QUANTITY_ITEMS_BUSINESS_ERROR, "Quantidades de itens diferentes", null);
         }).orElse(false);
     }
 
-    private Set<String> getOrderItemsIds(OrderEntity order) {
+    private Set<String> getOrderCommerceItemsIds(OrderEntity order) {
         return order.getItems().stream()
                 .map(OrderItemEntity::getCommerceItemId)
                 .collect(Collectors.toSet());
