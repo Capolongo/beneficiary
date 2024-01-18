@@ -39,7 +39,7 @@ public class ReservationService {
             }
 
             var partnerReservationResponse = partnerConnectorProxy.reservation(reservationMapper.toPartnerReservationRequest(request), transactionId);
-            OrderEntity orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
+            var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
 
             this.orderService.save(orderEntity);
             return reservationMapper.toReservationResponse(orderEntity);

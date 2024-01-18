@@ -5,7 +5,7 @@ import br.com.livelo.orderflight.domain.dto.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.PartnerReservationResponse;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
-import br.com.livelo.orderflight.utils.PartnerProperties;
+import br.com.livelo.orderflight.config.PartnerProperties;
 import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

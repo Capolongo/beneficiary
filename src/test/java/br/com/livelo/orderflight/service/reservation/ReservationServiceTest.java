@@ -147,6 +147,23 @@ class ReservationServiceTest {
     }
 
     @Test
+    void shouldntCreateOrder_WhenQuantityTokensDifferent() {
+        var transactionId = "123";
+        var type = "teste";
+        var segmentsPartnersId = "asdfg";
+        var token = "asdf";
+        var id = 1L;
+
+        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId, segmentsPartnersId));
+
+        var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, transactionId, token)));
+
+        when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
+        var exception = assertThrows(ReservationException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price"));
+        assertEquals(ReservationErrorType.ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR, exception.getReservationErrorType());
+    }
+
+    @Test
     void shouldntCreateOrder_WhenUnknownException() {
         var transactionId = "123";
         var type = "teste";

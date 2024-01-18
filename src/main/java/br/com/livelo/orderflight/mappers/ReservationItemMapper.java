@@ -17,8 +17,7 @@ public interface ReservationItemMapper {
     OrderItemEntity toOrderItemEntity(ReservationItem reservationItem, PartnerReservationItem partnerReservationItem, String listPrice);
 
     default OrderItemPriceEntity mapPrice(PartnerReservationItem partnerReservationItem, String listPrice) {
-        ReservationItemPriceMapper reservationItemPriceMapper = Mappers.getMapper(ReservationItemPriceMapper.class);
-
+        var reservationItemPriceMapper = Mappers.getMapper(ReservationItemPriceMapper.class);
         return reservationItemPriceMapper.toOrderItemPriceEntity(partnerReservationItem, listPrice);
     }
 

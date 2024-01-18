@@ -30,17 +30,17 @@ public interface ReservationMapper {
     OrderEntity toOrderEntity(ReservationRequest reservationRequest, PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId, String channel, String listPrice);
 
     default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse, String listPrice) {
-        ReservationPriceMapper reservationPriceMapper = Mappers.getMapper(ReservationPriceMapper.class);
+        var reservationPriceMapper = Mappers.getMapper(ReservationPriceMapper.class);
         return reservationPriceMapper.toOrderPriceEntity(partnerReservationResponse, listPrice);
     }
 
     default OrderStatusEntity mapStatus(PartnerReservationResponse partnerReservationResponse) {
-        ReservationStatusMapper reservationStatusMapper = Mappers.getMapper(ReservationStatusMapper.class);
+        var reservationStatusMapper = Mappers.getMapper(ReservationStatusMapper.class);
         return reservationStatusMapper.toOrderStatus(partnerReservationResponse);
     }
 
     default Set<OrderItemEntity> mapItems(ReservationRequest reservationRequest, PartnerReservationResponse partnerReservationResponse, String listPrice) {
-        ReservationItemMapper reservationItemMapper = Mappers.getMapper(ReservationItemMapper.class);
+        var reservationItemMapper = Mappers.getMapper(ReservationItemMapper.class);
 
         return reservationRequest.getItems()
                 .stream()
