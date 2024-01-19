@@ -10,7 +10,7 @@ autoscaling:
   cpuAverageUtilization: 75
 #  memoryAverageUtilization: 75 Deixei comentado para avaliação de necessidade, quando aplicação em PRD
 
-fullnameOverride: archetype-base-java17
+fullnameOverride: order-flight
 
 service:
   type: ClusterIP
