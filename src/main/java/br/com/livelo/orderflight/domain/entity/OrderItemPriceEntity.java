@@ -32,7 +32,7 @@ public class OrderItemPriceEntity extends BaseEntity {
 
     private BigDecimal pointsAmount; //RECUPEAR NA PRECIFICAÇÃO
 
-    private BigDecimal accrualPoints; //TODO RECUPERAR NA PRECIFICAÇÃO
+    private BigDecimal accrualPoints; //RECUPERAR NA PRECIFICAÇÃO
 
     private BigDecimal partnerAmount;
 

@@ -77,7 +77,7 @@ public class PartnerConnectorProxy {
         }
     }
 
-    //TODO BUSCAR DA LIB
+    //BUSCAR DA LIB
     private URI getUrlByPartnerCode(String partnerCode) {
         return URI.create(partnerProperties.getUrlByPartnerCode(partnerCode));
     }
