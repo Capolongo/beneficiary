@@ -13,17 +13,16 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.SequenceGenerator;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ORDERS_ITEM")
+@EqualsAndHashCode(callSuper = false)
 public class OrderItemEntity extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_ITEM_SEQ")

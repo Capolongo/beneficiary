@@ -113,14 +113,13 @@ class ReservationServiceTest {
         var transactionId = "123";
         var type = "teste";
         var segmentsPartnersId = "asdf";
-        var id = 1L;
 
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
 
         var order = this.buildOrderEntity(
                 Set.of(
-                        this.buildOrderItem(id, transactionId, segmentsPartnersId),
-                        this.buildOrderItem(id + 1, transactionId, segmentsPartnersId)
+                        this.buildOrderItem(1L, transactionId, segmentsPartnersId),
+                        this.buildOrderItem(2L, transactionId, segmentsPartnersId)
                 )
         );
 

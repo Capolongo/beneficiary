@@ -6,17 +6,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "CANCELATION_RULE")
+@EqualsAndHashCode(callSuper = false)
 public class CancelationRuleEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CANCELATION_RULE_SEQ")
     @SequenceGenerator(name = "CANCELATION_RULE_SEQ", sequenceName = "CANCELATION_RULE_SEQ", allocationSize = 1)

@@ -2,22 +2,22 @@ package br.com.livelo.orderflight.domain.entity;
 
 import br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ORDERS")
+@EqualsAndHashCode(callSuper = false)
 public class OrderEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")

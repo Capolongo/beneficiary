@@ -1,30 +1,19 @@
 package br.com.livelo.orderflight.domain.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.util.Set;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ORDERS_PRICE")
+@EqualsAndHashCode(callSuper = false)
 public class OrderPriceEntity extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_PRICE_SEQ")
