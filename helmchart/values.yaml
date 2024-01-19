@@ -2,7 +2,13 @@ replicas:
   default: 1
   dev: 1
   tst: 1
-  prd: 5
+  prd: 3
+
+autoscaling:
+  enabled: true
+  maxReplicas: 10
+  cpuAverageUtilization: 75
+#  memoryAverageUtilization: 75 Deixei comentado para avaliação de necessidade, quando aplicação em PRD
 
 fullnameOverride: archetype-base-java17
 
