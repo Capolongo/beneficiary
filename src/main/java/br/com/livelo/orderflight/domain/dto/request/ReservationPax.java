@@ -1,4 +1,4 @@
-package br.com.livelo.orderflight.domain.dto;
+package br.com.livelo.orderflight.domain.dto.request;
 
 import java.util.List;
 

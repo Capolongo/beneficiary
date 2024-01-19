@@ -1,7 +1,7 @@
 package br.com.livelo.orderflight.controller;
 
-import br.com.livelo.orderflight.domain.dto.ReservationRequest;
-import br.com.livelo.orderflight.domain.dto.ReservationResponse;
+import br.com.livelo.orderflight.domain.dto.request.ReservationRequest;
+import br.com.livelo.orderflight.domain.dto.response.ReservationResponse;
 import br.com.livelo.orderflight.service.reservation.ReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

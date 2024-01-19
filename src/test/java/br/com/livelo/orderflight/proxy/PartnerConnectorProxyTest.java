@@ -1,8 +1,8 @@
 package br.com.livelo.orderflight.proxy;
 
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
-import br.com.livelo.orderflight.domain.dto.PartnerReservationRequest;
-import br.com.livelo.orderflight.domain.dto.PartnerReservationResponse;
+import br.com.livelo.orderflight.domain.dto.request.PartnerReservationRequest;
+import br.com.livelo.orderflight.domain.dto.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.config.PartnerProperties;

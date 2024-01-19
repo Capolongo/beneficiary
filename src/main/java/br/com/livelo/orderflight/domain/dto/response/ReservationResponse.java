@@ -1,4 +1,4 @@
-package br.com.livelo.orderflight.domain.dto;
+package br.com.livelo.orderflight.domain.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.Set;

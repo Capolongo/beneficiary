@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-import br.com.livelo.orderflight.domain.dto.PartnerReservationRequest;
-import br.com.livelo.orderflight.domain.dto.PartnerReservationResponse;
+import br.com.livelo.orderflight.domain.dto.request.PartnerReservationRequest;
+import br.com.livelo.orderflight.domain.dto.response.PartnerReservationResponse;
 
 @FeignClient(name = "partner-api")
 public interface PartnerConnectorClient {
