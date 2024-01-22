@@ -33,16 +33,16 @@ livelo:
   resources:
     redis:
       enable: true
-      instance: livelo
+      instance: default
     oracledb:
       enable: true
-      instance: livelo
+      instance: default
     rabbitmq:
       enable: true
       instance: transactional
     mongodb:
       enable: false
-      instance: livelo
+      instance: default
 
 envResources:
   enabled: true
