@@ -18,16 +18,10 @@ public class OrderStatusEntity extends BaseEntity {
     @SequenceGenerator(name = "ORDERS_STATUS_SEQ", sequenceName = "ORDERS_STATUS_SEQ", allocationSize = 1)
     @Id
     private Long id;
-
     private String code;
-
     private String description;
-
     private String partnerCode;
-
     private String partnerDescription;
-
     private String partnerResponse;
-
     private LocalDateTime statusDate;
 }

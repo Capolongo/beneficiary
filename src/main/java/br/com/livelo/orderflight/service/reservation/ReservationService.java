@@ -60,7 +60,7 @@ public class ReservationService {
                 var requestTokens = new HashSet<>(request.getSegmentsPartnerIds());
                 var isSameCommerceItemsId = requestItemsIds.containsAll(orderCommerceItemsIds);
 
-                if(isSameCommerceItemsId) {
+                if (isSameCommerceItemsId) {
                     this.hasSameTokens(orderTokens, requestTokens);
                 }
                 return isSameCommerceItemsId;

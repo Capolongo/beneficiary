@@ -9,8 +9,13 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ReservationItemPriceMapper {
 
-    @Mapping(target = "listPrice", source = "listPrice")
     @Mapping(target = "partnerAmount", source = "partnerReservationItem.amount")
-    OrderItemPriceEntity toOrderItemPriceEntity(PartnerReservationItem partnerReservationItem, String listPrice);
+    @Mapping(target = "amount", expression = "java(java.math.BigDecimal.TEN)")
+    @Mapping(target = "pointsAmount", expression = "java(java.math.BigDecimal.TEN)")
+    @Mapping(target = "accrualPoints", expression = "java(java.math.BigDecimal.TEN)")
+    @Mapping(target = "priceListId", source = "priceList")
+    @Mapping(target = "listPrice", ignore = true)
+    @Mapping(target = "priceRule", ignore = true)
+    OrderItemPriceEntity toOrderItemPriceEntity(PartnerReservationItem partnerReservationItem, String priceList);
 }
 

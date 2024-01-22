@@ -27,6 +27,8 @@ public interface ReservationMapper {
     @Mapping(target = "partnerOrderId", source = "partnerReservationResponse.partnerOrderId")
     @Mapping(target = "partnerCode", source = "partnerReservationResponse.partnerCode")
     @Mapping(target = "channel", source = "channel")
+    @Mapping(target = "tierCode", ignore = true)
+    @Mapping(target = "originOrder", ignore = true)
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "customerIdentifier", source = "customerId")
     @Mapping(target = "statusHistory",  expression = "java(Set.of(mapStatus(partnerReservationResponse)))")
