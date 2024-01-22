@@ -14,6 +14,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,7 @@ public interface ReservationMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "items", expression = "java(mapItems(reservationRequest, partnerReservationResponse, listPrice))")
     @Mapping(target = "expirationDate", source = "partnerReservationResponse.expirationDate")
+    @Mapping(target = "createDate", ignore = true)
     @Mapping(target = "commerceOrderId", source = "reservationRequest.commerceOrderId")
     @Mapping(target = "partnerOrderId", source = "partnerReservationResponse.partnerOrderId")
     @Mapping(target = "partnerCode", source = "partnerReservationResponse.partnerCode")
