@@ -25,19 +25,12 @@ public class OrderItemPriceEntity extends BaseEntity {
     @SequenceGenerator(name = "ORDERS_ITEM_PRICE_SEQ", sequenceName = "ORDERS_ITEM_PRICE_SEQ", allocationSize = 1)
     @Id
     private Long id;
-
     private String listPrice;
-
     private BigDecimal amount; //RECUPERAR NA PRECIFICAÇÃO
-
     private BigDecimal pointsAmount; //RECUPEAR NA PRECIFICAÇÃO
-
     private BigDecimal accrualPoints; //RECUPERAR NA PRECIFICAÇÃO
-
     private BigDecimal partnerAmount;
-
     private String priceListId;
-
     @Lob
     private String priceRule;
 }

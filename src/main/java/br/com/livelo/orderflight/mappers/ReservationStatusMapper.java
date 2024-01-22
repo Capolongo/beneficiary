@@ -10,5 +10,6 @@ import org.mapstruct.Mapping;
 public interface ReservationStatusMapper {
 
     @Mapping(target = "code", source = "partnerReservationResponse.status")
+    @Mapping(target = "statusDate", expression = "java(java.time.LocalDateTime.now())")
     OrderStatusEntity toOrderStatus(PartnerReservationResponse partnerReservationResponse);
 }
