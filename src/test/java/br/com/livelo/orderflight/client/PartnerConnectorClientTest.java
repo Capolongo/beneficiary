@@ -1,7 +1,7 @@
 package br.com.livelo.orderflight.client;
 
-import br.com.livelo.orderflight.domain.dto.request.PartnerReservationRequest;
-import br.com.livelo.orderflight.domain.dto.response.PartnerReservationResponse;
+import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
+import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;

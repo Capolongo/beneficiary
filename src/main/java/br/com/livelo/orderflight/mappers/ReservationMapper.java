@@ -1,11 +1,11 @@
 package br.com.livelo.orderflight.mappers;
 
-import br.com.livelo.orderflight.domain.dto.request.PartnerReservationDocument;
-import br.com.livelo.orderflight.domain.dto.request.PartnerReservationRequest;
-import br.com.livelo.orderflight.domain.dto.request.ReservationDocument;
-import br.com.livelo.orderflight.domain.dto.request.ReservationRequest;
-import br.com.livelo.orderflight.domain.dto.response.PartnerReservationResponse;
-import br.com.livelo.orderflight.domain.dto.response.ReservationResponse;
+import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationDocument;
+import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
+import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationDocument;
+import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
+import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
+import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderPriceEntity;

@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.domain.dto;
 
-import br.com.livelo.orderflight.domain.dto.response.ReservationResponseTravelInfo;
+import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponseTravelInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

@@ -1,7 +1,7 @@
 package br.com.livelo.orderflight.mappers;
 
-import br.com.livelo.orderflight.domain.dto.request.ReservationItem;
-import br.com.livelo.orderflight.domain.dto.response.PartnerReservationItem;
+import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
+import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationItem;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemPriceEntity;
 import org.mapstruct.Mapper;

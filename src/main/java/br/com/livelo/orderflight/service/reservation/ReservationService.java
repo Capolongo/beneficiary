@@ -1,8 +1,8 @@
 package br.com.livelo.orderflight.service.reservation;
 
-import br.com.livelo.orderflight.domain.dto.request.ReservationItem;
-import br.com.livelo.orderflight.domain.dto.request.ReservationRequest;
-import br.com.livelo.orderflight.domain.dto.response.ReservationResponse;
+import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
+import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
+import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
