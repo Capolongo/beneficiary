@@ -49,3 +49,4 @@ server:
 partner:
   attempt:
     teste: 2
+    cvc: 1
