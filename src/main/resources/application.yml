@@ -45,3 +45,7 @@ management:
 server:
   servlet:
     contextPath: /order-flight
+
+partner:
+  attempt:
+    teste: 2

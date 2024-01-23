@@ -15,8 +15,13 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "partner")
 public class PartnerProperties {
 	private Map<String, String> urls;
+	private  Map<String, Integer> attempt;
 	
 	public String getUrlByPartnerCode(String partnerCode) {
 		return urls.get(partnerCode);
+	}
+
+	public Integer getAttemptByPartnerCode(String partnerCode) {
+		return  attempt.get(partnerCode);
 	}
 }
