@@ -23,7 +23,7 @@ public class OrderPriceEntity extends BaseEntity {
     private Double accrualPoints; //RECUPERAR DA PRECIFICAÇÃO
     private BigDecimal amount; //RECUPERAR DA PRECIFICAÇÃO
     private BigDecimal pointsAmount; //RECUPERAR DA PRECIFICAÇÃO
-    private BigDecimal partnerAmount; //RECUPERAR DO RESPONSE DO CONECTOR
+    private BigDecimal partnerAmount;
     private String priceListId;
     private String priceListDescription;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
