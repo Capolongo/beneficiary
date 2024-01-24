@@ -15,8 +15,13 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "partner")
 public class PartnerProperties {
 	private Map<String, String> urls;
+	private Map<String, Long> expirationTimer;
 	
 	public String getUrlByPartnerCode(String partnerCode) {
 		return urls.get(partnerCode);
+	}
+	
+	public Long getExpirationTimerByParterCode(String partnerCode) {
+		return expirationTimer.get(partnerCode);
 	}
 }

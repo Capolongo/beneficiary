@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.service.reservation;
 
+import br.com.livelo.orderflight.config.PartnerProperties;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
@@ -15,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -28,7 +30,7 @@ public class ReservationService {
 
     private final PartnerConnectorProxy partnerConnectorProxy;
     private final ReservationMapper reservationMapper;
-
+    private final PartnerProperties partnerProperties;
     @Transactional
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPrice) {
         try {
@@ -42,7 +44,11 @@ public class ReservationService {
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
 
             this.orderService.save(orderEntity);
-            return reservationMapper.toReservationResponse(orderEntity);
+    
+    		
+    		LocalDateTime dataHoraTimer = orderEntity.getExpirationDate().plusMinutes(partnerProperties.getExpirationTimerByParterCode(request.getPartnerCode()));
+    				
+            return reservationMapper.toReservationResponse(orderEntity, dataHoraTimer);
         } catch (ReservationException e) {
             throw e;
         } catch (Exception e) {
