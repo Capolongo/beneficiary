@@ -9,6 +9,7 @@ import br.com.livelo.orderflight.domain.entity.SegmentEntity;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
+import br.com.livelo.orderflight.proxy.PartnerConnectorProxy;
 import br.com.livelo.orderflight.service.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReservationService {
     private final OrderService orderService;
-    private final RetrieveReservationService retrieveReservationService;
+    private final PartnerConnectorProxy partnerConnectorProxy;
     private final ReservationMapper reservationMapper;
 
     @Transactional
@@ -36,11 +37,7 @@ public class ReservationService {
                 orderOptional.ifPresent(this.orderService::delete);
             }
 
-            var partnerReservationResponse = retrieveReservationService.reservationUsingRetry(
-                    reservationMapper.toPartnerReservationRequest(request),
-                    transactionId,
-                    Optional.empty()
-            );
+            var partnerReservationResponse = partnerConnectorProxy.reservation(reservationMapper.toPartnerReservationRequest(request), transactionId);
 
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
 
