@@ -36,7 +36,8 @@ public class PartnerConnectorProxy {
     private final RetryConditionEvaluator retryConditionEvaluator;
 
     public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
-        RetryTemplate retryTemplate = retryConditionEvaluator.createRetryTemplate(request.getPartnerCode());
+    RetryTemplate retryTemplate = ofNullable(retryConditionEvaluator.createRetryTemplate(request.getPartnerCode()))
+                .orElse(new RetryTemplate());
 
         return retryTemplate.execute(retryContext -> {
             try {

@@ -12,6 +12,6 @@ public class ReservationInternalException extends RuntimeException{
         super(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR.getDescription());
 
         this.args = args;
-        this.reservationErrorType = ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
+        this.reservationErrorType = ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR;
     }
 }
