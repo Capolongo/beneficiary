@@ -19,4 +19,5 @@ public class ReservationException extends RuntimeException {
         this.args = args;
         this.reservationErrorType = reservationErrorType;
     }
+
 }
