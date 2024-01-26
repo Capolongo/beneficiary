@@ -17,7 +17,7 @@ public class OrderService {
         Optional<OrderEntity> order = orderRepository.findById(id);
 
         if (order.isEmpty()) {
-            throw new Exception("Order NotFount");
+            throw new Exception("Order not found");
         }
 
         return order.get();

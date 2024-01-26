@@ -24,25 +24,14 @@ public class PaxEntity extends BaseEntity {
     @SequenceGenerator(name = "PAX_SEQ", sequenceName = "PAX_SEQ", allocationSize = 1)
     @Id
     private Long id;
-
     private String type;
-
     private String firstName;
-
     private String lastName;
-
     private String email;
-
     private String areaCode;
-
     private String phoneNumber;
-
     private String gender;
-
     private String birthDate;
-
     private String document;
-
     private String documentType;
-
 }

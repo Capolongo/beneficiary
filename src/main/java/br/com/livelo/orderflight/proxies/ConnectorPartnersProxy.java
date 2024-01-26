@@ -21,9 +21,10 @@ public class ConnectorPartnersProxy {
     public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) {
         try {
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
-            final URI connectorUri = URI.create(webhook.getConnectorUrl());
+//            final URI connectorUri = URI.create(webhook.getConnectorUrl());
+            final URI connectorUri = URI.create("http://api.k8s.uat.livelo.intranet/partners-route-travel/v2/orders/lf500/confirm");
             return partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest).getBody();
-        } catch (FeignException exception) {
+        } catch (Exception exception) {
             throw exception;
         }
     }
