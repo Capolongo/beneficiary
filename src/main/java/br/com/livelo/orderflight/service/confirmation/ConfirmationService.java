@@ -33,7 +33,8 @@ public class ConfirmationService {
 
         ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(
                 order.getPartnerCode(),
-                confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(foundOrder));
+                confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(foundOrder)
+        );
 
         validatePartnerOrderIds(foundOrder.getPartnerOrderId(), connectorPartnerConfirmation.getPartnerOrderId());
         OrderEntity updatedOrder = updateOrderStatus(foundOrder, connectorPartnerConfirmation.getCurrentStatus());
