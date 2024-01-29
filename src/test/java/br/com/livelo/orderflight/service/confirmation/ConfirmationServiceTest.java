@@ -28,6 +28,5 @@ class ConfirmationServiceTest {
 
     @Test
     void shouldValidateIfPartnerOrdersIdsAreEqual() {
-        confirmationService.confirmOrder()
     }
 }

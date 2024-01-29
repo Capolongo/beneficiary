@@ -3,6 +3,7 @@ package br.com.livelo.orderflight.mock;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderItemRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderPriceRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -41,6 +42,21 @@ public class MockBuilder {
                 .pointsAmount(BigDecimal.valueOf(20000))
                 .quantity(1)
                 .externalCoupon("externalCoupon")
+                .build();
+    }
+
+    public static ConfirmOrderResponse confirmOrderResponse() {
+        return ConfirmOrderResponse
+                .builder()
+                .id("id")
+                .commerceOrderId("id")
+                .partnerCode("id") Ï
+                .submittedDate("date")
+                .expirationDate("Date")
+                .transactionId("id")
+                .status(null)
+                .price(null)
+                .items(null)
                 .build();
     }
 }
