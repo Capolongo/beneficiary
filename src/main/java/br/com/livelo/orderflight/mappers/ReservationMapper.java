@@ -54,6 +54,7 @@ public interface ReservationMapper {
                 .stream()
                 .map(currentRequestItem ->
                         reservationItemMapper.toOrderItemEntity(
+                                reservationRequest,
                                 currentRequestItem,
                                 partnerReservationResponse.getItems().stream()
                                         .filter(currentPartnerReservation ->
