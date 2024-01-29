@@ -11,10 +11,8 @@ import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.OrderService;
 import br.com.livelo.orderflight.utils.PayloadComparison;
-import feign.FeignException;
 import lombok.AllArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -28,45 +26,19 @@ public class ConfirmationService {
     private final ConnectorPartnersProxy connectorPartnersProxy;
 
     public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest order) throws Exception {
-        OrderEntity foundOrder = null;
-        try {
-            foundOrder = orderService.getOrderById(id);
+        OrderEntity foundOrder = orderService.getOrderById(id);
 
-            validateIfAlreadyIsConfirmed(foundOrder.getCurrentStatus(), order.getResubmission());
-            validateRequestPayload(order, foundOrder);
+        validateIfAlreadyIsConfirmed(foundOrder.getCurrentStatus(), order.getResubmission());
+        validateRequestPayload(order, foundOrder);
 
-            ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(
-                    order.getPartnerCode(),
-                    confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(foundOrder)
-            );
+        ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(
+                order.getPartnerCode(),
+                confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(foundOrder));
 
-            validatePartnerOrderIds(foundOrder.getPartnerOrderId(), connectorPartnerConfirmation.getPartnerOrderId());
-            OrderEntity updatedOrder = updateOrderStatus(foundOrder, connectorPartnerConfirmation.getCurrentStatus());
+        validatePartnerOrderIds(foundOrder.getPartnerOrderId(), connectorPartnerConfirmation.getPartnerOrderId());
+        OrderEntity updatedOrder = updateOrderStatus(foundOrder, connectorPartnerConfirmation.getCurrentStatus());
 
-            return confirmOrderMapper.orderEntityToConfirmOrderResponse(updatedOrder);
-        } catch (FeignException exception) {
-//            TODO: ta certo usar o foundOrder?
-            if (exception.status() == 500 && foundOrder != null) {
-//                        TODO: tirar duvida desses atributos. estao certos?
-                ConnectorConfirmOrderStatusResponse failedStatus = ConnectorConfirmOrderStatusResponse
-                        .builder()
-                        .partnerCode(foundOrder.getPartnerCode())
-                        .code("LIVPNR-1014")
-                        .partnerResponse("\"{\\\"result\\\":\\\"falha\\\"}\"")
-                        .partnerDescription("FAILED")
-                        .description("FAILED")
-                        .statusDate(LocalDateTime.now())
-
-                        .build();
-
-                OrderEntity failedOrder = updateOrderStatus(foundOrder, failedStatus);
-                return confirmOrderMapper.orderEntityToConfirmOrderResponse(failedOrder);
-            }
-            throw exception;
-        } catch (Exception exception) {
-            throw exception;
-        }
-
+        return confirmOrderMapper.orderEntityToConfirmOrderResponse(updatedOrder);
     }
 
     private void validateRequestPayload(ConfirmOrderRequest order, OrderEntity foundOrder) throws Exception {
@@ -96,11 +68,9 @@ public class ConfirmationService {
 
     private OrderEntity updateOrderStatus(OrderEntity order, ConnectorConfirmOrderStatusResponse status) {
         order.getStatusHistory().add(
-                confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(status)
-        );
+                confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(status));
         order.setCurrentStatus(
-                confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(status)
-        );
+                confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(status));
         return orderRepository.save(order);
     }
 }
