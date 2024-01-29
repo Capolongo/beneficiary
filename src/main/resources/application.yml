@@ -41,7 +41,3 @@ management:
         readiness:
           include:
             - readinessState
-
-server:
-  servlet:
-    contextPath: /order-flight
