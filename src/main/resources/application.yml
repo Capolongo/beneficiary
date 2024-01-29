@@ -41,3 +41,7 @@ management:
         readiness:
           include:
             - readinessState
+
+partner:
+  attempt:
+    cvc: 1
