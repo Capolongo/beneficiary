@@ -49,11 +49,11 @@ public class MockBuilder {
         return ConfirmOrderResponse
                 .builder()
                 .id("id")
-                .commerceOrderId("id")
-                .partnerCode("id") Ï
+                .commerceOrderId("commerceItemId")
+                .partnerCode("partnerCode")
                 .submittedDate("date")
                 .expirationDate("Date")
-                .transactionId("id")
+                .transactionId("transactionId")
                 .status(null)
                 .price(null)
                 .items(null)
