@@ -4,10 +4,15 @@ import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderIt
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderPriceRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.http.ResponseEntity;
 
 public class MockBuilder {
     public static ConfirmOrderRequest confirmOrderRequest() {
@@ -58,5 +63,32 @@ public class MockBuilder {
                 .price(null)
                 .items(null)
                 .build();
+    }
+
+    public static ConnectorConfirmOrderRequest connectorConfirmOrderRequest() {
+        return ConnectorConfirmOrderRequest
+                .builder()
+                .id("id")
+                .commerceOrderId("commerceOrderId")
+                .commerceItemId("commerceItemId")
+                .partnerOrderId("partnerOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate("date")
+                .paxs(null)
+                .expirationDate("Date")
+                .build();
+    }
+
+    public static ResponseEntity<ConnectorConfirmOrderResponse> connectorConfirmOrderResponse() {
+        return ResponseEntity.ok().body(ConnectorConfirmOrderResponse
+                .builder()
+                .partnerOrderId("partnerOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate("date")
+                .expirationDate("Date")
+                .transactionId("transactionId")
+                .currentStatus(null)
+                .voucher(null)
+                .build());
     }
 }

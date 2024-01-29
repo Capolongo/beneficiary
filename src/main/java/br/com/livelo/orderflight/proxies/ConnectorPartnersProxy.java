@@ -5,7 +5,7 @@ import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirm
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.partnersconfigflightlibrary.dto.WebhookDTO;
-import br.com.livelo.partnersconfigflightlibrary.services.impl.PartnersConfigServiceImpl;
+import br.com.livelo.partnersconfigflightlibrary.services.PartnersConfigService;
 import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Component
 @AllArgsConstructor
 public class ConnectorPartnersProxy {
-    private final PartnersConfigServiceImpl partnersConfigService;
+    private final PartnersConfigService partnersConfigService;
     private final PartnerConnectorClient partnerConnectorClient;
 
     public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode,
