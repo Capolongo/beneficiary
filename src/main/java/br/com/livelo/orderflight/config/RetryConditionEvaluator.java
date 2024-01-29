@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.config;
 
-import br.com.livelo.orderflight.exception.ReservationInternalException;
+import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
@@ -14,13 +14,13 @@ import java.util.Collections;
 public class RetryConditionEvaluator {
 
     private final PartnerProperties partnerProperties;
+    private  final RetryTemplate retryTemplate;
 
     public RetryTemplate createRetryTemplate(String partnerCode) {
-        RetryTemplate retryTemplate = new RetryTemplate();
 
         RetryPolicy retryPolicy = new SimpleRetryPolicy(
                 partnerProperties.getAttemptByPartnerCode(partnerCode),
-                Collections.singletonMap(ReservationInternalException.class, true)
+                Collections.singletonMap(ConnectorReservationInternalException.class, true)
         );
 
         retryTemplate.setRetryPolicy(retryPolicy);

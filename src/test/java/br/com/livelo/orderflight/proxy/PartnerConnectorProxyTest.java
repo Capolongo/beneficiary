@@ -4,9 +4,9 @@ import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.config.RetryConditionEvaluator;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
-import br.com.livelo.orderflight.exception.ReservationBusinessException;
+import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
 import br.com.livelo.orderflight.exception.ReservationException;
-import br.com.livelo.orderflight.exception.ReservationInternalException;
+import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.config.PartnerProperties;
 import feign.FeignException;
@@ -84,7 +84,7 @@ class PartnerConnectorProxyTest {
 
         makeException(request, feignException);
 
-        var exception = assertThrows(ReservationInternalException.class,
+        var exception = assertThrows(ConnectorReservationInternalException.class,
                 () -> partnerConnectorProxy.reservation(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getReservationErrorType());
@@ -99,7 +99,7 @@ class PartnerConnectorProxyTest {
 
         makeException(request, feignException);
 
-        assertThrows(ReservationInternalException.class,
+        assertThrows(ConnectorReservationInternalException.class,
                 () -> partnerConnectorProxy.reservation(request, "transactionId"));
 
         verify(partnerConnectorClient, times(3)).reservation(any(), any(), any());
@@ -112,7 +112,7 @@ class PartnerConnectorProxyTest {
 
         makeException(request, feignException);
 
-        var exception = assertThrows(ReservationBusinessException.class,
+        var exception = assertThrows(ConnectorReservationBusinessException.class,
                 () -> partnerConnectorProxy.reservation(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getReservationErrorType());

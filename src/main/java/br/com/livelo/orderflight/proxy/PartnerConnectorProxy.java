@@ -6,9 +6,9 @@ import br.com.livelo.orderflight.config.PartnerProperties;
 import br.com.livelo.orderflight.config.RetryConditionEvaluator;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
-import br.com.livelo.orderflight.exception.ReservationBusinessException;
+import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
 import br.com.livelo.orderflight.exception.ReservationException;
-import br.com.livelo.orderflight.exception.ReservationInternalException;
+import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -52,9 +52,9 @@ public class PartnerConnectorProxy {
             } catch (FeignException e) {
                 var status = HttpStatus.valueOf(e.status());
                 if (status.is5xxServerError()) {
-                    throw new ReservationInternalException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
+                    throw new ConnectorReservationInternalException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
                 } else {
-                    throw new ReservationBusinessException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
+                    throw new ConnectorReservationBusinessException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
                 }
             } catch (Exception e) {
                 throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
