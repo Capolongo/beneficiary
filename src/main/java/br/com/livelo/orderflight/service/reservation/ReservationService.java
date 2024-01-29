@@ -46,9 +46,9 @@ public class ReservationService {
             this.orderService.save(orderEntity);
     
     		
-    		LocalDateTime dataHoraTimer = orderEntity.getExpirationDate().plusMinutes(partnerProperties.getExpirationTimerByParterCode(request.getPartnerCode()));
+    		LocalDateTime expirationTimerResponse = orderEntity.getExpirationDate().plusMinutes(partnerProperties.getExpirationTimerByParterCode(request.getPartnerCode()));
     				
-            return reservationMapper.toReservationResponse(orderEntity, dataHoraTimer);
+            return reservationMapper.toReservationResponse(orderEntity, expirationTimerResponse);
         } catch (ReservationException e) {
             throw e;
         } catch (Exception e) {
