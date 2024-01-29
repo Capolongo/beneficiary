@@ -17,6 +17,7 @@ public class ConfirmOrderRequest {
     private String submittedDate;
     private String channel;
     private String originOfOrder;
+    private Boolean resubmission;
     private ConfirmOrderPriceRequest price;
     private Set<ConfirmOrderItemRequest> items;
 }

@@ -20,9 +20,11 @@ public class ConnectorPartnersProxy {
 
     public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) {
         try {
+//            TODO: como saberemos se o parceiro está ativo? lib ou confirmOrder
+//            vai ser retornada uma exception da lib
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
 //            final URI connectorUri = URI.create(webhook.getConnectorUrl());
-            final URI connectorUri = URI.create("http://api.k8s.uat.livelo.intranet/partners-route-travel/v2/orders/lf500/confirm");
+            final URI connectorUri = URI.create("https://liv-fake-http.free.beeceptor.com/http");
             return partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest).getBody();
         } catch (Exception exception) {
             throw exception;

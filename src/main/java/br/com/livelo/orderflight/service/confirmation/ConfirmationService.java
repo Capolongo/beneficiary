@@ -16,8 +16,6 @@ import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -34,7 +32,7 @@ public class ConfirmationService {
         try {
             foundOrder = orderService.getOrderById(id);
 
-            validateIfAlreadyIsConfirmed(foundOrder.getCurrentStatus());
+            validateIfAlreadyIsConfirmed(foundOrder.getCurrentStatus(), order.getResubmission());
             validateRequestPayload(order, foundOrder);
 
             ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(
@@ -49,15 +47,16 @@ public class ConfirmationService {
         } catch (FeignException exception) {
 //            TODO: ta certo usar o foundOrder?
             if (exception.status() == 500 && foundOrder != null) {
+//                        TODO: tirar duvida desses atributos. estao certos?
                 ConnectorConfirmOrderStatusResponse failedStatus = ConnectorConfirmOrderStatusResponse
                         .builder()
                         .partnerCode(foundOrder.getPartnerCode())
                         .code("LIVPNR-1014")
-//                        TODO: tirar duvida desses atributos. estao certos?
                         .partnerResponse("\"{\\\"result\\\":\\\"falha\\\"}\"")
                         .partnerDescription("FAILED")
                         .description("FAILED")
                         .statusDate(LocalDateTime.now())
+
                         .build();
 
                 OrderEntity failedOrder = updateOrderStatus(foundOrder, failedStatus);
@@ -81,18 +80,12 @@ public class ConfirmationService {
         }
     }
 
-//    private void validateIfAlreadyIsConfirmed(Set<OrderStatusEntity> orderStatus) throws Exception {
-//        Optional<OrderStatusEntity> confirmedStatus = orderStatus.stream().filter(status -> "LIVPNR-1007".equals(status.getCode())).findFirst();
-//
-//        if (confirmedStatus.isPresent()) {
-//            throw new Exception("Order is already confirmed");
-//        }
-//    }
-    private void validateIfAlreadyIsConfirmed(OrderStatusEntity orderStatus) throws Exception {
-//        TODO: 1006 mesmo?
-        if (!orderStatus.getCode().equals("LIVPNR-1006")) {
-            throw new Exception("Order is already confirmed");
+    private void validateIfAlreadyIsConfirmed(OrderStatusEntity orderStatus, Boolean resubmission) throws Exception {
+        if (orderStatus.getCode().equals("LIVPNR-1006") || resubmission) {
+            return;
         }
+
+        throw new Exception("Order is already confirmed");
     }
 
     private void validatePartnerOrderIds(String foundOrderId, String partnerConnectorOrderId) throws Exception {
