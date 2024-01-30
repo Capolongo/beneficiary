@@ -36,7 +36,7 @@ public class MockBuilder {
 
     public static ConfirmOrderPriceRequest confirmOrderPriceRequest() {
         return ConfirmOrderPriceRequest.builder()
-                .pointsAmount(BigDecimal.valueOf(20000))
+                .pointsAmount(BigDecimal.valueOf(1000))
                 .build();
     }
 
@@ -45,7 +45,7 @@ public class MockBuilder {
                 .commerceItemId("commerceItemId")
                 .skuId("FLIGHT")
                 .productId("productId")
-                .pointsAmount(BigDecimal.valueOf(20000))
+                .pointsAmount(BigDecimal.valueOf(1000))
                 .quantity(1)
                 .externalCoupon("externalCoupon")
                 .build();

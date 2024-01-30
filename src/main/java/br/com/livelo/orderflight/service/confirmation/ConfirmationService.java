@@ -38,7 +38,6 @@ public class ConfirmationService {
 
         validatePartnerOrderIds(foundOrder.getPartnerOrderId(), connectorPartnerConfirmation.getPartnerOrderId());
         OrderEntity updatedOrder = updateOrderStatus(foundOrder, connectorPartnerConfirmation.getCurrentStatus());
-
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(updatedOrder);
     }
 

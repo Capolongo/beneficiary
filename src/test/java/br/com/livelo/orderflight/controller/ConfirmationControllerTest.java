@@ -42,8 +42,8 @@ public class ConfirmationControllerTest {
 
     assertEquals(responseBody, response.getBody());
     assertEquals(201, response.getStatusCode().value());
-     verify(confirmationService).confirmOrder(id,
-             requestBody);
-     verifyNoMoreInteractions(confirmationService);
+    verify(confirmationService).confirmOrder(id,
+            requestBody);
+    verifyNoMoreInteractions(confirmationService);
   }
 }
