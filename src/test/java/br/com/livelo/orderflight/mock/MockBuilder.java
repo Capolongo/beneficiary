@@ -28,7 +28,7 @@ public class MockBuilder {
                 .submittedDate("12-12-2024")
                 .channel("channel")
                 .originOfOrder("originOfOrder")
-                .resubmission(Boolean.TRUE)
+                .resubmission(Boolean.FALSE)
                 .price(confirmOrderPriceRequest())
                 .items(items)
                 .build();
@@ -116,6 +116,33 @@ public class MockBuilder {
                 .items(items)
                 .statusHistory(statusHistory)
                 .currentStatus(statusInitial())
+                .build();
+    }
+
+    public static OrderEntity orderEntityAlreadyConfirmed() {
+        Set<OrderItemEntity> items = new HashSet<>();
+        items.add(orderItemEntity());
+
+        Set<OrderStatusEntity> statusHistory = new HashSet<>();
+        statusHistory.add(statusInitial());
+        statusHistory.add(statusProcessing());
+
+        return OrderEntity.builder()
+                .id("id")
+                .commerceOrderId("commerceOrderId")
+                .partnerOrderId("partnerOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate(LocalDateTime.now())
+                .channel("channel")
+                .tierCode("tierCode")
+                .originOrder("originOrder")
+                .customerIdentifier("customerIdentifier")
+                .transactionId("transactionId")
+                .expirationDate(LocalDateTime.now())
+                .price(orderPriceEntity())
+                .items(items)
+                .statusHistory(statusHistory)
+                .currentStatus(statusProcessing())
                 .build();
     }
 

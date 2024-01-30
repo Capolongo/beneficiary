@@ -2,7 +2,6 @@ package br.com.livelo.orderflight.service.confirmation;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.mapper.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
@@ -13,8 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,7 +43,18 @@ class ConfirmationServiceTest {
 
         ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest());
         assertEquals(MockBuilder.confirmOrderResponse(), confirmOrderResponse);
+    }
+
+    @Test
+    void shouldThrowAnExceptionWhenOrderIsAlreadyConfirmed() throws Exception {
+        try {
+            Exception exception = Mockito.mock(Exception.class);
+            when(orderService.getOrderById(anyString())).thenReturn(MockBuilder.orderEntityAlreadyConfirmed());
+            when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest())).thenThrow(exception);
 
 
+        } catch (Exception exception) {
+            assertEquals("Order is already confirmed", exception.getMessage());
+        }
     }
 }
