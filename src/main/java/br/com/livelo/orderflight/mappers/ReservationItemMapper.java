@@ -5,19 +5,24 @@ import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationReque
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationItem;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemPriceEntity;
+import br.com.livelo.orderflight.domain.entity.SegmentEntity;
 import br.com.livelo.orderflight.domain.entity.TravelInfoEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring", uses = {ReservationItemPriceMapper.class, ReservationTravelInfoEntityMapper.class})
+
+@Mapper(componentModel = "spring", uses = {ReservationItemPriceMapper.class, ReservationTravelInfoEntityMapper.class, ReservationSegmentsMapper.class})
 public interface ReservationItemMapper {
     @Mapping(target = "commerceItemId", source = "reservationItem.commerceItemId")
     @Mapping(target = "productId", source = "reservationItem.productId")
     @Mapping(target = "quantity", source = "partnerReservationItem.quantity")
     @Mapping(target = "price", expression = "java(mapPrice(partnerReservationItem, listPrice))")
     @Mapping(target = "travelInfo", expression = "java(mapTravelInfo(reservationRequest))")
+    @Mapping(target = "segments", expression = "java(mapSegments(partnerReservationItem))")
     OrderItemEntity toOrderItemEntity(ReservationRequest reservationRequest, ReservationItem reservationItem, PartnerReservationItem partnerReservationItem, String listPrice);
 
     default OrderItemPriceEntity mapPrice(PartnerReservationItem partnerReservationItem, String listPrice) {
@@ -28,6 +33,14 @@ public interface ReservationItemMapper {
     default TravelInfoEntity mapTravelInfo(ReservationRequest reservationRequest){
         var mapper = Mappers.getMapper(ReservationTravelInfoEntityMapper.class);
         return mapper.toReservationTravelInfoEntity(reservationRequest);
+    }
+
+    default Set<SegmentEntity> mapSegments(PartnerReservationItem partnerReservationItem){
+        var mapper = Mappers.getMapper(ReservationSegmentsMapper.class);
+
+        return partnerReservationItem.getSegments()
+                .stream()
+                .map(mapper::toSegmentEntity).collect(Collectors.toSet());
     }
 
 
