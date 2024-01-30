@@ -10,7 +10,6 @@ spring:
   config:
     import: "optional:configserver:https://fake-url.com?max-attempts=1"
   datasource:
-    # Configurar com credenciais do serviço
     url: jdbc:oracle:thin:@//${ORACLEDB_HOST:localhost}:${ORACLEDB_PORT:1521}/${ORACLEDB_SERVICENAME:xe}
     username: ${ORACLEDB_USERNAME:order_flight}
     password: ${ORACLEDB_PASSWORD:order_flight}
