@@ -3,7 +3,10 @@ package br.com.livelo.orderflight.mock;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderItemRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderPriceRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderItemResponse;
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderPriceResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.entity.*;
@@ -55,14 +58,40 @@ public class MockBuilder {
         return ConfirmOrderResponse
                 .builder()
                 .id("id")
-                .commerceOrderId("commerceItemId")
+                .partnerOrderId("partnerOrderId")
+                .commerceOrderId("commerceOrderId")
                 .partnerCode("partnerCode")
                 .submittedDate("date")
                 .expirationDate("Date")
                 .transactionId("transactionId")
-                .status(null)
-                .price(null)
-                .items(null)
+                .status(confirmOrderStatusResponse())
+                .price(confirmOrderPriceResponse())
+                .items(Set.of(confirmOrderItemResponse()))
+                .build();
+    }
+
+    public static ConfirmOrderStatusResponse confirmOrderStatusResponse() {
+        return ConfirmOrderStatusResponse.builder()
+                .code("LIVPNR-1006")
+                .description("desc")
+                .details("desc")
+                .build();
+    }
+
+    public static ConfirmOrderPriceResponse confirmOrderPriceResponse() {
+        return ConfirmOrderPriceResponse.builder()
+                .amount(BigDecimal.valueOf(1000))
+                .pointsAmount(BigDecimal.valueOf(1000))
+                .build();
+    }
+
+    public static ConfirmOrderItemResponse confirmOrderItemResponse() {
+        return ConfirmOrderItemResponse.builder()
+                .commerceItemId("commerceItemId")
+                .skuId("skuId")
+                .productId("productId")
+                .quantity(1)
+                .price(confirmOrderPriceResponse())
                 .build();
     }
 
