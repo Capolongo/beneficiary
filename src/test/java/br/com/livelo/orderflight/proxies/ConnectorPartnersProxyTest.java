@@ -1,7 +1,6 @@
 package br.com.livelo.orderflight.proxies;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -87,6 +86,15 @@ public class ConnectorPartnersProxyTest {
       proxy.confirmOnPartner("CVC",
           MockBuilder.connectorConfirmOrderRequest());
     });
+  }
 
+  @Test
+  void shouldThrowException(){
+    Exception exception = assertThrows(Exception.class, () -> {
+      proxy.confirmOnPartner("CVC",
+              MockBuilder.connectorConfirmOrderRequest());
+    });
+
+    assertTrue(exception.getMessage().contains("Cannot invoke"));
   }
 }
