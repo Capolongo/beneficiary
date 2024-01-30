@@ -21,7 +21,7 @@ public class InternalOrdersController {
     @GetMapping("/{id}")
     public ResponseEntity<OrderEntity> getById(@PathVariable String id) {
         final Optional<OrderEntity> orderOp = orderRepository.findById(id);
-
+        
         return ResponseEntity.ok().body(orderOp.orElse(null));
     }
 
