@@ -7,13 +7,16 @@ import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderI
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderPriceResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.entity.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
@@ -73,8 +76,8 @@ public class MockBuilder {
     public static ConfirmOrderStatusResponse confirmOrderStatusResponse() {
         return ConfirmOrderStatusResponse.builder()
                 .code("LIVPNR-1006")
-                .description("desc")
-                .details("desc")
+                .description("description")
+                .details("partnerDescription")
                 .build();
     }
 
@@ -104,8 +107,23 @@ public class MockBuilder {
                 .partnerOrderId("partnerOrderId")
                 .partnerCode("partnerCode")
                 .submittedDate("date")
-                .paxs(null)
+                .paxs(List.of(connectorConfirmOrderPaxRequest()))
                 .expirationDate("Date")
+                .build();
+    }
+
+    private static ConnectorConfirmOrderPaxRequest connectorConfirmOrderPaxRequest() {
+        return ConnectorConfirmOrderPaxRequest.builder()
+                .type("type")
+                .firstName("firstName")
+                .lastName("lastName")
+                .gender("gender")
+                .birthDate("birthDate")
+                .document("document")
+                .documentType("documentType")
+                .email("email")
+                .areaCode("areaCode")
+                .phone("phone")
                 .build();
     }
 
@@ -205,7 +223,28 @@ public class MockBuilder {
     }
 
     public static TravelInfoEntity travelInfo() {
-        return TravelInfoEntity.builder().build();
+        return TravelInfoEntity.builder()
+                .id(1L)
+                .type("type")
+                .reservationCode("reservation")
+                .paxs(Set.of(paxEntity()))
+                .build();
+    }
+
+    public static PaxEntity paxEntity() {
+        return PaxEntity.builder()
+                .id(1L)
+                .type("type")
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("email")
+                .areaCode("areaCode")
+                .phoneNumber("phone")
+                .gender("gender")
+                .birthDate("birthDate")
+                .document("document")
+                .documentType("documentType")
+                .build();
     }
 
     public static SegmentEntity segmentEntity() {
@@ -232,7 +271,7 @@ public class MockBuilder {
                 .amount(BigDecimal.valueOf(1000))
                 .pointsAmount(BigDecimal.valueOf(1000))
                 .type("type")
-                .description("desc")
+                .description("description")
                 .build();
     }
 
@@ -240,10 +279,10 @@ public class MockBuilder {
         return OrderStatusEntity.builder()
                 .id(1L)
                 .code("LIVPNR-1006")
-                .description("desc")
+                .description("description")
                 .partnerCode("partnerCode")
-                .partnerDescription("desc")
-                .partnerResponse("response")
+                .partnerDescription("partnerDescription")
+                .partnerResponse("partnerResponse")
                 .statusDate(LocalDateTime.now())
                 .build();
     }
@@ -252,9 +291,9 @@ public class MockBuilder {
         return OrderStatusEntity.builder()
                 .id(1L)
                 .code("LIVPNR-1007")
-                .description("desc")
+                .description("description")
                 .partnerCode("partnerCode")
-                .partnerDescription("desc")
+                .partnerDescription("partnerDescription")
                 .partnerResponse("response")
                 .statusDate(LocalDateTime.now())
                 .build();
@@ -264,10 +303,22 @@ public class MockBuilder {
         return OrderStatusEntity.builder()
                 .id(1L)
                 .code("LIVPNR-1014")
-                .description("desc")
+                .description("description")
                 .partnerCode("partnerCode")
-                .partnerDescription("desc")
+                .partnerDescription("partnerDescription")
                 .partnerResponse("response")
+                .statusDate(LocalDateTime.now())
+                .build();
+    }
+
+    public static ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse() {
+        return ConnectorConfirmOrderStatusResponse.builder()
+                .id(1L)
+                .code("LIVPNR-1006")
+                .description("description")
+                .partnerCode("partnerCode")
+                .partnerDescription("partnerDescription")
+                .partnerResponse("partnerResponse")
                 .statusDate(LocalDateTime.now())
                 .build();
     }
