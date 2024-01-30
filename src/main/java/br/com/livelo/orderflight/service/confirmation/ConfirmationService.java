@@ -63,7 +63,7 @@ public class ConfirmationService {
 
     private void validatePartnerOrderIds(String foundOrderId, String partnerConnectorOrderId) throws Exception {
         if (!partnerConnectorOrderId.equals(foundOrderId)) {
-            throw new Exception("PartnerOrderIds are different");
+            throw new Exception("PartnerOrderIds are not equal");
         }
     }
 

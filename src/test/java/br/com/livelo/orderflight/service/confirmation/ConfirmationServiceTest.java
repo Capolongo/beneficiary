@@ -107,7 +107,7 @@ class ConfirmationServiceTest {
 
             when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest())).thenThrow(exception);
         } catch (Exception exception) {
-            assertEquals("PartnerOrderIds are different", exception.getMessage());
+            assertEquals("PartnerOrderIds are not equal", exception.getMessage());
         }
     }
 }
