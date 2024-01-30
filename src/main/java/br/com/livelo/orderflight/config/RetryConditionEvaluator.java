@@ -14,7 +14,7 @@ import java.util.Collections;
 public class RetryConditionEvaluator {
 
     private final PartnerProperties partnerProperties;
-    private  final RetryTemplate retryTemplate;
+    private final RetryTemplate retryTemplate;
 
     public RetryTemplate createRetryTemplate(String partnerCode) {
 
