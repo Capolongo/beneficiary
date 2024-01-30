@@ -5,7 +5,6 @@ import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import java.util.Set;
 
 public class PayloadComparison {
-    private PayloadComparison() {}
     public static boolean compareItems(Set<ConfirmOrderItemRequest> itemsOrder, Set<OrderItemEntity> itemsFoundOrder) {
         if (itemsOrder.size() != itemsFoundOrder.size()) {
             return false;
@@ -14,14 +13,9 @@ public class PayloadComparison {
         for (int i = 0; i < itemsOrder.size(); i++) {
             String commerceItemOrder = itemsOrder.stream().toList().get(i).getCommerceItemId();
             var ItemFoundOrder = itemsFoundOrder.stream().filter(
-                    item -> item.getCommerceItemId().equals(commerceItemOrder)
-            ).findFirst();
+                    item -> item.getCommerceItemId().equals(commerceItemOrder)).findFirst();
 
             if (ItemFoundOrder.isEmpty()) {
-                return false;
-            }
-
-            if (!commerceItemOrder.equals(ItemFoundOrder.get().getCommerceItemId())) {
                 return false;
             }
         }
