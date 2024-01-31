@@ -31,7 +31,7 @@ public interface ReservationMapper {
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "customerIdentifier", source = "customerId")
     @Mapping(target = "statusHistory", expression = "java(Set.of(mapStatus(partnerReservationResponse)))")
-    @Mapping(target = "status", expression = "java(mapStatus(partnerReservationResponse))")
+    @Mapping(target = "currentStatus", expression = "java(mapStatus(partnerReservationResponse))")
     @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice))")
     OrderEntity toOrderEntity(ReservationRequest reservationRequest,
             PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId,

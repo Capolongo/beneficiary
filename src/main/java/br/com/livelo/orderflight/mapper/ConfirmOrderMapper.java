@@ -15,7 +15,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ConfirmOrderMapper {
-    @Mapping(source = "status.partnerDescription", target = "status.details")
+    @Mapping(source = "currentStatus.partnerDescription", target = "status.details")
     ConfirmOrderResponse orderEntityToConfirmOrderResponse(OrderEntity orderEntity);
 
     @Mapping(target = "commerceItemId", expression = "java(getFlightItemCommerceItemId(orderEntity))")

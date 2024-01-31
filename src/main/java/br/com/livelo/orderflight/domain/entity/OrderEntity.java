@@ -46,5 +46,5 @@ public class OrderEntity extends BaseEntity {
         private Set<OrderStatusEntity> statusHistory;
         @OneToOne(cascade = CascadeType.ALL)
         @JoinColumn(name = "STATUS")
-        private OrderStatusEntity status;
+        private OrderStatusEntity currentStatus;
 }
