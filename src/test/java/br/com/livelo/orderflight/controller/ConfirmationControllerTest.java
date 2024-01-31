@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
-import br.com.livelo.orderflight.service.confirmation.ConfirmationService;
+import br.com.livelo.orderflight.service.confirmation.impl.ConfirmationServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class ConfirmationControllerTest {
@@ -27,7 +27,7 @@ public class ConfirmationControllerTest {
   private ConfirmationController controller;
 
   @Mock
-  private ConfirmationService confirmationService;
+  private ConfirmationServiceImpl confirmationService;
 
   @Test
   void shouldReturnSuccessConfirmOrder() throws Exception {

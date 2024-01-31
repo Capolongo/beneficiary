@@ -9,6 +9,7 @@ import br.com.livelo.orderflight.mock.MockBuilder;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.OrderService;
+import br.com.livelo.orderflight.service.confirmation.impl.ConfirmationServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class ConfirmationServiceTest {
+class ConfirmationServiceImplTest {
     @Mock
     private OrderService orderService;
     @Mock
@@ -34,7 +35,7 @@ class ConfirmationServiceTest {
     private ConnectorPartnersProxy connectorPartnersProxy;
 
     @InjectMocks
-    private ConfirmationService confirmationService;
+    private ConfirmationServiceImpl confirmationService;
 
     @Test
     void shouldConfirmOrder() throws Exception {
