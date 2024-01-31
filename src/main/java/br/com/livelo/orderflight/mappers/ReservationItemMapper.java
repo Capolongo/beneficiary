@@ -24,7 +24,7 @@ public interface ReservationItemMapper {
     @Mapping(target = "productId", source = "reservationItem.productId")
     @Mapping(target = "quantity", source = "partnerReservationItem.quantity")
     @Mapping(target = "price", expression = "java(mapPrice(partnerReservationItem, listPrice))")
-    @Mapping(target = "travelInfo", expression = "java(mapTravelInfo(reservationRequest))")
+    @Mapping(target = "travelInfo", expression = "java(mapTravelInfo(reservationRequest, partnerReservationItem))")
     @Mapping(target = "segments", expression = "java(mapSegments(partnerReservationItem))")
     OrderItemEntity toOrderItemEntity(ReservationRequest reservationRequest, ReservationItem reservationItem, PartnerReservationItem partnerReservationItem, String listPrice);
 
@@ -33,9 +33,10 @@ public interface ReservationItemMapper {
         return reservationItemPriceMapper.toOrderItemPriceEntity(partnerReservationItem, listPrice);
     }
 
-    default TravelInfoEntity mapTravelInfo(ReservationRequest reservationRequest) {
+    default TravelInfoEntity mapTravelInfo(ReservationRequest reservationRequest, PartnerReservationItem partnerReservationItem) {
         var mapper = Mappers.getMapper(ReservationTravelInfoEntityMapper.class);
-        return mapper.toReservationTravelInfoEntity(reservationRequest);
+
+        return mapper.toReservationTravelInfoEntity(reservationRequest, partnerReservationItem.getTravelInfo());
     }
 
     default Set<SegmentEntity> mapSegments(PartnerReservationItem partnerReservationItem) {
