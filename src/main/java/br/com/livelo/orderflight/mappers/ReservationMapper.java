@@ -57,9 +57,10 @@ public interface ReservationMapper {
                                 reservationRequest,
                                 currentRequestItem,
                                 partnerReservationResponse.getItems().stream()
-                                        .filter(currentPartnerReservation ->
-                                                currentPartnerReservation.getType().equals(currentRequestItem.getProductType())
-                                        ).toList().getFirst(), listPrice
+                                        .filter(currentPartnerReservationResponseItem ->
+                                                currentPartnerReservationResponseItem.getType().equals(currentRequestItem.getProductType())
+                                        ).toList().getFirst(),
+                                listPrice
                         )
                 )
                 .collect(Collectors.toSet());

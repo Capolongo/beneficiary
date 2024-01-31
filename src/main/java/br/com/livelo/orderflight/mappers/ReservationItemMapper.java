@@ -3,6 +3,7 @@ package br.com.livelo.orderflight.mappers;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationItem;
+import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationSegment;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemPriceEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
@@ -11,6 +12,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,18 +33,28 @@ public interface ReservationItemMapper {
         return reservationItemPriceMapper.toOrderItemPriceEntity(partnerReservationItem, listPrice);
     }
 
-    default TravelInfoEntity mapTravelInfo(ReservationRequest reservationRequest){
+    default TravelInfoEntity mapTravelInfo(ReservationRequest reservationRequest) {
         var mapper = Mappers.getMapper(ReservationTravelInfoEntityMapper.class);
         return mapper.toReservationTravelInfoEntity(reservationRequest);
     }
 
-    default Set<SegmentEntity> mapSegments(PartnerReservationItem partnerReservationItem){
+    default Set<SegmentEntity> mapSegments(PartnerReservationItem partnerReservationItem) {
         var mapper = Mappers.getMapper(ReservationSegmentsMapper.class);
 
-        return partnerReservationItem.getSegments()
-                .stream()
-                .map(mapper::toSegmentEntity).collect(Collectors.toSet());
-    }
+        if (partnerReservationItem != null) {
+            List<PartnerReservationSegment> segments = partnerReservationItem.getSegments();
 
+            if (segments != null) {
+                return partnerReservationItem.getSegments()
+                        .stream()
+                        .map(mapper::toSegmentEntity)
+                        .collect(Collectors.toSet());
+            }
+
+
+        }
+
+        return Collections.emptySet();
+    }
 
 }

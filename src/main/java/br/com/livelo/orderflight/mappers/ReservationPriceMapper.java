@@ -3,7 +3,6 @@ package br.com.livelo.orderflight.mappers;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.entity.OrderPriceDescriptionEntity;
 import br.com.livelo.orderflight.domain.entity.OrderPriceEntity;
-import lombok.val;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -24,7 +23,7 @@ public interface ReservationPriceMapper {
     OrderPriceEntity toOrderPriceEntity(PartnerReservationResponse partnerReservationResponse, String listPrice);
 
     default Set<OrderPriceDescriptionEntity> mapOrdersPriceDescription(PartnerReservationResponse partnerReservationResponse) {
-        val orderPriceDescriptionMapper = Mappers.getMapper(ReservationOrderPriceDescriptionMapper.class);
+        var orderPriceDescriptionMapper = Mappers.getMapper(ReservationOrderPriceDescriptionMapper.class);
 
         return partnerReservationResponse.getOrdersPriceDescription()
                 .stream()
