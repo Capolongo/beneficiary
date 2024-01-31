@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 
-@FeignClient(name = "partner-api")
+@FeignClient(name = "partner-api", url = "localhost:3000")
 public interface PartnerConnectorClient {
 
 	@PostMapping

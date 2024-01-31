@@ -35,7 +35,7 @@ class ReservationServiceTest {
     private OrderService orderService;
 
     @Mock
-    PartnerConnectorProxy partnerConnectorProxy;
+    private PartnerConnectorProxy partnerConnectorProxy;
 
 
     @BeforeEach
