@@ -1,0 +1,4 @@
+partner:
+  urls:
+    cvc: "https://9vr26.wiremockapi.cloud/partner01"
+    teste: "https://9vr26.wiremockapi.cloud/partner02"
