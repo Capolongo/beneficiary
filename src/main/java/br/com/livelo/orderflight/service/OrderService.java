@@ -2,15 +2,16 @@ package br.com.livelo.orderflight.service;
 
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
+import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.mapper.ConfirmOrderMapper;
 import br.com.livelo.orderflight.repository.OrderRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository orderRepository;
@@ -27,9 +28,22 @@ public class OrderService {
     }
 
     public OrderEntity addNewOrderStatus(OrderEntity order, ConnectorConfirmOrderStatusResponse status) {
-        order.getStatusHistory().add(confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(status));
-        order.setCurrentStatus(confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(status));
+        OrderStatusEntity mappedStatus = confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(status);
+        order.getStatusHistory().add(mappedStatus);
+        order.setStatus(mappedStatus);
 
         return orderRepository.save(order);
+    }
+
+    public Optional<OrderEntity> findByCommerceOrderId(String commerceOrderId) {
+        return this.orderRepository.findByCommerceOrderId(commerceOrderId);
+    }
+
+    public void delete(OrderEntity order) {
+        this.orderRepository.delete(order);
+    }
+
+    public OrderEntity save(OrderEntity order) {
+        return this.orderRepository.save(order);
     }
 }

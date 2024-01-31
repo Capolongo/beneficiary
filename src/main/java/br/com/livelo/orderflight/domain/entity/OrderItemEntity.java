@@ -13,42 +13,33 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.SequenceGenerator;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ORDERS_ITEM")
+@EqualsAndHashCode(callSuper = false)
 public class OrderItemEntity extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_ITEM_SEQ")
     @SequenceGenerator(name = "ORDERS_ITEM_SEQ", sequenceName = "ORDERS_ITEM_SEQ", allocationSize = 1)
     @Id
     private Long id;
-
     private String commerceItemId;
-
     private String skuId;
-
     private String productId;
-
     private Integer quantity;
-
     private String externalCoupon;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ORDER_ITEM_PRICE_ID")
     private OrderItemPriceEntity price;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "TRAVEL_INFO_ID")
     private TravelInfoEntity travelInfo;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_ITEM_ID")
     private Set<SegmentEntity> segments;

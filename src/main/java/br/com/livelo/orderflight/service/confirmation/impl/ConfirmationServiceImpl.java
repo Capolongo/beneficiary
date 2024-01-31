@@ -28,7 +28,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         OrderEntity order = orderService.getOrderById(id);
         log.info("ConfirmationService.confirmOrder() - order: [{}]", order);
 
-        ConfirmOrderValidation.validateIfAlreadyIsConfirmed(order.getCurrentStatus(), orderRequest.getResubmission());
+        ConfirmOrderValidation.validateIfAlreadyIsConfirmed(order.getStatus(), orderRequest.getResubmission());
         ConfirmOrderValidation.validateRequestPayload(orderRequest, order);
 
         ConnectorConfirmOrderRequest connectorConfirmOrderRequest = confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(order);

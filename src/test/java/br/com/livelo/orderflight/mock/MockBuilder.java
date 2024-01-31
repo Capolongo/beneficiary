@@ -119,8 +119,7 @@ public class MockBuilder {
                 .lastName("lastName")
                 .gender("gender")
                 .birthDate("birthDate")
-                .document("document")
-                .documentType("documentType")
+                .document(Set.of())
                 .email("email")
                 .areaCode("areaCode")
                 .phone("phone")
@@ -162,7 +161,7 @@ public class MockBuilder {
                 .price(orderPriceEntity())
                 .items(items)
                 .statusHistory(statusHistory)
-                .currentStatus(statusInitial())
+                .status(statusInitial())
                 .build();
     }
 
@@ -189,7 +188,7 @@ public class MockBuilder {
                 .price(orderPriceEntity())
                 .items(items)
                 .statusHistory(statusHistory)
-                .currentStatus(statusProcessing())
+                .status(statusProcessing())
                 .build();
     }
 
@@ -242,8 +241,7 @@ public class MockBuilder {
                 .phoneNumber("phone")
                 .gender("gender")
                 .birthDate("birthDate")
-                .document("document")
-                .documentType("documentType")
+                .document(Set.of())
                 .build();
     }
 

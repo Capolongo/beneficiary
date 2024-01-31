@@ -15,7 +15,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ConfirmOrderMapper {
-    @Mapping(source = "currentStatus.partnerDescription", target = "status.details")
+    @Mapping(source = "status.partnerDescription", target = "status.details")
     ConfirmOrderResponse orderEntityToConfirmOrderResponse(OrderEntity orderEntity);
 
     @Mapping(target = "commerceItemId", expression = "java(getFlightItemCommerceItemId(orderEntity))")
@@ -25,10 +25,12 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "phone", source = "phoneNumber")
     ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
-    OrderStatusEntity ConnectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
+    OrderStatusEntity ConnectorConfirmOrderStatusResponseToStatusEntity(
+            ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
 
     default String getFlightItemCommerceItemId(OrderEntity orderEntity) {
-        return orderEntity.getItems().stream().filter(item -> !item.getSkuId().toUpperCase().contains("TAX")).findFirst()
+        return orderEntity.getItems().stream().filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
+                .findFirst()
                 .get().getCommerceItemId();
     }
 
