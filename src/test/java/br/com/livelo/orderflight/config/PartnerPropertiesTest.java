@@ -26,4 +26,19 @@ class PartnerPropertiesTest {
         var response = properties.getUrlByPartnerCode(partner);
         assertEquals(expected, response);
     }
+    
+    
+    @Test
+    void shoultGetExpirationTimer() {
+        var expected = 15;
+        var partner = "CVC";
+        Map<String, Long> expirationTimers = new HashMap<>();
+        expirationTimers.put(partner, (long) expected);
+
+        var properties = new PartnerProperties();
+        properties.setExpirationTimer(expirationTimers);
+
+        var response = properties.getExpirationTimerByParterCode(partner);
+        assertEquals(expected, response);
+    }
 }

@@ -34,6 +34,7 @@ public interface ReservationMapper {
     @Mapping(target = "statusHistory",  expression = "java(Set.of(mapStatus(partnerReservationResponse)))")
 	@Mapping(target = "status", expression = "java(mapStatus(partnerReservationResponse))")
 	@Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice))")
+    @Mapping(target = "createDate", ignore = true)
     OrderEntity toOrderEntity(ReservationRequest reservationRequest, PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId, String channel, String listPrice);
 
     default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse, String listPrice) {
