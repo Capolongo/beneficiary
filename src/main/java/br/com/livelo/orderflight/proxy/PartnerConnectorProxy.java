@@ -3,19 +3,18 @@ package br.com.livelo.orderflight.proxy;
 import br.com.livelo.orderflight.client.Constants;
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.config.PartnerProperties;
-import br.com.livelo.orderflight.config.RetryConditionEvaluator;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
-import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
+import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.support.RetryTemplate;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -33,13 +32,11 @@ import static java.util.Optional.ofNullable;
 public class PartnerConnectorProxy {
     private final PartnerConnectorClient partnerConnectorClient;
     private final PartnerProperties partnerProperties;
-    private final RetryConditionEvaluator retryConditionEvaluator;
 
+    @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
     public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
-    RetryTemplate retryTemplate = ofNullable(retryConditionEvaluator.createRetryTemplate(request.getPartnerCode()))
-                .orElse(new RetryTemplate());
 
-        return retryTemplate.execute(retryContext -> {
+
             try {
                 var response = partnerConnectorClient.reservation(
                         getUrlByPartnerCode(request.getPartnerCode()),
@@ -59,7 +56,7 @@ public class PartnerConnectorProxy {
             } catch (Exception e) {
                 throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
             }
-        });
+
 
     }
 
