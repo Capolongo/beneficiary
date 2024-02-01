@@ -73,9 +73,32 @@ public class MockBuilder {
                 .build();
     }
 
+    public static ConfirmOrderResponse confirmOrderResponseWithFailed() {
+        return ConfirmOrderResponse
+                .builder()
+                .id("id")
+                .partnerOrderId("partnerOrderId")
+                .commerceOrderId("commerceOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate("date")
+                .expirationDate("Date")
+                .transactionId("transactionId")
+                .status(confirmOrderStatusFailed())
+                .price(confirmOrderPriceResponse())
+                .items(Set.of(confirmOrderItemResponse()))
+                .build();
+    }
+
     public static ConfirmOrderStatusResponse confirmOrderStatusResponse() {
         return ConfirmOrderStatusResponse.builder()
                 .code("LIVPNR-1006")
+                .description("description")
+                .details("partnerDescription")
+                .build();
+    }
+    public static ConfirmOrderStatusResponse confirmOrderStatusFailed() {
+        return ConfirmOrderStatusResponse.builder()
+                .code("LIVPNR-1014")
                 .description("description")
                 .details("partnerDescription")
                 .build();

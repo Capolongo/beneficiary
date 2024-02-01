@@ -1,12 +1,12 @@
-package br.com.livelo.orderflight.proxy;
+package br.com.livelo.orderflight.proxies;
 
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
+import br.com.livelo.orderflight.configs.PartnerProperties;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.client.Constants;
-import br.com.livelo.orderflight.config.PartnerProperties;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

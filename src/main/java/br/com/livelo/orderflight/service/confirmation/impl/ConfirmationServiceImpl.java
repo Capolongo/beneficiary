@@ -8,12 +8,11 @@ import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirm
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.exception.ConfirmationExceptions.ValidationRequestException;
 import br.com.livelo.orderflight.exception.OrderExceptions.OrderNotFoundException;
-import br.com.livelo.orderflight.mapper.ConfirmOrderMapper;
+import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.service.OrderService;
 import br.com.livelo.orderflight.service.confirmation.ConfirmationService;
 import br.com.livelo.orderflight.utils.ConfirmOrderValidation;
-import feign.FeignException;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;

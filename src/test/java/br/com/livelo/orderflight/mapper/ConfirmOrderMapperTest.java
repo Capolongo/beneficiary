@@ -5,6 +5,7 @@ import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmO
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;

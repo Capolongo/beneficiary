@@ -4,7 +4,7 @@ import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirm
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.exception.OrderExceptions.OrderNotFoundException;
-import br.com.livelo.orderflight.mapper.ConfirmOrderMapper;
+import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

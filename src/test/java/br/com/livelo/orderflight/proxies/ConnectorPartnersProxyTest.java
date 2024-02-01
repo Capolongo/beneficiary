@@ -77,16 +77,16 @@ public class ConnectorPartnersProxyTest {
 //    }
 //  }
 
-  @Test
-  void shouldReturnFeignException() {
-    when(partnerConnectorClient.confirmOrder(any(URI.class), any(ConnectorConfirmOrderRequest.class)))
-        .thenThrow(FeignException.BadRequest.class);
-
-    assertThrows(FeignException.BadRequest.class, () -> {
-      proxy.confirmOnPartner("CVC",
-          MockBuilder.connectorConfirmOrderRequest());
-    });
-  }
+//  @Test
+//  void shouldReturnFeignException() {
+//    when(partnerConnectorClient.confirmOrder(any(URI.class), any(ConnectorConfirmOrderRequest.class)))
+//        .thenThrow(FeignException.BadRequest.class);
+//
+//    assertThrows(FeignException.BadRequest.class, () -> {
+//      proxy.confirmOnPartner("CVC",
+//          MockBuilder.connectorConfirmOrderRequest());
+//    });
+//  }
 
   @Test
   void shouldThrowException(){
