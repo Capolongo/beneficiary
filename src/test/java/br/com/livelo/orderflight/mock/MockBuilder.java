@@ -161,7 +161,7 @@ public class MockBuilder {
                 .price(orderPriceEntity())
                 .items(items)
                 .statusHistory(statusHistory)
-                .status(statusInitial())
+                .currentStatus(statusInitial())
                 .build();
     }
 
@@ -188,7 +188,7 @@ public class MockBuilder {
                 .price(orderPriceEntity())
                 .items(items)
                 .statusHistory(statusHistory)
-                .status(statusProcessing())
+                .currentStatus(statusProcessing())
                 .build();
     }
 

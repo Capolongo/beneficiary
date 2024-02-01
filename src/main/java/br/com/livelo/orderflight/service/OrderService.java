@@ -30,7 +30,7 @@ public class OrderService {
     public OrderEntity addNewOrderStatus(OrderEntity order, ConnectorConfirmOrderStatusResponse status) {
         OrderStatusEntity mappedStatus = confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(status);
         order.getStatusHistory().add(mappedStatus);
-        order.setStatus(mappedStatus);
+        order.setCurrentStatus(mappedStatus);
 
         return orderRepository.save(order);
     }
