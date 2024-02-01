@@ -10,7 +10,7 @@ import br.com.livelo.orderflight.domain.entity.SegmentEntity;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.mappers.ReservationMapperImpl;
-import br.com.livelo.orderflight.proxies.PartnerConnectorProxy;
+import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.service.OrderService;
 import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,12 +35,12 @@ class ReservationServiceTest {
     @Mock
     private OrderService orderService;
     @Mock
-    private PartnerConnectorProxy partnerConnectorProxy;
+    private ConnectorPartnersProxy connectorPartnersProxy;
 
     @BeforeEach
     void setup() {
         var cartMapper = new ReservationMapperImpl();
-        this.reservationService = new ReservationService(orderService, partnerConnectorProxy, cartMapper);
+        this.reservationService = new ReservationService(orderService, connectorPartnersProxy, cartMapper);
     }
 
     @Test
@@ -49,7 +49,7 @@ class ReservationServiceTest {
         var orderMock = mock(OrderEntity.class);
         var requestMock = mock(ReservationRequest.class);
         when(orderService.findByCommerceOrderId(requestMock.getCommerceOrderId())).thenReturn(Optional.empty());
-        when(partnerConnectorProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponseMock);
+        when(connectorPartnersProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponseMock);
         when(orderService.save(any())).thenReturn(orderMock);
         var transactionId = "123";
 
@@ -70,7 +70,7 @@ class ReservationServiceTest {
 
         var partnerReservationResponse = PartnerReservationResponse.builder().items(List.of(PartnerReservationItem.builder().type("teste").build())).build();
 
-        when(partnerConnectorProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponse);
+        when(connectorPartnersProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
 
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
@@ -94,7 +94,7 @@ class ReservationServiceTest {
         var segmentsPartnersId = "asdf";
 
         var partnerReservationResponse = PartnerReservationResponse.builder().items(List.of(PartnerReservationItem.builder().type("teste").build())).build();
-        when(partnerConnectorProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponse);
+        when(connectorPartnersProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponse);
 
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
 

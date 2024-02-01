@@ -6,7 +6,7 @@ import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservati
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
-import br.com.livelo.orderflight.proxies.PartnerConnectorProxy;
+import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 class PartnerConnectorProxyTest {
 
     @InjectMocks
-    private PartnerConnectorProxy partnerConnectorProxy;
+    private ConnectorPartnersProxy connectorPartnersProxy;
 
     @Mock
     private PartnerConnectorClient partnerConnectorClient;
@@ -49,7 +49,7 @@ class PartnerConnectorProxyTest {
         when(partnerConnectorClient.reservation(any(), any(), any()))
                 .thenReturn(ResponseEntity.ok(response));
 
-        PartnerReservationResponse result = partnerConnectorProxy.reservation(request, "transactionID");
+        PartnerReservationResponse result = connectorPartnersProxy.reservation(request, "transactionID");
         assertNotNull(result);
     }
 
@@ -61,7 +61,7 @@ class PartnerConnectorProxyTest {
         makeException(request, feignException);
 
         var exception = assertThrows(ReservationException.class,
-                () -> partnerConnectorProxy.reservation(request, "transactionId"));
+                () -> connectorPartnersProxy.reservation(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getReservationErrorType());
     }
@@ -74,7 +74,7 @@ class PartnerConnectorProxyTest {
         makeException(request, feignException);
 
         var exception = assertThrows(ReservationException.class,
-                () -> partnerConnectorProxy.reservation(request, "transactionId"));
+                () -> connectorPartnersProxy.reservation(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getReservationErrorType());
     }
@@ -87,10 +87,10 @@ class PartnerConnectorProxyTest {
         when(partnerProperties.getUrlByPartnerCode(anyString())).thenReturn("http://teste.com");
 
         assertThrows(ReservationException.class,
-                () -> partnerConnectorProxy.reservation(mock(PartnerReservationRequest.class), "transactionId"));
+                () -> connectorPartnersProxy.reservation(mock(PartnerReservationRequest.class), "transactionId"));
 
         var exception = assertThrows(ReservationException.class,
-                () -> partnerConnectorProxy.reservation(request, "transactionId"));
+                () -> connectorPartnersProxy.reservation(request, "transactionId"));
 
         assertEquals(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, exception.getReservationErrorType());
     }
@@ -106,7 +106,7 @@ class PartnerConnectorProxyTest {
         when(partnerProperties.getUrlByPartnerCode(anyString())).thenReturn("http://teste.com");
 
         var exception =  assertThrows(ReservationException.class,
-                () -> partnerConnectorProxy.reservation(request, "transactionId"));
+                () -> connectorPartnersProxy.reservation(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getReservationErrorType());
 
@@ -123,7 +123,7 @@ class PartnerConnectorProxyTest {
         when(partnerProperties.getUrlByPartnerCode(anyString())).thenReturn("http://teste.com");
 
         var exception =  assertThrows(ReservationException.class,
-                () -> partnerConnectorProxy.reservation(request, "transactionId"));
+                () -> connectorPartnersProxy.reservation(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getReservationErrorType());
 
