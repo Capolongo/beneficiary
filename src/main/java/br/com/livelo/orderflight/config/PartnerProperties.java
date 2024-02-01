@@ -14,7 +14,6 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "partner")
 public class PartnerProperties {
     private Map<String, String> urls;
-    private Map<String, Integer> attempt;
 
     public String getUrlByPartnerCode(String partnerCode) {
         return urls.get(partnerCode);
