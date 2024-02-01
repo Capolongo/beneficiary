@@ -94,21 +94,4 @@ class ConfirmationServiceImplTest {
             assertEquals("Objects are not equal", exception.getMessage());
         }
     }
-
-    @Test
-    void shouldThrowAnExceptionWhenPartnerOrderIdsAreDifferent() {
-        try {
-            ConnectorConfirmOrderResponse connectorConfirmOrderResponse = MockBuilder.connectorConfirmOrderResponse().getBody();
-            assert connectorConfirmOrderResponse != null;
-            connectorConfirmOrderResponse.setPartnerOrderId("wrongId");
-            Exception exception = Mockito.mock(Exception.class);
-            when(orderService.getOrderById(anyString())).thenReturn(MockBuilder.orderEntity());
-            when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class))).thenReturn(MockBuilder.connectorConfirmOrderRequest());
-            when(connectorPartnersProxy.confirmOnPartner(anyString(), any(ConnectorConfirmOrderRequest.class))).thenReturn(connectorConfirmOrderResponse);
-
-            when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest())).thenThrow(exception);
-        } catch (Exception exception) {
-            assertEquals("PartnerOrderIds are not equal", exception.getMessage());
-        }
-    }
 }

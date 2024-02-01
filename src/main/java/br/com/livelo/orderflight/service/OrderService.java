@@ -32,7 +32,7 @@ public class OrderService {
         order.getStatusHistory().add(mappedStatus);
         order.setCurrentStatus(mappedStatus);
 
-        return orderRepository.save(order);
+        return order;
     }
 
     public Optional<OrderEntity> findByCommerceOrderId(String commerceOrderId) {
