@@ -1,12 +1,11 @@
 package br.com.livelo.orderflight.config;
 
-import java.util.Map;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Map;
 
 
 @Getter
@@ -14,14 +13,11 @@ import lombok.Setter;
 @Component
 @ConfigurationProperties(prefix = "partner")
 public class PartnerProperties {
-	private Map<String, String> urls;
-	private  Map<String, Integer> attempt;
-	
-	public String getUrlByPartnerCode(String partnerCode) {
-		return urls.get(partnerCode);
-	}
+    private Map<String, String> urls;
+    private Map<String, Integer> attempt;
 
-	public Integer getAttemptByPartnerCode(String partnerCode) {
-		return  attempt.get(partnerCode);
-	}
+    public String getUrlByPartnerCode(String partnerCode) {
+        return urls.get(partnerCode);
+    }
+
 }
