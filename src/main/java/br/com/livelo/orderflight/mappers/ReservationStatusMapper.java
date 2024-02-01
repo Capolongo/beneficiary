@@ -1,6 +1,5 @@
 package br.com.livelo.orderflight.mappers;
 
-
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import org.mapstruct.Mapper;

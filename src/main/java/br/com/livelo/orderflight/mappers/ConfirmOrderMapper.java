@@ -1,4 +1,4 @@
-package br.com.livelo.orderflight.mapper;
+package br.com.livelo.orderflight.mappers;
 
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;

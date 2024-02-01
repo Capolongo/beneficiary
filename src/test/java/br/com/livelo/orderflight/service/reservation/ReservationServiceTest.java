@@ -10,7 +10,7 @@ import br.com.livelo.orderflight.domain.entity.SegmentEntity;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.mappers.ReservationMapperImpl;
-import br.com.livelo.orderflight.proxy.PartnerConnectorProxy;
+import br.com.livelo.orderflight.proxies.PartnerConnectorProxy;
 import br.com.livelo.orderflight.service.OrderService;
 import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
