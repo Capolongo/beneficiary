@@ -2,9 +2,7 @@ package br.com.livelo.orderflight.service.confirmation;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.exception.OrderExceptions.OrderNotFoundException;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
@@ -41,11 +39,15 @@ class ConfirmationServiceImplTest {
     @Test
     void shouldConfirmOrder() throws Exception {
         when(orderService.getOrderById(anyString())).thenReturn(MockBuilder.orderEntity());
-        when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class))).thenReturn(MockBuilder.connectorConfirmOrderRequest());
-        when(connectorPartnersProxy.confirmOnPartner(anyString(), any(ConnectorConfirmOrderRequest.class))).thenReturn(MockBuilder.connectorConfirmOrderResponse().getBody());
-        when(confirmOrderMapper.orderEntityToConfirmOrderResponse(any())).thenReturn(MockBuilder.confirmOrderResponse());
+        when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class)))
+                .thenReturn(MockBuilder.connectorConfirmOrderRequest());
+        when(connectorPartnersProxy.confirmOnPartner(anyString(), any(ConnectorConfirmOrderRequest.class)))
+                .thenReturn(MockBuilder.connectorConfirmOrderResponse().getBody());
+        when(confirmOrderMapper.orderEntityToConfirmOrderResponse(any()))
+                .thenReturn(MockBuilder.confirmOrderResponse());
 
-        ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest());
+        ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder("id",
+                MockBuilder.confirmOrderRequest());
         assertEquals(MockBuilder.confirmOrderResponse(), confirmOrderResponse);
     }
 
@@ -55,7 +57,6 @@ class ConfirmationServiceImplTest {
             Exception exception = Mockito.mock(Exception.class);
             when(orderService.getOrderById(anyString())).thenReturn(MockBuilder.orderEntityAlreadyConfirmed());
             when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest())).thenThrow(exception);
-
 
         } catch (Exception exception) {
             assertEquals("Order is already confirmed", exception.getMessage());
@@ -69,10 +70,8 @@ class ConfirmationServiceImplTest {
             OrderEntity foundOrder = MockBuilder.orderEntity();
             foundOrder.getPrice().setPointsAmount(BigDecimal.valueOf(2000));
 
-
             when(orderService.getOrderById(anyString())).thenReturn(foundOrder);
             when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest())).thenThrow(exception);
-
 
         } catch (Exception exception) {
             assertEquals("Objects are not equal", exception.getMessage());
@@ -86,10 +85,8 @@ class ConfirmationServiceImplTest {
             OrderEntity foundOrder = MockBuilder.orderEntity();
             foundOrder.setCommerceOrderId("wrongId");
 
-
             when(orderService.getOrderById(anyString())).thenReturn(foundOrder);
             when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest())).thenThrow(exception);
-
 
         } catch (Exception exception) {
             assertEquals("Objects are not equal", exception.getMessage());
@@ -102,10 +99,13 @@ class ConfirmationServiceImplTest {
         responseWithFailedStatus.setStatus(MockBuilder.confirmOrderStatusFailed());
 
         when(orderService.getOrderById(anyString())).thenReturn(MockBuilder.orderEntity());
-        when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class))).thenReturn(MockBuilder.connectorConfirmOrderRequest());
-        when(connectorPartnersProxy.confirmOnPartner(anyString(), any(ConnectorConfirmOrderRequest.class))).thenThrow(Exception.class);
+        when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class)))
+                .thenReturn(MockBuilder.connectorConfirmOrderRequest());
+        when(connectorPartnersProxy.confirmOnPartner(anyString(), any(ConnectorConfirmOrderRequest.class)))
+                .thenThrow(Exception.class);
         when(confirmOrderMapper.orderEntityToConfirmOrderResponse(any())).thenReturn(responseWithFailedStatus);
-        ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest());
+        ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder("id",
+                MockBuilder.confirmOrderRequest());
         assertEquals(MockBuilder.confirmOrderResponseWithFailed(), confirmOrderResponse);
     }
 }
