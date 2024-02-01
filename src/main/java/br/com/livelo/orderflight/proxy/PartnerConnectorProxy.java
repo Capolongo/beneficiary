@@ -1,12 +1,13 @@
 package br.com.livelo.orderflight.proxy;
 
+import br.com.livelo.orderflight.client.Constants;
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
-import br.com.livelo.orderflight.client.Constants;
-import br.com.livelo.orderflight.config.PartnerProperties;
+import br.com.livelo.partnersconfigflightlibrary.services.PartnersConfigService;
+import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ import static java.util.Optional.ofNullable;
 @Slf4j
 public class PartnerConnectorProxy {
     private final PartnerConnectorClient partnerConnectorClient;
-    private final PartnerProperties partnerProperties;
+    private final PartnersConfigService partnersConfigService;
 
     public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
         try {
@@ -77,8 +78,7 @@ public class PartnerConnectorProxy {
         }
     }
 
-    //BUSCAR DA LIB
     private URI getUrlByPartnerCode(String partnerCode) {
-        return URI.create(partnerProperties.getUrlByPartnerCode(partnerCode));
+        return URI.create(this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.RESERVATION).getConnectorUrl());
     }
 }
