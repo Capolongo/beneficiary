@@ -1,0 +1,3 @@
+partner:
+  urls:
+    cvc: "http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/connector-flight-order-cvc/v1/reservation"
