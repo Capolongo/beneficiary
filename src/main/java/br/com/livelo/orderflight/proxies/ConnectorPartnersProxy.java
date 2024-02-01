@@ -37,23 +37,24 @@ public class ConnectorPartnersProxy {
     private final ObjectMapper objectMapper;
     private final PartnerProperties partnerProperties;
 
-
-    public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws Exception {
+    public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode,
+            ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws Exception {
         try {
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(),
                     Webhooks.CONFIRMATION);
             final URI connectorUri = URI.create(webhook.getConnectorUrl());
-            ConnectorConfirmOrderResponse connectorConfirmOrderResponse = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest).getBody();
+            ConnectorConfirmOrderResponse connectorConfirmOrderResponse = partnerConnectorClient
+                    .confirmOrder(connectorUri, connectorConfirmOrderRequest).getBody();
 
             log.info("ConnectorPartnersProxy.confirmOnPartner() - response: [{}]", connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
         } catch (FeignException exception) {
             ConnectorConfirmOrderResponse connectorConfirmOrderResponse = getResponseError(exception);
-            log.info("ConnectorPartnersProxy.confirmOnPartner() - exception response: [{}]", connectorConfirmOrderResponse);
+            log.info("ConnectorPartnersProxy.confirmOnPartner() - exception response: [{}]",
+                    connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
         }
     }
-
 
     private ConnectorConfirmOrderResponse getResponseError(FeignException feignException) throws Exception {
         try {
@@ -79,16 +80,16 @@ public class ConnectorPartnersProxy {
                 throw new ReservationException(
                         ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR,
                         null,
-                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(),
-                        e
-                );
+                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: "
+                                + e.responseBody().toString(),
+                        e);
             } else {
                 throw new ReservationException(
                         ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR,
                         null,
-                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(),
-                        e
-                );
+                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: "
+                                + e.responseBody().toString(),
+                        e);
             }
         } catch (Exception e) {
             throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
@@ -112,7 +113,7 @@ public class ConnectorPartnersProxy {
         }
     }
 
-    //BUSCAR DA LIB
+    // BUSCAR DA LIB
     private URI getUrlByPartnerCode(String partnerCode) {
         return URI.create(partnerProperties.getUrlByPartnerCode(partnerCode));
     }
