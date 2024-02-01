@@ -35,29 +35,25 @@ public class PartnerConnectorProxy {
 
     @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
     public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
+        try {
+            var response = partnerConnectorClient.reservation(
+                    getUrlByPartnerCode(request.getPartnerCode()),
+                    request,
+                    getHeaders(Collections.singletonMap(Constants.TRANSACTION_ID, transactionId)));
 
-
-            try {
-                var response = partnerConnectorClient.reservation(
-                        getUrlByPartnerCode(request.getPartnerCode()),
-                        request,
-                        getHeaders(Collections.singletonMap(Constants.TRANSACTION_ID, transactionId)));
-
-                return this.handleResponse(response);
-            } catch (ReservationException e) {
-                throw e;
-            } catch (FeignException e) {
-                var status = HttpStatus.valueOf(e.status());
-                if (status.is5xxServerError()) {
-                    throw new ConnectorReservationInternalException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
-                } else {
-                    throw new ConnectorReservationBusinessException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
-                }
-            } catch (Exception e) {
-                throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
+            return this.handleResponse(response);
+        } catch (ReservationException e) {
+            throw e;
+        } catch (FeignException e) {
+            var status = HttpStatus.valueOf(e.status());
+            if (status.is5xxServerError()) {
+                throw new ConnectorReservationInternalException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
+            } else {
+                throw new ConnectorReservationBusinessException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
             }
-
-
+        } catch (Exception e) {
+            throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
+        }
     }
 
 

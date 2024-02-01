@@ -7,6 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,14 +26,14 @@ public interface ReservationPriceMapper {
     default Set<OrderPriceDescriptionEntity> mapOrdersPriceDescription(PartnerReservationResponse partnerReservationResponse) {
         var orderPriceDescriptionMapper = Mappers.getMapper(ReservationOrderPriceDescriptionMapper.class);
 
-        return partnerReservationResponse.getOrdersPriceDescription()
-                .stream()
-                .map(orderPriceDescriptionMapper::toOrderPriceDescriptionEntity)
-                .collect(Collectors.toSet());
-
+        if (partnerReservationResponse.getOrdersPriceDescription() != null) {
+            return partnerReservationResponse.getOrdersPriceDescription()
+                    .stream()
+                    .map(orderPriceDescriptionMapper::toOrderPriceDescriptionEntity)
+                    .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
     }
-
-
 }
 
 
