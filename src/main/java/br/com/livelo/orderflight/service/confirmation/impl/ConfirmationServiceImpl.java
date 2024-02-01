@@ -6,11 +6,14 @@ import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRe
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
+import br.com.livelo.orderflight.exception.ConfirmationExceptions.ValidationRequestException;
+import br.com.livelo.orderflight.exception.OrderExceptions.OrderNotFoundException;
 import br.com.livelo.orderflight.mapper.ConfirmOrderMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.service.OrderService;
 import br.com.livelo.orderflight.service.confirmation.ConfirmationService;
 import br.com.livelo.orderflight.utils.ConfirmOrderValidation;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +31,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
 
     public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest) throws Exception {
         OrderEntity order = null;
-        ConnectorConfirmOrderRequest connectorConfirmOrderRequest = null;
-        ConnectorConfirmOrderResponse connectorPartnerConfirmation = null;
+        ConnectorConfirmOrderRequest connectorConfirmOrderRequest;
+        ConnectorConfirmOrderResponse connectorPartnerConfirmation;
         try {
             log.info("ConfirmationService.confirmOrder() - Start");
             order = orderService.getOrderById(id);
@@ -44,54 +47,27 @@ public class ConfirmationServiceImpl implements ConfirmationService {
                     connectorConfirmOrderRequest
             );
             order.setPartnerOrderId(connectorPartnerConfirmation.getPartnerOrderId());
+            order = orderService.addNewOrderStatus(order, connectorPartnerConfirmation.getCurrentStatus());
+        } catch (OrderNotFoundException | ValidationRequestException exception) {
+            throw exception;
         } catch (Exception exception) {
-            connectorConfirmOrderRequest.;
+            order = orderService.addNewOrderStatus(order, buildStatusToFailed(exception.getMessage()));
         }
-
-
-        order = orderService.addNewOrderStatus(order, connectorPartnerConfirmation.getCurrentStatus());
         orderService.save(order);
         log.info("ConfirmationService.confirmOrder() - End");
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
 
 
-    private void buildStatusToFailed() {
-        ConnectorConfirmOrderStatusResponse failedStatus = ConnectorConfirmOrderStatusResponse
+    private ConnectorConfirmOrderStatusResponse buildStatusToFailed(String cause) {
+        return ConnectorConfirmOrderStatusResponse
                 .builder()
                 .partnerCode(String.valueOf(500))
-//                    .partnerCode(String.valueOf(exception.status()))
                 .code("LIVPNR-1014")
-                .partnerResponse(exception.getMessage())
+                .partnerResponse(cause)
                 .partnerDescription("failed")
                 .description("failed")
                 .statusDate(LocalDateTime.now())
                 .build();
-
-        ConnectorConfirmOrderResponse
-                .builder()
-                .partnerOrderId(connectorConfirmOrderRequest.getPartnerOrderId())
-                .partnerCode(connectorConfirmOrderRequest.getPartnerCode())
-                .submittedDate(connectorConfirmOrderRequest.getSubmittedDate())
-                .expirationDate(connectorConfirmOrderRequest.getExpirationDate())
-                .currentStatus(failedStatus)
-                .voucher(null)
-                .build();
     }
-
-
-
-
-//    private StatusEntity updateStatusFailed(StatusEntity statusEntity, String message, String id, String commerceOrderId){
-//        log.info("ProcessOrderServiceImpl.updateStatusFailed - failed transfer, updating order status to failed, id: {}, commerceOrderId: {} ",id, commerceOrderId);
-//        final StatusConstant statusFailed = StatusConstant.FAILED;
-//        final String finalMessage = createMessageStatusFailed(message, statusFailed);
-//
-//        return statusEntity.toBuilder()
-//                .code(statusFailed.getCode())
-//                .description(statusFailed.getDescription())
-//                .details(finalMessage)
-//                .build();
-//
-//    }
 }

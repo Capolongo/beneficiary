@@ -3,6 +3,7 @@ package br.com.livelo.orderflight.service;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.exception.OrderExceptions.OrderNotFoundException;
 import br.com.livelo.orderflight.mapper.ConfirmOrderMapper;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,11 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ConfirmOrderMapper confirmOrderMapper;
 
-    public OrderEntity getOrderById(String id) throws Exception {
+    public OrderEntity getOrderById(String id) throws OrderNotFoundException {
         Optional<OrderEntity> order = orderRepository.findById(id);
 
         if (order.isEmpty()) {
-            throw new Exception("Order not found");
+            throw new OrderNotFoundException("Order not found");
         }
 
         return order.get();

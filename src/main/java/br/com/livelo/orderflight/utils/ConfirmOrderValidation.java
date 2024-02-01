@@ -2,6 +2,7 @@ package br.com.livelo.orderflight.utils;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
+import br.com.livelo.orderflight.exception.ConfirmationExceptions.ValidationRequestException;
 
 import java.util.List;
 
@@ -14,12 +15,12 @@ public class ConfirmOrderValidation {
         );
 
         if (validationList.contains(false)) {
-            throw new Exception("Objects are not equal");
+            throw new ValidationRequestException("Objects are not equal");
         }
 
 
         if (!order.getCurrentStatus().getCode().equals("LIVPNR-1006") && !orderRequest.getResubmission()) {
-            throw new Exception("Order is already confirmed");
+            throw new ValidationRequestException("Order is already confirmed");
         }
 
     }
