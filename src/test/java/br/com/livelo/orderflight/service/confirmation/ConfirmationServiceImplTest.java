@@ -7,8 +7,9 @@ import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.repository.OrderRepository;
-import br.com.livelo.orderflight.service.OrderService;
 import br.com.livelo.orderflight.service.confirmation.impl.ConfirmationServiceImpl;
+import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class ConfirmationServiceImplTest {
     @Mock
-    private OrderService orderService;
+    private OrderServiceImpl orderService;
     @Mock
     private OrderRepository orderRepository;
     @Mock

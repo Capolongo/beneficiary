@@ -4,9 +4,11 @@ import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.exception.OrderExceptions.OrderNotFoundException;
+import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import br.com.livelo.orderflight.repository.OrderRepository;
+import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,10 +32,10 @@ class OrderServiceTest {
     private ConfirmOrderMapper confirmOrderMapper;
 
     @InjectMocks
-    private OrderService orderService;
+    private OrderServiceImpl orderService;
 
     @Test
-    void shouldReturnFoundOrderById() throws OrderNotFoundException {
+    void shouldReturnFoundOrderById() throws ReservationException {
         Optional<OrderEntity> mockedOrder = Optional.of(MockBuilder.orderEntity());
         when(orderRepository.findById(anyString())).thenReturn(mockedOrder);
         OrderEntity order = orderService.getOrderById("id");
@@ -41,10 +43,10 @@ class OrderServiceTest {
     }
 
     @Test
-    void shouldThrowOrderNotFoundExceptionWhenOrderNotFound() throws OrderNotFoundException {
+    void shouldThrowReservationExceptionWhenOrderNotFound() throws ReservationException {
         when(orderRepository.findById(anyString())).thenReturn(Optional.empty());
 
-        assertThrows(OrderNotFoundException.class, () -> {
+        assertThrows(ReservationException.class, () -> {
             orderService.getOrderById("id");
         });
     }
@@ -58,10 +60,11 @@ class OrderServiceTest {
                 .ConnectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class)))
                 .thenReturn(status);
 
-        OrderEntity updatedOrder = orderService.addNewOrderStatus(order,
-                MockBuilder.connectorConfirmOrderStatusResponse());
+        orderService.addNewOrderStatus(order,
+                confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(
+                        MockBuilder.connectorConfirmOrderStatusResponse()));
 
-        assertTrue(updatedOrder.getCurrentStatus().equals(status));
+        assertTrue(order.getCurrentStatus().equals(status));
     }
 
     @Test

@@ -9,7 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class RestExceptionHandlerTest {
@@ -18,12 +17,12 @@ class RestExceptionHandlerTest {
 
     @Test
     void shouldReturnErrorResponse() {
-        var exception = new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, "message", "message");
+        var exception = new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, "message",
+                "message");
 
         var response = this.restExceptionHandler.handleException(exception);
         assertAll(
                 () -> assertTrue(response.getStatusCode().is5xxServerError()),
-                () -> assertInstanceOf(ErrorResponse.class, response.getBody())
-        );
+                () -> assertInstanceOf(ErrorResponse.class, response.getBody()));
     }
 }
