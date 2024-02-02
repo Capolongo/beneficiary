@@ -23,28 +23,16 @@ public class FlightLegEntity extends BaseEntity {
     @SequenceGenerator(name = "FLIGHT_LEG_SEQ", sequenceName = "FLIGHT_LEG_SEQ", allocationSize = 1)
     @Id
     private Long id;
-
     private String flightNumber;
-
     private Integer flightDuration;
-
     private String airline;
-
     private String managedBy;
-
     private Integer timeToWait;
-    
     private String originIata;
-
     private String originDescription;
-
     private String destinationIata;
-
     private String destinationDescription;
-
     private LocalDateTime departureDate;
-
     private LocalDateTime arrivalDate;
-
     private String type;
 }

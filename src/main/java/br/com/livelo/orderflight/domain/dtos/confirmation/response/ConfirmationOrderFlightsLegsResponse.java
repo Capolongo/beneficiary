@@ -18,7 +18,7 @@ public class ConfirmationOrderFlightsLegsResponse {
     private String originDescription;
     private String destinationIata;
     private String destinationDescription;
-    private LocalDateTime depatureDate;
+    private LocalDateTime departureDate;
     private LocalDateTime arrivalDate;
     private String type;
 }
