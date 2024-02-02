@@ -11,7 +11,7 @@ import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.mappers.ReservationMapperImpl;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
-import br.com.livelo.orderflight.service.OrderService;
+import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 class ReservationServiceTest {
     private ReservationService reservationService;
     @Mock
-    private OrderService orderService;
+    private OrderServiceImpl orderService;
     @Mock
     private ConnectorPartnersProxy connectorPartnersProxy;
 

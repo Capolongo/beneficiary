@@ -10,7 +10,7 @@ import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
-import br.com.livelo.orderflight.service.OrderService;
+import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
-    private final OrderService orderService;
+    private final OrderServiceImpl orderService;
 
     private final ConnectorPartnersProxy connectorPartnersProxy;
     private final ReservationMapper reservationMapper;

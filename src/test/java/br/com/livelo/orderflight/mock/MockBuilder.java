@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.mock;
 
+import br.com.livelo.orderflight.configs.order.consts.Constants;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderItemRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderPriceRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
@@ -91,14 +92,15 @@ public class MockBuilder {
 
     public static ConfirmOrderStatusResponse confirmOrderStatusResponse() {
         return ConfirmOrderStatusResponse.builder()
-                .code("LIVPNR-1006")
+                .code(Constants.INITIAL)
                 .description("description")
                 .details("partnerDescription")
                 .build();
     }
+
     public static ConfirmOrderStatusResponse confirmOrderStatusFailed() {
         return ConfirmOrderStatusResponse.builder()
-                .code("LIVPNR-1014")
+                .code(Constants.FAILED)
                 .description("description")
                 .details("partnerDescription")
                 .build();
@@ -299,7 +301,7 @@ public class MockBuilder {
     public static OrderStatusEntity statusInitial() {
         return OrderStatusEntity.builder()
                 .id(1L)
-                .code("LIVPNR-1006")
+                .code(Constants.INITIAL)
                 .description("description")
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
@@ -311,7 +313,7 @@ public class MockBuilder {
     public static OrderStatusEntity statusProcessing() {
         return OrderStatusEntity.builder()
                 .id(1L)
-                .code("LIVPNR-1007")
+                .code(Constants.PROCESSING)
                 .description("description")
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
@@ -323,7 +325,7 @@ public class MockBuilder {
     public static OrderStatusEntity statusFailed() {
         return OrderStatusEntity.builder()
                 .id(1L)
-                .code("LIVPNR-1014")
+                .code(Constants.FAILED)
                 .description("description")
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
@@ -335,7 +337,7 @@ public class MockBuilder {
     public static ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse() {
         return ConnectorConfirmOrderStatusResponse.builder()
                 .id(1L)
-                .code("LIVPNR-1006")
+                .code(Constants.INITIAL)
                 .description("description")
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
