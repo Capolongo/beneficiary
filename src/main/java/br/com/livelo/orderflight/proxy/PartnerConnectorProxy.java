@@ -9,6 +9,8 @@ import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException
 import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
+import br.com.livelo.partnersconfigflightlibrary.services.PartnersConfigService;
+import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +30,9 @@ import static java.util.Optional.ofNullable;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-
 public class PartnerConnectorProxy {
     private final PartnerConnectorClient partnerConnectorClient;
-    private final PartnerProperties partnerProperties;
+    private final PartnersConfigService partnersConfigService;
 
     @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
     public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
@@ -40,7 +41,6 @@ public class PartnerConnectorProxy {
                     getUrlByPartnerCode(request.getPartnerCode()),
                     request,
                     getHeaders(Collections.singletonMap(Constants.TRANSACTION_ID, transactionId)));
-
             return this.handleResponse(response);
         } catch (ReservationException e) {
             throw e;
@@ -55,7 +55,6 @@ public class PartnerConnectorProxy {
             throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
-
 
     private MultiValueMap<String, String> getHeaders(Map<String, String> mapHeaders) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
@@ -74,9 +73,7 @@ public class PartnerConnectorProxy {
         }
     }
 
-    //BUSCAR DA LIB
     private URI getUrlByPartnerCode(String partnerCode) {
-        return URI.create(partnerProperties.getUrlByPartnerCode(partnerCode));
+        return URI.create(this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.RESERVATION).getConnectorUrl());
     }
-
 }
