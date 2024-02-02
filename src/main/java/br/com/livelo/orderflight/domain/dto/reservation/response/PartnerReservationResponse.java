@@ -19,7 +19,7 @@ public class PartnerReservationResponse {
     private String partnerCode;
     private LocalDateTime expirationDate;
     private String createDate;
-    private String status;
+    private PartnerResponseStatus status;
     private BigDecimal amount;
     private List<PartnerReservationOrdersPriceDescription> ordersPriceDescription;
     private List<PartnerReservationItem> items;

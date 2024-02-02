@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReservationService {
     private final OrderService orderService;
-
     private final PartnerConnectorProxy partnerConnectorProxy;
     private final ReservationMapper reservationMapper;
 
@@ -39,6 +38,7 @@ public class ReservationService {
             }
 
             var partnerReservationResponse = partnerConnectorProxy.reservation(reservationMapper.toPartnerReservationRequest(request), transactionId);
+
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
 
             this.orderService.save(orderEntity);

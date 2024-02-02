@@ -4,6 +4,8 @@ import br.com.livelo.orderflight.client.Constants;
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
+import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
+import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.partnersconfigflightlibrary.services.PartnersConfigService;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -30,6 +33,7 @@ public class PartnerConnectorProxy {
     private final PartnerConnectorClient partnerConnectorClient;
     private final PartnersConfigService partnersConfigService;
 
+    @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
     public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
         try {
             var url = this.getUrlByPartnerCode(request.getPartnerCode());
@@ -45,19 +49,9 @@ public class PartnerConnectorProxy {
             log.error("Feign exception na chamada do conector ", e);
             var status = HttpStatus.valueOf(e.status());
             if (status.is5xxServerError()) {
-                throw new ReservationException(
-                        ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR,
-                        null,
-                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(),
-                        e
-                );
+                throw new ConnectorReservationInternalException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
             } else {
-                throw new ReservationException(
-                        ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR,
-                        null,
-                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(),
-                        e
-                );
+                throw new ConnectorReservationBusinessException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
             }
         } catch (Exception e) {
             log.error("erro desconhecido chamada conector ", e);
