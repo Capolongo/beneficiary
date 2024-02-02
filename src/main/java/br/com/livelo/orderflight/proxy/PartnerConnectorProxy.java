@@ -32,8 +32,10 @@ public class PartnerConnectorProxy {
 
     public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
         try {
+            var url = this.getUrlByPartnerCode(request.getPartnerCode());
+            log.info(url.toString());
             var response = partnerConnectorClient.reservation(
-                    getUrlByPartnerCode(request.getPartnerCode()),
+                    url,
                     request,
                     getHeaders(Collections.singletonMap(Constants.TRANSACTION_ID, transactionId)));
             return this.handleResponse(response);
