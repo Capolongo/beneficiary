@@ -44,7 +44,7 @@ public class ReservationService {
 
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
 
-            log.info("Order: {}", new ObjectMapper().writeValueAsString(orderEntity));
+            log.info("Order: {}", orderEntity.toString());
             this.orderService.save(orderEntity);
             return reservationMapper.toReservationResponse(orderEntity);
         } catch (ReservationException e) {
