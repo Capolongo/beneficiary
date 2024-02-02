@@ -12,7 +12,7 @@ import org.mapstruct.Mapping;
 public interface ReservationTravelInfoEntityMapper {
 
     @Mapping(target = "paxs", source = "reservationRequest.paxs")
-    @Mapping(target = "type", source = "partnerReservationTravelInfo.type")
+    @Mapping(target = "type", constant = "DE")
     TravelInfoEntity toReservationTravelInfoEntity(ReservationRequest reservationRequest, PartnerReservationTravelInfo partnerReservationTravelInfo);
 
 }
