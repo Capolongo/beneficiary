@@ -42,6 +42,7 @@ public class PartnerConnectorProxy {
         } catch (ReservationException e) {
             throw e;
         } catch (FeignException e) {
+            log.error("Feign exception na chamada do conector ", e);
             var status = HttpStatus.valueOf(e.status());
             if (status.is5xxServerError()) {
                 throw new ReservationException(
@@ -59,6 +60,7 @@ public class PartnerConnectorProxy {
                 );
             }
         } catch (Exception e) {
+            log.error("erro desconhecido chamada conector ", e);
             throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
