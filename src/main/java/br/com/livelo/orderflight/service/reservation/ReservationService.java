@@ -11,8 +11,10 @@ import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
 import br.com.livelo.orderflight.proxy.PartnerConnectorProxy;
 import br.com.livelo.orderflight.service.OrderService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationService {
     private final OrderService orderService;
     private final PartnerConnectorProxy partnerConnectorProxy;
@@ -41,6 +44,7 @@ public class ReservationService {
 
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
 
+            log.info("Order: {}", new ObjectMapper().writeValueAsString(orderEntity));
             this.orderService.save(orderEntity);
             return reservationMapper.toReservationResponse(orderEntity);
         } catch (ReservationException e) {
