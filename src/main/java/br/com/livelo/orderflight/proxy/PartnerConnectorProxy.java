@@ -37,14 +37,17 @@ public class PartnerConnectorProxy {
     @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
     public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
         try {
+            var url = this.getUrlByPartnerCode(request.getPartnerCode());
+            log.info(url.toString());
             var response = partnerConnectorClient.reservation(
-                    getUrlByPartnerCode(request.getPartnerCode()),
+                    url,
                     request,
                     getHeaders(Collections.singletonMap(Constants.TRANSACTION_ID, transactionId)));
             return this.handleResponse(response);
         } catch (ReservationException e) {
             throw e;
         } catch (FeignException e) {
+            log.error("Feign exception na chamada do conector ", e);
             var status = HttpStatus.valueOf(e.status());
             if (status.is5xxServerError()) {
                 throw new ConnectorReservationInternalException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
@@ -52,6 +55,7 @@ public class PartnerConnectorProxy {
                 throw new ConnectorReservationBusinessException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
             }
         } catch (Exception e) {
+            log.error("erro desconhecido chamada conector ", e);
             throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
