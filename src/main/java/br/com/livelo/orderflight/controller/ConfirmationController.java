@@ -30,6 +30,6 @@ public class ConfirmationController {
         ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder(id, order);
 
         log.info("ConfirmationController.confirmOrder() - End - response: [{}]", confirmOrderResponse);
-        return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(confirmOrderResponse);
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(confirmOrderResponse);
     }
 }
