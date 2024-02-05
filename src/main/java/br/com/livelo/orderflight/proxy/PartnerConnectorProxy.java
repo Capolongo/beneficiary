@@ -49,7 +49,7 @@ public class PartnerConnectorProxy {
                 var message = String.format("Internal error on partner connector calls. httpStatus: %s ResponseBody: %s", e.status(), e.responseBody());
                 throw new ConnectorReservationInternalException(message, e);
             } else {
-                var message = String.format("Business error on partner connector calls. httpStatus: %s ResponseBody: %s", e.status(), e.responseBody().toString());
+                var message = String.format("Business error on partner connector calls. httpStatus: %s ResponseBody: %s ", e.status(), e.responseBody().toString());
                 throw new ConnectorReservationBusinessException(message, e);
             }
         } catch (Exception e) {
