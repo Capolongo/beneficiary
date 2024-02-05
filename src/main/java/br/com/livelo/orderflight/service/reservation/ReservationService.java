@@ -13,6 +13,7 @@ import br.com.livelo.orderflight.proxy.PartnerConnectorProxy;
 import br.com.livelo.orderflight.service.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -23,9 +24,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationService {
     private final OrderService orderService;
-
     private final PartnerConnectorProxy partnerConnectorProxy;
     private final ReservationMapper reservationMapper;
 
@@ -38,8 +39,11 @@ public class ReservationService {
                 orderOptional.ifPresent(this.orderService::delete);
             }
 
-            var partnerReservationResponse = partnerConnectorProxy.reservation(reservationMapper.toPartnerReservationRequest(request), transactionId);
+            var partnerReservationResponse = partnerConnectorProxy.createReserve(reservationMapper.toPartnerReservationRequest(request), transactionId);
+
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
+
+            log.info("Creating order Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId, listPrice);
             this.orderService.save(orderEntity);
             //deve vir do connector
             return reservationMapper.toReservationResponse(orderEntity, 15);

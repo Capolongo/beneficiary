@@ -23,10 +23,13 @@ public interface ReservationMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "items", expression = "java(mapItems(reservationRequest, partnerReservationResponse, listPrice))")
     @Mapping(target = "expirationDate", source = "partnerReservationResponse.expirationDate")
+    @Mapping(target = "createDate", ignore = true)
     @Mapping(target = "commerceOrderId", source = "reservationRequest.commerceOrderId")
     @Mapping(target = "partnerOrderId", source = "partnerReservationResponse.partnerOrderId")
     @Mapping(target = "partnerCode", source = "partnerReservationResponse.partnerCode")
     @Mapping(target = "channel", source = "channel")
+    @Mapping(target = "tierCode", ignore = true)
+    @Mapping(target = "originOrder", ignore = true)
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "customerIdentifier", source = "customerId")
     @Mapping(target = "statusHistory", expression = "java(Set.of(mapStatus(partnerReservationResponse)))")
@@ -52,11 +55,13 @@ public interface ReservationMapper {
                 .stream()
                 .map(currentRequestItem ->
                         reservationItemMapper.toOrderItemEntity(
+                                reservationRequest,
                                 currentRequestItem,
                                 partnerReservationResponse.getItems().stream()
-                                        .filter(currentPartnerReservation ->
-                                                currentPartnerReservation.getType().equals(currentRequestItem.getProductType())
-                                        ).toList().getFirst(), listPrice
+                                        .filter(currentPartnerReservationResponseItem ->
+                                                currentPartnerReservationResponseItem.getType().equals(currentRequestItem.getProductType())
+                                        ).toList().getFirst(),
+                                listPrice
                         )
                 )
                 .collect(Collectors.toSet());

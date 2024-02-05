@@ -18,12 +18,8 @@ public class OrderPriceDescriptionEntity extends BaseEntity {
     @SequenceGenerator(name = "ORDERS_PRICE_DESCRIPTION_SEQ", sequenceName = "ORDERS_PRICE_DESCRIPTION_SEQ", allocationSize = 1)
     @Id
     private Long id;
-
     private BigDecimal amount; //RECUPERAR DA PRECIFICAÇÃO
-
     private BigDecimal pointsAmount; //RECUPERAR DA PRECIFICAÇÃO
-
     private String type;
-
     private String description;
 }

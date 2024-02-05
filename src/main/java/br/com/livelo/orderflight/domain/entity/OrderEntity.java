@@ -18,6 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "ORDERS")
 @EqualsAndHashCode(callSuper = false)
+@ToString
 public class OrderEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")

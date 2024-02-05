@@ -3,22 +3,20 @@ package br.com.livelo.orderflight.proxy;
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
+import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
+import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.ReservationException;
 import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
-import br.com.livelo.orderflight.client.Constants;
-import br.com.livelo.orderflight.config.PartnerProperties;
+import br.com.livelo.partnersconfigflightlibrary.services.PartnersConfigService;
+import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.Map;
 
 import static java.util.Optional.ofNullable;
 
@@ -27,58 +25,40 @@ import static java.util.Optional.ofNullable;
 @Slf4j
 public class PartnerConnectorProxy {
     private final PartnerConnectorClient partnerConnectorClient;
-    private final PartnerProperties partnerProperties;
+    private final PartnersConfigService partnersConfigService;
 
-    public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
+    @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
+    public PartnerReservationResponse createReserve(PartnerReservationRequest request, String transactionId) {
         try {
-            var response = partnerConnectorClient.reservation(
-                    getUrlByPartnerCode(request.getPartnerCode()),
+            var url = this.getUrlByPartnerCode(request.getPartnerCode());
+            log.info("call connector partner create reserve. partner: {} url: {} request: {}", request.getPartnerCode(), url, request);
+
+            var response = partnerConnectorClient.createReserve(
+                    url,
                     request,
-                    getHeaders(Collections.singletonMap(Constants.TRANSACTION_ID, transactionId)));
-            return this.handleResponse(response);
+                    transactionId);
+            ofNullable(response.getBody()).ifPresent(body -> log.info("create reserve partner connector response: {}", body));
+
+            return response.getBody();
         } catch (ReservationException e) {
             throw e;
         } catch (FeignException e) {
+            log.error("Error on connector call ", e);
             var status = HttpStatus.valueOf(e.status());
             if (status.is5xxServerError()) {
-                throw new ReservationException(
-                        ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR,
-                        null,
-                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(),
-                        e
-                );
+                var message = String.format("Internal error on partner connector calls. httpStatus: %s ResponseBody: %s", e.status(), e.responseBody());
+                throw new ConnectorReservationInternalException(message, e);
             } else {
-                throw new ReservationException(
-                        ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR,
-                        null,
-                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(),
-                        e
-                );
+                var message = String.format("Business error on partner connector calls. httpStatus: %s ResponseBody: %s ", e.status(), e.responseBody().toString());
+                throw new ConnectorReservationBusinessException(message, e);
             }
         } catch (Exception e) {
+            log.error("Unknown error on connector call ", e);
             throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
 
-    private MultiValueMap<String, String> getHeaders(Map<String, String> mapHeaders) {
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        mapHeaders.forEach(headers::add);
-        return headers;
-    }
-
-    public PartnerReservationResponse handleResponse(ResponseEntity<PartnerReservationResponse> response) {
-        var body = ofNullable(response.getBody()).map(Object::toString).orElse(null);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
-        } else if (response.getStatusCode().is4xxClientError()) {
-            throw new ReservationException(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, null, body);
-        } else {
-            throw new ReservationException(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, null, body);
-        }
-    }
-
-    //BUSCAR DA LIB
     private URI getUrlByPartnerCode(String partnerCode) {
-        return URI.create(partnerProperties.getUrlByPartnerCode(partnerCode));
+        return URI.create(this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.RESERVATION).getConnectorUrl());
     }
 }
