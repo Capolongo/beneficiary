@@ -45,7 +45,8 @@ public class ReservationService {
 
             log.info("Creating order Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId, listPrice);
             this.orderService.save(orderEntity);
-            return reservationMapper.toReservationResponse(orderEntity);
+            //deve vir do connector
+            return reservationMapper.toReservationResponse(orderEntity, 15);
         } catch (ReservationException e) {
             throw e;
         } catch (Exception e) {
