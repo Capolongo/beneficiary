@@ -1,21 +1,20 @@
 # Order Flight - Confirmation Order
 
-API responsável por solicitar a confirmação do pedido pelo connector do parceiro.
+API responsável por solicitar a confirmação do pedido por meio do connector do parceiro.
 
 ## Endpoint
 
-/order-flight/v1/orders/{id}/confirmation
+/v1/orders/{id}/confirmation
 
 ## Contexto
 
-Para que aconteça a confirmação da ordem o Order Flight ira solicitar a confirmação no parceiro por meio do connector. É também responsável por fazer toda tratativa de error a partir da solicitação até a atualização da ordem no oracle database.
+Para que ocorra a confirmação da ordem, o Order Flight irá solicitar a confirmação ao parceiro por meio do connector, utilizando a URL cadastrada no webhook de confirmação. Além disso, o serviço é encarregado de gerenciar todo o tratamento de erros, desde a solicitação inicial até a atualização da ordem no banco de dados Oracle. Ele desempenha um papel integral na comunicação eficaz com o parceiro, aproveitando a URL registrada no webhook de confirmação, ao mesmo tempo em que assume a responsabilidade pela manipulação exceção que possa ocorrer durante esse processo, garantindo uma integração fluida e confiável. Posteriormente, o serviço atualiza os detalhes da ordem no banco de dados, mantendo a consistência e a precisão das informações registradas.
 
 ## Regras:
 
-- O `{id}` enviado na URL precisa ser um id válido, ou seja, precisa ter o prefixo `lf`;
-- A Ordem deve estar salva na oracle database caso o contrário será lançado o erro `Status: 400 -> Order not found`;
-- O Parceiro deve tá ativo para que confirmação seja bem sucedida ou então será lançado o erro `Status: 400 -> Partner disabled`;
-- O body da requisição não pode ter divergências dos valores da ordem que está salva na base (commerceOrderId, pointsAmount, items.length) caso haja divergência será lançado o erro `Status: 400 -> Objects are not equal`;
+- A Ordem deve estar salva no banco de dados, caso o contrário será lançado o erro `Status: 404 -> Order not found`;
+- O Parceiro deve estar ativo para que confirmação seja bem sucedida, caso contrário o pedido irá cair em falha (LIVPNR-1014 - FAILED);
+- O body da requisição não pode ter divergências dos valores da ordem que está salva na base (commerceOrderId, pointsAmount, items.length), caso haja divergência será lançado o erro `Status: 400 -> Objects are not equal`;
 - O current status da ordem deve ser `LIVPNR-1006` ou `resubmission=true` caso o contrário será lançado o erro `Status: 400 -> Order is already confirmed`;
 
 ### Diagrama:

@@ -2,8 +2,8 @@ site_name: order-flight
 site_url: https://stash.livelo.intranet/projects/LIVTRAVEL/repos/order-flight/browse
 nav:
   - Home: index.md
-  - APIS:
+  - APIs:
       - Confirmação de pedido: confirmation.md
-      - Inicializando dependências: use-dependencies.md
+  - Inicializando dependências: use-dependencies.md
 plugins:
   - techdocs-core

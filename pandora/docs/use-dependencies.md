@@ -10,4 +10,12 @@ Para inicialização do MS e perfeito funcionamento do order-flight é preciso q
 - [Configurar back-end Spring Boot para testes locais](https://livelo.atlassian.net/wiki/spaces/TV/pages/162824953/Configurar+back-end+Spring+Boot+para+testes+locais)
 - [Oracle Database Docker para desenvolvimento local (instalação manual)](https://livelo.atlassian.net/wiki/spaces/TV/pages/162824953/Configurar+back-end+Spring+Boot+para+testes+locais)
 
-Seguindo os passos da documentação você já deve estar pronto para rodar o MS.
+Após seguir os passos da documentação você já vai estar quase pronto para rodar o MS, agora você só precisa executar um script SQL para garantir seu acesso ao banco.
+
+```sql
+alter session set "_ORACLE_SCRIPT"=true;
+CREATE USER order_flight IDENTIFIED BY order_flight;
+GRANT CONNECT TO order_flight;
+GRANT CONNECT, RESOURCE, DBA TO order_flight;
+GRANT UNLIMITED TABLESPACE TO order_flight;
+```
