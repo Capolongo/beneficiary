@@ -140,7 +140,6 @@ class PartnerConnectorProxyTest {
     private FeignException makeFeignMockExceptionWithStatus(Integer statusCode) {
         var feignException = Mockito.mock(FeignException.class);
         Mockito.when(feignException.status()).thenReturn(statusCode);
-
         return feignException;
     }
 }
