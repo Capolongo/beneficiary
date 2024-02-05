@@ -39,11 +39,11 @@ public class ReservationService {
                 orderOptional.ifPresent(this.orderService::delete);
             }
 
-            var partnerReservationResponse = partnerConnectorProxy.reservation(reservationMapper.toPartnerReservationRequest(request), transactionId);
+            var partnerReservationResponse = partnerConnectorProxy.createReserve(reservationMapper.toPartnerReservationRequest(request), transactionId);
 
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
 
-            log.info("Order: {}", orderEntity.toString());
+            log.info("Creating order Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId, listPrice);
             this.orderService.save(orderEntity);
             return reservationMapper.toReservationResponse(orderEntity);
         } catch (ReservationException e) {

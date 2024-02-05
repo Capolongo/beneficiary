@@ -49,10 +49,10 @@ class PartnerConnectorProxyTest {
 
         when(request.getPartnerCode()).thenReturn("cvc");
         when(partnersConfigService.getPartnerWebhook(anyString(), any())).thenReturn(partnerWebhook);
-        when(partnerConnectorClient.reservation(any(), any(), any()))
+        when(partnerConnectorClient.createReserve(any(), any(), any()))
                 .thenReturn(ResponseEntity.ok(response));
 
-        PartnerReservationResponse result = partnerConnectorProxy.reservation(request, "transactionID");
+        PartnerReservationResponse result = partnerConnectorProxy.createReserve(request, "transactionID");
         assertNotNull(result);
     }
 
@@ -64,7 +64,7 @@ class PartnerConnectorProxyTest {
         makeException(request, feignException);
 
         var exception = assertThrows(ConnectorReservationInternalException.class,
-                () -> partnerConnectorProxy.reservation(request, "transactionId"));
+                () -> partnerConnectorProxy.createReserve(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getReservationErrorType());
     }
@@ -77,7 +77,7 @@ class PartnerConnectorProxyTest {
         makeException(request, feignException);
 
         var exception = assertThrows(ConnectorReservationBusinessException.class,
-                () -> partnerConnectorProxy.reservation(request, "transactionId"));
+                () -> partnerConnectorProxy.createReserve(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getReservationErrorType());
     }
@@ -87,14 +87,14 @@ class PartnerConnectorProxyTest {
         var request = mock(PartnerReservationRequest.class);
         var partnerWebhook = WebhookDTO.builder().connectorUrl("http://test").build();
 
-        when(partnerConnectorClient.reservation(any(), any(), any())).thenThrow(new RuntimeException("Simulated internal error"));
+        when(partnerConnectorClient.createReserve(any(), any(), any())).thenThrow(new RuntimeException("Simulated internal error"));
         when(partnersConfigService.getPartnerWebhook(anyString(), any())).thenReturn(partnerWebhook);
 
         assertThrows(ReservationException.class,
-                () -> partnerConnectorProxy.reservation(mock(PartnerReservationRequest.class), "transactionId"));
+                () -> partnerConnectorProxy.createReserve(mock(PartnerReservationRequest.class), "transactionId"));
 
         var exception = assertThrows(ReservationException.class,
-                () -> partnerConnectorProxy.reservation(request, "transactionId"));
+                () -> partnerConnectorProxy.createReserve(request, "transactionId"));
 
         assertEquals(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, exception.getReservationErrorType());
     }
@@ -104,14 +104,14 @@ class PartnerConnectorProxyTest {
         var request = mock(PartnerReservationRequest.class);
         var partnerWebhook = WebhookDTO.builder().connectorUrl("http://test").build();
 
-        when(partnerConnectorClient.reservation(any(), any(), any()))
+        when(partnerConnectorClient.createReserve(any(), any(), any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
 
         when(request.getPartnerCode()).thenReturn("cvc");
         when(partnersConfigService.getPartnerWebhook(anyString(), any())).thenReturn(partnerWebhook);
 
         var exception = assertThrows(ReservationException.class,
-                () -> partnerConnectorProxy.reservation(request, "transactionId"));
+                () -> partnerConnectorProxy.createReserve(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getReservationErrorType());
 
@@ -122,14 +122,14 @@ class PartnerConnectorProxyTest {
         var request = mock(PartnerReservationRequest.class);
         var partnerWebhook = WebhookDTO.builder().connectorUrl("http://test").build();
 
-        when(partnerConnectorClient.reservation(any(), any(), any()))
+        when(partnerConnectorClient.createReserve(any(), any(), any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
 
         when(request.getPartnerCode()).thenReturn("cvc");
         when(partnersConfigService.getPartnerWebhook(anyString(), any())).thenReturn(partnerWebhook);
 
         var exception = assertThrows(ReservationException.class,
-                () -> partnerConnectorProxy.reservation(request, "transactionId"));
+                () -> partnerConnectorProxy.createReserve(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getReservationErrorType());
 
@@ -139,7 +139,7 @@ class PartnerConnectorProxyTest {
         var partnerWebhook = WebhookDTO.builder().connectorUrl("http://test").build();
         when(partnerReservationRequest.getPartnerCode()).thenReturn("cvc");
         when(partnersConfigService.getPartnerWebhook(anyString(), any())).thenReturn(partnerWebhook);
-        when(partnerConnectorClient.reservation(any(), any(), any())).thenThrow(feignException);
+        when(partnerConnectorClient.createReserve(any(), any(), any())).thenThrow(feignException);
     }
 
     private FeignException makeFeignMockExceptionWithStatus(Integer statusCode) {

@@ -58,7 +58,7 @@ class ReservationServiceTest {
         var orderMock = mock(OrderEntity.class);
         var requestMock = mock(ReservationRequest.class);
         when(orderService.findByCommerceOrderId(requestMock.getCommerceOrderId())).thenReturn(Optional.empty());
-        when(partnerConnectorProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponse);
+        when(partnerConnectorProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
         var transactionId = "123";
 
@@ -99,7 +99,7 @@ class ReservationServiceTest {
                         .build()))
                 .build();
 
-        when(partnerConnectorProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponse);
+        when(partnerConnectorProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
 
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
@@ -143,7 +143,7 @@ class ReservationServiceTest {
                                 .build()))
                         .build()))
                 .build();
-        when(partnerConnectorProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponse);
+        when(partnerConnectorProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
 
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
 

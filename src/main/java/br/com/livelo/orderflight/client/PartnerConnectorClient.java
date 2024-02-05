@@ -16,7 +16,7 @@ import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservat
 public interface PartnerConnectorClient {
 
 	@PostMapping
-	ResponseEntity<PartnerReservationResponse> reservation(
+	ResponseEntity<PartnerReservationResponse> createReserve(
 			URI baseUrl,
 			@RequestBody PartnerReservationRequest partnerReservationRequest,
 			@RequestHeader MultiValueMap<String, String> headers

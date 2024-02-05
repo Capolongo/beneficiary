@@ -34,27 +34,30 @@ public class PartnerConnectorProxy {
     private final PartnersConfigService partnersConfigService;
 
     @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
-    public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
+    public PartnerReservationResponse createReserve(PartnerReservationRequest request, String transactionId) {
         try {
             var url = this.getUrlByPartnerCode(request.getPartnerCode());
-            log.info(url.toString());
-            var response = partnerConnectorClient.reservation(
+            log.info("call partner create reserve. partner: {} url: {} request: {}", request.getPartnerCode(), url, request);
+
+            var response = partnerConnectorClient.createReserve(
                     url,
                     request,
                     getHeaders(Collections.singletonMap(Constants.TRANSACTION_ID, transactionId)));
+            ofNullable(response.getBody()).ifPresent(body -> log.info("create reserve partner connector response: {}", body));
+
             return this.handleResponse(response);
         } catch (ReservationException e) {
             throw e;
         } catch (FeignException e) {
-            log.error("Feign exception na chamada do conector ", e);
+            log.error("Error on connector call ", e);
             var status = HttpStatus.valueOf(e.status());
             if (status.is5xxServerError()) {
-                throw new ConnectorReservationInternalException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
+                throw new ConnectorReservationInternalException("Internal error on partner connector calls. ResponseBody: {}" + e.responseBody().toString());
             } else {
-                throw new ConnectorReservationBusinessException("Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString());
+                throw new ConnectorReservationBusinessException("Business error on partner connector calls. ResponseBody: {}" + e.responseBody().toString());
             }
         } catch (Exception e) {
-            log.error("erro desconhecido chamada conector ", e);
+            log.error("Unknown error on connector call ", e);
             throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }

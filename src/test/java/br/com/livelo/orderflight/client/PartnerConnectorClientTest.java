@@ -24,11 +24,11 @@ class PartnerConnectorClientTest {
 
         PartnerConnectorClient partnerConnectorClient = mock(PartnerConnectorClient.class);
 
-        when(partnerConnectorClient.reservation(any(), any(), any())).thenReturn(responseEntity);
+        when(partnerConnectorClient.createReserve(any(), any(), any())).thenReturn(responseEntity);
 
-        ResponseEntity<PartnerReservationResponse> result = partnerConnectorClient.reservation(baseUrl, partnerReservationRequest, new LinkedMultiValueMap<>());
+        ResponseEntity<PartnerReservationResponse> result = partnerConnectorClient.createReserve(baseUrl, partnerReservationRequest, new LinkedMultiValueMap<>());
 
-        verify(partnerConnectorClient, times(1)).reservation(any(), any(), any());
+        verify(partnerConnectorClient, times(1)).createReserve(any(), any(), any());
         assertEquals(partnerReservationResponse, result.getBody());
     }
 }
