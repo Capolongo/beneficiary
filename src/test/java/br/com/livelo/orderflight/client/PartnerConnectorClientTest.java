@@ -26,7 +26,7 @@ class PartnerConnectorClientTest {
 
         when(partnerConnectorClient.createReserve(any(), any(), any())).thenReturn(responseEntity);
 
-        ResponseEntity<PartnerReservationResponse> result = partnerConnectorClient.createReserve(baseUrl, partnerReservationRequest, new LinkedMultiValueMap<>());
+        ResponseEntity<PartnerReservationResponse> result = partnerConnectorClient.createReserve(baseUrl, partnerReservationRequest, "123");
 
         verify(partnerConnectorClient, times(1)).createReserve(any(), any(), any());
         assertEquals(partnerReservationResponse, result.getBody());

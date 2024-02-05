@@ -103,14 +103,12 @@ class PartnerConnectorProxyTest {
     void shouldThrowFlightConnectorBusinessError_WhenThereIsBadRequest() {
         var request = mock(PartnerReservationRequest.class);
         var partnerWebhook = WebhookDTO.builder().connectorUrl("http://test").build();
+        var feignException = makeFeignMockExceptionWithStatus(400);
+        makeException(request, feignException);
 
-        when(partnerConnectorClient.createReserve(any(), any(), any()))
-                .thenReturn(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
-
-        when(request.getPartnerCode()).thenReturn("cvc");
         when(partnersConfigService.getPartnerWebhook(anyString(), any())).thenReturn(partnerWebhook);
 
-        var exception = assertThrows(ReservationException.class,
+        var exception = assertThrows(ConnectorReservationBusinessException.class,
                 () -> partnerConnectorProxy.createReserve(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getReservationErrorType());
@@ -121,17 +119,14 @@ class PartnerConnectorProxyTest {
     void shouldThrowFlightConnectorInternalError_WhenThereIsSomeInternalError() {
         var request = mock(PartnerReservationRequest.class);
         var partnerWebhook = WebhookDTO.builder().connectorUrl("http://test").build();
-
-        when(partnerConnectorClient.createReserve(any(), any(), any()))
-                .thenReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
-
-        when(request.getPartnerCode()).thenReturn("cvc");
+        var feignException = makeFeignMockExceptionWithStatus(400);
+        makeException(request, feignException);
         when(partnersConfigService.getPartnerWebhook(anyString(), any())).thenReturn(partnerWebhook);
 
         var exception = assertThrows(ReservationException.class,
                 () -> partnerConnectorProxy.createReserve(request, "transactionId"));
 
-        assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getReservationErrorType());
+        assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getReservationErrorType());
 
     }
 
