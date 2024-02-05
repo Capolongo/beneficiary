@@ -42,13 +42,8 @@ public class ReservationService {
 
             var partnerReservationResponse = partnerConnectorProxy.reservation(reservationMapper.toPartnerReservationRequest(request), transactionId);
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
-
             this.orderService.save(orderEntity);
-    
-    		
-    		LocalDateTime expirationTimerResponse = orderEntity.getExpirationDate().plusMinutes(partnerProperties.getExpirationTimerByParterCode(request.getPartnerCode()));
-    				
-            return reservationMapper.toReservationResponse(orderEntity, expirationTimerResponse);
+            return reservationMapper.toReservationResponse(orderEntity, partnerProperties.getExpirationTimerByParterCode(request.getPartnerCode()));
         } catch (ReservationException e) {
             throw e;
         } catch (Exception e) {

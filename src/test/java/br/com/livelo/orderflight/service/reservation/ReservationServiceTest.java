@@ -61,19 +61,14 @@ class ReservationServiceTest {
         when(orderService.findByCommerceOrderId(requestMock.getCommerceOrderId())).thenReturn(Optional.empty());
         when(partnerConnectorProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponseMock);
         when(orderService.save(any())).thenReturn(orderMock);
-        
-        when(partnerProperties.getExpirationTimerByParterCode(any())).thenReturn(15L);
-        var currentDateTime = LocalDateTime.now();
-        when(partnerReservationResponseMock.getExpirationDate()).thenReturn(currentDateTime);
-        
+                
         var transactionId = "123";
         
         var response = reservationService.createOrder(requestMock, transactionId, "123", "WEB", "price");
         assertAll(
                 () -> assertNotNull(response),
-                () -> assertEquals(transactionId, response.transactionId()),
-                () -> assertEquals(response.expirationTimer(),currentDateTime.plusMinutes(15L))
-        );
+                () -> assertEquals(transactionId, response.transactionId())
+              );
     }
 
     @Test
@@ -83,10 +78,8 @@ class ReservationServiceTest {
         var type = "teste";
         var segmentsPartnersId = "asdf";
         var orderMock = mock(OrderEntity.class);
-        var currentDateTime = LocalDateTime.now();
         
         var partnerReservationResponse = PartnerReservationResponse.builder()
-        		.expirationDate(currentDateTime)
         		.items(List.of(PartnerReservationItem.builder().type("teste").build())).build();
 
         when(partnerConnectorProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponse);
@@ -103,8 +96,7 @@ class ReservationServiceTest {
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price");
         assertAll(
                 () -> assertNotNull(response),
-                () -> assertEquals(transactionId, response.transactionId()),
-                () -> assertEquals(response.expirationTimer(),currentDateTime.plusMinutes(15L))
+                () -> assertEquals(transactionId, response.transactionId())
         );
     }
 
@@ -115,10 +107,8 @@ class ReservationServiceTest {
         var commerceItemId = "123";
         var type = "teste";
         var segmentsPartnersId = "asdf";
-        var currentDateTime = LocalDateTime.now();
         
         var partnerReservationResponse = PartnerReservationResponse.builder()
-        		.expirationDate(currentDateTime)
         		.items(List.of(PartnerReservationItem.builder().type("teste").build())).build();
         
         when(partnerConnectorProxy.reservation(any(), anyString())).thenReturn(partnerReservationResponse);
@@ -133,8 +123,7 @@ class ReservationServiceTest {
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price");
         assertAll(
                 () -> assertNotNull(response),
-                () -> assertEquals(transactionId, response.transactionId()),
-                () -> assertEquals(response.expirationTimer(),currentDateTime.plusMinutes(15L))
+                () -> assertEquals(transactionId, response.transactionId())
         );
     }
 

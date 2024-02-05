@@ -33,8 +33,10 @@ spring:
 partner:
   urls:
     cvc: "https://9vr26.wiremockapi.cloud/partner01"
-    teste: "https://9vr26.wiremockapi.cloud/partner02"
-
+    teste: "https://9vr26.wiremockapi.cloud/partner01"
+  expirationTimer: 
+    cvc: 15
+    teste: 30
 client:
   partnersconfigflight:
     endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/partners-config-flight

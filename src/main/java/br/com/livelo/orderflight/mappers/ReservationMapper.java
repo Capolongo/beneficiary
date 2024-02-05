@@ -69,6 +69,6 @@ public interface ReservationMapper {
     PartnerReservationDocument toPartnerReservationDocument(ReservationDocument reservationDocument);
 
     @Mapping(target = "expirationTimer", source = "expirationTimer")
-    ReservationResponse toReservationResponse(OrderEntity orderEntity, LocalDateTime expirationTimer);
+    ReservationResponse toReservationResponse(OrderEntity orderEntity, Long expirationTimer);
 
 }
