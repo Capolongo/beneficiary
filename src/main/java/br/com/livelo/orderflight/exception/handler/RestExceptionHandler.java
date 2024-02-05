@@ -1,8 +1,8 @@
 package br.com.livelo.orderflight.exception.handler;
 
 import br.com.livelo.orderflight.exception.ErrorResponse;
-import br.com.livelo.orderflight.exception.ReservationException;
-import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
+import br.com.livelo.orderflight.exception.OrderFlightException;
+import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.http.ResponseEntity;
@@ -16,20 +16,20 @@ import static java.util.Optional.ofNullable;
 public class RestExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(ReservationException e) {
+    public ResponseEntity<ErrorResponse> handleException(OrderFlightException e) {
         var message = ofNullable(e.getArgs()).orElse(e.getMessage());
-        ofNullable(e.getReservationErrorType().getLevel()).ifPresent(level -> this.logMessage(level, message, e));
+        ofNullable(e.getOrderFlightErrorType().getLevel()).ifPresent(level -> this.logMessage(level, message, e));
 
-        return ResponseEntity.status(e.getReservationErrorType().getStatus())
-                .body(this.buildError(e.getReservationErrorType()));
+        return ResponseEntity.status(e.getOrderFlightErrorType().getStatus())
+                .body(this.buildError(e.getOrderFlightErrorType()));
     }
 
-    private ErrorResponse buildError(ReservationErrorType reservationErrorType) {
-        return new ErrorResponse(reservationErrorType.getCode(), reservationErrorType.getTitle(),
-                reservationErrorType.getDescription());
+    private ErrorResponse buildError(OrderFlightErrorType orderFlightErrorType) {
+        return new ErrorResponse(orderFlightErrorType.getCode(), orderFlightErrorType.getTitle(),
+                orderFlightErrorType.getDescription());
     }
 
-    private void logMessage(Level levelLog, String message, ReservationException e) {
-        log.atLevel(levelLog).log("errorType: {} message: {}", e.getReservationErrorType().getCode(), message, e);
+    private void logMessage(Level levelLog, String message, OrderFlightException e) {
+        log.atLevel(levelLog).log("errorType: {} message: {}", e.getOrderFlightErrorType().getCode(), message, e);
     }
 }

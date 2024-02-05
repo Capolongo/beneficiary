@@ -3,6 +3,7 @@ package br.com.livelo.orderflight.service.confirmation;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
+import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
@@ -60,7 +61,7 @@ class ConfirmationServiceImplTest {
             when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest())).thenThrow(exception);
 
         } catch (Exception exception) {
-            assertEquals("Order is already confirmed", exception.getMessage());
+            assertEquals(OrderFlightErrorType.VALIDATION_ALREADY_CONFIRMED.getTitle(), exception.getMessage());
         }
     }
 
@@ -75,7 +76,7 @@ class ConfirmationServiceImplTest {
             when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest())).thenThrow(exception);
 
         } catch (Exception exception) {
-            assertEquals("Objects are not equal", exception.getMessage());
+            assertEquals(OrderFlightErrorType.VALIDATION_OBJECTS_NOT_EQUAL.getTitle(), exception.getMessage());
         }
     }
 
@@ -90,7 +91,7 @@ class ConfirmationServiceImplTest {
             when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest())).thenThrow(exception);
 
         } catch (Exception exception) {
-            assertEquals("Objects are not equal", exception.getMessage());
+            assertEquals(OrderFlightErrorType.VALIDATION_OBJECTS_NOT_EQUAL.getTitle(), exception.getMessage());
         }
     }
 

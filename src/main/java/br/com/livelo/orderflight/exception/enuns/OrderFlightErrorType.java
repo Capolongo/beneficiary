@@ -5,7 +5,7 @@ import org.slf4j.event.Level;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum ReservationErrorType {
+public enum OrderFlightErrorType {
     // INTERNAL
     ORDER_FLIGHT_INTERNAL_ERROR("OFCART000", "Erro não esperado",
             "Ocorreu um erro por aqui. Entre em contato com o suporte!", HttpStatus.INTERNAL_SERVER_ERROR, Level.ERROR),
@@ -20,12 +20,9 @@ public enum ReservationErrorType {
     ORDER_FLIGHT_DIVERGENT_QUANTITY_ITEMS_BUSINESS_ERROR("OFCART502", "Erro ao adicionar pedido ao carrinho",
             "Favor tente novamente", HttpStatus.BAD_REQUEST, null),
 
-    VALIDATION_ORDER_NOT_FOUND("400", "Order not found",
-            "Order not found", HttpStatus.BAD_REQUEST, null),
-    VALIDATION_OBJECTS_NOT_EQUAL("400", "Objects are not equal",
-            "Objects are not equal", HttpStatus.BAD_REQUEST, null),
-    VALIDATION_ALREADY_CONFIRMED("400", "Order is already confirmed",
-            "Order is already confirmed", HttpStatus.BAD_REQUEST, null);
+    VALIDATION_ORDER_NOT_FOUND("OFCONFIRMATION000", "Ordem não encontrada", "Ordem não foi encontrada na base de dados", HttpStatus.BAD_REQUEST, null),
+    VALIDATION_OBJECTS_NOT_EQUAL("OFCONFIRMATION001", "Objetos não são iguais", "Objetos do request body e da base de dados não são iguais", HttpStatus.BAD_REQUEST, null),
+    VALIDATION_ALREADY_CONFIRMED("OFCONFIRMATION002", "Ordem já confirmada", "Ordem já foi confirmada anteriormente", HttpStatus.BAD_REQUEST, null);
 
     private final String code;
     private final String title;
@@ -33,7 +30,7 @@ public enum ReservationErrorType {
     private final HttpStatus status;
     private final Level level;
 
-    ReservationErrorType(String code, String title, String description, HttpStatus status, Level level) {
+    OrderFlightErrorType(String code, String title, String description, HttpStatus status, Level level) {
         this.code = code;
         this.title = title;
         this.description = description;

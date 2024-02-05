@@ -7,8 +7,8 @@ import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservati
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
-import br.com.livelo.orderflight.exception.ReservationException;
-import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
+import br.com.livelo.orderflight.exception.OrderFlightException;
+import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.partnersconfigflightlibrary.dto.WebhookDTO;
 import br.com.livelo.partnersconfigflightlibrary.services.PartnersConfigService;
 import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
@@ -37,21 +37,17 @@ public class ConnectorPartnersProxy {
     private final ObjectMapper objectMapper;
     private final PartnerProperties partnerProperties;
 
-    public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode,
-            ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws Exception {
+    public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws Exception {
         try {
-            WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(),
-                    Webhooks.CONFIRMATION);
+            WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
             final URI connectorUri = URI.create(webhook.getConnectorUrl());
-            ConnectorConfirmOrderResponse connectorConfirmOrderResponse = partnerConnectorClient
-                    .confirmOrder(connectorUri, connectorConfirmOrderRequest).getBody();
+            ConnectorConfirmOrderResponse connectorConfirmOrderResponse = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest).getBody();
 
             log.info("ConnectorPartnersProxy.confirmOnPartner() - response: [{}]", connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
         } catch (FeignException exception) {
             ConnectorConfirmOrderResponse connectorConfirmOrderResponse = getResponseError(exception);
-            log.info("ConnectorPartnersProxy.confirmOnPartner() - exception response: [{}]",
-                    connectorConfirmOrderResponse);
+            log.info("ConnectorPartnersProxy.confirmOnPartner() - exception response: [{}]", connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
         }
     }
@@ -67,32 +63,19 @@ public class ConnectorPartnersProxy {
 
     public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
         try {
-            var response = partnerConnectorClient.reservation(
-                    getUrlByPartnerCode(request.getPartnerCode()),
-                    request,
-                    getHeaders(Collections.singletonMap(Constants.TRANSACTION_ID, transactionId)));
+            var response = partnerConnectorClient.reservation(getUrlByPartnerCode(request.getPartnerCode()), request, getHeaders(Collections.singletonMap(Constants.TRANSACTION_ID, transactionId)));
             return this.handleResponse(response);
-        } catch (ReservationException e) {
+        } catch (OrderFlightException e) {
             throw e;
         } catch (FeignException e) {
             var status = HttpStatus.valueOf(e.status());
             if (status.is5xxServerError()) {
-                throw new ReservationException(
-                        ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR,
-                        null,
-                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: "
-                                + e.responseBody().toString(),
-                        e);
+                throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, null, "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(), e);
             } else {
-                throw new ReservationException(
-                        ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR,
-                        null,
-                        "Erro interno ao se comunicar com parceiro no conector. ResponseBody: "
-                                + e.responseBody().toString(),
-                        e);
+                throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, null, "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(), e);
             }
         } catch (Exception e) {
-            throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
+            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
 
@@ -107,9 +90,9 @@ public class ConnectorPartnersProxy {
         if (response.getStatusCode().is2xxSuccessful()) {
             return response.getBody();
         } else if (response.getStatusCode().is4xxClientError()) {
-            throw new ReservationException(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, null, body);
+            throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, null, body);
         } else {
-            throw new ReservationException(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, null, body);
+            throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, null, body);
         }
     }
 

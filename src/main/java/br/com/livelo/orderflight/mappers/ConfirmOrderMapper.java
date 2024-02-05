@@ -49,7 +49,7 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "phone", source = "phoneNumber")
     ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
-    OrderStatusEntity ConnectorConfirmOrderStatusResponseToStatusEntity(
+    OrderStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(
             ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
 
     default String getFlightItemCommerceItemId(OrderEntity orderEntity) {

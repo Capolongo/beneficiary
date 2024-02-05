@@ -1,31 +1,28 @@
 package br.com.livelo.orderflight.utils;
 
+import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.exception.ReservationException;
-import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
+import br.com.livelo.orderflight.exception.OrderFlightException;
+import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 
 import java.util.List;
 
 public class ConfirmOrderValidation {
-    public static void validateOrderPayload(ConfirmOrderRequest orderRequest, OrderEntity order)
-            throws ReservationException {
+    public static void validateOrderPayload(ConfirmOrderRequest orderRequest, OrderEntity order) throws OrderFlightException {
         List<Boolean> validationList = List.of(
                 orderRequest.getCommerceOrderId().equals(order.getCommerceOrderId()),
                 orderRequest.getPrice().getPointsAmount().equals(order.getPrice().getPointsAmount()),
                 PayloadComparison.compareItems(orderRequest.getItems(), order.getItems()));
 
         if (validationList.contains(false)) {
-            ReservationErrorType errorType = ReservationErrorType.VALIDATION_OBJECTS_NOT_EQUAL;
-            throw new ReservationException(errorType,
-                    errorType.getTitle(), null);
+            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_OBJECTS_NOT_EQUAL;
+            throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
 
-        if (!order.getCurrentStatus().getCode().equals("LIVPNR-1006") && !orderRequest.getResubmission()) {
-            ReservationErrorType errorType = ReservationErrorType.VALIDATION_ALREADY_CONFIRMED;
-            throw new ReservationException(errorType,
-                    errorType.getTitle(), null);
+        if (!StatusConstants.INITIAL.getCode().equals(order.getCurrentStatus().getCode()) && !orderRequest.getResubmission()) {
+            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ALREADY_CONFIRMED;
+            throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
-
     }
 }

@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.exception.ReservationException;
+import br.com.livelo.orderflight.exception.OrderFlightException;
 
 public interface OrderService {
-  OrderEntity getOrderById(String id) throws ReservationException;
+  OrderEntity getOrderById(String id) throws OrderFlightException;
 
   void addNewOrderStatus(OrderEntity order, OrderStatusEntity status);
 

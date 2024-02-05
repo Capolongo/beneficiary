@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.mock;
 
-import br.com.livelo.orderflight.configs.order.consts.Constants;
+import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderItemRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderPriceRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
@@ -92,16 +92,16 @@ public class MockBuilder {
 
     public static ConfirmOrderStatusResponse confirmOrderStatusResponse() {
         return ConfirmOrderStatusResponse.builder()
-                .code(Constants.INITIAL)
-                .description("description")
-                .details("partnerDescription")
+                .code(StatusConstants.INITIAL.getCode())
+                .description(StatusConstants.INITIAL.getDescription())
+                .details(StatusConstants.INITIAL.getDescription())
                 .build();
     }
 
     public static ConfirmOrderStatusResponse confirmOrderStatusFailed() {
         return ConfirmOrderStatusResponse.builder()
-                .code(Constants.FAILED)
-                .description("description")
+                .code(StatusConstants.FAILED.getCode())
+                .description(StatusConstants.FAILED.getDescription())
                 .details("partnerDescription")
                 .build();
     }
@@ -301,8 +301,8 @@ public class MockBuilder {
     public static OrderStatusEntity statusInitial() {
         return OrderStatusEntity.builder()
                 .id(1L)
-                .code(Constants.INITIAL)
-                .description("description")
+                .code(StatusConstants.INITIAL.getCode())
+                .description(StatusConstants.INITIAL.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("partnerResponse")
@@ -313,8 +313,8 @@ public class MockBuilder {
     public static OrderStatusEntity statusProcessing() {
         return OrderStatusEntity.builder()
                 .id(1L)
-                .code(Constants.PROCESSING)
-                .description("description")
+                .code(StatusConstants.PROCESSING.getCode())
+                .description(StatusConstants.PROCESSING.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("response")
@@ -325,8 +325,8 @@ public class MockBuilder {
     public static OrderStatusEntity statusFailed() {
         return OrderStatusEntity.builder()
                 .id(1L)
-                .code(Constants.FAILED)
-                .description("description")
+                .code(StatusConstants.FAILED.getCode())
+                .description(StatusConstants.FAILED.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("response")
@@ -337,8 +337,8 @@ public class MockBuilder {
     public static ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse() {
         return ConnectorConfirmOrderStatusResponse.builder()
                 .id(1L)
-                .code(Constants.INITIAL)
-                .description("description")
+                .code(StatusConstants.INITIAL.getCode())
+                .description(StatusConstants.INITIAL.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("partnerResponse")

@@ -53,7 +53,7 @@ class ConfirmOrderMapperTest {
     void shouldMapConnectorConfirmOrderStatusResponseToStatusEntity() {
         LocalDateTime date = LocalDateTime.now();
         ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse =  MockBuilder.connectorConfirmOrderStatusResponse();
-        OrderStatusEntity mappedOrderStatusEntity = confirmOrderMapper.ConnectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderStatusResponse);
+        OrderStatusEntity mappedOrderStatusEntity = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderStatusResponse);
         OrderStatusEntity orderStatusEntity = MockBuilder.statusInitial();
 
         orderStatusEntity.setStatusDate(date);

@@ -6,8 +6,8 @@ import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResp
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
-import br.com.livelo.orderflight.exception.ReservationException;
-import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
+import br.com.livelo.orderflight.exception.OrderFlightException;
+import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
@@ -43,10 +43,10 @@ public class ReservationService {
 
             this.orderService.save(orderEntity);
             return reservationMapper.toReservationResponse(orderEntity);
-        } catch (ReservationException e) {
+        } catch (OrderFlightException e) {
             throw e;
         } catch (Exception e) {
-            throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
+            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
 
@@ -65,7 +65,7 @@ public class ReservationService {
                 }
                 return isSameCommerceItemsId;
             }
-            throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_DIVERGENT_QUANTITY_ITEMS_BUSINESS_ERROR, "Quantidades de itens diferentes", null);
+            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_QUANTITY_ITEMS_BUSINESS_ERROR, "Quantidades de itens diferentes", null);
         }).orElse(false);
     }
 
@@ -91,7 +91,7 @@ public class ReservationService {
 
     private void hasSameTokens(Set<String> orderTokens, Set<String> requestTokens) {
         if (orderTokens.size() != requestTokens.size() || !orderTokens.containsAll(requestTokens)) {
-            throw new ReservationException(ReservationErrorType.ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR, "Tokens do parceiro divergentes", null);
+            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR, "Tokens do parceiro divergentes", null);
         }
     }
 }

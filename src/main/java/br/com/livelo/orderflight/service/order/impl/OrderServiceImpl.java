@@ -2,8 +2,8 @@ package br.com.livelo.orderflight.service.order.impl;
 
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.exception.ReservationException;
-import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
+import br.com.livelo.orderflight.exception.OrderFlightException;
+import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +17,12 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
-    public OrderEntity getOrderById(String id) throws ReservationException {
+    public OrderEntity getOrderById(String id) throws OrderFlightException {
         Optional<OrderEntity> order = orderRepository.findById(id);
 
         if (order.isEmpty()) {
-            ReservationErrorType errorType = ReservationErrorType.VALIDATION_ORDER_NOT_FOUND;
-            throw new ReservationException(errorType,
-                    errorType.getTitle(), null);
+            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;
+            throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
 
         return order.get();

@@ -25,13 +25,11 @@ public class ConfirmationController {
     private final ConfirmationServiceImpl confirmationService;
 
     @PostMapping("{id}/confirmation")
-    public ResponseEntity<ConfirmOrderResponse> confirmOrder(@PathVariable("id") String id, @RequestBody ConfirmOrderRequest order) throws Exception {
+    public ResponseEntity<ConfirmOrderResponse> confirmOrder(@PathVariable("id") String id, @RequestBody ConfirmOrderRequest order) {
         log.info("ConfirmationController.confirmOrder() - Start - id: [{}], body: [{}]", id, order);
         ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder(id, order);
 
         log.info("ConfirmationController.confirmOrder() - End - response: [{}]", confirmOrderResponse);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(confirmOrderResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(confirmOrderResponse);
     }
 }

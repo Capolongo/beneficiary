@@ -4,8 +4,8 @@ import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.configs.PartnerProperties;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
-import br.com.livelo.orderflight.exception.ReservationException;
-import br.com.livelo.orderflight.exception.enuns.ReservationErrorType;
+import br.com.livelo.orderflight.exception.OrderFlightException;
+import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,10 +59,10 @@ class PartnerConnectorProxyTest {
         var feignException = makeFeignMockExceptionWithStatus(500);
         makeException(request, feignException);
 
-        var exception = assertThrows(ReservationException.class,
+        var exception = assertThrows(OrderFlightException.class,
                 () -> connectorPartnersProxy.reservation(request, "transactionId"));
 
-        assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getReservationErrorType());
+        assertEquals(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
@@ -72,10 +72,10 @@ class PartnerConnectorProxyTest {
 
         makeException(request, feignException);
 
-        var exception = assertThrows(ReservationException.class,
+        var exception = assertThrows(OrderFlightException.class,
                 () -> connectorPartnersProxy.reservation(request, "transactionId"));
 
-        assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getReservationErrorType());
+        assertEquals(OrderFlightErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
@@ -85,13 +85,13 @@ class PartnerConnectorProxyTest {
         when(partnerConnectorClient.reservation(any(), any(), any())).thenThrow(new RuntimeException("Simulated internal error"));
         when(partnerProperties.getUrlByPartnerCode(anyString())).thenReturn("http://teste.com");
 
-        assertThrows(ReservationException.class,
+        assertThrows(OrderFlightException.class,
                 () -> connectorPartnersProxy.reservation(mock(PartnerReservationRequest.class), "transactionId"));
 
-        var exception = assertThrows(ReservationException.class,
+        var exception = assertThrows(OrderFlightException.class,
                 () -> connectorPartnersProxy.reservation(request, "transactionId"));
 
-        assertEquals(ReservationErrorType.ORDER_FLIGHT_INTERNAL_ERROR, exception.getReservationErrorType());
+        assertEquals(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
@@ -104,10 +104,10 @@ class PartnerConnectorProxyTest {
         when(request.getPartnerCode()).thenReturn("cvc");
         when(partnerProperties.getUrlByPartnerCode(anyString())).thenReturn("http://teste.com");
 
-        var exception =  assertThrows(ReservationException.class,
+        var exception =  assertThrows(OrderFlightException.class,
                 () -> connectorPartnersProxy.reservation(request, "transactionId"));
 
-        assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getReservationErrorType());
+        assertEquals(OrderFlightErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
 
     }
 
@@ -121,10 +121,10 @@ class PartnerConnectorProxyTest {
         when(request.getPartnerCode()).thenReturn("cvc");
         when(partnerProperties.getUrlByPartnerCode(anyString())).thenReturn("http://teste.com");
 
-        var exception =  assertThrows(ReservationException.class,
+        var exception =  assertThrows(OrderFlightException.class,
                 () -> connectorPartnersProxy.reservation(request, "transactionId"));
 
-        assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getReservationErrorType());
+        assertEquals(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
 
     }
 
