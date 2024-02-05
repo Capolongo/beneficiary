@@ -2,7 +2,11 @@
 
 O order-flight tem as seguintes dependências externas:
 
+- partners config flight
 - Oracle Database
+
+Partners Config Flight:
+O order-flight utiliza a biblioteca interna da Livelo, chamada: Partners Config Flight, que é instalada e importada no projeto para buscar a URL do connector do parceiro.
 
 Oracle Database:
 Para inicialização do MS e perfeito funcionamento do order-flight é preciso que a oracle database esteja UP, para isso você pode consultar as seguintes documentações interna da Livelo.
