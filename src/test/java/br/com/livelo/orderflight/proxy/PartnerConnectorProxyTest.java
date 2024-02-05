@@ -16,14 +16,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class PartnerConnectorProxyTest {
 
@@ -80,6 +78,17 @@ class PartnerConnectorProxyTest {
                 () -> partnerConnectorProxy.createReserve(request, "transactionId"));
 
         assertEquals(ReservationErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getReservationErrorType());
+    }
+
+    @Test
+    void shouldThrowsReservationException_WhenFeignExceptionResponseIsDifferentOf5xxxStatus() {
+        var partnerWebhook = WebhookDTO.builder().connectorUrl("http://test").build();
+        when(partnersConfigService.getPartnerWebhook(anyString(), any())).thenReturn(partnerWebhook);
+        var request = mock(PartnerReservationRequest.class);
+        when(request.getPartnerCode()).thenReturn("cvc");
+        doThrow(ReservationException.class).when(partnerConnectorClient).createReserve(any(), any(), anyString());
+
+        assertThrows(ReservationException.class, () -> partnerConnectorProxy.createReserve(request, "transactionId"));
     }
 
     @Test
