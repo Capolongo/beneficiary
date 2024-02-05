@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.service.reservation;
 
+import br.com.livelo.orderflight.config.PartnerProperties;
 import br.com.livelo.orderflight.domain.dto.reservation.response.*;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
@@ -15,6 +16,7 @@ import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -43,7 +45,7 @@ class ReservationServiceTest {
     @BeforeEach
     void setup() {
         var cartMapper = Mappers.getMapper(ReservationMapper.class);
-        this.reservationService = new ReservationService(orderService, partnerConnectorProxy, cartMapper, partnerProperties);
+        this.reservationService = new ReservationService(orderService, partnerConnectorProxy, cartMapper);
     }
 
     @Test
