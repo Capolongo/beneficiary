@@ -26,8 +26,6 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "productType", source = "productId")
     ConfirmOrderItemResponse orderItemEntityToConfirmOrderItemResponse(OrderItemEntity orderItemEntity);
 
-    // TODO: ver com Lanza se vai colocar na base o operatedBy para que possamos
-    // remover essa linha :30
     @Mapping(target = "operatedBy", source = "managedBy")
     ConfirmationOrderFlightsLegsResponse flightLegEntityToConfirmationOrderFlightsLegsResponse(
             FlightLegEntity flightLegEntity);
@@ -39,7 +37,7 @@ public interface ConfirmOrderMapper {
     ConfirmationOrderPaxResponse paxEntityToConfirmationOrderPaxResponse(
             PaxEntity paxEntity);
 
-            @Mapping(source = "currentStatus.partnerDescription", target = "status.details")
+    @Mapping(source = "currentStatus.partnerDescription", target = "status.details")
     ConfirmOrderResponse orderEntityToConfirmOrderResponse(OrderEntity orderEntity);
 
     @Mapping(target = "commerceItemId", expression = "java(getFlightItemCommerceItemId(orderEntity))")
