@@ -1,6 +1,5 @@
 package br.com.livelo.orderflight.service.reservation;
 
-import br.com.livelo.orderflight.config.PartnerProperties;
 import br.com.livelo.orderflight.domain.dto.reservation.response.*;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
@@ -34,13 +33,8 @@ class ReservationServiceTest {
     private ReservationService reservationService;
     @Mock
     private OrderService orderService;
-
     @Mock
     private PartnerConnectorProxy partnerConnectorProxy;
-
-    @Mock
-    private PartnerProperties partnerProperties;
-
 
     @BeforeEach
     void setup() {
