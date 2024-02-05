@@ -144,14 +144,11 @@ class ReservationServiceTest {
                                 .build()))
                         .build()))
                 .build();
+        
         when(partnerConnectorProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
-
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
-
         var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, commerceItemId, segmentsPartnersId)));
-
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
-
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price");
         assertAll(
                 () -> assertNotNull(response),
