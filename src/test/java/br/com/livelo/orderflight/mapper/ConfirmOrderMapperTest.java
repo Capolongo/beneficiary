@@ -29,7 +29,6 @@ class ConfirmOrderMapperTest {
         mappedConfirmOrderResponse.setSubmittedDate(date);
         mappedConfirmOrderResponse.setExpirationDate(date);
 
-
         assertEquals(confirmOrderResponse, mappedConfirmOrderResponse);
     }
 

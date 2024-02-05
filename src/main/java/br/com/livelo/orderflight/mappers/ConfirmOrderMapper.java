@@ -29,7 +29,7 @@ public interface ConfirmOrderMapper {
     // TODO: ver com Lanza se vai colocar na base o operatedBy para que possamos
     // remover essa linha :30
     @Mapping(target = "operatedBy", source = "managedBy")
-    ConfirmationOrderFlightsLegsResponse paxEntityToConfirmationOrderPaxResponse(
+    ConfirmationOrderFlightsLegsResponse flightLegEntityToConfirmationOrderFlightsLegsResponse(
             FlightLegEntity flightLegEntity);
 
     ConfirmationOrderDocumentResponse paxEntityToConfirmationOrderPaxResponse(

@@ -8,6 +8,9 @@ import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderI
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderPriceResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderPaxResponse;
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderSegmentsResponse;
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderTravelInfoResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
@@ -66,7 +69,7 @@ public class MockBuilder {
                 .commerceOrderId("commerceOrderId")
                 .partnerCode("partnerCode")
                 .submittedDate("date")
-                .expirationDate("Date")
+                .expirationDate("date")
                 .transactionId("transactionId")
                 .status(confirmOrderStatusResponse())
                 .price(confirmOrderPriceResponse())
@@ -113,11 +116,41 @@ public class MockBuilder {
                 .build();
     }
 
+    public static ConfirmationOrderPaxResponse confirmationOrderPaxResponse() {
+        return ConfirmationOrderPaxResponse.builder()
+                .type("type")
+                .firstName("firstName")
+                .lastName("lastName")
+                .birthDate("birthDate")
+                .document(Set.of())
+                .email("email")
+                .areaCode("areaCode")
+                .phone("phone")
+                .build();
+    }
+
+    public static ConfirmationOrderSegmentsResponse confirmationOrderSegmentsResponse() {
+        return ConfirmationOrderSegmentsResponse.builder()
+                .build();
+    }
+
+    public static ConfirmationOrderTravelInfoResponse confirmationOrderTravelInfoResponse() {
+        return ConfirmationOrderTravelInfoResponse.builder()
+                .reservationCode("reservation")
+                .type("type")
+                .paxs(Set.of(confirmationOrderPaxResponse()))
+                .build();
+    }
+
     public static ConfirmOrderItemResponse confirmOrderItemResponse() {
         return ConfirmOrderItemResponse.builder()
                 .commerceItemId("commerceItemId")
                 .skuId("skuId")
                 .productId("productId")
+                .productType("productId")
+                .externalCoupon("externalCoupon")
+                .segments(Set.of(confirmationOrderSegmentsResponse()))
+                .travelInfo(confirmationOrderTravelInfoResponse())
                 .quantity(1)
                 .price(confirmOrderPriceResponse())
                 .build();
@@ -304,7 +337,7 @@ public class MockBuilder {
                 .code(StatusConstants.INITIAL.getCode())
                 .description(StatusConstants.INITIAL.getDescription())
                 .partnerCode("partnerCode")
-                .partnerDescription("partnerDescription")
+                .partnerDescription(StatusConstants.INITIAL.getDescription())
                 .partnerResponse("partnerResponse")
                 .statusDate(LocalDateTime.now())
                 .build();
