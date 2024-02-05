@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {ReservationItemMapper.class, ReservationPriceMapper.class})
 public interface ReservationMapper {
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "items", expression = "java(mapItems(reservationRequest, partnerReservationResponse, listPrice))")
     @Mapping(target = "expirationDate", source = "partnerReservationResponse.expirationDate")
     @Mapping(target = "commerceOrderId", source = "reservationRequest.commerceOrderId")
@@ -71,6 +70,7 @@ public interface ReservationMapper {
     PartnerReservationDocument toPartnerReservationDocument(ReservationDocument reservationDocument);
 
     @Mapping(target = "expirationTimer", source = "expirationTimer")
+    @Mapping(target = "orderId", source = "orderEntity.id")
     ReservationResponse toReservationResponse(OrderEntity orderEntity, int expirationTimer);
 
 }

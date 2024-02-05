@@ -30,7 +30,6 @@ public class ReservationService {
     private final PartnerConnectorProxy partnerConnectorProxy;
     private final ReservationMapper reservationMapper;
 
-    @Transactional
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPrice) {
         try {
             var orderOptional = this.orderService.findByCommerceOrderId(request.getCommerceOrderId());
@@ -43,8 +42,8 @@ public class ReservationService {
 
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
 
-            log.info("Creating order Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId, listPrice);
             this.orderService.save(orderEntity);
+            log.info("Creating order Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId, listPrice);
             //deve vir do connector
             return reservationMapper.toReservationResponse(orderEntity, 15);
         } catch (ReservationException e) {
