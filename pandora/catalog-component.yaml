@@ -1,15 +1,23 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    gitlab.com/project-id: "52665496"
+    # fact-sheet-id: 722adf45-848f-43c9-9092-51b343541496
   name: order-flight
   description: Microservice that encompasses the database and management of flight orders.
   tags:
     - java
     - springboot
-  annotations:
-    backstage.io/techdocs-ref: dir:.
-#    leanix.net/fact-sheet-id: 
+    - api
+    - order-flight
+    - flight
+    - travel
+    - reservando minha viagem
+    - concluindo minha viagem
+    # - leanix.net/fact-sheet-id:
 spec:
-  type: service
-  owner: group:default/viagem
   lifecycle: experimental
+  owner: group:default/confirmando-minha-viagem
+  type: service
