@@ -27,7 +27,7 @@ class ReservationMapperTest {
 
     @Test
     void shouldReturnReservationResponseNull() {
-        var response = this.mapper.toReservationResponse(null);
+        var response = this.mapper.toReservationResponse(null, 10);
         assertNull(response);
     }
 }
