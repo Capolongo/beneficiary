@@ -20,8 +20,4 @@ public class PartnerProperties {
 	public String getUrlByPartnerCode(String partnerCode) {
 		return urls.get(partnerCode);
 	}
-	
-	public Long getExpirationTimerByParterCode(String partnerCode) {
-		return expirationTimer.get(partnerCode);
-	}
 }

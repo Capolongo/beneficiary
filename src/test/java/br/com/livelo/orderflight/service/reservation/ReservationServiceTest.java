@@ -90,9 +90,7 @@ class ReservationServiceTest {
         var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, transactionId, segmentsPartnersId)));
 
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
-        
-        when(partnerProperties.getExpirationTimerByParterCode(any())).thenReturn(15L);
-        
+
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price");
         assertAll(
                 () -> assertNotNull(response),
@@ -119,7 +117,6 @@ class ReservationServiceTest {
 
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
         
-        when(partnerProperties.getExpirationTimerByParterCode(any())).thenReturn(15L);
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price");
         assertAll(
                 () -> assertNotNull(response),

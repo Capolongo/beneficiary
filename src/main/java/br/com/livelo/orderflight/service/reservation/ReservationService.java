@@ -1,6 +1,5 @@
 package br.com.livelo.orderflight.service.reservation;
 
-import br.com.livelo.orderflight.config.PartnerProperties;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
@@ -16,7 +15,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -30,7 +28,7 @@ public class ReservationService {
 
     private final PartnerConnectorProxy partnerConnectorProxy;
     private final ReservationMapper reservationMapper;
-    private final PartnerProperties partnerProperties;
+
     @Transactional
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPrice) {
         try {
@@ -43,7 +41,8 @@ public class ReservationService {
             var partnerReservationResponse = partnerConnectorProxy.reservation(reservationMapper.toPartnerReservationRequest(request), transactionId);
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice);
             this.orderService.save(orderEntity);
-            return reservationMapper.toReservationResponse(orderEntity, partnerProperties.getExpirationTimerByParterCode(request.getPartnerCode()));
+            //deve vir do connector
+            return reservationMapper.toReservationResponse(orderEntity, 15);
         } catch (ReservationException e) {
             throw e;
         } catch (Exception e) {
@@ -61,7 +60,7 @@ public class ReservationService {
                 var requestTokens = new HashSet<>(request.getSegmentsPartnerIds());
                 var isSameCommerceItemsId = requestItemsIds.containsAll(orderCommerceItemsIds);
 
-                if(isSameCommerceItemsId) {
+                if (isSameCommerceItemsId) {
                     this.hasSameTokens(orderTokens, requestTokens);
                 }
                 return isSameCommerceItemsId;
