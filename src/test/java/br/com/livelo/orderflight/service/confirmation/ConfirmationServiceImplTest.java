@@ -108,6 +108,7 @@ class ConfirmationServiceImplTest {
         when(confirmOrderMapper.orderEntityToConfirmOrderResponse(any())).thenReturn(responseWithFailedStatus);
         ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder("id",
                 MockBuilder.confirmOrderRequest());
-        assertEquals(MockBuilder.confirmOrderResponseWithFailed(), confirmOrderResponse);
+        var test = MockBuilder.confirmOrderResponseWithFailed();
+        assertEquals(test, confirmOrderResponse);
     }
 }

@@ -85,7 +85,7 @@ public class MockBuilder {
                 .commerceOrderId("commerceOrderId")
                 .partnerCode("partnerCode")
                 .submittedDate("date")
-                .expirationDate("Date")
+                .expirationDate("date")
                 .transactionId("transactionId")
                 .status(confirmOrderStatusFailed())
                 .price(confirmOrderPriceResponse())
@@ -97,7 +97,7 @@ public class MockBuilder {
         return ConfirmOrderStatusResponse.builder()
                 .code(StatusConstants.INITIAL.getCode())
                 .description(StatusConstants.INITIAL.getDescription())
-                .details(StatusConstants.INITIAL.getDescription())
+                .details("partnerDescription")
                 .build();
     }
 
@@ -166,7 +166,7 @@ public class MockBuilder {
                 .partnerCode("partnerCode")
                 .submittedDate("date")
                 .paxs(List.of(connectorConfirmOrderPaxRequest()))
-                .expirationDate("Date")
+                .expirationDate("date")
                 .build();
     }
 
@@ -190,7 +190,7 @@ public class MockBuilder {
                 .partnerOrderId("partnerOrderId")
                 .partnerCode("partnerCode")
                 .submittedDate("date")
-                .expirationDate("Date")
+                .expirationDate("date")
                 .transactionId("transactionId")
                 .currentStatus(null)
                 .voucher(null)
@@ -337,7 +337,7 @@ public class MockBuilder {
                 .code(StatusConstants.INITIAL.getCode())
                 .description(StatusConstants.INITIAL.getDescription())
                 .partnerCode("partnerCode")
-                .partnerDescription(StatusConstants.INITIAL.getDescription())
+                .partnerDescription("partnerDescription")
                 .partnerResponse("partnerResponse")
                 .statusDate(LocalDateTime.now())
                 .build();
