@@ -17,6 +17,7 @@ import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
@@ -35,9 +36,11 @@ public class ConnectorPartnersProxy {
     public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode,
             ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws Exception {
         try {
-            WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
+            WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(),
+                    Webhooks.CONFIRMATION);
             final URI connectorUri = URI.create(webhook.getConnectorUrl());
-            ConnectorConfirmOrderResponse connectorConfirmOrderResponse = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest).getBody();
+            ConnectorConfirmOrderResponse connectorConfirmOrderResponse = partnerConnectorClient
+                    .confirmOrder(connectorUri, connectorConfirmOrderRequest).getBody();
 
             log.info("ConnectorPartnersProxy.confirmOnPartner() - response: [{}]", connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
@@ -52,11 +55,12 @@ public class ConnectorPartnersProxy {
     @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
     public PartnerReservationResponse createReserve(PartnerReservationRequest request, String transactionId) {
         try {
-            URI url = URI.create(this.partnersConfigService.getPartnerWebhook(request.getPartnerCode(), Webhooks.RESERVATION).getConnectorUrl());
+            URI url = URI.create(this.partnersConfigService
+                    .getPartnerWebhook(request.getPartnerCode(), Webhooks.RESERVATION).getConnectorUrl());
             log.info("call connector partner create reserve. partner: {} url: {} request: {}", request.getPartnerCode(),
                     url, request);
 
-            var response = partnerConnectorClient.createReserve(
+            ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.createReserve(
                     url,
                     request,
                     transactionId);
@@ -68,14 +72,14 @@ public class ConnectorPartnersProxy {
             throw e;
         } catch (FeignException e) {
             log.error("Error on connector call ", e);
-            var status = HttpStatus.valueOf(e.status());
+            HttpStatus status = HttpStatus.valueOf(e.status());
             if (status.is5xxServerError()) {
-                var message = String.format(
+                String message = String.format(
                         "Internal error on partner connector calls. httpStatus: %s ResponseBody: %s", e.status(),
                         e.responseBody());
                 throw new ConnectorReservationInternalException(message, e);
             } else {
-                var message = String.format(
+                String message = String.format(
                         "Business error on partner connector calls. httpStatus: %s ResponseBody: %s ", e.status(),
                         e.responseBody().toString());
                 throw new ConnectorReservationBusinessException(message, e);
@@ -86,12 +90,13 @@ public class ConnectorPartnersProxy {
         }
     }
 
-    private ConnectorConfirmOrderResponse getResponseError(FeignException feignException) throws Exception {
+    private ConnectorConfirmOrderResponse getResponseError(FeignException feignException) throws OrderFlightException {
         try {
             final String content = feignException.contentUTF8();
             return objectMapper.readValue(content, ConnectorConfirmOrderResponse.class);
         } catch (Exception e) {
-            throw new Exception(feignException.getMessage());
+            throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, e.getMessage(), null,
+                    e);
         }
     }
 
