@@ -39,7 +39,7 @@ public class ConnectorPartnersProxy {
             final var connectorUri = URI.create(webhook.getConnectorUrl());
 
             ResponseEntity<ConnectorConfirmOrderResponse> response = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest);
-            ConnectorConfirmOrderResponse connectorConfirmOrderResponse = response.getBody();
+            var connectorConfirmOrderResponse = response.getBody();
             log.info("ConnectorPartnersProxy.confirmOnPartner() - requestId: [{}], commerceOrderId: [{}], response: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(),  connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
         } catch (FeignException exception) {
