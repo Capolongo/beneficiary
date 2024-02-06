@@ -40,7 +40,7 @@ public class ConnectorPartnersProxy {
 
             ResponseEntity<ConnectorConfirmOrderResponse> response = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest);
             ConnectorConfirmOrderResponse connectorConfirmOrderResponse = response.getBody();
-            log.info("ConnectorPartnersProxy.confirmOnPartner() - responseId: [{}], commerceOrderId: [{}] responseId: [{}]  response: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), connectorConfirmOrderResponse.getPartnerOrderId(),  connectorConfirmOrderResponse);
+            log.info("ConnectorPartnersProxy.confirmOnPartner() - requestId: [{}], commerceOrderId: [{}], response: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(),  connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
         } catch (FeignException exception) {
             var connectorConfirmOrderResponse = getResponseError(exception);
