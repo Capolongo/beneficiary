@@ -36,16 +36,14 @@ public class ConnectorPartnersProxy {
     public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode,
             ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws OrderFlightException {
         try {
-            WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(),
-                    Webhooks.CONFIRMATION);
-            final URI connectorUri = URI.create(webhook.getConnectorUrl());
-            ConnectorConfirmOrderResponse connectorConfirmOrderResponse = partnerConnectorClient
-                    .confirmOrder(connectorUri, connectorConfirmOrderRequest).getBody();
+            WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
+            final var connectorUri = URI.create(webhook.getConnectorUrl());
+            var connectorConfirmOrderResponse = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest).getBody();
 
             log.info("ConnectorPartnersProxy.confirmOnPartner() - response: [{}]", connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
         } catch (FeignException exception) {
-            ConnectorConfirmOrderResponse connectorConfirmOrderResponse = getResponseError(exception);
+            var connectorConfirmOrderResponse = getResponseError(exception);
             log.info("ConnectorPartnersProxy.confirmOnPartner() - exception response: [{}]",
                     connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
@@ -55,7 +53,7 @@ public class ConnectorPartnersProxy {
     @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
     public PartnerReservationResponse createReserve(PartnerReservationRequest request, String transactionId) {
         try {
-            URI url = URI.create(this.partnersConfigService
+            var url = URI.create(this.partnersConfigService
                     .getPartnerWebhook(request.getPartnerCode(), Webhooks.RESERVATION).getConnectorUrl());
             log.info("call connector partner create reserve. partner: {} url: {} request: {}", request.getPartnerCode(),
                     url, request);
@@ -74,12 +72,12 @@ public class ConnectorPartnersProxy {
             log.error("Error on connector call ", e);
             HttpStatus status = HttpStatus.valueOf(e.status());
             if (status.is5xxServerError()) {
-                String message = String.format(
+                var message = String.format(
                         "Internal error on partner connector calls. httpStatus: %s ResponseBody: %s", e.status(),
                         e.responseBody());
                 throw new ConnectorReservationInternalException(message, e);
             } else {
-                String message = String.format(
+                var message = String.format(
                         "Business error on partner connector calls. httpStatus: %s ResponseBody: %s ", e.status(),
                         e.responseBody().toString());
                 throw new ConnectorReservationBusinessException(message, e);
