@@ -41,7 +41,7 @@ public class ConfirmationControllerTest {
     ResponseEntity<ConfirmOrderResponse> response = controller.confirmOrder(id, requestBody);
 
     assertEquals(responseBody, response.getBody());
-    assertEquals(201, response.getStatusCode().value());
+    assertEquals(200, response.getStatusCode().value());
     verify(confirmationService).confirmOrder(id,
             requestBody);
     verifyNoMoreInteractions(confirmationService);

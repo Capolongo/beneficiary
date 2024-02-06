@@ -23,6 +23,7 @@ import lombok.*;
 @AllArgsConstructor
 @Table(name = "ORDERS_ITEM")
 @EqualsAndHashCode(callSuper = false)
+@ToString
 public class OrderItemEntity extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_ITEM_SEQ")

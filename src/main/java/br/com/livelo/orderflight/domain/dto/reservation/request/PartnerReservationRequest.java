@@ -2,15 +2,13 @@ package br.com.livelo.orderflight.domain.dto.reservation.request;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
+@ToString
 public class PartnerReservationRequest {
 	private String partnerCode;
     private List<String> segmentsPartnerIds;

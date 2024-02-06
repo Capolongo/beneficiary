@@ -13,17 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-import org.springframework.util.MultiValueMap;
-
-@FeignClient(value = "partner-client", url = "http://test")
+@FeignClient(value = "partner-client", url = "http://api.k8s")
 public interface PartnerConnectorClient {
 	@PostMapping
 	ResponseEntity<ConnectorConfirmOrderResponse> confirmOrder(URI baseUrl,
-			@RequestBody ConnectorConfirmOrderRequest ConnectorConfirmOrderRequest);
+			@RequestBody ConnectorConfirmOrderRequest connectorConfirmOrderRequest);
 
 	@PostMapping
-	ResponseEntity<PartnerReservationResponse> reservation(
+	ResponseEntity<PartnerReservationResponse> createReserve(
 			URI baseUrl,
 			@RequestBody PartnerReservationRequest partnerReservationRequest,
-			@RequestHeader MultiValueMap<String, String> headers);
+			@RequestHeader(value = "transactionId") String transactionId);
 }

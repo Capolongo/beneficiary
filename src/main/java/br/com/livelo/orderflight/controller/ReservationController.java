@@ -2,7 +2,7 @@ package br.com.livelo.orderflight.controller;
 
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
-import br.com.livelo.orderflight.service.reservation.ReservationService;
+import br.com.livelo.orderflight.service.reservation.impl.ReservationServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/v1/orders")
 public class ReservationController {
-    private final ReservationService reservationService;
+    private final ReservationServiceImpl reservationService;
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            @RequestHeader(value = "transactionId") String transacationId,
+            @RequestHeader(value = "transactionId") String transactionId,
             @RequestHeader(value = "customerId", required = false) String customerId,
             @RequestHeader(value = "channel") String channel,
             @RequestHeader(value = "listPrice") String listPrice,
             @RequestBody @Valid ReservationRequest reservationRequest
     ) {
-        var response = reservationService.createOrder(reservationRequest, transacationId, customerId, channel, listPrice);
+        var response = reservationService.createOrder(reservationRequest, transactionId, customerId, channel, listPrice);
         return ResponseEntity.ok(response);
     }
 }

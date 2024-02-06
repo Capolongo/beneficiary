@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "ORDERS_STATUS")
 @EqualsAndHashCode(callSuper = false)
+@ToString
 public class OrderStatusEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_STATUS_SEQ")
     @SequenceGenerator(name = "ORDERS_STATUS_SEQ", sequenceName = "ORDERS_STATUS_SEQ", allocationSize = 1)

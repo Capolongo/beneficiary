@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = { ReservationItemMapper.class, ReservationPriceMapper.class })
 public interface ReservationMapper {
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "items", expression = "java(mapItems(reservationRequest, partnerReservationResponse, listPrice))")
     @Mapping(target = "expirationDate", source = "partnerReservationResponse.expirationDate")
     @Mapping(target = "commerceOrderId", source = "reservationRequest.commerceOrderId")
@@ -33,6 +32,7 @@ public interface ReservationMapper {
     @Mapping(target = "statusHistory", expression = "java(Set.of(mapStatus(partnerReservationResponse)))")
     @Mapping(target = "currentStatus", expression = "java(mapStatus(partnerReservationResponse))")
     @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice))")
+    @Mapping(target = "createDate", ignore = true)
     OrderEntity toOrderEntity(ReservationRequest reservationRequest,
             PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId,
             String channel, String listPrice);
@@ -54,10 +54,13 @@ public interface ReservationMapper {
         return reservationRequest.getItems()
                 .stream()
                 .map(currentRequestItem -> reservationItemMapper.toOrderItemEntity(
+                        reservationRequest,
                         currentRequestItem,
                         partnerReservationResponse.getItems().stream()
-                                .filter(currentPartnerReservation -> currentPartnerReservation.getType()
-                                        .equals(currentRequestItem.getProductType()))
+                                .filter(currentPartnerReservationResponseItem -> currentPartnerReservationResponseItem
+                                        .getType()
+                                        .equals(currentRequestItem
+                                                .getProductType()))
                                 .toList().getFirst(),
                         listPrice))
                 .collect(Collectors.toSet());
@@ -67,6 +70,8 @@ public interface ReservationMapper {
 
     PartnerReservationDocument toPartnerReservationDocument(ReservationDocument reservationDocument);
 
-    ReservationResponse toReservationResponse(OrderEntity orderEntity);
+    @Mapping(target = "expirationTimer", source = "expirationTimer")
+    @Mapping(target = "orderId", source = "orderEntity.id")
+    ReservationResponse toReservationResponse(OrderEntity orderEntity, int expirationTimer);
 
 }

@@ -1,12 +1,12 @@
 package br.com.livelo.orderflight.proxies;
 
-import br.com.livelo.orderflight.client.Constants;
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
-import br.com.livelo.orderflight.configs.PartnerProperties;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
+import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
+import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.partnersconfigflightlibrary.dto.WebhookDTO;
@@ -17,14 +17,10 @@ import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.Map;
 
 import static java.util.Optional.ofNullable;
 
@@ -35,9 +31,9 @@ public class ConnectorPartnersProxy {
     private final PartnersConfigService partnersConfigService;
     private final PartnerConnectorClient partnerConnectorClient;
     private final ObjectMapper objectMapper;
-    private final PartnerProperties partnerProperties;
 
-    public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws Exception {
+    public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode,
+            ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws Exception {
         try {
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
             final URI connectorUri = URI.create(webhook.getConnectorUrl());
@@ -47,8 +43,46 @@ public class ConnectorPartnersProxy {
             return connectorConfirmOrderResponse;
         } catch (FeignException exception) {
             ConnectorConfirmOrderResponse connectorConfirmOrderResponse = getResponseError(exception);
-            log.info("ConnectorPartnersProxy.confirmOnPartner() - exception response: [{}]", connectorConfirmOrderResponse);
+            log.info("ConnectorPartnersProxy.confirmOnPartner() - exception response: [{}]",
+                    connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
+        }
+    }
+
+    @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
+    public PartnerReservationResponse createReserve(PartnerReservationRequest request, String transactionId) {
+        try {
+            URI url = URI.create(this.partnersConfigService.getPartnerWebhook(request.getPartnerCode(), Webhooks.RESERVATION).getConnectorUrl());
+            log.info("call connector partner create reserve. partner: {} url: {} request: {}", request.getPartnerCode(),
+                    url, request);
+
+            var response = partnerConnectorClient.createReserve(
+                    url,
+                    request,
+                    transactionId);
+            ofNullable(response.getBody())
+                    .ifPresent(body -> log.info("create reserve partner connector response: {}", body));
+
+            return response.getBody();
+        } catch (OrderFlightException e) {
+            throw e;
+        } catch (FeignException e) {
+            log.error("Error on connector call ", e);
+            var status = HttpStatus.valueOf(e.status());
+            if (status.is5xxServerError()) {
+                var message = String.format(
+                        "Internal error on partner connector calls. httpStatus: %s ResponseBody: %s", e.status(),
+                        e.responseBody());
+                throw new ConnectorReservationInternalException(message, e);
+            } else {
+                var message = String.format(
+                        "Business error on partner connector calls. httpStatus: %s ResponseBody: %s ", e.status(),
+                        e.responseBody().toString());
+                throw new ConnectorReservationBusinessException(message, e);
+            }
+        } catch (Exception e) {
+            log.error("Unknown error on connector call ", e);
+            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
 
@@ -61,43 +95,4 @@ public class ConnectorPartnersProxy {
         }
     }
 
-    public PartnerReservationResponse reservation(PartnerReservationRequest request, String transactionId) {
-        try {
-            var response = partnerConnectorClient.reservation(getUrlByPartnerCode(request.getPartnerCode()), request, getHeaders(Collections.singletonMap(Constants.TRANSACTION_ID, transactionId)));
-            return this.handleResponse(response);
-        } catch (OrderFlightException e) {
-            throw e;
-        } catch (FeignException e) {
-            var status = HttpStatus.valueOf(e.status());
-            if (status.is5xxServerError()) {
-                throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, null, "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(), e);
-            } else {
-                throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, null, "Erro interno ao se comunicar com parceiro no conector. ResponseBody: " + e.responseBody().toString(), e);
-            }
-        } catch (Exception e) {
-            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
-        }
-    }
-
-    private MultiValueMap<String, String> getHeaders(Map<String, String> mapHeaders) {
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        mapHeaders.forEach(headers::add);
-        return headers;
-    }
-
-    public PartnerReservationResponse handleResponse(ResponseEntity<PartnerReservationResponse> response) {
-        var body = ofNullable(response.getBody()).map(Object::toString).orElse(null);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
-        } else if (response.getStatusCode().is4xxClientError()) {
-            throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, null, body);
-        } else {
-            throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, null, body);
-        }
-    }
-
-    // BUSCAR DA LIB
-    private URI getUrlByPartnerCode(String partnerCode) {
-        return URI.create(partnerProperties.getUrlByPartnerCode(partnerCode));
-    }
 }
