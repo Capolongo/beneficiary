@@ -18,8 +18,8 @@ import br.com.livelo.orderflight.domain.entity.PaxEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Mapper(componentModel = "spring")
 public interface ConfirmOrderMapper {
@@ -27,15 +27,12 @@ public interface ConfirmOrderMapper {
     ConfirmOrderItemResponse orderItemEntityToConfirmOrderItemResponse(OrderItemEntity orderItemEntity);
 
     @Mapping(target = "operatedBy", source = "managedBy")
-    ConfirmationOrderFlightsLegsResponse flightLegEntityToConfirmationOrderFlightsLegsResponse(
-            FlightLegEntity flightLegEntity);
+    ConfirmationOrderFlightsLegsResponse flightLegEntityToConfirmationOrderFlightsLegsResponse(FlightLegEntity flightLegEntity);
 
-    ConfirmationOrderDocumentResponse paxEntityToConfirmationOrderPaxResponse(
-            DocumentEntity documentEntity);
+    ConfirmationOrderDocumentResponse paxEntityToConfirmationOrderPaxResponse(DocumentEntity documentEntity);
 
     @Mapping(target = "phone", source = "phoneNumber")
-    ConfirmationOrderPaxResponse paxEntityToConfirmationOrderPaxResponse(
-            PaxEntity paxEntity);
+    ConfirmationOrderPaxResponse paxEntityToConfirmationOrderPaxResponse(PaxEntity paxEntity);
 
     @Mapping(source = "currentStatus.partnerDescription", target = "status.details")
     ConfirmOrderResponse orderEntityToConfirmOrderResponse(OrderEntity orderEntity);
@@ -47,35 +44,23 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "phone", source = "phoneNumber")
     ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
-    OrderStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(
-            ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
+    OrderStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
 
     default String getFlightItemCommerceItemId(OrderEntity orderEntity) {
-
-        Optional<OrderItemEntity> orderItemEntity = orderEntity.getItems().stream().filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
-        .findFirst();
-
-        if(orderItemEntity.isEmpty()) {
-                return "";
-        }
-
-        return orderItemEntity.get().getCommerceItemId();
+        return orderEntity.getItems().stream()
+                .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
+                .findFirst()
+                .map(OrderItemEntity::getCommerceItemId)
+                .orElse("");
     }
 
     default List<ConnectorConfirmOrderPaxRequest> reducePaxs(OrderEntity orderEntity) {
-
-        Optional<OrderItemEntity> orderItemEntity = orderEntity.getItems().stream()
-        .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
-        .findFirst();
-
-        if(orderItemEntity.isEmpty()) {
-                return List.of();
-        }
-
-        return orderItemEntity.get()
-                .getTravelInfo()
-                .getPaxs()
-                .stream().map(this::paxEntityToConnectorConfirmOrderPaxRequest)
-                .toList();
+        return orderEntity.getItems().stream()
+                .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
+                .findFirst()
+                .map(item -> item.getTravelInfo().getPaxs().stream()
+                        .map(this::paxEntityToConnectorConfirmOrderPaxRequest)
+                        .toList())
+                .orElse(Collections.emptyList());
     }
 }
