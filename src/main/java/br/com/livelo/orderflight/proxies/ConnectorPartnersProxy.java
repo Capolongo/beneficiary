@@ -34,7 +34,7 @@ public class ConnectorPartnersProxy {
     private final ObjectMapper objectMapper;
 
     public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode,
-            ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws Exception {
+            ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws OrderFlightException {
         try {
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(),
                     Webhooks.CONFIRMATION);

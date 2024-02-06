@@ -2,8 +2,11 @@ package br.com.livelo.orderflight.utils;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderItemRequest;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
+import lombok.experimental.UtilityClass;
+
 import java.util.Set;
 
+@UtilityClass
 public class PayloadComparison {
     public static boolean compareItems(Set<ConfirmOrderItemRequest> orderItemsRequest, Set<OrderItemEntity> orderItems) {
         if (orderItemsRequest.size() != orderItems.size()) {
@@ -12,10 +15,10 @@ public class PayloadComparison {
 
         for (ConfirmOrderItemRequest orderItemRequest: orderItemsRequest) {
             String commerceItemOrder = orderItemRequest.getCommerceItemId();
-            var ItemFoundOrder = orderItems.stream().filter(
+            var itemFoundOrder = orderItems.stream().filter(
                     item -> item.getCommerceItemId().equals(commerceItemOrder)).findFirst();
 
-            if (ItemFoundOrder.isEmpty()) {
+            if (itemFoundOrder.isEmpty()) {
                 return false;
             }
         }

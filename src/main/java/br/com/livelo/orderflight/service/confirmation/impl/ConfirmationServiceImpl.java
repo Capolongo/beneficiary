@@ -29,7 +29,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
     private final ConfirmOrderMapper confirmOrderMapper;
     private final ConnectorPartnersProxy connectorPartnersProxy;
 
-    public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest) {
+    public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest) throws OrderFlightException {
         OrderEntity order = null;
         OrderStatusEntity status = null;
         try {

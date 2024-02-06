@@ -5,9 +5,11 @@ import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRe
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import lombok.experimental.UtilityClass;
 
 import java.util.List;
 
+@UtilityClass
 public class ConfirmOrderValidation {
     public static void validateOrderPayload(ConfirmOrderRequest orderRequest, OrderEntity order) throws OrderFlightException {
         List<Boolean> validationList = List.of(

@@ -63,7 +63,7 @@ class OrderServiceTest {
                 confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(
                         MockBuilder.connectorConfirmOrderStatusResponse()));
 
-        assertTrue(order.getCurrentStatus().equals(status));
+        assertEquals(status, order.getCurrentStatus());
     }
 
     @Test
