@@ -8,7 +8,6 @@ import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderR
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderDocumentResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderFlightsLegsResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderPaxResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderTravelInfoResponse;
 import br.com.livelo.orderflight.domain.entity.DocumentEntity;
 import br.com.livelo.orderflight.domain.entity.FlightLegEntity;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
@@ -20,6 +19,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper(componentModel = "spring")
 public interface ConfirmOrderMapper {
@@ -51,16 +51,28 @@ public interface ConfirmOrderMapper {
             ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
 
     default String getFlightItemCommerceItemId(OrderEntity orderEntity) {
-        return orderEntity.getItems().stream().filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
-                .findFirst()
-                .get().getCommerceItemId();
+
+        Optional<OrderItemEntity> orderItemEntity = orderEntity.getItems().stream().filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
+        .findFirst();
+
+        if(orderItemEntity.isEmpty()) {
+                return "";
+        }
+
+        return orderItemEntity.get().getCommerceItemId();
     }
 
     default List<ConnectorConfirmOrderPaxRequest> reducePaxs(OrderEntity orderEntity) {
-        return orderEntity.getItems().stream()
-                .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
-                .findFirst()
-                .get()
+
+        Optional<OrderItemEntity> orderItemEntity = orderEntity.getItems().stream()
+        .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
+        .findFirst();
+
+        if(orderItemEntity.isEmpty()) {
+                return List.of();
+        }
+
+        return orderItemEntity.get()
                 .getTravelInfo()
                 .getPaxs()
                 .stream().map(this::paxEntityToConnectorConfirmOrderPaxRequest)

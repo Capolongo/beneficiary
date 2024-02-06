@@ -378,4 +378,14 @@ public class MockBuilder {
                 .statusDate(LocalDateTime.now())
                 .build();
     }
+
+    public static DocumentEntity documentEntity() {
+        return DocumentEntity.builder()
+                .build();
+    }
+
+    public static FlightLegEntity flightLegEntity() {
+        return FlightLegEntity.builder()
+                .build();
+    }
 }
