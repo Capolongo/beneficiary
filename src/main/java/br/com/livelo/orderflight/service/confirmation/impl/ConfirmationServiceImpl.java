@@ -1,7 +1,6 @@
 package br.com.livelo.orderflight.service.confirmation.impl;
 
 import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
