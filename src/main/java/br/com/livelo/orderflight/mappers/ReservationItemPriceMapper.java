@@ -5,7 +5,6 @@ import br.com.livelo.orderflight.domain.entity.OrderItemPriceEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-
 @Mapper(componentModel = "spring")
 public interface ReservationItemPriceMapper {
 
@@ -18,4 +17,3 @@ public interface ReservationItemPriceMapper {
     @Mapping(target = "priceRule", ignore = true)
     OrderItemPriceEntity toOrderItemPriceEntity(PartnerReservationItem partnerReservationItem, String priceList);
 }
-

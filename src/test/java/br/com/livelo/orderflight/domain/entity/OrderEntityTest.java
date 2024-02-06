@@ -19,7 +19,7 @@ class OrderEntityTest {
         var expected = OrderStatusEntity.builder().id(2L).statusDate(data.plusDays(1)).build();
 
         var order = OrderEntity.builder().statusHistory(Set.of(orderStatus, expected)).build();
-        order.setStatus(order.getStatusHistory());
-        assertEquals(expected, order.getStatus());
+        order.setCurrentStatus(orderStatus);
+        assertEquals(orderStatus, order.getCurrentStatus());
     }
 }

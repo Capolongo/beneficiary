@@ -7,7 +7,7 @@ import org.springframework.retry.annotation.EnableRetry;
 
 @EnableFeignClients
 @EnableRetry
-@SpringBootApplication(scanBasePackages = {"br.com.livelo.orderflight", "br.com.livelo.partnersconfigflightlibrary"})
+@SpringBootApplication(scanBasePackages = { "br.com.livelo.orderflight", "br.com.livelo.partnersconfigflightlibrary" })
 public class OrderFlightApplication {
     public static void main(String[] args) {
         SpringApplication.run(OrderFlightApplication.class, args);

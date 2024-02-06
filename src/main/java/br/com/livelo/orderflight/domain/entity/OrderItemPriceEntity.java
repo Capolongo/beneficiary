@@ -26,9 +26,9 @@ public class OrderItemPriceEntity extends BaseEntity {
     @Id
     private Long id;
     private String listPrice;
-    private BigDecimal amount; //RECUPERAR NA PRECIFICAÇÃO
-    private BigDecimal pointsAmount; //RECUPEAR NA PRECIFICAÇÃO
-    private BigDecimal accrualPoints; //RECUPERAR NA PRECIFICAÇÃO
+    private BigDecimal amount; // RECUPERAR NA PRECIFICAÇÃO
+    private BigDecimal pointsAmount; // RECUPERAR NA PRECIFICAÇÃO
+    private BigDecimal accrualPoints; // RECUPERAR NA PRECIFICAÇÃO
     private BigDecimal partnerAmount;
     private String priceListId;
     @Lob

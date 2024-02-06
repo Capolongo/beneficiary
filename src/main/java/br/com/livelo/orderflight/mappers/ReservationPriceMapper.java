@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @Mapper(componentModel = "spring", uses = ReservationOrderPriceDescriptionMapper.class)
 public interface ReservationPriceMapper {
 
@@ -23,7 +22,8 @@ public interface ReservationPriceMapper {
     @Mapping(target = "ordersPriceDescription", expression = "java(mapOrdersPriceDescription(partnerReservationResponse))")
     OrderPriceEntity toOrderPriceEntity(PartnerReservationResponse partnerReservationResponse, String listPrice);
 
-    default Set<OrderPriceDescriptionEntity> mapOrdersPriceDescription(PartnerReservationResponse partnerReservationResponse) {
+    default Set<OrderPriceDescriptionEntity> mapOrdersPriceDescription(
+            PartnerReservationResponse partnerReservationResponse) {
         var orderPriceDescriptionMapper = Mappers.getMapper(ReservationOrderPriceDescriptionMapper.class);
 
         if (partnerReservationResponse.getOrdersPriceDescription() != null) {
@@ -35,5 +35,3 @@ public interface ReservationPriceMapper {
         return Collections.emptySet();
     }
 }
-
-

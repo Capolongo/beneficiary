@@ -30,5 +30,4 @@ public class PaxEntity extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "PAX_ID")
     private Set<DocumentEntity> document;
-
 }

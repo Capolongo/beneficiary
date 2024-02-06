@@ -3,7 +3,8 @@ package br.com.livelo.orderflight.controller;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.service.reservation.ReservationService;
+import br.com.livelo.orderflight.service.reservation.impl.ReservationServiceImpl;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +22,7 @@ class ReservationControllerTest {
     @InjectMocks
     private ReservationController reservationController;
     @Mock
-    private ReservationService reservationService;
+    private ReservationServiceImpl reservationService;
 
     @Test
     void shouldCreateReservation() {

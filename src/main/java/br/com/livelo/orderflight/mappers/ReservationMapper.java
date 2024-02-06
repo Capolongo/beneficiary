@@ -17,8 +17,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
-@Mapper(componentModel = "spring", uses = {ReservationItemMapper.class, ReservationPriceMapper.class})
+@Mapper(componentModel = "spring", uses = { ReservationItemMapper.class, ReservationPriceMapper.class })
 public interface ReservationMapper {
     @Mapping(target = "items", expression = "java(mapItems(reservationRequest, partnerReservationResponse, listPrice))")
     @Mapping(target = "expirationDate", source = "partnerReservationResponse.expirationDate")
@@ -31,10 +30,12 @@ public interface ReservationMapper {
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "customerIdentifier", source = "customerId")
     @Mapping(target = "statusHistory", expression = "java(Set.of(mapStatus(partnerReservationResponse)))")
-    @Mapping(target = "status", expression = "java(mapStatus(partnerReservationResponse))")
+    @Mapping(target = "currentStatus", expression = "java(mapStatus(partnerReservationResponse))")
     @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice))")
     @Mapping(target = "createDate", ignore = true)
-    OrderEntity toOrderEntity(ReservationRequest reservationRequest, PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId, String channel, String listPrice);
+    OrderEntity toOrderEntity(ReservationRequest reservationRequest,
+            PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId,
+            String channel, String listPrice);
 
     default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse, String listPrice) {
         var reservationPriceMapper = Mappers.getMapper(ReservationPriceMapper.class);
@@ -46,22 +47,22 @@ public interface ReservationMapper {
         return reservationStatusMapper.toOrderStatus(partnerReservationResponse);
     }
 
-    default Set<OrderItemEntity> mapItems(ReservationRequest reservationRequest, PartnerReservationResponse partnerReservationResponse, String listPrice) {
+    default Set<OrderItemEntity> mapItems(ReservationRequest reservationRequest,
+            PartnerReservationResponse partnerReservationResponse, String listPrice) {
         var reservationItemMapper = Mappers.getMapper(ReservationItemMapper.class);
 
         return reservationRequest.getItems()
                 .stream()
-                .map(currentRequestItem ->
-                        reservationItemMapper.toOrderItemEntity(
-                                reservationRequest,
-                                currentRequestItem,
-                                partnerReservationResponse.getItems().stream()
-                                        .filter(currentPartnerReservationResponseItem ->
-                                                currentPartnerReservationResponseItem.getType().equals(currentRequestItem.getProductType())
-                                        ).toList().getFirst(),
-                                listPrice
-                        )
-                )
+                .map(currentRequestItem -> reservationItemMapper.toOrderItemEntity(
+                        reservationRequest,
+                        currentRequestItem,
+                        partnerReservationResponse.getItems().stream()
+                                .filter(currentPartnerReservationResponseItem -> currentPartnerReservationResponseItem
+                                        .getType()
+                                        .equals(currentRequestItem
+                                                .getProductType()))
+                                .toList().getFirst(),
+                        listPrice))
                 .collect(Collectors.toSet());
     }
 
