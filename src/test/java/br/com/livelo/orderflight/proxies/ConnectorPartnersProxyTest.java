@@ -32,7 +32,7 @@ import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import feign.FeignException;
 
 @ExtendWith(MockitoExtension.class)
-public class ConnectorPartnersProxyTest {
+class ConnectorPartnersProxyTest {
 
   @Mock
   private PartnersConfigServiceImpl partnersConfigService;

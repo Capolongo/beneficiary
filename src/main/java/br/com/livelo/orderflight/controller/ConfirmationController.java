@@ -27,7 +27,7 @@ public class ConfirmationController {
     @PostMapping("{id}/confirmation")
     public ResponseEntity<ConfirmOrderResponse> confirmOrder(@PathVariable("id") String id, @RequestBody ConfirmOrderRequest order) {
         log.info("ConfirmationController.confirmOrder() - Start - id: [{}], body: [{}]", id, order);
-        ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder(id, order);
+        var confirmOrderResponse = confirmationService.confirmOrder(id, order);
 
         log.info("ConfirmationController.confirmOrder() - End - response: [{}]", confirmOrderResponse);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(confirmOrderResponse);

@@ -70,7 +70,7 @@ public class ConnectorPartnersProxy {
             throw e;
         } catch (FeignException e) {
             log.error("Error on connector call ", e);
-            HttpStatus status = HttpStatus.valueOf(e.status());
+            var status = HttpStatus.valueOf(e.status());
             if (status.is5xxServerError()) {
                 var message = String.format(
                         "Internal error on partner connector calls. httpStatus: %s ResponseBody: %s", e.status(),

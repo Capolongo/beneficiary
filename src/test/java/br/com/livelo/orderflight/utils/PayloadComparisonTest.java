@@ -17,7 +17,7 @@ import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.mock.MockBuilder;
 
 @ExtendWith(MockitoExtension.class)
-public class PayloadComparisonTest {
+class PayloadComparisonTest {
 
   @Test
   void shouldReturnPayloadComparisonAreEqual() {

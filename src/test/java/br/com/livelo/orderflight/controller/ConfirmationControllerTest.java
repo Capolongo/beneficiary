@@ -21,7 +21,7 @@ import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderR
 import br.com.livelo.orderflight.service.confirmation.impl.ConfirmationServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
-public class ConfirmationControllerTest {
+class ConfirmationControllerTest {
 
   @InjectMocks
   private ConfirmationController controller;
