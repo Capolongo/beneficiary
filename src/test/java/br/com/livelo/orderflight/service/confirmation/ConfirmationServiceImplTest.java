@@ -3,6 +3,7 @@ package br.com.livelo.orderflight.service.confirmation;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
+import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
@@ -10,6 +11,7 @@ import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.confirmation.impl.ConfirmationServiceImpl;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
+import feign.FeignException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -96,18 +98,15 @@ class ConfirmationServiceImplTest {
     }
 
     @Test
-    void shouldUpdateOrderWithStatusFailedAndSave() throws Exception {
+    void shouldUpdateOrderWithStatusFailedAndSave() throws OrderFlightException {
         ConfirmOrderResponse responseWithFailedStatus = MockBuilder.confirmOrderResponse();
         responseWithFailedStatus.setStatus(MockBuilder.confirmOrderStatusFailed());
 
         when(orderService.getOrderById(anyString())).thenReturn(MockBuilder.orderEntity());
-        when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class)))
-                .thenReturn(MockBuilder.connectorConfirmOrderRequest());
-        when(connectorPartnersProxy.confirmOnPartner(anyString(), any(ConnectorConfirmOrderRequest.class)))
-                .thenThrow(Exception.class);
+        when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class))).thenReturn(MockBuilder.connectorConfirmOrderRequest());
+        when(connectorPartnersProxy.confirmOnPartner(anyString(), any(ConnectorConfirmOrderRequest.class))).thenThrow(FeignException.class);
         when(confirmOrderMapper.orderEntityToConfirmOrderResponse(any())).thenReturn(responseWithFailedStatus);
-        ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder("id",
-                MockBuilder.confirmOrderRequest());
+        ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest());
         assertEquals(MockBuilder.confirmOrderResponseWithFailed(), confirmOrderResponse);
     }
 }
