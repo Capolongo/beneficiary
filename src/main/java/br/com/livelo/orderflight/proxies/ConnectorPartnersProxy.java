@@ -33,14 +33,14 @@ public class ConnectorPartnersProxy {
     private final PartnerConnectorClient partnerConnectorClient;
     private final ObjectMapper objectMapper;
 
-    public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode,
-            ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws OrderFlightException {
+    public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws OrderFlightException {
         try {
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
             final var connectorUri = URI.create(webhook.getConnectorUrl());
-            var connectorConfirmOrderResponse = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest).getBody();
 
-            log.info("ConnectorPartnersProxy.confirmOnPartner() - response: [{}]", connectorConfirmOrderResponse);
+            ResponseEntity<ConnectorConfirmOrderResponse> response = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest);
+            ConnectorConfirmOrderResponse connectorConfirmOrderResponse = response.getBody();
+            log.info("ConnectorPartnersProxy.confirmOnPartner() - responseId: [{}], commerceOrderId: [{}] responseId: [{}]  response: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), connectorConfirmOrderResponse.getPartnerOrderId(),  connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
         } catch (FeignException exception) {
             var connectorConfirmOrderResponse = getResponseError(exception);
