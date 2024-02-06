@@ -8,14 +8,14 @@ import java.util.Set;
 @Data
 @Builder
 public class ConfirmOrderResponse {
-    public String id;
-    public String commerceOrderId;
-    public String partnerOrderId;
-    public String partnerCode;
-    public String submittedDate;
-    public String expirationDate;
-    public String transactionId;
-    public ConfirmOrderStatusResponse status;
-    public ConfirmOrderPriceResponse price;
-    public Set<ConfirmOrderItemResponse> items;
+    private String id;
+    private String commerceOrderId;
+    private String partnerOrderId;
+    private String partnerCode;
+    private String submittedDate;
+    private String expirationDate;
+    private String transactionId;
+    private ConfirmOrderStatusResponse status;
+    private ConfirmOrderPriceResponse price;
+    private Set<ConfirmOrderItemResponse> items;
 }

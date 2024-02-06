@@ -22,7 +22,7 @@ import java.util.Set;
 public class OrderEntity extends BaseEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")
-        @GenericGenerator(name = "ORDERS_SEQ", strategy = "br.com.livelo.orderflight.utils.StringPrefixedSequenceIdGenerator", parameters = {
+        @GenericGenerator(name = "ORDERS_SEQ", parameters = {
                         @Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "lf"),
                         @Parameter(name = "increment_size", value = "1") })
         private String id;

@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class ConfirmOrderStatusResponse {
-    public String code;
-    public String description;
-    public String details;
+    private String code;
+    private String description;
+    private String details;
 }

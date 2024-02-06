@@ -22,7 +22,7 @@ public class ConfirmOrderValidation {
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
 
-        if (!StatusConstants.INITIAL.getCode().equals(order.getCurrentStatus().getCode()) && !orderRequest.getResubmission()) {
+        if (!StatusConstants.INITIAL.getCode().equals(order.getCurrentStatus().getCode()) && !orderRequest.getResubmission().booleanValue()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ALREADY_CONFIRMED;
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }

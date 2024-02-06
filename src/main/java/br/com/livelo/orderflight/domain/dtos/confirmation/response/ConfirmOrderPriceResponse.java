@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 @Builder
 public class ConfirmOrderPriceResponse {
-    public BigDecimal amount;
-    public BigDecimal pointsAmount;
+    private BigDecimal amount;
+    private BigDecimal pointsAmount;
 }
