@@ -34,7 +34,7 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "phone", source = "phoneNumber")
     ConfirmationOrderPaxResponse paxEntityToConfirmationOrderPaxResponse(PaxEntity paxEntity);
 
-    @Mapping(source = "currentStatus.partnerDescription", target = "status.details")
+    @Mapping(source = "currentStatus.partnerResponse", target = "status.details")
     ConfirmOrderResponse orderEntityToConfirmOrderResponse(OrderEntity orderEntity);
 
     @Mapping(target = "commerceItemId", expression = "java(getFlightItemCommerceItemId(orderEntity))")
@@ -44,8 +44,6 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "phone", source = "phoneNumber")
     ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
-//    TODO: trocar para details
-    @Mapping(source = "partnerResponse", target = "description")
     OrderStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
 
     default String getFlightItemCommerceItemId(OrderEntity orderEntity) {
