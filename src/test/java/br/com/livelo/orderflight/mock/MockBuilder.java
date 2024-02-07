@@ -97,7 +97,7 @@ public class MockBuilder {
         return ConfirmOrderStatusResponse.builder()
                 .code(StatusConstants.INITIAL.getCode())
                 .description(StatusConstants.INITIAL.getDescription())
-                .details("partnerDescription")
+                .details("partnerResponse")
                 .build();
     }
 
@@ -192,7 +192,7 @@ public class MockBuilder {
                 .submittedDate("date")
                 .expirationDate("date")
                 .transactionId("transactionId")
-                .currentStatus(null)
+                .currentStatus(ConnectorConfirmOrderStatusResponse.builder().build())
                 .voucher(null)
                 .build());
     }

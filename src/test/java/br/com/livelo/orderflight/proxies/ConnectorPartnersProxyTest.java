@@ -20,11 +20,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
+import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import br.com.livelo.partnersconfigflightlibrary.dto.WebhookDTO;
 import br.com.livelo.partnersconfigflightlibrary.services.impl.PartnersConfigServiceImpl;
@@ -67,7 +69,7 @@ class ConnectorPartnersProxyTest {
   }
 
   @Test
-  void shouldReturnFailedWhenCatchFeignException() throws Exception {
+  void shouldReturnFailedWhenCatchFeignException() throws OrderFlightException, JsonProcessingException {
     FeignException mockException = Mockito.mock(FeignException.class);
     when(mockException.contentUTF8())
         .thenReturn(
