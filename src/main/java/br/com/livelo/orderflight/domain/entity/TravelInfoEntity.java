@@ -19,21 +19,13 @@ public class TravelInfoEntity extends BaseEntity {
     @SequenceGenerator(name = "TRAVEL_INFO_SEQ", sequenceName = "TRAVEL_INFO_SEQ", allocationSize = 1)
     @Id
     private Long id;
-
     private String type;
-
     private String reservationCode;
-
     private Integer adultQuantity;
-
     private Integer childQuantity;
-
     private Integer babyQuantity;
-
     private String voucher;
-
     private String typeClass;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "TRAVEL_INFO_ID")
     private Set<PaxEntity> paxs;
