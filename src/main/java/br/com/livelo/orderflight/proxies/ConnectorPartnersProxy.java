@@ -91,11 +91,15 @@ public class ConnectorPartnersProxy {
     private ConnectorConfirmOrderResponse getResponseError(FeignException feignException) throws OrderFlightException {
         try {
             final String content = feignException.contentUTF8();
-            return objectMapper.readValue(content, ConnectorConfirmOrderResponse.class);
+            log.info("ConnectorPartnersProxy.getResponseError() - contentUTF8: [{}]", content);
+            var connectorConfirmOrderResponse = objectMapper.readValue(content, ConnectorConfirmOrderResponse.class);
+            if (connectorConfirmOrderResponse.getCurrentStatus() == null) {
+                throw new Exception(content);
+            }
+
+            return connectorConfirmOrderResponse;
         } catch (Exception e) {
-            throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, e.getMessage(), null,
-                    e);
+            throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
-
 }

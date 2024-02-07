@@ -40,8 +40,9 @@ public class OrderServiceImpl implements OrderService {
         Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(item -> !item.getSkuId().toLowerCase().contains("tax")).findFirst();
 
         if (itemFlight.isEmpty()) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND; //TODO: criar error para esse caso
-            throw new OrderFlightException(errorType, errorType.getTitle(), null);        }
+            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;
+            throw new OrderFlightException(errorType, errorType.getTitle(), null);
+        }
 
         return itemFlight.get();
     }
