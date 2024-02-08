@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: order-flight-v1
+  description: Order Flight V1
+  tags:
+    - rest
+  links:
+    - url: https://stash.livelo.intranet/projects/LIVSW/repos/livelo-swagger-partners-route-travel-v2/browse/livelo-swagger-partners-route-travel-v2.yaml
+      title: API partners route travel
+      icon: code
+spec:
+  type: openapi
+  lifecycle: experimental
+  owner: group:default/confirmando-minha-viagem
+  definition:
+    $text: https://stash.livelo.intranet/projects/LIVSW/repos/livelo-swagger-partners-route-travel-v2/raw/livelo-swagger-partners-route-travel-v2.yaml
