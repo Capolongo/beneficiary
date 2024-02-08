@@ -28,15 +28,15 @@ Para os cenários de confirmação, temos alguns mocks configurados no projeto c
 Para utilizar os mocks do connector parceiro, siga estas etapas:
 
 1. Utilize a rota interna [POST] createOrder para criar uma ordem na base com algumas modificações no payload de criação.
-   Você deve alterar os seguintes parâmetros do objeto usuário que fica no caminho `items.travelInfo.paxs[0]`, por exemplo:
+Você deve alterar os seguintes parâmetros do objeto usuário que fica no caminho `items.travelInfo.paxs[0]`, por exemplo:
 
-   ```json
-   {
-     "firstName": "LIVELO",
-     "lastName": "MOCK",
-     "phoneNumber": "999991007"
-   }
-   ```
+```json
+{
+    "firstName": "LIVELO",
+    "lastName": "MOCK",
+    "phoneNumber": "999991007"
+}
+```
 
 Quando `firstName` é "LIVELO" e `lastName` é "MOCK", você deve testar todos os status que não sejam de falha, determinando apenas os últimos 4 dígitos do `phoneNumber`. No exemplo acima, teríamos o status `LIVPNR-1007`.
 
