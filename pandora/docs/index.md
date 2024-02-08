@@ -23,7 +23,6 @@ O serviço 'order-flight' desempenha um papel fundamental no ecossistema de comp
 Para a configuração do MS em local devemos rodar o comando `git clone ssh://git@stash.livelo.intranet:7999/livtravel/order-flight.git` para baixar na nossa maquina o projeto.
 
 Atenção, você precisa ter o ambiente JAVA configurado em sua máquina:
-
 - Maven;
 - Java 21;
 - Conexão com oracle database;

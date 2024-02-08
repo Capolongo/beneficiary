@@ -1,54 +1,28 @@
 spring:
   cloud:
-    bus:
-      enabled: false
-
     openfeign:
       micrometer:
         enabled: true
 
-  main:
-    lazy-initialization: false
-    allow-bean-definition-overriding: true
-
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
   config:
     import: "optional:configserver:https://fake-url.com?max-attempts=1"
-
-  rabbitmq:
-
-    enabled: true
-    host: ${RABBIT_HOST:localhost}
-    port: ${RABBIT_PORT:5672}
-    username: ${RABBIT_USERNAME:guest}
-    password: ${RABBIT_PASSWORD:guest}
-    exchange: product.exchange
-    queue: product.queue
-    routingkey: product.routingkey
-
-
-
   datasource:
-    url: jdbc:h2:mem:mydb;NON_KEYWORDS=user
-    username: username
-    password: password
-    driverClassName: org.h2.Driver
-
+    url: jdbc:oracle:thin:@//${ORACLEDB_HOST:localhost}:${ORACLEDB_PORT:1521}/${ORACLEDB_SERVICENAME:xe}
+    username: ${ORACLEDB_USERNAME:order_flight}
+    password: ${ORACLEDB_PASSWORD:order_flight}
+    driver-class-name: oracle.jdbc.OracleDriver
   application:
     name: order-flight
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    open-in-view: false
-
-
 management:
-  endpoints:
+  endpoints: 
     web:
       exposure:
         include:
           - health
-
   endpoint:
-
     health:
       show-details: always
       show-components: always
@@ -58,11 +32,6 @@ management:
         readiness:
           include:
             - readinessState
-
-
-
-
-server:
-  port: 8080
-  servlet:
-    contextPath: /archetype-base-java17
+client:
+  partnersconfigflight:
+    endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/partners-config-flight

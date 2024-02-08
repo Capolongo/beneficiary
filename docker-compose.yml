@@ -1,22 +1,16 @@
-version: "3.9"
-
-
-x-service_defaults: &service_defaults
-  extra_hosts:
-    - "host.docker.internal:host-gateway"
-  labels:
-    org.springframework.boot.ignore: true
+# Use root/example as user/password credentials
+version: '3.1'
 
 services:
-
-  rabbitmq:
-    << : *service_defaults
-    container_name: rabbitmq
-    image: rabbitmq:management
+  oracle:
+    image: container-registry.oracle.com/database/enterprise:19.3.0.0
+    container_name: "oracle-container"
+    expose:
+      - 1521
     ports:
-      - "5672:5672"
-      - "15672:15672"
-
-
-
-
+      - 1521:1521
+      - 5500:5500
+    environment:
+      ORACLE_PWD: admin
+      ORACLE_SID: xe
+      DB_SID: "xe"
