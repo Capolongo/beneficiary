@@ -6,4 +6,4 @@ metadata:
 spec:
   targets:
     - ./catalog-component.yaml
-    - ./catalog-apis/v2/order-flight-v1.yaml
+    - ./catalog-apis/v1/order-flight-v1.yaml
