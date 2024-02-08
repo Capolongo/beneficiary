@@ -10,6 +10,12 @@ metadata:
   tags:
     - java
     - springboot
+    - api
+    - order-flight
+    - flight
+    - travel
+    - reservando minha viagem
+    - concluindo minha viagem
     # - leanix.net/fact-sheet-id:
 spec:
   lifecycle: experimental
