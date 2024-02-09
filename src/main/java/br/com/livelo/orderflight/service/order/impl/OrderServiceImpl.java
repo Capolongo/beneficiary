@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.service.order.impl;
 
+import br.com.livelo.orderflight.domain.dtos.repository.FindAllOrdersByStatusCode;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
@@ -8,8 +9,13 @@ import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,6 +24,9 @@ import java.util.Set;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+
+    @Value("${order.findAllOrdersByStatusMaxLimit}")
+    private int findAllOrdersByStatusMaxLimit;
 
     public OrderEntity getOrderById(String id) throws OrderFlightException {
         Optional<OrderEntity> order = orderRepository.findById(id);
@@ -30,11 +39,17 @@ public class OrderServiceImpl implements OrderService {
         return order.get();
     }
 
+    public List<FindAllOrdersByStatusCode> getOrdersByStatusCode(String statusCode, Integer page, Integer limit) throws OrderFlightException {
+        limit = limit > findAllOrdersByStatusMaxLimit ? findAllOrdersByStatusMaxLimit : limit;
+
+        Pageable pagination = PageRequest.of(page, limit);
+        return orderRepository.findAllByCurrentStatusCode(statusCode, pagination);
+    }
+
     public void addNewOrderStatus(OrderEntity order, OrderStatusEntity status) {
         order.getStatusHistory().add(status);
         order.setCurrentStatus(status);
     }
-
 
     public OrderItemEntity getFlightFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
         Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(item -> !item.getSkuId().toLowerCase().contains("tax")).findFirst();

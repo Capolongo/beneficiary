@@ -17,7 +17,7 @@ spring:
   application:
     name: order-flight
 management:
-  endpoints: 
+  endpoints:
     web:
       exposure:
         include:
@@ -35,3 +35,6 @@ management:
 client:
   partnersconfigflight:
     endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/partners-config-flight
+
+order:
+  findAllOrdersByStatusMaxLimit: 500
