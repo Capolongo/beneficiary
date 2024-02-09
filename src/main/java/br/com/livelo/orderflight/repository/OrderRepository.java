@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.repository;
 
-import br.com.livelo.orderflight.domain.dtos.repository.FindAllOrdersByStatusCode;
+import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 
 import org.springframework.data.domain.Pageable;
@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<OrderEntity, String> {
     Optional<OrderEntity> findByCommerceOrderId(String commerceOrderId);
 
-    List<FindAllOrdersByStatusCode> findAllByCurrentStatusCode(String statusCode, Pageable pageable);
+    List<OrderProcess> findAllByCurrentStatusCode(String statusCode, Pageable pageable);
 }

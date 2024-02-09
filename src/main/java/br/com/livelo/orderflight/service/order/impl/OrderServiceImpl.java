@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.service.order.impl;
 
-import br.com.livelo.orderflight.domain.dtos.repository.FindAllOrdersByStatusCode;
+import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
@@ -25,8 +25,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
-    @Value("${order.findAllOrdersByStatusMaxLimit}")
-    private int findAllOrdersByStatusMaxLimit;
+    @Value("${order.orderProcessMaxRows}")
+    private int orderProcessMaxRows;
 
     public OrderEntity getOrderById(String id) throws OrderFlightException {
         Optional<OrderEntity> order = orderRepository.findById(id);
@@ -39,10 +39,10 @@ public class OrderServiceImpl implements OrderService {
         return order.get();
     }
 
-    public List<FindAllOrdersByStatusCode> getOrdersByStatusCode(String statusCode, Integer page, Integer limit) throws OrderFlightException {
-        limit = limit > findAllOrdersByStatusMaxLimit ? findAllOrdersByStatusMaxLimit : limit;
+    public List<OrderProcess> getOrdersByStatusCode(String statusCode, Integer page, Integer rows) throws OrderFlightException {
+        rows = rows > orderProcessMaxRows ? orderProcessMaxRows : rows;
 
-        Pageable pagination = PageRequest.of(page, limit);
+        Pageable pagination = PageRequest.of(page, rows);
         return orderRepository.findAllByCurrentStatusCode(statusCode, pagination);
     }
 

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class FindAllOrdersByStatusCode {
+public class OrderProcess {
   private String id;
   private String commerceOrderId;
 }
