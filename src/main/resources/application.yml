@@ -37,4 +37,4 @@ client:
     endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/partners-config-flight
 
 order:
-  findAllOrdersByStatusMaxLimit: 500
+  orderProcessMaxRows: 500

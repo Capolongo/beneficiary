@@ -3,7 +3,10 @@ package br.com.livelo.orderflight.service.order;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
+import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
@@ -11,7 +14,7 @@ import br.com.livelo.orderflight.exception.OrderFlightException;
 public interface OrderService {
   OrderEntity getOrderById(String id) throws OrderFlightException;
 
-  List<OrderProcess> getOrdersByStatusCode(String status, Integer page, Integer rows) throws OrderFlightException;
+  PaginationOrderProcessResponse getOrdersByStatusCode(String status, Integer page, Integer rows) throws OrderFlightException;
 
   void addNewOrderStatus(OrderEntity order, OrderStatusEntity status);
 
