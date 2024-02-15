@@ -54,12 +54,12 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             }
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getMessage()));
         } catch (Exception exception) {
-            log.error("ConfirmationService.confirmOrder exception - id: [{}], orderId: [{}], transactionId: [{}],  error: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), exception);
+            log.error("ConfirmationService.confirmOrder exception - id: [{}], orderId: [{}], transactionId: [{}],  error: [{}]", id, orderRequest.getCommerceOrderId(), order.getTransactionId(), exception);
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getLocalizedMessage()));
         }
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
-        log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}]", id, order.getCommerceOrderId(), order.getTransactionId());
+        log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}]", id, orderRequest.getCommerceOrderId(), order.getTransactionId());
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
 

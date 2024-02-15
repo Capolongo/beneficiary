@@ -8,9 +8,9 @@ import lombok.Data;
 @Data
 @Builder
 public class PaginationOrderProcessResponse {
-  List<OrderProcess> orders;
-  int page;
-  int rows;
-  int total;
-  int totalPages;
+  private List<OrderProcess> orders;
+  private int page;
+  private int rows;
+  private int total;
+  private int totalPages;
 }

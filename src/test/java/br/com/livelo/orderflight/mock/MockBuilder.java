@@ -392,20 +392,26 @@ public class MockBuilder {
                 .build();
     }
 
-    public static PaginationOrderProcessResponse paginationOrderProcessResponse(int pages, int rows) {
+    public static List<OrderProcess> listOfOrderProcess(int amountOrders) {
         List<OrderProcess> orders = new ArrayList<OrderProcess>();
-        for (int i = 0; i < rows; i++) {
+        for (int i = 0; i < amountOrders; i++) {
             orders.add(OrderProcess.builder()
             .id(String.valueOf(i))
             .commerceOrderId(String.valueOf(i + i * 1000))
             .build());
         }
+        return orders;
+    }
+
+    public static PaginationOrderProcessResponse paginationOrderProcessResponse(int pages, int rows) {
+        int total = 500;
+        List<OrderProcess> orders = listOfOrderProcess(rows);
         return PaginationOrderProcessResponse.builder()
         .orders(orders)
         .page(pages)
         .rows(rows)
-        .total(orders.size())
-        .totalPages(0)
+        .total(total)
+        .totalPages(total / orders.size())
         .build();
     }
 }

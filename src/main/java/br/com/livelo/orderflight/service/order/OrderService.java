@@ -1,11 +1,8 @@
 package br.com.livelo.orderflight.service.order;
 
-import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
 
-import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
