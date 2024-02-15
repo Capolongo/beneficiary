@@ -4,6 +4,7 @@ nav:
   - Home: index.md
   - APIs:
       - Confirmação de pedido: confirmation.md
+      - Processamento do pedido: process-order.md
   - Inicializando dependências: use-dependencies.md
   - Mockando as dependências: use-mocks.md
 plugins:
