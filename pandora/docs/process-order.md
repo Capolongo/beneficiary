@@ -19,53 +19,9 @@ linhas não pode ser maior que a quantidade configurada na variável `order.orde
 - A quantidade de linhas pode ser escolhida através do parâmetro `rows`, e deve ser menor do que o valor da
   variável `order.orderProcessMaxRows` do `application.yml`, que é também o valor default.
 
-## Mocks
+## Exemplos de request
 
-No processamento de ordem existem algumas opções de retornos nos mocks.
-
-1. No primeiro é o mock default, caso não seja enviado nenhum parâmetro.
-
-`GET` /v1/orders/process
-
-<details>
-    <summary>Clique para ver o retorno</summary>
-    <pre>
-{
-    "orders": [
-        {
-            "id": "lf121",
-            "commerceOrderId": "o1231"
-        },
-        {
-            "id": "lf122",
-            "commerceOrderId": "o1232"
-        },
-        {
-            "id": "lf123",
-            "commerceOrderId": "o1233"
-        },
-        {
-            "id": "lf124",
-            "commerceOrderId": "o1234"
-        },
-        {
-            "id": "lf125",
-            "commerceOrderId": "o1235"
-        }
-    ],
-    "page": 1,
-    "rows": 100,
-    "total": 13,
-    "totalPages": 1
-}
-    </pre>
-</details>
-
-2. O segundo cenário tem algumas opções da quantidade de linhas que será retornado.
-
-- O parâmetro `statusCode` deve ser igual a `LIVPNR-1007`
-- O parâmetro `page` deve ser igual a `1`
-- O parâmetro `rows` pode ser `12`, `25`, `50` ou `100`, dependendo da quantidade de linhas desejada
+1. Retorno da página 1 de ordens no status `LIVPNR-1007`, contendo 12 linhas por página
 
 `GET` /v1/orders/process?statusCode=LIVPNR-1007&page=1&rows=12
 
@@ -143,6 +99,21 @@ No processamento de ordem existem algumas opções de retornos nos mocks.
     "rows": 12,
     "total": 13,
     "totalPages": 2
+}
+</pre>
+</details>
+
+2. Caso não tenha nenhuma ordem no status buscado esse será o retorno
+
+<details>
+    <summary>Clique para ver o retorno</summary>
+    <pre>
+{
+    "orders": [],
+    "page": 0,
+    "rows": 12,
+    "total": 0,
+    "totalPages": 0
 }
 </pre>
 </details>
