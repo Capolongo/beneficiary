@@ -14,8 +14,8 @@ metadata:
     - order-flight
     - flight
     - travel
-    - reservando minha viagem
-    - concluindo minha viagem
+    - reservando-minha-viagem
+    - concluindo-minha-viagem
     # - leanix.net/fact-sheet-id:
 spec:
   lifecycle: experimental
