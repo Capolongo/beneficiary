@@ -33,10 +33,10 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         OrderEntity order = null;
         OrderStatusEntity status = null;
         try {
-            log.info("ConfirmationService.confirmOrder() - Start");
+            log.info("ConfirmationService.confirmOrder - Start - id: [{}]", id);
             order = orderService.getOrderById(id);
 
-            log.info("ConfirmationService.confirmOrder() - id: [{}], orderId: [{}], transactionId: [{}],  order: [{}]", order.getId(), order.getCommerceOrderId(), order.getTransactionId(), order);
+            log.info("ConfirmationService.confirmOrder - id: [{}], orderId: [{}], transactionId: [{}],  order: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), order);
 
             ConfirmOrderValidation.validateOrderPayload(orderRequest, order);
 
@@ -54,11 +54,12 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             }
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getMessage()));
         } catch (Exception exception) {
+            log.error("ConfirmationService.confirmOrder exception - id: [{}], orderId: [{}], transactionId: [{}],  error: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), exception);
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getLocalizedMessage()));
         }
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
-        log.info("ConfirmationService.confirmOrder() - End");
+        log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}]", id, order.getCommerceOrderId(), order.getTransactionId());
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
 

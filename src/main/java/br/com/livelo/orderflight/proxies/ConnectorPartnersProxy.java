@@ -35,17 +35,17 @@ public class ConnectorPartnersProxy {
 
     public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws OrderFlightException {
         try {
+            log.info("ConnectorPartnersProxy.confirmOnPartner - start - id: [{}], commerceOrderId: [{}], partnerCode: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), partnerCode);
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
             final var connectorUri = URI.create(webhook.getConnectorUrl());
 
             ResponseEntity<ConnectorConfirmOrderResponse> response = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest);
             var connectorConfirmOrderResponse = response.getBody();
-            log.info("ConnectorPartnersProxy.confirmOnPartner() - requestId: [{}], commerceOrderId: [{}], response: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(),  connectorConfirmOrderResponse);
+            log.info("ConnectorPartnersProxy.confirmOnPartner - end - id: [{}], commerceOrderId: [{}], response: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(),  connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
         } catch (FeignException exception) {
-            var connectorConfirmOrderResponse = getResponseError(exception);
-            log.info("ConnectorPartnersProxy.confirmOnPartner() - exception response: [{}]",
-                    connectorConfirmOrderResponse);
+            var connectorConfirmOrderResponse = getResponseError(exception, connectorConfirmOrderRequest);
+            log.warn("ConnectorPartnersProxy.confirmOnPartner exception - id: [{}], commerceOrderId: [{}], partnerCode: [{}], exception response: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), partnerCode, connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
         }
     }
@@ -88,17 +88,18 @@ public class ConnectorPartnersProxy {
         }
     }
 
-    private ConnectorConfirmOrderResponse getResponseError(FeignException feignException) throws OrderFlightException {
+    private ConnectorConfirmOrderResponse getResponseError(FeignException feignException, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws OrderFlightException {
         final String content = feignException.contentUTF8();
         try {
-            log.info("ConnectorPartnersProxy.getResponseError() - contentUTF8: [{}]", content);
             var connectorConfirmOrderResponse = objectMapper.readValue(content, ConnectorConfirmOrderResponse.class);
             if (connectorConfirmOrderResponse.getCurrentStatus() == null) {
+                log.error("ConnectorPartnersProxy.getResponseError - FLIGHT_CONNECTOR_INTERNAL_ERROR - id: [{}], commerceOrderId: [{}], contentUTF8: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), content);
                 throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, content, null);
             }
 
             return connectorConfirmOrderResponse;
         } catch (Exception e) {
+            log.error("ConnectorPartnersProxy.getResponseError - FLIGHT_CONNECTOR_INTERNAL_ERROR - id: [{}], commerceOrderId: [{}], contentUTF8: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), content);
             throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, content, null, e);
         }
     }
