@@ -9,8 +9,10 @@ import br.com.livelo.orderflight.domain.entity.SegmentEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
+import br.com.livelo.orderflight.proxies.PricingProxy;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import br.com.livelo.orderflight.service.reservation.impl.ReservationServiceImpl;
+import br.com.livelo.orderflight.mappers.PricingCalculateRequestMapper;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
 import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,11 +38,15 @@ class ReservationServiceTest {
     private OrderServiceImpl orderService;
     @Mock
     private ConnectorPartnersProxy connectorPartnersProxy;
-
+    @Mock
+    private PricingProxy pricingProxy;
+    @Mock
+    private PricingCalculateRequestMapper pricingCalculateRequestMapper;
+    
     @BeforeEach
     void setup() {
         var cartMapper = Mappers.getMapper(ReservationMapper.class);
-        this.reservationService = new ReservationServiceImpl(orderService, connectorPartnersProxy, cartMapper);
+        this.reservationService = new ReservationServiceImpl(orderService, connectorPartnersProxy, pricingProxy, cartMapper,pricingCalculateRequestMapper);
     }
 
     @Test
