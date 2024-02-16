@@ -8,8 +8,8 @@ metadata:
     - order-flight
     - flight
     - travel
-    - reservando minha viagem
-    - concluindo minha viagem
+    - reservando-minha-viagem
+    - concluindo-minha-viagem
   links: # optional - array de objetos
     - url: https://stash.livelo.intranet/projects/LIVSW/repos/livelo-swagger-order-flight-v1/browse/livelo-swagger-order-flight-v1.yaml
       title: order-flight
