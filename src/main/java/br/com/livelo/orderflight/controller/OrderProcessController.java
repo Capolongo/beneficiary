@@ -21,7 +21,7 @@ public class OrderProcessController {
   private final OrderService orderService;
 
   @GetMapping("/process")
-  public ResponseEntity<PaginationOrderProcessResponse> getOrdersByStatus(@RequestParam String statusCode, @RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "${order.orderProcessMaxRows}") Integer rows) {
+  public ResponseEntity<PaginationOrderProcessResponse> getOrdersByStatus(@RequestParam String statusCode, @RequestParam(required = false, defaultValue = "1") Integer page, @RequestParam(required = false, defaultValue = "${order.orderProcessMaxRows}") Integer rows) {
     log.debug("ConfirmationController.getOrdersByStatus() - Start - statusCode: [{}], page: [{}], rows: [{}]", statusCode, page, rows);
     var orders = orderService.getOrdersByStatusCode(statusCode, page, rows);
 

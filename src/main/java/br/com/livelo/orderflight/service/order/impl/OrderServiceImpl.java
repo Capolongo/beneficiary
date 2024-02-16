@@ -73,7 +73,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public PaginationOrderProcessResponse getOrdersByStatusCode(String statusCode, Integer page, Integer rows) throws OrderFlightException {
+        if (page <= 0) {
+            throw new OrderFlightException(OrderFlightErrorType.VALIDATION_INVALID_PAGINATION, OrderFlightErrorType.VALIDATION_INVALID_PAGINATION.getDescription(), null);
+        }
+
         rows = rows > orderProcessMaxRows ? orderProcessMaxRows : rows;
+        page = page - 1;
 
         Pageable pagination = PageRequest.of(page, rows);
         var foundOrders = orderRepository.findAllByCurrentStatusCode(statusCode.toUpperCase(), pagination);
