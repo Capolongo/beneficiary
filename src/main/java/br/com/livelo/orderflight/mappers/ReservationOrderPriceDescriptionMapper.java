@@ -9,6 +9,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ReservationOrderPriceDescriptionMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "pointsAmount", ignore = true) //RECUPERAR DA PRECIFICAÇÃO
+    @Mapping(target = "pointsAmount", ignore = true)
     OrderPriceDescriptionEntity toOrderPriceDescriptionEntity(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription);
 }

@@ -6,6 +6,7 @@ import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationDocum
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderPriceEntity;
@@ -31,15 +32,15 @@ public interface ReservationMapper {
     @Mapping(target = "customerIdentifier", source = "customerId")
     @Mapping(target = "statusHistory", expression = "java(Set.of(mapStatus(partnerReservationResponse)))")
     @Mapping(target = "currentStatus", expression = "java(mapStatus(partnerReservationResponse))")
-    @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice))")
+    @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice,pricingCalculatePrice))")
     @Mapping(target = "createDate", ignore = true)
     OrderEntity toOrderEntity(ReservationRequest reservationRequest,
             PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId,
-            String channel, String listPrice);
+            String channel, String listPrice, PricingCalculatePrice pricingCalculatePrice);
 
-    default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse, String listPrice) {
+    default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse, String listPrice,PricingCalculatePrice pricingCalculatePrice) {
         var reservationPriceMapper = Mappers.getMapper(ReservationPriceMapper.class);
-        return reservationPriceMapper.toOrderPriceEntity(partnerReservationResponse, listPrice);
+        return reservationPriceMapper.toOrderPriceEntity(partnerReservationResponse, listPrice,pricingCalculatePrice);
     }
 
     default OrderStatusEntity mapStatus(PartnerReservationResponse partnerReservationResponse) {

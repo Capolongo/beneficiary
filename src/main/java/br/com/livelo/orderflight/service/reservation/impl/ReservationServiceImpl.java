@@ -1,25 +1,29 @@
 package br.com.livelo.orderflight.service.reservation.impl;
 
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.mappers.PricingCalculateRequestMapper;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
+import br.com.livelo.orderflight.proxies.PricingProxy;
 import br.com.livelo.orderflight.service.order.OrderService;
 import br.com.livelo.orderflight.service.reservation.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +31,9 @@ import java.util.stream.Collectors;
 public class ReservationServiceImpl implements ReservationService {
     private final OrderService orderService;
     private final ConnectorPartnersProxy partnerConnectorProxy;
+    private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
+    private final PricingCalculateRequestMapper pricingCalculateRequestMapper;
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId,
             String channel, String listPrice) {
@@ -41,9 +47,11 @@ public class ReservationServiceImpl implements ReservationService {
             var partnerReservationResponse = partnerConnectorProxy
                     .createReserve(reservationMapper.toPartnerReservationRequest(request), transactionId);
 
+            var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse));
+            PricingCalculatePrice pricingCalculatePrice = pricingCalculateResponse[0].getPrices().stream().filter(price ->listPrice.equals(price.getPriceListId())).findFirst().orElse(null);
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId,
-                    customerId, channel, listPrice);
-
+                    customerId, channel, listPrice,pricingCalculatePrice);
+              
             this.orderService.save(orderEntity);
             log.info("Creating order Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId,
                     listPrice);
@@ -56,7 +64,8 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    public boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional) {
+
+	public boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional) {
         return orderOptional.map(order -> {
             if (order.getItems().size() == request.getItems().size()) {
                 var orderCommerceItemsIds = this.getOrderCommerceItemsIds(order);
