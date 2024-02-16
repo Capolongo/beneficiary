@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 public class ConnectorReservationBusinessException extends OrderFlightException {
     public ConnectorReservationBusinessException(String args, Throwable e) {
-        super(OrderFlightErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, null, args, e);
+        super(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, null, args, e);
     }
 }

@@ -39,8 +39,8 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setup() {
-        var cartMapper = Mappers.getMapper(ReservationMapper.class);
-        this.reservationService = new ReservationServiceImpl(orderService, connectorPartnersProxy, cartMapper);
+        var reservationMapper = Mappers.getMapper(ReservationMapper.class);
+        this.reservationService = new ReservationServiceImpl(orderService, connectorPartnersProxy, reservationMapper);
     }
 
     @Test
