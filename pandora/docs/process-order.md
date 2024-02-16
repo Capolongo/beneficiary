@@ -15,13 +15,13 @@ linhas não pode ser maior que a quantidade configurada na variável `order.orde
 ## Regras:
 
 - Deve ser passado o `statusCode` como parâmetro na requisição, por exemplo, `statusCode=LIVPNR-1007`.
-- A página pode ser escolhida através do parâmetro `page`, por default o valor será a primeira página (`page=0`).
+- A página pode ser escolhida através do parâmetro `page` e deve ser maior que `0`. Por default o valor será a primeira página (`page=1`).
 - A quantidade de linhas pode ser escolhida através do parâmetro `rows`, e deve ser menor do que o valor da
   variável `order.orderProcessMaxRows` do `application.yml`, que é também o valor default.
 
 ## Exemplos de request
 
-1. Retorno da página 1 de ordens no status `LIVPNR-1007`, contendo 12 linhas por página
+1. Retorno da página 1 de ordens no status `LIVPNR-1007`, contendo 12 linhas por página.
 
 `GET` /v1/orders/process?statusCode=LIVPNR-1007&page=1&rows=12
 
@@ -110,7 +110,7 @@ linhas não pode ser maior que a quantidade configurada na variável `order.orde
     <pre>
 {
     "orders": [],
-    "page": 0,
+    "page": 1,
     "rows": 12,
     "total": 0,
     "totalPages": 0
