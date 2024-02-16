@@ -18,4 +18,4 @@ spec:
   lifecycle: development # descrição do status da API
   owner: group:default/reservando-minha-viagem # nome do time conforme cadastro na Pandora
   definition:
-    $text: https://stash.livelo.intranet/projects/LIVSW/repos/livelo-swagger-order-flight-v1/browse/livelo-swagger-order-flight-v1.yaml # link para o raw da especificação do swagger
+    $text: https://stash.livelo.intranet/projects/LIVSW/repos/livelo-swagger-order-flight-v1/raw/livelo-swagger-order-flight-v1.yaml # link para o raw da especificação do swagger
