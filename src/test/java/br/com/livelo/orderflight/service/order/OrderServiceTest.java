@@ -130,7 +130,29 @@ class OrderServiceTest {
 
         assertEquals(mappedRepositoryResponse, response);
         assertEquals(mappedRepositoryResponse.getOrders().size(), response.getRows());
-        verify(orderRepository).findAllByCurrentStatusCode(statusCode, PageRequest.of(page - 1, rows));
+        verify(orderRepository).findAllByCurrentStatusCode(statusCode, PageRequest.of(page -  1, rows));
+        verifyNoMoreInteractions(orderRepository);
+    }
+
+    @Test
+    void shouldReturnSuccessGetOrdersByStatusCodeWithRowsGraterThenMaxLimit() throws OrderFlightException {
+        ReflectionTestUtils.setField(orderService, "orderProcessMaxRows", 500);
+
+        String statusCode = "LIVPNR-1006";
+        int page = 1;
+        int rows = 600;
+
+        Page<OrderProcess> repositoryResponse = Page.empty();
+        PaginationOrderProcessResponse mappedRepositoryResponse = MockBuilder.paginationOrderProcessResponse(page, rows);
+
+        when(orderRepository.findAllByCurrentStatusCode(anyString(), any(Pageable.class))).thenReturn(repositoryResponse);
+        when(orderProcessMapper.pageRepositoryToPaginationResponse(any())).thenReturn(mappedRepositoryResponse);
+
+        PaginationOrderProcessResponse response = orderService.getOrdersByStatusCode(statusCode, page, rows);
+
+        assertEquals(mappedRepositoryResponse, response);
+        assertEquals(mappedRepositoryResponse.getOrders().size(), response.getRows());
+        verify(orderRepository).findAllByCurrentStatusCode(statusCode, PageRequest.of(page -  1, 500));
         verifyNoMoreInteractions(orderRepository);
     }
 }
