@@ -3,6 +3,8 @@ package br.com.livelo.orderflight.service.reservation;
 import br.com.livelo.orderflight.domain.dto.reservation.response.*;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
@@ -12,7 +14,6 @@ import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.proxies.PricingProxy;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import br.com.livelo.orderflight.service.reservation.impl.ReservationServiceImpl;
-import br.com.livelo.orderflight.mappers.PricingCalculateRequestMapper;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
 import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,9 +23,8 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -40,33 +40,22 @@ class ReservationServiceTest {
     private ConnectorPartnersProxy connectorPartnersProxy;
     @Mock
     private PricingProxy pricingProxy;
-    @Mock
-    private PricingCalculateRequestMapper pricingCalculateRequestMapper;
     
     @BeforeEach
     void setup() {
         var cartMapper = Mappers.getMapper(ReservationMapper.class);
-        this.reservationService = new ReservationServiceImpl(orderService, connectorPartnersProxy, pricingProxy, cartMapper,pricingCalculateRequestMapper);
+        this.reservationService = new ReservationServiceImpl(orderService, connectorPartnersProxy, pricingProxy, cartMapper);
     }
 
     @Test
     void shouldCreateReservation() {
-        var partnerReservationResponse = PartnerReservationResponse.builder()
-                .items(
-                        List.of(
-                                PartnerReservationItem
-                                        .builder()
-                                        .segments(List.of(PartnerReservationSegment.builder().build()))
-                                        .build()
-                        )
-                )
-                .build();
+        var partnerReservationResponse = buildPartnerReservationResponse();
         var orderMock = mock(OrderEntity.class);
         var requestMock = mock(ReservationRequest.class);
         when(orderService.findByCommerceOrderId(requestMock.getCommerceOrderId())).thenReturn(Optional.empty());
         when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
-
+        when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
         var transactionId = "123";
 
         var response = reservationService.createOrder(requestMock, transactionId, "123", "WEB", "price");
@@ -80,31 +69,11 @@ class ReservationServiceTest {
     void shouldCreateOrder_WhenOrderItemsQuantityEqualsAndTokensEquals() {
         var transactionId = "123";
         var id = 1L;
-        var type = "teste";
+        var type = "type_flight";
         var segmentsPartnersId = "asdf";
         var orderMock = mock(OrderEntity.class);
 
-        var partnerReservationResponse = PartnerReservationResponse.builder()
-                .items(List.of(PartnerReservationItem
-                        .builder()
-                        .type("teste")
-                                .segments(List.of(PartnerReservationSegment
-                                        .builder()
-                                                .luggages(List.of(PartnerReservationLuggage
-                                                        .builder()
-                                                        .build()))
-                                                .cancelationRules(List.of(PartnerReservationCancelationRule
-                                                        .builder()
-                                                        .build()))
-                                                .changeRules(List.of(PartnerReservationChangeRule
-                                                        .builder()
-                                                        .build()))
-                                                .flightsLegs(List.of(PartnerReservationFlightsLeg
-                                                        .builder()
-                                                        .build()))
-                                        .build()))
-                        .build()))
-                .build();
+        var partnerReservationResponse = buildPartnerReservationResponse();
 
         when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
@@ -114,7 +83,7 @@ class ReservationServiceTest {
         var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, transactionId, segmentsPartnersId)));
 
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
-
+        when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price");
         assertAll(
                 () -> assertNotNull(response),
@@ -127,31 +96,11 @@ class ReservationServiceTest {
         var transactionId = "1234";
         var id = 1L;
         var commerceItemId = "123";
-        var type = "teste";
+        var type = "type_flight";
         var segmentsPartnersId = "asdf";
 
-        var partnerReservationResponse = PartnerReservationResponse.builder()
-                .items(List.of(PartnerReservationItem
-                        .builder()
-                        .type("teste")
-                        .segments(List.of(PartnerReservationSegment
-                                .builder()
-                                .luggages(List.of(PartnerReservationLuggage
-                                        .builder()
-                                        .build()))
-                                .cancelationRules(List.of(PartnerReservationCancelationRule
-                                        .builder()
-                                        .build()))
-                                .changeRules(List.of(PartnerReservationChangeRule
-                                        .builder()
-                                        .build()))
-                                .flightsLegs(List.of(PartnerReservationFlightsLeg
-                                        .builder()
-                                        .build()))
-                                .build()))
-                        .build()))
-                .build();
-        
+        var partnerReservationResponse = buildPartnerReservationResponse();
+        when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
         when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
         var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, commerceItemId, segmentsPartnersId)));
@@ -166,7 +115,7 @@ class ReservationServiceTest {
     @Test
     void shouldntCreateOrder_WhenOrderItemsQuantityDiverge() {
         var transactionId = "123";
-        var type = "teste";
+        var type = "type_flight";
         var segmentsPartnersId = "asdf";
 
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
@@ -186,7 +135,7 @@ class ReservationServiceTest {
     @Test
     void shouldntCreateOrder_WhenTokensDifferent() {
         var transactionId = "123";
-        var type = "teste";
+        var type = "type_flight";
         var segmentsPartnersId = "asdfg";
         var token = "asdf";
         var id = 1L;
@@ -203,7 +152,7 @@ class ReservationServiceTest {
     @Test
     void shouldntCreateOrder_WhenQuantityTokensDifferent() {
         var transactionId = "123";
-        var type = "teste";
+        var type = "type_flight";
         var segmentsPartnersId = "asdfg";
         var token = "asdf";
         var id = 1L;
@@ -220,7 +169,7 @@ class ReservationServiceTest {
     @Test
     void shouldntCreateOrder_WhenUnknownException() {
         var transactionId = "123";
-        var type = "teste";
+        var type = "type_flight";
         var segmentsPartnersId = "asdfg";
 
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
@@ -253,5 +202,48 @@ class ReservationServiceTest {
 
     private ReservationItem buildReservationItem(String commerceItemId, String type) {
         return ReservationItem.builder().commerceItemId(commerceItemId).productType(type).build();
+    }
+
+    private PricingCalculateResponse[] buildPricingCalculateResponse(){
+        return new PricingCalculateResponse[]{PricingCalculateResponse.builder()
+                .prices(
+                        new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price").build()))
+                ).build()};
+    }
+
+    private PartnerReservationResponse buildPartnerReservationResponse(){
+        return PartnerReservationResponse.builder()
+                .ordersPriceDescription(
+                        List.of(PartnerReservationOrdersPriceDescription.builder()
+                                .amount(new BigDecimal(10))
+                                .taxes(
+                                        List.of(PartnerReservationOrdersPriceDescriptionTaxes.builder()
+                                                .amount(new BigDecimal(10)).build())).build())
+                )
+                .items(
+                        List.of(
+                                PartnerReservationItem
+                                        .builder()
+                                        .type("type_flight")
+                                        .travelInfo(PartnerReservationTravelInfo.builder().build())
+                                        .segments(List.of(PartnerReservationSegment.builder()
+                                                .step("1")
+                                                .stops(1)
+                                                .flightDuration(55)
+                                                .luggages(List.of(PartnerReservationLuggage.builder().build()))
+                                                .cancelationRules(List.of(PartnerReservationCancelationRule
+                                                        .builder()
+                                                        .build()))
+                                                .changeRules(List.of(PartnerReservationChangeRule
+                                                        .builder()
+                                                        .build()))
+                                                .flightsLegs(List.of(PartnerReservationFlightsLeg
+                                                        .builder()
+                                                        .build()))
+                                                .build()))
+                                        .build()
+                        )
+                )
+                .build();
     }
 }

@@ -27,10 +27,12 @@ import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateReq
 import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateSegment;
 import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateTaxes;
 import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateTravelInfo;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class PricingCalculateRequestMapper {
 	private final String TYPE_FLIGHT = "type_flight";
-	public PricingCalculateRequest toPricingCalculateRequest(PartnerReservationResponse partnerReservationResponse) {
+	public static PricingCalculateRequest toPricingCalculateRequest(PartnerReservationResponse partnerReservationResponse) {
 		
 		var partnerReservationItemTypeFlight = partnerReservationResponse.getItems()
 				.stream()

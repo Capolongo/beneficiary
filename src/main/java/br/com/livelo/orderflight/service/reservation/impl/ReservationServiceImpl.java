@@ -33,7 +33,6 @@ public class ReservationServiceImpl implements ReservationService {
     private final ConnectorPartnersProxy partnerConnectorProxy;
     private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
-    private final PricingCalculateRequestMapper pricingCalculateRequestMapper;
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId,
             String channel, String listPrice) {
@@ -47,7 +46,7 @@ public class ReservationServiceImpl implements ReservationService {
             var partnerReservationResponse = partnerConnectorProxy
                     .createReserve(reservationMapper.toPartnerReservationRequest(request), transactionId);
 
-            var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse));
+            var pricingCalculateResponse = pricingProxy.calculate(PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse));
             PricingCalculatePrice pricingCalculatePrice = pricingCalculateResponse[0].getPrices().stream().filter(price ->listPrice.equals(price.getPriceListId())).findFirst().orElse(null);
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId,
                     customerId, channel, listPrice,pricingCalculatePrice);
