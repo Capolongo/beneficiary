@@ -29,7 +29,7 @@ class OrderProcessControllerTest {
   void shouldReturnSuccessGetOrdersByStatusCode() throws Exception {
 
     String statusCode = "LIVPNR-1006";
-    int page = 0;
+    int page = 1;
     int rows = 4;
 
     PaginationOrderProcessResponse responseBody = MockBuilder.paginationOrderProcessResponse(page, rows);

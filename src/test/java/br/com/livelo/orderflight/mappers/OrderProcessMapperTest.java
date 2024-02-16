@@ -29,7 +29,7 @@ class OrderProcessMapperTest {
     Page<OrderProcess> rawPageOrderProcess = new PageImpl<OrderProcess>(MockBuilder.listOfOrderProcess(rows), pagination, 500);
     PaginationOrderProcessResponse mappedValues = mapper.pageRepositoryToPaginationResponse(rawPageOrderProcess);
 
-    assertEquals(MockBuilder.paginationOrderProcessResponse(0, rows), mappedValues);
+    assertEquals(MockBuilder.paginationOrderProcessResponse(1, rows), mappedValues);
   }
 
 }

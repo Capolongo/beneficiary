@@ -117,7 +117,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(orderService, "orderProcessMaxRows", 500);
 
         String statusCode = "LIVPNR-1006";
-        int page = 0;
+        int page = 1;
         int rows = 4;
 
         Page<OrderProcess> repositoryResponse = Page.empty();
@@ -130,7 +130,7 @@ class OrderServiceTest {
 
         assertEquals(mappedRepositoryResponse, response);
         assertEquals(mappedRepositoryResponse.getOrders().size(), response.getRows());
-        verify(orderRepository).findAllByCurrentStatusCode(statusCode, PageRequest.of(page, rows));
+        verify(orderRepository).findAllByCurrentStatusCode(statusCode, PageRequest.of(page - 1, rows));
         verifyNoMoreInteractions(orderRepository);
     }
 }
