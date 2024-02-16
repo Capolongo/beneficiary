@@ -62,4 +62,8 @@ public class OrderServiceImpl implements OrderService {
     public OrderEntity save(OrderEntity order) {
         return this.orderRepository.save(order);
     }
+
+    public void orderProcess(String str) {
+        System.out.println("Message" + str);
+    }
 }
