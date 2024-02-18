@@ -27,12 +27,9 @@ public class PricingProxy {
 	
     public PricingCalculateResponse[] calculate(PricingCalculateRequest request) {
         try {
-            var url = URI.create("http://localhost:8090/pricing-calculator-flight/v1/calculate");
-            log.info("call pricing calculate. url: {} request: {}", 
-                    url, request);
+            log.info("call pricing calculate. request: {}",request);
 
             ResponseEntity<PricingCalculateResponse[]> response = pricingClient.calculate(
-                    url,
                     request);
             ofNullable(response.getBody())
                     .ifPresent(body -> log.info(" pricing calculate response: {}", body));

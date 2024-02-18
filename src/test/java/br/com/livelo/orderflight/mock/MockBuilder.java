@@ -15,10 +15,13 @@ import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmO
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
 import br.com.livelo.orderflight.domain.entity.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -182,6 +185,13 @@ public class MockBuilder {
                 .areaCode("areaCode")
                 .phone("phone")
                 .build();
+    }
+
+    public static ResponseEntity<PricingCalculateResponse[]> pricingCalculateResponse(){
+        return  ResponseEntity.ok().body(new PricingCalculateResponse[]{PricingCalculateResponse.builder()
+                .prices(
+                        new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price").build()))
+                ).build()});
     }
 
     public static ResponseEntity<ConnectorConfirmOrderResponse> connectorConfirmOrderResponse() {

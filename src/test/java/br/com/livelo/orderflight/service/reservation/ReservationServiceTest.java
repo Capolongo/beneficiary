@@ -4,7 +4,9 @@ import br.com.livelo.orderflight.domain.dto.reservation.response.*;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePricesDescription;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateTaxes;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
@@ -207,7 +209,14 @@ class ReservationServiceTest {
     private PricingCalculateResponse[] buildPricingCalculateResponse(){
         return new PricingCalculateResponse[]{PricingCalculateResponse.builder()
                 .prices(
-                        new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price").build()))
+                        new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price")
+                                .pricesDescription( new ArrayList<>(List.of(PricingCalculatePricesDescription.builder()
+                                        .passengerType("BY_ADULT").pointsAmount(7)
+                                        .taxes(new ArrayList<>(List.of(PricingCalculateTaxes.builder()
+                                                .description("TESTE_TAX")
+                                                .pointsAmount(7)
+                                                .build())))
+                                        .build()))).build()))
                 ).build()};
     }
 
@@ -216,9 +225,12 @@ class ReservationServiceTest {
                 .ordersPriceDescription(
                         List.of(PartnerReservationOrdersPriceDescription.builder()
                                 .amount(new BigDecimal(10))
+                                .type("BY_ADULT")
                                 .taxes(
                                         List.of(PartnerReservationOrdersPriceDescriptionTaxes.builder()
-                                                .amount(new BigDecimal(10)).build())).build())
+                                                .amount(new BigDecimal(10))
+                                                .description("TESTE_TAX")
+                                                .build())).build())
                 )
                 .items(
                         List.of(

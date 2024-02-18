@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateRequest;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
 
-@FeignClient(value = "pricing-client", url = "http://api.k8s")
+@FeignClient(value = "pricing-client", url = "${client.pricingcalculatorflight.endpoint}")
 public interface PricingClient {
 	@PostMapping
-	ResponseEntity<PricingCalculateResponse[]> calculate(URI baseUrl,
-			@RequestBody PricingCalculateRequest orderEntity);
+	ResponseEntity<PricingCalculateResponse[]> calculate(@RequestBody PricingCalculateRequest orderEntity);
 
 }

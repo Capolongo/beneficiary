@@ -1,9 +1,12 @@
 package br.com.livelo.orderflight.mappers;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePricesDescription;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateTaxes;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -36,10 +39,17 @@ public interface ReservationPriceMapper {
         	Set<OrderPriceDescriptionEntity> ordersPriceDescription = new HashSet<>();
         	
         	for(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription:partnerReservationResponse.getOrdersPriceDescription()) {
-        		ordersPriceDescription.add(orderPriceDescriptionMapper.toOrderPriceDescriptionEntity(partnerReservationOrdersPriceDescription));
-        		
+                OrderPriceDescriptionEntity orderPriceDescriptionEntity = orderPriceDescriptionMapper.toOrderPriceDescriptionEntity(partnerReservationOrdersPriceDescription);
+                PricingCalculatePricesDescription pricingCalculatePricesDescription = pricingCalculatePrice.getPricesDescription()
+                        .stream().filter(priceDescription -> partnerReservationOrdersPriceDescription.getType().equals(priceDescription.getPassengerType())).findFirst().get();
+                orderPriceDescriptionEntity.setPointsAmount(new BigDecimal(pricingCalculatePricesDescription.getPointsAmount()));
+        		ordersPriceDescription.add(orderPriceDescriptionEntity);
         		for(PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes:partnerReservationOrdersPriceDescription.getTaxes()) {
-        			ordersPriceDescription.add(orderPriceDescriptionTaxesMapper.toOrderPriceDescriptionEntity(partnerReservationOrdersPriceDescriptionTaxes));
+                    OrderPriceDescriptionEntity orderPriceDescriptionEntityTaxes = orderPriceDescriptionTaxesMapper.toOrderPriceDescriptionEntity(partnerReservationOrdersPriceDescriptionTaxes);
+                    PricingCalculateTaxes pricingCalculateTaxes = pricingCalculatePricesDescription.getTaxes()
+                            .stream().filter(priceDescriptionTaxes -> orderPriceDescriptionEntityTaxes.getDescription().equals(priceDescriptionTaxes.getDescription())).findFirst().get();
+                    orderPriceDescriptionEntityTaxes.setPointsAmount(new BigDecimal(pricingCalculateTaxes.getPointsAmount()));
+        			ordersPriceDescription.add(orderPriceDescriptionEntityTaxes);
         		}
         	}
             return ordersPriceDescription;

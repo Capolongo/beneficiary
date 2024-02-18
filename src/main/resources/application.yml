@@ -35,3 +35,5 @@ management:
 client:
   partnersconfigflight:
     endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/partners-config-flight
+  pricingcalculatorflight:
+    endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/pricing-calculator-flight/v1/calculate
