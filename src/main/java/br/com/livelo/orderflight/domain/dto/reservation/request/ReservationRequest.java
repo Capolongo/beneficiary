@@ -15,8 +15,6 @@ public class ReservationRequest {
     @NotNull
     private String commerceOrderId;
     @NotNull
-    private String partnerOrderId;
-    @NotNull
     private String partnerCode;
     @NotNull
     private List<String> segmentsPartnerIds;

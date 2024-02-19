@@ -64,7 +64,7 @@ class ConnectorconnectorPartnersProxyTest {
         var exception = assertThrows(ConnectorReservationInternalException.class,
                 () -> connectorPartnersProxy.createReserve(request, "transactionId"));
 
-        assertEquals(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
+        assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
@@ -77,7 +77,7 @@ class ConnectorconnectorPartnersProxyTest {
         var exception = assertThrows(ConnectorReservationBusinessException.class,
                 () -> connectorPartnersProxy.createReserve(request, "transactionId"));
 
-        assertEquals(OrderFlightErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
+        assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
@@ -120,7 +120,7 @@ class ConnectorconnectorPartnersProxyTest {
         var exception = assertThrows(ConnectorReservationBusinessException.class,
                 () -> connectorPartnersProxy.createReserve(request, "transactionId"));
 
-        assertEquals(OrderFlightErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
+        assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
 
     }
 
@@ -135,7 +135,7 @@ class ConnectorconnectorPartnersProxyTest {
         var exception = assertThrows(OrderFlightException.class,
                 () -> connectorPartnersProxy.createReserve(request, "transactionId"));
 
-        assertEquals(OrderFlightErrorType.FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
+        assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
 
     }
 

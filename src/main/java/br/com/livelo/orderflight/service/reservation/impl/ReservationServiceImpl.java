@@ -52,7 +52,7 @@ public class ReservationServiceImpl implements ReservationService {
                     customerId, channel, listPrice,pricingCalculatePrice);
               
             this.orderService.save(orderEntity);
-            log.info("Creating order Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId,
+            log.info("Order created Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId,
                     listPrice);
             // deve vir do connector
             return reservationMapper.toReservationResponse(orderEntity, 15);
