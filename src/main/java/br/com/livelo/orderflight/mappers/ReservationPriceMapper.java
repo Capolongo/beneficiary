@@ -4,7 +4,6 @@ import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservat
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationOrdersPriceDescriptionTaxes;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateTaxes;
 import br.com.livelo.orderflight.domain.entity.OrderPriceDescriptionEntity;
 import br.com.livelo.orderflight.domain.entity.OrderPriceEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
@@ -38,7 +37,7 @@ public interface ReservationPriceMapper {
             Set<OrderPriceDescriptionEntity> ordersPriceDescription = new HashSet<>();
 
             for (PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription : partnerReservationResponse.getOrdersPriceDescription()) {
-                OrderPriceDescriptionEntity orderPriceDescriptionEntity = orderPriceDescriptionMapper.toOrderPriceDescriptionEntity(partnerReservationOrdersPriceDescription);
+                var orderPriceDescriptionEntity = orderPriceDescriptionMapper.toOrderPriceDescriptionEntity(partnerReservationOrdersPriceDescription);
 
                 var pricingCalculatePricesDescription = pricingCalculatePrice.getPricesDescription()
                         .stream()
@@ -50,9 +49,9 @@ public interface ReservationPriceMapper {
                 ordersPriceDescription.add(orderPriceDescriptionEntity);
 
                 for (PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes : partnerReservationOrdersPriceDescription.getTaxes()) {
-                    OrderPriceDescriptionEntity orderPriceDescriptionEntityTaxes = orderPriceDescriptionTaxesMapper.toOrderPriceDescriptionEntity(partnerReservationOrdersPriceDescriptionTaxes);
+                    var orderPriceDescriptionEntityTaxes = orderPriceDescriptionTaxesMapper.toOrderPriceDescriptionEntity(partnerReservationOrdersPriceDescriptionTaxes);
 
-                    PricingCalculateTaxes pricingCalculateTaxes = pricingCalculatePricesDescription.getTaxes()
+                    var pricingCalculateTaxes = pricingCalculatePricesDescription.getTaxes()
                             .stream().filter(priceDescriptionTaxes -> orderPriceDescriptionEntityTaxes.getDescription().equals(priceDescriptionTaxes.getDescription()))
                             .findFirst()
                             .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Tax description not found"));

@@ -1,13 +1,5 @@
 package br.com.livelo.orderflight.proxies;
 
-import static java.util.Optional.ofNullable;
-
-import java.net.URI;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-
 import br.com.livelo.orderflight.client.PricingClient;
 import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateRequest;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
@@ -18,16 +10,21 @@ import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+
+import static java.util.Optional.ofNullable;
 
 @Slf4j
 @Component
 @AllArgsConstructor
 public class PricingProxy {
-	private final PricingClient pricingClient;
-	
+    private final PricingClient pricingClient;
+
     public PricingCalculateResponse[] calculate(PricingCalculateRequest request) {
         try {
-            log.info("call pricing calculate. request: {}",request);
+            log.info("call pricing calculate. request: {}", request);
 
             ResponseEntity<PricingCalculateResponse[]> response = pricingClient.calculate(
                     request);
