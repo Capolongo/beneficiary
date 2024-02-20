@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.service.order.impl;
 
+import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
@@ -25,7 +26,6 @@ import java.util.Set;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final ObjectMapper objectMapper;
     private final ConnectorPartnersProxy connectorPartnersProxy;
     private final ConfirmOrderMapper confirmOrderMapper;
 
@@ -74,23 +74,40 @@ public class OrderServiceImpl implements OrderService {
         return this.orderRepository.save(order);
     }
 
-    public void orderProcess(OrderProcess orderProcess) throws JsonProcessingException {
+    public void orderProcess(OrderProcess orderProcess) {
 //      1 - consumir mensagem que vai ter o ID do pedido DONE
 //      2 - Com o id, buscar na base DONE
-//      3 - se nao encontrar o processo é finalizado DONE
-//      4 - com os dados do pedido, usaremos o partnercode do pedido para buscar o webhook usando a lib
-//      5 - bater no webhook e salvar o status history e currentStatus q for retornado
+//      3 - se nao encontrar o processo é finalizado (obs: analizar se realmente está certo)
+//      4 - com os dados do pedido, usaremos o partnercode do pedido para buscar o webhook usando a lib DONE
+//      5 - bater no webhook e salvar o status history e currentStatus q for retornado DONE
 //      6 - incrementar contador que conta quantas vezes o pedido passou no processo e adicionar o status retornado
 
 
-//        OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);
-        System.out.println("order id = " + orderProcess.getId());
         var order = getOrderById(orderProcess.getId());
+        var currentStatusCode = order.getCurrentStatus().getCode();
+
+        if (!isSameStatus(currentStatusCode, StatusConstants.PROCESSING.getCode())) {
+            return;
+        }
+
+//          todo: verificar se quantidade de vezes é >= 45 e setar como falha se for
+
 
         var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getId());
         var status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
 
+        if (isSameStatus(currentStatusCode, status.getCode())) {
+//                TODO: incrementar a quantidade de chamadas na tabela
+            return;
+        }
+
+        var itemFlight = getFlightFromOrderItems(order.getItems());
+        updateVoucher(itemFlight, connectorConfirmOrderResponse.getVoucher());
         addNewOrderStatus(order, status);
-        System.out.println("order = " + order);
+        orderRepository.save(order);
+    }
+
+    public boolean isSameStatus(String currentStatus, String newStatus) {
+        return currentStatus.equals(newStatus);
     }
 }

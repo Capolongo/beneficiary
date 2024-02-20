@@ -16,12 +16,8 @@ public class OrderProcessListener {
     private final OrderService orderService;
     private final ObjectMapper objectMapper;
     @RabbitListener(queues = "${spring.rabbitmq.custom.order-flight-commands-getconfirmation.queue}")
-    public void consumer(Message payload) throws JsonProcessingException {
-        var test = MessageUtils.extractBodyAsString(payload);
-//        final OrderProcess orderProcess = objectMapper.readValue(test, OrderProcess.class);
-        System.out.println(test);
-
-//        orderService.orderProcess(orderProcess);
-        System.out.println("payload = " + payload);
+    public void consumer(Message payload) throws Exception {
+        final OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);
+        orderService.orderProcess(orderProcess);
     }
 }

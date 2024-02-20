@@ -90,9 +90,11 @@ public class ConnectorPartnersProxy {
 
     public ConnectorConfirmOrderResponse getConfirmationOnPartner(String partnerCode, String id) {
         WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.GETCONFIRMATION);
-        final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id));
+//        final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id));
+        final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id + "001030"));
+        var connectorGetConfirmation = partnerConnectorClient.getConfirmation(connectorUri);
 
-        return partnerConnectorClient.getConfirmation(connectorUri).getBody();
+        return connectorGetConfirmation.getBody();
     }
 
     private ConnectorConfirmOrderResponse getResponseError(FeignException feignException) throws OrderFlightException {
