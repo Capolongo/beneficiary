@@ -208,13 +208,14 @@ class ReservationServiceTest {
 
     private PricingCalculateResponse[] buildPricingCalculateResponse(){
         return new PricingCalculateResponse[]{PricingCalculateResponse.builder()
+                .id("QWERT")
                 .prices(
                         new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price")
                                 .pricesDescription( new ArrayList<>(List.of(PricingCalculatePricesDescription.builder()
-                                        .passengerType("BY_ADULT").pointsAmount(7)
+                                        .passengerType("BY_ADULT").pointsAmount(new BigDecimal(7))
                                         .taxes(new ArrayList<>(List.of(PricingCalculateTaxes.builder()
                                                 .description("TESTE_TAX")
-                                                .pointsAmount(7)
+                                                .pointsAmount(new BigDecimal(7))
                                                 .build())))
                                         .build()))).build()))
                 ).build()};
@@ -222,6 +223,7 @@ class ReservationServiceTest {
 
     private PartnerReservationResponse buildPartnerReservationResponse(){
         return PartnerReservationResponse.builder()
+                .commerceOrderId("QWERT")
                 .ordersPriceDescription(
                         List.of(PartnerReservationOrdersPriceDescription.builder()
                                 .amount(new BigDecimal(10))

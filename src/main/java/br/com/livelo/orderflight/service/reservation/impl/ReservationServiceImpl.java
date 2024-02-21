@@ -1,10 +1,12 @@
 package br.com.livelo.orderflight.service.reservation.impl;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import org.springframework.stereotype.Service;
 
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
@@ -46,8 +48,9 @@ public class ReservationServiceImpl implements ReservationService {
             var partnerReservationResponse = partnerConnectorProxy
                     .createReserve(reservationMapper.toPartnerReservationRequest(request), transactionId);
 
-            var pricingCalculateResponse = pricingProxy.calculate(PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse));
-            PricingCalculatePrice pricingCalculatePrice = pricingCalculateResponse[0].getPrices().stream().filter(price ->listPrice.equals(price.getPriceListId())).findFirst().orElse(null);
+
+            var pricingCalculatePrice = calculatePricing(listPrice,partnerReservationResponse);
+
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId,
                     customerId, channel, listPrice,pricingCalculatePrice);
               
@@ -63,8 +66,18 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
+    private PricingCalculatePrice calculatePricing(String listPrice,PartnerReservationResponse partnerReservationResponse) {
+        var pricingCalculateResponse = pricingProxy.calculate(PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse));
+        return Arrays.stream(pricingCalculateResponse).filter(
+                                pricingCalculate -> partnerReservationResponse.getCommerceOrderId().equals(pricingCalculate.getId())
+                        ).findFirst().orElse(null)
+                        .getPrices().stream().filter(
+                                price ->listPrice.equals(price.getPriceListId())
+                        ).findFirst().orElse(null);
+    }
 
-	public boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional) {
+
+    public boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional) {
         return orderOptional.map(order -> {
             if (order.getItems().size() == request.getItems().size()) {
                 var orderCommerceItemsIds = this.getOrderCommerceItemsIds(order);

@@ -35,24 +35,11 @@ public class PricingProxy {
                     .ifPresent(body -> log.info(" pricing calculate response: {}", body));
 
             return response.getBody();
-        } catch (OrderFlightException e) {
-            throw e;
         } catch (FeignException e) {
-            log.error("Error on pricing call ", e);
             var status = HttpStatus.valueOf(e.status());
-            if (status.is5xxServerError()) {
-                var message = String.format(
-                        "Internal error on pricing calls. httpStatus: %s ResponseBody: %s", e.status(),
-                        e.responseBody());
-                throw new ConnectorReservationInternalException(message, e);
-            } else {
-                var message = String.format(
-                        "Business error on pricing calls. httpStatus: %s ResponseBody: %s ", e.status(),
-                        e.responseBody().toString());
-                throw new ConnectorReservationBusinessException(message, e);
-            }
+            log.error("Error on pricing call, HttpStatus: {}", e,status);
+            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         } catch (Exception e) {
-            log.error("Unknown error on pricing call ", e);
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }

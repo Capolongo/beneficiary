@@ -50,8 +50,9 @@ class PricingProxyTest {
   }
 
   @Test
-  void shouldReturnFailedWhenCatchOrderFlightException() throws OrderFlightException, JsonProcessingException {
-    OrderFlightException mockException = Mockito.mock(OrderFlightException.class);
+  void shouldReturnFailedWhenCatchFeignException() throws OrderFlightException, JsonProcessingException {
+    FeignException mockException = Mockito.mock(FeignException.class);
+    when(mockException.status()).thenReturn(500);
     when(pricingClient.calculate(
             any(PricingCalculateRequest.class)))
             .thenThrow(mockException);
@@ -61,39 +62,7 @@ class PricingProxyTest {
               mock(PricingCalculateRequest.class));
     });
 
-    assertTrue(Objects.nonNull(exception));
-  }
-
-  @Test
-  void shouldReturnFailedWhenCatchFeignBusinessException() throws OrderFlightException, JsonProcessingException {
-    FeignException mockException = Mockito.mock(FeignException.class);
-    when(mockException.status()).thenReturn(400);
-    when(pricingClient.calculate(
-        any(PricingCalculateRequest.class)))
-        .thenThrow(mockException);
-
-    ConnectorReservationBusinessException exception = assertThrows(ConnectorReservationBusinessException.class, () -> {
-      proxy.calculate(
-              mock(PricingCalculateRequest.class));
-    });
-
-    assertTrue(exception.getArgs().contains("Business error on pricing calls"));
-  }
-
-  @Test
-  void shouldReturnFailedWhenCatchFeignInternalException() throws OrderFlightException, JsonProcessingException {
-    FeignException mockException = Mockito.mock(FeignException.class);
-    when(mockException.status()).thenReturn(500);
-    when(pricingClient.calculate(
-            any(PricingCalculateRequest.class)))
-            .thenThrow(mockException);
-
-    ConnectorReservationInternalException exception = assertThrows(ConnectorReservationInternalException.class, () -> {
-      proxy.calculate(
-              mock(PricingCalculateRequest.class));
-    });
-
-    assertTrue(exception.getArgs().contains("Internal error on pricing calls"));
+    assertTrue(exception.getOrderFlightErrorType().getCode().contains("OFCART000"));
   }
 
 

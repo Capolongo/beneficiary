@@ -39,21 +39,28 @@ public interface ReservationPriceMapper {
         	Set<OrderPriceDescriptionEntity> ordersPriceDescription = new HashSet<>();
         	
         	for(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription:partnerReservationResponse.getOrdersPriceDescription()) {
-                OrderPriceDescriptionEntity orderPriceDescriptionEntity = orderPriceDescriptionMapper.toOrderPriceDescriptionEntity(partnerReservationOrdersPriceDescription);
-                PricingCalculatePricesDescription pricingCalculatePricesDescription = pricingCalculatePrice.getPricesDescription()
-                        .stream().filter(priceDescription -> partnerReservationOrdersPriceDescription.getType().equals(priceDescription.getPassengerType())).findFirst().get();
-                orderPriceDescriptionEntity.setPointsAmount(new BigDecimal(pricingCalculatePricesDescription.getPointsAmount()));
-        		ordersPriceDescription.add(orderPriceDescriptionEntity);
+        		ordersPriceDescription.add(orderPriceDescriptionMapper.toOrderPriceDescriptionEntity(
+                        partnerReservationOrdersPriceDescription,
+                        getPointsAmountFromPricingCalculate(partnerReservationOrdersPriceDescription,pricingCalculatePrice).getPointsAmount()));
         		for(PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes:partnerReservationOrdersPriceDescription.getTaxes()) {
-                    OrderPriceDescriptionEntity orderPriceDescriptionEntityTaxes = orderPriceDescriptionTaxesMapper.toOrderPriceDescriptionEntity(partnerReservationOrdersPriceDescriptionTaxes);
-                    PricingCalculateTaxes pricingCalculateTaxes = pricingCalculatePricesDescription.getTaxes()
-                            .stream().filter(priceDescriptionTaxes -> orderPriceDescriptionEntityTaxes.getDescription().equals(priceDescriptionTaxes.getDescription())).findFirst().get();
-                    orderPriceDescriptionEntityTaxes.setPointsAmount(new BigDecimal(pricingCalculateTaxes.getPointsAmount()));
-        			ordersPriceDescription.add(orderPriceDescriptionEntityTaxes);
+        			ordersPriceDescription.add(orderPriceDescriptionTaxesMapper.toOrderPriceDescriptionEntity(
+                            partnerReservationOrdersPriceDescriptionTaxes,
+                            getPointsAmountFromPricingCalculateTaxes(partnerReservationOrdersPriceDescription,partnerReservationOrdersPriceDescriptionTaxes,pricingCalculatePrice).getPointsAmount()));
         		}
         	}
             return ordersPriceDescription;
         }
         return Collections.emptySet();
+    }
+
+    default PricingCalculateTaxes getPointsAmountFromPricingCalculateTaxes(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription,PartnerReservationOrdersPriceDescriptionTaxes orderPriceDescriptionEntityTaxes,PricingCalculatePrice pricingCalculatePrice){
+        return getPointsAmountFromPricingCalculate(partnerReservationOrdersPriceDescription,pricingCalculatePrice).getTaxes()
+                .stream().filter(priceDescriptionTaxes -> orderPriceDescriptionEntityTaxes.getDescription().equals(priceDescriptionTaxes.getDescription())).findFirst().get();
+    }
+
+    default PricingCalculatePricesDescription getPointsAmountFromPricingCalculate(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription,PricingCalculatePrice pricingCalculatePrice){
+        PricingCalculatePricesDescription pricingCalculatePricesDescription = pricingCalculatePrice.getPricesDescription()
+                .stream().filter(priceDescription -> partnerReservationOrdersPriceDescription.getType().equals(priceDescription.getPassengerType())).findFirst().get();
+        return pricingCalculatePricesDescription;
     }
 }

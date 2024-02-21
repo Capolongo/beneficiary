@@ -33,10 +33,10 @@ class ReservationPriceMapperTest {
                 ).build(),
                 PricingCalculatePrice.builder().priceListId("price")
                         .pricesDescription( new ArrayList<>(List.of(PricingCalculatePricesDescription.builder()
-                                .passengerType("BY_ADULT").pointsAmount(7)
+                                .passengerType("BY_ADULT").pointsAmount(new BigDecimal(7))
                                 .taxes(new ArrayList<>(List.of(PricingCalculateTaxes.builder()
                                         .description("TESTE_TAX")
-                                                .pointsAmount(7)
+                                                .pointsAmount(new BigDecimal(7))
                                         .build())))
                                 .build()))).build());
         assertNotNull(response);

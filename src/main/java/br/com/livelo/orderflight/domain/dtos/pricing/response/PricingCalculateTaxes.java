@@ -9,6 +9,6 @@ import lombok.Data;
 @Builder
 public class PricingCalculateTaxes {
     private BigDecimal amount;
-    private Integer pointsAmount;
+    private BigDecimal pointsAmount;
     private String description;
 }

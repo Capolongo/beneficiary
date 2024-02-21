@@ -10,7 +10,7 @@ import lombok.Data;
 @Builder
 public class PricingCalculatePricesDescription {
     private BigDecimal amount;
-    private Integer pointsAmount;
+    private BigDecimal pointsAmount;
     private PricingCalculateFlight flight;
     private String passengerType;
     private ArrayList<PricingCalculateTaxes> taxes;
