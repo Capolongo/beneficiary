@@ -17,6 +17,8 @@ import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirm
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
+import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
+import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.entity.*;
 
 import java.math.BigDecimal;
@@ -397,5 +399,28 @@ public class MockBuilder {
     public static FlightLegEntity flightLegEntity() {
         return FlightLegEntity.builder()
                 .build();
+    }
+
+    public static List<OrderProcess> listOfOrderProcess(int amountOrders) {
+        List<OrderProcess> orders = new ArrayList<OrderProcess>();
+        for (int i = 0; i < amountOrders; i++) {
+            orders.add(OrderProcess.builder()
+            .id(String.valueOf(i))
+            .commerceOrderId(String.valueOf(i + i * 1000))
+            .build());
+        }
+        return orders;
+    }
+
+    public static PaginationOrderProcessResponse paginationOrderProcessResponse(int pages, int rows) {
+        int total = 500;
+        List<OrderProcess> orders = listOfOrderProcess(rows);
+        return PaginationOrderProcessResponse.builder()
+        .orders(orders)
+        .page(pages)
+        .rows(rows)
+        .total(total)
+        .totalPages(total / orders.size())
+        .build();
     }
 }

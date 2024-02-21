@@ -28,11 +28,23 @@ import org.springframework.http.ResponseEntity;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
+
 import static br.com.livelo.partnersconfigflightlibrary.utils.ErrorsType.PARTNER_INACTIVE;
 import static br.com.livelo.partnersconfigflightlibrary.utils.ErrorsType.UNKNOWN;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import br.com.livelo.orderflight.client.PartnerConnectorClient;
+import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
+import br.com.livelo.orderflight.exception.OrderFlightException;
+import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.mock.MockBuilder;
+import br.com.livelo.partnersconfigflightlibrary.dto.WebhookDTO;
+import br.com.livelo.partnersconfigflightlibrary.services.impl.PartnersConfigServiceImpl;
+import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
+import feign.FeignException;
+
 
 @ExtendWith(MockitoExtension.class)
 class ConnectorPartnersProxyTest {
@@ -100,7 +112,33 @@ class ConnectorPartnersProxyTest {
 
         assertTrue(exception.getMessage().contains("Cannot invoke"));
     }
+    @Test
+    void should() throws OrderFlightException, JsonProcessingException {
+        FeignException mockException = Mockito.mock(FeignException.class);
+        when(mockException.contentUTF8())
+                .thenReturn(
+                        new String(MockBuilder.connectorConfirmOrderResponse().getBody().toString().getBytes(),
+                                StandardCharsets.UTF_8));
 
+        var mock = MockBuilder.connectorConfirmOrderResponse().getBody();
+        mock.setCurrentStatus(null);
+
+        when(objectMapper.readValue(anyString(), eq(ConnectorConfirmOrderResponse.class)))
+                .thenReturn(mock);
+
+        when(partnerConnectorClient.confirmOrder(any(URI.class),
+                any(ConnectorConfirmOrderRequest.class)))
+                .thenThrow(mockException);
+
+        when(partnersConfigService.getPartnerWebhook("CVC", Webhooks.CONFIRMATION))
+                .thenReturn(WebhookDTO.builder().connectorUrl("www").build());
+
+        try {
+            proxy.confirmOnPartner("CVC", MockBuilder.connectorConfirmOrderRequest());
+        } catch (OrderFlightException exception) {
+            assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
+        }
+    }
     @Test
     void shouldMakeReservation() {
         var request = mock(PartnerReservationRequest.class);

@@ -17,7 +17,7 @@ spring:
   application:
     name: order-flight
 management:
-  endpoints: 
+  endpoints:
     web:
       exposure:
         include:
@@ -34,6 +34,12 @@ management:
             - readinessState
 client:
   partnersconfigflight:
-    endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/partners-config-flight
+     endpoint: http://partners-config-flight.livtravel.svc.cluster.local
   pricingcalculatorflight:
     endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/pricing-calculator-flight/v1/calculate
+
+
+
+order:
+  orderProcessMaxRows: 500
+

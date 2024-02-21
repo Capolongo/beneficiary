@@ -20,7 +20,9 @@ public enum OrderFlightErrorType {
 
     VALIDATION_ORDER_NOT_FOUND("OFCONFIRMATION000", "Ordem não encontrada", "Ordem não foi encontrada na base de dados", HttpStatus.NOT_FOUND, null),
     VALIDATION_OBJECTS_NOT_EQUAL("OFCONFIRMATION001", "Objetos não são iguais", "Objetos do request body e da base de dados não são iguais", HttpStatus.BAD_REQUEST, null),
-    VALIDATION_ALREADY_CONFIRMED("OFCONFIRMATION002", "Ordem já confirmada", "Ordem já foi confirmada anteriormente", HttpStatus.BAD_REQUEST, null);
+    VALIDATION_ALREADY_CONFIRMED("OFCONFIRMATION002", "Ordem já confirmada", "Ordem já foi confirmada anteriormente", HttpStatus.BAD_REQUEST, null),
+    
+    VALIDATION_INVALID_PAGINATION("QUERYPAGINATION000", "Paginação invalida", "Verifique os parâmetros de paginação", HttpStatus.BAD_REQUEST, null);
 
     private final String code;
     private final String title;

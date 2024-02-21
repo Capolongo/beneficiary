@@ -1,13 +1,19 @@
 package br.com.livelo.orderflight.service.order.impl;
 
+import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.mappers.OrderProcessMapper;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,6 +24,10 @@ import java.util.Set;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final OrderProcessMapper orderMapper;
+
+    @Value("${order.orderProcessMaxRows}")
+    private int orderProcessMaxRows;
 
     public OrderEntity getOrderById(String id) throws OrderFlightException {
         Optional<OrderEntity> order = orderRepository.findById(id);
@@ -34,7 +44,6 @@ public class OrderServiceImpl implements OrderService {
         order.getStatusHistory().add(status);
         order.setCurrentStatus(status);
     }
-
 
     public OrderItemEntity getFlightFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
         Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(item -> !item.getSkuId().toLowerCase().contains("tax")).findFirst();
@@ -61,5 +70,18 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderEntity save(OrderEntity order) {
         return this.orderRepository.save(order);
+    }
+
+    public PaginationOrderProcessResponse getOrdersByStatusCode(String statusCode, Integer page, Integer rows) throws OrderFlightException {
+        if (page <= 0) {
+            throw new OrderFlightException(OrderFlightErrorType.VALIDATION_INVALID_PAGINATION, OrderFlightErrorType.VALIDATION_INVALID_PAGINATION.getDescription(), null);
+        }
+
+        rows = rows > orderProcessMaxRows ? orderProcessMaxRows : rows;
+        page = page - 1;
+
+        Pageable pagination = PageRequest.of(page, rows);
+        var foundOrders = orderRepository.findAllByCurrentStatusCode(statusCode.toUpperCase(), pagination);
+        return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
     }
 }
