@@ -6,6 +6,7 @@ import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessRe
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
@@ -13,6 +14,7 @@ import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.mappers.OrderProcessMapper;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
+import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,6 +38,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Value("${order.orderProcessMaxRows}")
     private int orderProcessMaxRows;
+
+//    private int maxProcessCountFailed = 48;
+    private int maxProcessCountFailed = 3;
 
     public OrderEntity getOrderById(String id) throws OrderFlightException {
         Optional<OrderEntity> order = orderRepository.findById(id);
@@ -91,18 +97,26 @@ public class OrderServiceImpl implements OrderService {
         var order = getOrderById(orderProcess.getId());
         var currentStatusCode = order.getCurrentStatus().getCode();
 
+
         if (!isSameStatus(currentStatusCode, StatusConstants.PROCESSING.getCode())) {
             return;
         }
 
-//          todo: verificar se quantidade de vezes é >= 45 e setar como falha se for
 
+        var processCounter = findProcessCounterByWebhook(order.getProcessCounters(), Webhooks.GETCONFIRMATION);
+        if (processCounter.getCount() >= maxProcessCountFailed) {
+            addNewOrderStatus(order, buildOrderStatusFailed());
+            save(order);
+            return;
+        }
+//          todo: verificar se quantidade de vezes é >= 48 e setar como falha se for
 
         var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getId());
         var status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
 
         if (isSameStatus(currentStatusCode, status.getCode())) {
-//                TODO: incrementar a quantidade de chamadas na tabela
+            incrementProcessCounter(processCounter);
+            save(order);
             return;
         }
 
@@ -127,5 +141,33 @@ public class OrderServiceImpl implements OrderService {
         Pageable pagination = PageRequest.of(page, rows);
         var foundOrders = orderRepository.findAllByCurrentStatusCode(statusCode.toUpperCase(), pagination);
         return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
+    }
+
+    private void incrementProcessCounter(ProcessCounterEntity processCounter) {
+        processCounter.setCount(processCounter.getCount() + 1);
+    }
+
+    private ProcessCounterEntity findProcessCounterByWebhook(Set<ProcessCounterEntity> processCounterEntities, Webhooks webhook) {
+        var processCounter = processCounterEntities.stream().filter(counter -> webhook.value.equals(counter.getProcess())).findFirst();
+
+
+        if (processCounter.isEmpty()) {
+            var builder = ProcessCounterEntity.builder().process(Webhooks.GETCONFIRMATION.value).count(1).build();
+            processCounterEntities.add(builder);
+            return builder;
+        }
+
+        return processCounter.get();
+    }
+
+    private OrderStatusEntity buildOrderStatusFailed() {
+        return OrderStatusEntity.builder()
+                .partnerCode(String.valueOf(500))
+                .code(StatusConstants.FAILED.getCode())
+                .partnerResponse("")
+                .partnerDescription("failed")
+                .description(StatusConstants.FAILED.getDescription())
+                .statusDate(LocalDateTime.now())
+                .build();
     }
 }
