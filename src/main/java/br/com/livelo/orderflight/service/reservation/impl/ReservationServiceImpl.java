@@ -27,6 +27,8 @@ import br.com.livelo.orderflight.service.reservation.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -70,10 +72,10 @@ public class ReservationServiceImpl implements ReservationService {
         var pricingCalculateResponse = pricingProxy.calculate(PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse));
         return Arrays.stream(pricingCalculateResponse).filter(
                         pricingCalculate -> partnerReservationResponse.getCommerceOrderId().equals(pricingCalculate.getId())
-                ).findFirst().orElse(null)
+                ).findFirst().orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "CommerceOrderId not found in pricing calculate response"))
                 .getPrices().stream().filter(
                         price ->listPrice.equals(price.getPriceListId())
-                ).findFirst().orElse(null);
+                ).findFirst().orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "PriceListId not found in pricing calculate response"));
     }
 
 

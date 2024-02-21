@@ -20,7 +20,10 @@ import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateReq
 import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateSegment;
 import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateTaxes;
 import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateTravelInfo;
+import br.com.livelo.orderflight.exception.OrderFlightException;
 import lombok.experimental.UtilityClass;
+
+import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
 
 
 @UtilityClass
@@ -185,6 +188,6 @@ public class PricingCalculateRequestMapper {
 				.stream()
 				.filter(item -> TYPE_FLIGHT.equals(item.getType()))
 				.findFirst()
-				.orElse(null);
+				.orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Type Flight not found"));
 	}
 }
