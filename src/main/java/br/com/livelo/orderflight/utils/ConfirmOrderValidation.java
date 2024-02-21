@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.utils;
 
-import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
+import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
@@ -22,7 +22,7 @@ public class ConfirmOrderValidation {
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
 
-        if (!StatusConstants.INITIAL.getCode().equals(order.getCurrentStatus().getCode()) && !orderRequest.getResubmission().booleanValue()) {
+        if (!StatusLivelo.INITIAL.getCode().equals(order.getCurrentStatus().getCode()) && !orderRequest.getResubmission().booleanValue()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ALREADY_CONFIRMED;
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }

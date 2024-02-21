@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.service.confirmation.impl;
 
-import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
+import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
@@ -49,7 +49,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             order.setPartnerOrderId(connectorPartnerConfirmation.getPartnerOrderId());
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorPartnerConfirmation.getCurrentStatus());
         } catch (OrderFlightException exception) {
-            if (!exception.getOrderFlightErrorType().equals(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR)) {
+            if (!exception.getOrderFlightErrorType().equals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR)) {
                 throw exception;
             }
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getMessage()));
@@ -66,10 +66,10 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         return ConnectorConfirmOrderStatusResponse
                 .builder()
                 .partnerCode(String.valueOf(500))
-                .code(StatusConstants.FAILED.getCode())
+                .code(StatusLivelo.FAILED.getCode())
                 .partnerResponse(cause)
                 .partnerDescription("failed")
-                .description(StatusConstants.FAILED.getDescription())
+                .description(StatusLivelo.FAILED.getDescription())
                 .statusDate(LocalDateTime.now())
                 .build();
     }

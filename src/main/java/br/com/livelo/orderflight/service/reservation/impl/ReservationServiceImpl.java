@@ -7,12 +7,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
 import org.springframework.stereotype.Service;
 
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
@@ -37,7 +37,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationMapper reservationMapper;
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId,
-            String channel, String listPrice) {
+                                           String channel, String listPrice) {
         try {
             var orderOptional = this.orderService.findByCommerceOrderId(request.getCommerceOrderId());
 
@@ -52,10 +52,10 @@ public class ReservationServiceImpl implements ReservationService {
             var pricingCalculatePrice = calculatePricing(listPrice,partnerReservationResponse);
 
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId,
-                    customerId, channel, listPrice,pricingCalculatePrice);
-              
+                    customerId, channel, listPrice, pricingCalculatePrice);
+
             this.orderService.save(orderEntity);
-            log.info("Creating order Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId,
+            log.info("Order created Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId,
                     listPrice);
             // deve vir do connector
             return reservationMapper.toReservationResponse(orderEntity, 15);
@@ -66,14 +66,14 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    private PricingCalculatePrice calculatePricing(String listPrice,PartnerReservationResponse partnerReservationResponse) {
+    private PricingCalculatePrice calculatePricing(String listPrice, PartnerReservationResponse partnerReservationResponse) {
         var pricingCalculateResponse = pricingProxy.calculate(PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse));
         return Arrays.stream(pricingCalculateResponse).filter(
-                                pricingCalculate -> partnerReservationResponse.getCommerceOrderId().equals(pricingCalculate.getId())
-                        ).findFirst().orElse(null)
-                        .getPrices().stream().filter(
-                                price ->listPrice.equals(price.getPriceListId())
-                        ).findFirst().orElse(null);
+                        pricingCalculate -> partnerReservationResponse.getCommerceOrderId().equals(pricingCalculate.getId())
+                ).findFirst().orElse(null)
+                .getPrices().stream().filter(
+                        price ->listPrice.equals(price.getPriceListId())
+                ).findFirst().orElse(null);
     }
 
 
