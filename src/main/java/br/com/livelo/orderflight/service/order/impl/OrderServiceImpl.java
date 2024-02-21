@@ -2,6 +2,7 @@ package br.com.livelo.orderflight.service.order.impl;
 
 import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
+import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
@@ -9,13 +10,14 @@ import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
+import br.com.livelo.orderflight.mappers.OrderProcessMapper;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
-import br.com.livelo.orderflight.utils.MessageUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.core.Message;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -29,6 +31,10 @@ public class OrderServiceImpl implements OrderService {
     private final ConnectorPartnersProxy connectorPartnersProxy;
     private final ConfirmOrderMapper confirmOrderMapper;
 
+    private final OrderProcessMapper orderMapper;
+
+    @Value("${order.orderProcessMaxRows}")
+    private int orderProcessMaxRows;
 
     public OrderEntity getOrderById(String id) throws OrderFlightException {
         Optional<OrderEntity> order = orderRepository.findById(id);
@@ -45,7 +51,6 @@ public class OrderServiceImpl implements OrderService {
         order.getStatusHistory().add(status);
         order.setCurrentStatus(status);
     }
-
 
     public OrderItemEntity getFlightFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
         Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(item -> !item.getSkuId().toLowerCase().contains("tax")).findFirst();
@@ -109,5 +114,18 @@ public class OrderServiceImpl implements OrderService {
 
     public boolean isSameStatus(String currentStatus, String newStatus) {
         return currentStatus.equals(newStatus);
+    }
+
+    public PaginationOrderProcessResponse getOrdersByStatusCode(String statusCode, Integer page, Integer rows) throws OrderFlightException {
+        if (page <= 0) {
+            throw new OrderFlightException(OrderFlightErrorType.VALIDATION_INVALID_PAGINATION, OrderFlightErrorType.VALIDATION_INVALID_PAGINATION.getDescription(), null);
+        }
+
+        rows = rows > orderProcessMaxRows ? orderProcessMaxRows : rows;
+        page = page - 1;
+
+        Pageable pagination = PageRequest.of(page, rows);
+        var foundOrders = orderRepository.findAllByCurrentStatusCode(statusCode.toUpperCase(), pagination);
+        return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
     }
 }
