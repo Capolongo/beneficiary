@@ -3,8 +3,6 @@ package br.com.livelo.orderflight.proxies;
 import br.com.livelo.orderflight.client.PricingClient;
 import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateRequest;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
-import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
-import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import feign.FeignException;

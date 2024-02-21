@@ -29,9 +29,6 @@ import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORD
 @UtilityClass
 public class PricingCalculateRequestMapper {
 	private final String TYPE_FLIGHT = "type_flight";
-
-	private static BigDecimal totalTaxes = new BigDecimal(0);
-	private static BigDecimal totalflight = new BigDecimal(0);
 	public static PricingCalculateRequest toPricingCalculateRequest(PartnerReservationResponse partnerReservationResponse) {
 		var partnerReservationItemTypeFlight = getItemTypeFlight(partnerReservationResponse);
 		return PricingCalculateRequest.builder()
@@ -149,19 +146,21 @@ public class PricingCalculateRequestMapper {
 	}
 
 	private static PricingCalculatePrice buildPricingCalculatePrice(PartnerReservationResponse partnerReservationResponse) {
+		var totalTaxes = BigDecimal.ZERO;
+		var totalflight = BigDecimal.ZERO;
 		return PricingCalculatePrice.builder()
 				.currency("BRL")
 				.amount(partnerReservationResponse.getAmount())
+				.pricesDescription(buildPricesDescription(partnerReservationResponse.getOrdersPriceDescription(),totalflight,totalTaxes))
 				.flight(PricingCalculateFlight.builder().amount(totalflight).build())
 				.taxes(PricingCalculateTaxes.builder().amount(totalTaxes).build())
-				.pricesDescription(buildPricesDescription(partnerReservationResponse.getOrdersPriceDescription()))
 				.build();
 	}
 
-	private static ArrayList<PricingCalculatePricesDescription> buildPricesDescription(List<PartnerReservationOrdersPriceDescription> ordersPriceDescription) {
+	private static ArrayList<PricingCalculatePricesDescription> buildPricesDescription(List<PartnerReservationOrdersPriceDescription> ordersPriceDescription, BigDecimal totalflight, BigDecimal totalTaxes) {
 		var pricesDescription = new ArrayList<PricingCalculatePricesDescription>();
 		for(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription : ordersPriceDescription) {
-			BigDecimal taxes = new BigDecimal(0);
+			var taxes = BigDecimal.ZERO;
 			var pricingCalculateTaxes = new ArrayList<PricingCalculateTaxes>();
 			for(PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes:partnerReservationOrdersPriceDescription.getTaxes()) {
 				taxes = taxes.add(partnerReservationOrdersPriceDescriptionTaxes.getAmount());
