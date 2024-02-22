@@ -5,6 +5,10 @@ nav:
   - APIs:
       - Confirmação de pedido: confirmation.md
       - Processamento do pedido: process-order.md
+      - Opções parcelamento de pagamento: payment-installment-options.md
+      - Opções de envio: shipment-options.md
+      - Opções de pagamento: shipment-payment-options.md
+      - SKU: sku.md
   - Inicializando dependências: use-dependencies.md
   - Mockando as dependências: use-mocks.md
 plugins:
