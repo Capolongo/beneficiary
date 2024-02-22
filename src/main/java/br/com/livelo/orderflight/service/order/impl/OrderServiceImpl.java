@@ -103,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
 
-        var processCounter = findProcessCounterByWebhook(order.getProcessCounters(), Webhooks.GETCONFIRMATION);
+        var processCounter = findProcessCounterByWebhook(order.getProcessCounters(), Webhooks.GETCONFIRMATION, order.getId());
         if (processCounter.getCount() >= maxProcessCountFailed) {
             addNewOrderStatus(order, buildOrderStatusFailed());
             save(order);
@@ -147,7 +147,7 @@ public class OrderServiceImpl implements OrderService {
         processCounter.setCount(processCounter.getCount() + 1);
     }
 
-    private ProcessCounterEntity findProcessCounterByWebhook(Set<ProcessCounterEntity> processCounterEntities, Webhooks webhook) {
+    private ProcessCounterEntity findProcessCounterByWebhook(Set<ProcessCounterEntity> processCounterEntities, Webhooks webhook, String orderId) {
         var processCounter = processCounterEntities.stream().filter(counter -> webhook.value.equals(counter.getProcess())).findFirst();
 
 
