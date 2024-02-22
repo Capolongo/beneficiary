@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -22,8 +22,8 @@ public class PricingCalculateSegment {
     private PricingCalculateAirline airline;
     @JsonProperty("class")
     private String flightClass;
-    private ArrayList<PricingCalculateLuggage> luggages;
-    private ArrayList<PricingCalculateCancelationRule> cancelationRules;
-    private ArrayList<PricingCalculateChangeRule> changeRules;
-    private ArrayList<PricingCalculateFlightsLeg> flightsLegs;
+    private List<PricingCalculateLuggage> luggages;
+    private List<PricingCalculateCancellationRule> cancellationRules;
+    private List<PricingCalculateChangeRule> changeRules;
+    private List<PricingCalculateFlightsLeg> flightsLegs;
 }

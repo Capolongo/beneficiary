@@ -1,18 +1,10 @@
 package br.com.livelo.orderflight.service.reservation.impl;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
-import org.springframework.stereotype.Service;
-
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
+import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
@@ -26,6 +18,12 @@ import br.com.livelo.orderflight.service.order.OrderService;
 import br.com.livelo.orderflight.service.reservation.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
 
@@ -51,7 +49,7 @@ public class ReservationServiceImpl implements ReservationService {
                     .createReserve(reservationMapper.toPartnerReservationRequest(request), transactionId);
 
 
-            var pricingCalculatePrice = calculatePricing(listPrice,partnerReservationResponse);
+            var pricingCalculatePrice = calculatePricing(listPrice, partnerReservationResponse);
 
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId,
                     customerId, channel, listPrice, pricingCalculatePrice);
@@ -70,12 +68,17 @@ public class ReservationServiceImpl implements ReservationService {
 
     private PricingCalculatePrice calculatePricing(String listPrice, PartnerReservationResponse partnerReservationResponse) {
         var pricingCalculateResponse = pricingProxy.calculate(PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse));
-        return Arrays.stream(pricingCalculateResponse).filter(
-                        pricingCalculate -> partnerReservationResponse.getCommerceOrderId().equals(pricingCalculate.getId())
-                ).findFirst().orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "CommerceOrderId not found in pricing calculate response"))
-                .getPrices().stream().filter(
-                        price ->listPrice.equals(price.getPriceListId())
-                ).findFirst().orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "PriceListId not found in pricing calculate response"));
+
+        var pricingCalculate = pricingCalculateResponse.stream()
+                .filter(pricing -> partnerReservationResponse.getCommerceOrderId().equals(pricing.getId()))
+                .findFirst()
+                .orElseThrow(() ->
+                        new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Order not found in pricing response. commerceOrderId: " + partnerReservationResponse.getCommerceOrderId())
+                );
+
+        return pricingCalculate.getPrices().stream()
+                .filter(price -> listPrice.equals(price.getPriceListId())).findFirst()
+                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "PriceListId not found in pricing calculate response. listPrice: " + listPrice));
     }
 
 

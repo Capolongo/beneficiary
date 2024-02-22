@@ -206,8 +206,8 @@ class ReservationServiceTest {
         return ReservationItem.builder().commerceItemId(commerceItemId).productType(type).build();
     }
 
-    private PricingCalculateResponse[] buildPricingCalculateResponse(){
-        return new PricingCalculateResponse[]{PricingCalculateResponse.builder()
+    private List<PricingCalculateResponse> buildPricingCalculateResponse(){
+        return List.of(PricingCalculateResponse.builder()
                 .id("QWERT")
                 .prices(
                         new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price")
@@ -218,7 +218,7 @@ class ReservationServiceTest {
                                                 .pointsAmount(new BigDecimal(7))
                                                 .build())))
                                         .build()))).build()))
-                ).build()};
+                ).build());
     }
 
     private PartnerReservationResponse buildPartnerReservationResponse(){

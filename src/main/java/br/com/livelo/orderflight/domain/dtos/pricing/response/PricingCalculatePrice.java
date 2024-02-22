@@ -1,13 +1,15 @@
 package br.com.livelo.orderflight.domain.dtos.pricing.response;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Builder
+@ToString
 public class PricingCalculatePrice {
     private String priceListId;
     private BigDecimal amount;
@@ -15,5 +17,5 @@ public class PricingCalculatePrice {
     private PricingCalculateFlight flight;
     private PricingCalculateTaxes taxes;
     private Integer accrualPoints;
-    private ArrayList<PricingCalculatePricesDescription> pricesDescription;
+    private List<PricingCalculatePricesDescription> pricesDescription;
 }

@@ -38,8 +38,6 @@ client:
   pricingcalculatorflight:
     endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/pricing-calculator-flight/v1/calculate
 
-
-
 order:
   orderProcessMaxRows: 500
 

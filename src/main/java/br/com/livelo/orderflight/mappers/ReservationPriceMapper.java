@@ -59,8 +59,9 @@ public interface ReservationPriceMapper {
     }
 
     default PricingCalculatePricesDescription getPointsAmountFromPricingCalculate(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription, PricingCalculatePrice pricingCalculatePrice){
-        return pricingCalculatePrice.getPricesDescription()
-                .stream().filter(priceDescription -> partnerReservationOrdersPriceDescription.getType().equals(priceDescription.getPassengerType())).findFirst()
+        return pricingCalculatePrice.getPricesDescription().stream()
+                .filter(priceDescription -> partnerReservationOrdersPriceDescription.getType().equals(priceDescription.getPassengerType()))
+                .findFirst()
                 .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Passenger type not found"));
     }
 }
