@@ -1,7 +1,6 @@
 package br.com.livelo.orderflight.domain.dto.reservation.response;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import lombok.*;
 
@@ -10,9 +9,8 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @ToString
-public class PartnerReservationOrdersPriceDescription {
+public class PartnerReservationOrdersPriceDescriptionTaxes {
 	private BigDecimal amount;
     private String type;
     private String description;
-    private List<PartnerReservationOrdersPriceDescriptionTaxes> taxes;
 }

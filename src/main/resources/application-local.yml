@@ -33,3 +33,5 @@ spring:
 client:
   partnersconfigflight:
     endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/partners-config-flight
+  pricingcalculatorflight:
+    endpoint: http://localhost:8090/pricing-calculator-flight/v1/calculate

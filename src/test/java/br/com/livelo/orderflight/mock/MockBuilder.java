@@ -15,6 +15,8 @@ import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmO
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.entity.*;
@@ -185,6 +187,13 @@ public class MockBuilder {
                 .areaCode("areaCode")
                 .phone("phone")
                 .build();
+    }
+
+    public static ResponseEntity<PricingCalculateResponse[]> pricingCalculateResponse(){
+        return  ResponseEntity.ok().body(new PricingCalculateResponse[]{PricingCalculateResponse.builder()
+                .prices(
+                        new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price").build()))
+                ).build()});
     }
 
     public static ResponseEntity<ConnectorConfirmOrderResponse> connectorConfirmOrderResponse() {

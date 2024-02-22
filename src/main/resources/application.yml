@@ -34,7 +34,10 @@ management:
             - readinessState
 client:
   partnersconfigflight:
-    endpoint: http://partners-config-flight.livtravel.svc.cluster.local
+     endpoint: http://partners-config-flight.livtravel.svc.cluster.local
+  pricingcalculatorflight:
+    endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/pricing-calculator-flight/v1/calculate
 
 order:
   orderProcessMaxRows: 500
+
