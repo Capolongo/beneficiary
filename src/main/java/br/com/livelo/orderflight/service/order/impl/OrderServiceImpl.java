@@ -49,10 +49,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public void addNewOrderStatus(OrderEntity order, OrderStatusEntity status) {
-//        TODO: validar se tem o mesmo status
+        if (isSameStatus(status.getCode(), order.getCurrentStatus().getCode())) {
+            return;
+        }
+
         order.getStatusHistory().add(status);
         order.setCurrentStatus(status);
-        orderRepository.save(order);
     }
 
     public OrderItemEntity getFlightFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
