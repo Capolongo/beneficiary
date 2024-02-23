@@ -109,7 +109,7 @@ public class OrderServiceImpl implements OrderService {
         var processCounter = order.getProcessCounters().stream().filter(counter -> webhook.equals(counter.getProcess())).findFirst();
 
         if (processCounter.isEmpty()) {
-            var newProcessCounter = ProcessCounterEntity.builder().process(webhook).count(1).build();
+            var newProcessCounter = ProcessCounterEntity.builder().process(webhook).count(0).build();
             order.getProcessCounters().add(newProcessCounter);
             return newProcessCounter;
         }
