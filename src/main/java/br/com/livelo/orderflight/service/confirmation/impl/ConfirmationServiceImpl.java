@@ -5,6 +5,7 @@ import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirm
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
@@ -14,6 +15,7 @@ import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.service.confirmation.ConfirmationService;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import br.com.livelo.orderflight.utils.ConfirmOrderValidation;
+import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
     private final OrderServiceImpl orderService;
     private final ConfirmOrderMapper confirmOrderMapper;
     private final ConnectorPartnersProxy connectorPartnersProxy;
+    private int maxProcessCountFailed = 3;
 
     public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest) throws OrderFlightException {
         OrderEntity order = null;
@@ -54,17 +57,58 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             }
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getMessage()));
         } catch (Exception exception) {
-            if(order != null){
+            if (order != null) {
                 log.error("ConfirmationService.confirmOrder exception - id: [{}], orderId: [{}], transactionId: [{}],  error: [{}]", id, orderRequest.getCommerceOrderId(), order.getTransactionId(), exception);
             }
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getLocalizedMessage()));
         }
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
-        if(order != null){
+        if (order != null) {
             log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}]", id, orderRequest.getCommerceOrderId(), order.getTransactionId());
         }
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
+    }
+
+    public void orderProcess(OrderProcess orderProcess) {
+//      1 - consumir mensagem que vai ter o ID do pedido DONE
+//      2 - Com o id, buscar na base DONE
+//      3 - se nao encontrar o processo é finalizado (obs: analizar se realmente está certo)
+//      4 - com os dados do pedido, usaremos o partnercode do pedido para buscar o webhook usando a lib DONE
+//      5 - bater no webhook e salvar o status history e currentStatus q for retornado DONE
+//      6 - incrementar contador que conta quantas vezes o pedido passou no processo e adicionar o status retornado
+
+
+        var order = orderService.getOrderById(orderProcess.getId());
+        var currentStatusCode = order.getCurrentStatus().getCode();
+
+
+        if (!orderService.isSameStatus(StatusConstants.PROCESSING.getCode(), currentStatusCode)) {
+            log.warn("ConfirmationService.orderProcess - order has different status - id: [{}]", order.getId());
+            return;
+        }
+
+
+        var processCounter = orderService.findProcessCounterByWebhook(order.getProcessCounters(), Webhooks.GETCONFIRMATION, order.getId());
+        if (processCounter.getCount() >= maxProcessCountFailed) {
+            updateStatusAndSaveOrder(order, orderService.buildOrderStatusFailed());
+            return;
+        }
+//          todo: verificar se quantidade de vezes é >= 48 e setar como falha se for
+
+        var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getId());
+        var status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
+
+//        adicionar o
+        if (orderService.isSameStatus(status.getCode(), currentStatusCode)) {
+            orderService.incrementProcessCounter(processCounter);
+            orderService.save(order);
+            return;
+        }
+
+        var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
+        orderService.updateVoucher(itemFlight, connectorConfirmOrderResponse.getVoucher());
+        updateStatusAndSaveOrder(order, status);
     }
 
     private ConnectorConfirmOrderStatusResponse buildStatusToFailed(String cause) {
@@ -77,5 +121,10 @@ public class ConfirmationServiceImpl implements ConfirmationService {
                 .description(StatusConstants.FAILED.getDescription())
                 .statusDate(LocalDateTime.now())
                 .build();
+    }
+
+    private void updateStatusAndSaveOrder(OrderEntity order, OrderStatusEntity status) {
+        orderService.addNewOrderStatus(order, status);
+        orderService.save(order);
     }
 }

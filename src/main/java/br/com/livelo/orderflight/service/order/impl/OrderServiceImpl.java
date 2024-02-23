@@ -31,16 +31,11 @@ import java.util.Set;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final ConnectorPartnersProxy connectorPartnersProxy;
-    private final ConfirmOrderMapper confirmOrderMapper;
-
     private final OrderProcessMapper orderMapper;
 
     @Value("${order.orderProcessMaxRows}")
     private int orderProcessMaxRows;
 
-//    private int maxProcessCountFailed = 48;
-    private int maxProcessCountFailed = 3;
 
     public OrderEntity getOrderById(String id) throws OrderFlightException {
         Optional<OrderEntity> order = orderRepository.findById(id);
@@ -54,6 +49,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public void addNewOrderStatus(OrderEntity order, OrderStatusEntity status) {
+//        TODO: validar se tem o mesmo status
         order.getStatusHistory().add(status);
         order.setCurrentStatus(status);
     }
@@ -85,47 +81,6 @@ public class OrderServiceImpl implements OrderService {
         return this.orderRepository.save(order);
     }
 
-    public void orderProcess(OrderProcess orderProcess) {
-//      1 - consumir mensagem que vai ter o ID do pedido DONE
-//      2 - Com o id, buscar na base DONE
-//      3 - se nao encontrar o processo é finalizado (obs: analizar se realmente está certo)
-//      4 - com os dados do pedido, usaremos o partnercode do pedido para buscar o webhook usando a lib DONE
-//      5 - bater no webhook e salvar o status history e currentStatus q for retornado DONE
-//      6 - incrementar contador que conta quantas vezes o pedido passou no processo e adicionar o status retornado
-
-
-        var order = getOrderById(orderProcess.getId());
-        var currentStatusCode = order.getCurrentStatus().getCode();
-
-
-        if (!isSameStatus(currentStatusCode, StatusConstants.PROCESSING.getCode())) {
-            return;
-        }
-
-
-        var processCounter = findProcessCounterByWebhook(order.getProcessCounters(), Webhooks.GETCONFIRMATION, order.getId());
-        if (processCounter.getCount() >= maxProcessCountFailed) {
-            addNewOrderStatus(order, buildOrderStatusFailed());
-            save(order);
-            return;
-        }
-//          todo: verificar se quantidade de vezes é >= 48 e setar como falha se for
-
-        var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getId());
-        var status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
-
-        if (isSameStatus(currentStatusCode, status.getCode())) {
-            incrementProcessCounter(processCounter);
-            save(order);
-            return;
-        }
-
-        var itemFlight = getFlightFromOrderItems(order.getItems());
-        updateVoucher(itemFlight, connectorConfirmOrderResponse.getVoucher());
-        addNewOrderStatus(order, status);
-        orderRepository.save(order);
-    }
-
     public boolean isSameStatus(String currentStatus, String newStatus) {
         return currentStatus.equals(newStatus);
     }
@@ -143,11 +98,11 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
     }
 
-    private void incrementProcessCounter(ProcessCounterEntity processCounter) {
+    public void incrementProcessCounter(ProcessCounterEntity processCounter) {
         processCounter.setCount(processCounter.getCount() + 1);
     }
 
-    private ProcessCounterEntity findProcessCounterByWebhook(Set<ProcessCounterEntity> processCounterEntities, Webhooks webhook, String orderId) {
+    public ProcessCounterEntity findProcessCounterByWebhook(Set<ProcessCounterEntity> processCounterEntities, Webhooks webhook, String orderId) {
         var processCounter = processCounterEntities.stream().filter(counter -> webhook.value.equals(counter.getProcess())).findFirst();
 
 
@@ -160,7 +115,7 @@ public class OrderServiceImpl implements OrderService {
         return processCounter.get();
     }
 
-    private OrderStatusEntity buildOrderStatusFailed() {
+    public OrderStatusEntity buildOrderStatusFailed() {
         return OrderStatusEntity.builder()
                 .partnerCode(String.valueOf(500))
                 .code(StatusConstants.FAILED.getCode())
