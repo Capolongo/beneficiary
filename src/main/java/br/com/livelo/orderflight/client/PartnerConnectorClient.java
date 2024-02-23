@@ -7,11 +7,10 @@ import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservati
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 
+import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorReservationResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(value = "partner-client", url = "http://api.k8s")
 public interface PartnerConnectorClient {
@@ -24,4 +23,11 @@ public interface PartnerConnectorClient {
 			URI baseUrl,
 			@RequestBody PartnerReservationRequest partnerReservationRequest,
 			@RequestHeader(value = "transactionId") String transactionId);
+
+	@GetMapping
+	ResponseEntity<ConnectorReservationResponse> getReservation(
+			URI baseUri,
+			@RequestParam(value = "id") String id,
+			@RequestHeader(value = "transactionId") String transactionId
+	);
 }

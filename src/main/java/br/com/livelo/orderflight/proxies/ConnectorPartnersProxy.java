@@ -4,8 +4,9 @@ import br.com.livelo.exceptions.WebhookException;
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorReservationResponse;
 import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
 import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.OrderFlightException;
@@ -92,7 +93,17 @@ public class ConnectorPartnersProxy {
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
-
+    public ConnectorReservationResponse reservationStatus(String id , String transactionId, String partnerCode) {
+        try {
+            var url = URI.create(this.partnersConfigService
+                    .getPartnerWebhook(partnerCode, Webhooks.GETRESERVATION).getConnectorUrl());
+            ResponseEntity<ConnectorReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId);
+            return response.getBody();
+        } catch (Exception e) {
+            log.error("Unknown error on connector call ", e);
+            throw e;
+        }
+    }
     private ConnectorConfirmOrderResponse getResponseError(FeignException feignException, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws OrderFlightException {
         final String content = feignException.contentUTF8();
         try {
