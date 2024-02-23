@@ -1,6 +1,6 @@
 # Order Flight - Payment Installment Options
 
-API responsável por retornar uma lista de opções de parcelamento de pagamento, buscando pelo id e parcelamento de pagamento
+API responsável por retornar uma lista de opções de parcelamento de pagamento, buscando pelo id do pedido e id do pagamento
 
 ## Endpoint
 
@@ -13,14 +13,14 @@ Este endpoint retornará uma lista de opções de parcelamento de pagamento, pas
 
 ## Regras:
 
-- Deve ser passado o `id` como parâmetro na requisição, por exemplo, `id=951661608301` e `paymentOptionId` como parâmetro na requisição, por exemplo, `paymentOptionId=1234`.
+O id do pedido passado como parâmetro deve existir na base. Se existir vai retornar uma resposta fixa para todos os pedidos. Se não existir, irá retornar uma exceção.
 
 
 ## Exemplos de request
 
 1. Retorno da lista:
 
-`GET` /orders/951661608301/payment-options/1234/installment-options
+`GET` /orders/lf261/payment-options/1234/installment-options
 
 <details>
     <summary>Clique para ver o retorno</summary>

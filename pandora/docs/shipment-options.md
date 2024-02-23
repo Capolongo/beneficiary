@@ -13,14 +13,15 @@ Este endpoint retornará uma lista de opções de envio, passando por parametro 
 
 ## Regras:
 
-- Deve ser passado o `id` como parâmetro na requisição, por exemplo, `id=951661608301` e `shipmentOptionId` como parâmetro na requisição, por exemplo, `postalCode=1234`.
+
+- O id do pedido passado como parâmetro deve existir na base. Se existir vai retornar uma resposta de entrega eletrônica para todos os pedidos. Se não existir, irá retornar uma exceção.
 
 
 ## Exemplos de request
 
 1. Retorno da lista:
 
-`GET` /v1/orders/951661608301/shipment-options/1234
+`GET` /v1/orders/lf261/shipment-options/1234
 
 <details>
     <summary>Clique para ver o retorno</summary>
@@ -28,7 +29,7 @@ Este endpoint retornará uma lista de opções de envio, passando por parametro 
 {
   "shipmentOptions": [
     {
-      "id": "12345",
+      "id": "lf261",
       "currency": "PTS",
       "description": "Sem entrega física",
       "price": 0.1,

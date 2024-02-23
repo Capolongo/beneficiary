@@ -13,14 +13,15 @@ Este endpoint retornará o response do sku, passando por id
 
 ## Regras:
 
-- Deve ser passado o `id` como parâmetro na requisição, por exemplo, `id=1234`.
+- Deve ser passado como parametro patch o `id` e por parametro query `commerceItemId`, `currency`, e  como parâmetro na requisição, por exemplo, `id=CVCFLIGHT`, `commerceItemId=1234` e `currency=PTS`.
+- commerceItemId enviado - busca ele na base e retorna os valores de acordo com o que está na base. Se não encontrou, deve retornar uma exceção.
 
 
 ## Exemplos de request
 
-1. Retorno da lista:
+1. Retorno da lista se caso enviar o commerceItemId:
 
-`GET` /v1/skus/1234
+`GET` /v1/skus/CVCFLIGHT?commerceItemId=1234&currency=PTS
 
 <details>
     <summary>Clique para ver o retorno</summary>
@@ -34,6 +35,25 @@ Este endpoint retornará o response do sku, passando por id
   "listPrice": 18200,
   "quantity": 1,
   "commerceItemId": "ci19870698620961"
+}
+</pre>
+</details>
+
+2. Retorno da lista se caso não enviar commerceItemId:
+
+`GET` /v1/skus/CVCFLIGHT?currency=PTS
+
+<details>
+    <summary>Clique para ver o retorno</summary>
+    <pre>
+{ 
+  "id": "CVCFLIGHT", 
+  "description": "CVCFLIGHT", 
+  "available": true, 
+  "currency": "PTS", 
+  "salePrice": 1, 
+  "listPrice": 1, 
+  "quantity": 1 
 }
 </pre>
 </details>

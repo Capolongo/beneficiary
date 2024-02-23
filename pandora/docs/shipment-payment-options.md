@@ -13,14 +13,15 @@ Este endpoint retornará uma lista de opções de pagamento, passando por parame
 
 ## Regras:
 
-- Deve ser passado o `id` como parâmetro na requisição, por exemplo, `id=951661608301` e `shipmentOptionId` como parâmetro na requisição, por exemplo, `shipmentOptionId=1234`.
+
+- O id do pedido passado como parâmetro deve existir na base. Se existir vai retornar uma resposta fixa para todos os pedidos. Se não existir, irá retornar uma exceção.
 
 
 ## Exemplos de request
 
 1. Retorno da lista:
 
-`GET` /v1/orders/951661608301/shipment-options/1234/payment-options
+`GET` /v1/orders/lf261/shipment-options/12345/payment-options
 
 <details>
     <summary>Clique para ver o retorno</summary>
