@@ -54,3 +54,4 @@ client:
 
 order:
   orderProcessMaxRows: 500
+  maxProcessCountFailed: 3

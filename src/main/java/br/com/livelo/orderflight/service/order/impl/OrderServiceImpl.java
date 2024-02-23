@@ -52,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
 //        TODO: validar se tem o mesmo status
         order.getStatusHistory().add(status);
         order.setCurrentStatus(status);
+        orderRepository.save(order);
     }
 
     public OrderItemEntity getFlightFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
@@ -102,14 +103,13 @@ public class OrderServiceImpl implements OrderService {
         processCounter.setCount(processCounter.getCount() + 1);
     }
 
-    public ProcessCounterEntity findProcessCounterByWebhook(Set<ProcessCounterEntity> processCounterEntities, Webhooks webhook, String orderId) {
-        var processCounter = processCounterEntities.stream().filter(counter -> webhook.value.equals(counter.getProcess())).findFirst();
-
+    public ProcessCounterEntity getProcessCounter(OrderEntity order, String webhook) {
+        var processCounter = order.getProcessCounters().stream().filter(counter -> webhook.equals(counter.getProcess())).findFirst();
 
         if (processCounter.isEmpty()) {
-            var builder = ProcessCounterEntity.builder().process(Webhooks.GETCONFIRMATION.value).count(1).build();
-            processCounterEntities.add(builder);
-            return builder;
+            var newProcessCounter = ProcessCounterEntity.builder().process(webhook).count(1).build();
+            order.getProcessCounters().add(newProcessCounter);
+            return newProcessCounter;
         }
 
         return processCounter.get();

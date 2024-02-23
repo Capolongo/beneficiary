@@ -16,21 +16,24 @@ import br.com.livelo.orderflight.service.confirmation.ConfirmationService;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import br.com.livelo.orderflight.utils.ConfirmOrderValidation;
 import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
-import lombok.AllArgsConstructor;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ConfirmationServiceImpl implements ConfirmationService {
     private final OrderServiceImpl orderService;
     private final ConfirmOrderMapper confirmOrderMapper;
     private final ConnectorPartnersProxy connectorPartnersProxy;
-    private int maxProcessCountFailed = 3;
+
+    @Value("${order.maxProcessCountFailed}")
+    private int maxProcessCountFailed;
 
     public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest) throws OrderFlightException {
         OrderEntity order = null;
@@ -63,7 +66,6 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getLocalizedMessage()));
         }
         orderService.addNewOrderStatus(order, status);
-        orderService.save(order);
         if (order != null) {
             log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}]", id, orderRequest.getCommerceOrderId(), order.getTransactionId());
         }
@@ -78,18 +80,15 @@ public class ConfirmationServiceImpl implements ConfirmationService {
 //      5 - bater no webhook e salvar o status history e currentStatus q for retornado DONE
 //      6 - incrementar contador que conta quantas vezes o pedido passou no processo e adicionar o status retornado
 
-
         var order = orderService.getOrderById(orderProcess.getId());
         var currentStatusCode = order.getCurrentStatus().getCode();
-
 
         if (!orderService.isSameStatus(StatusConstants.PROCESSING.getCode(), currentStatusCode)) {
             log.warn("ConfirmationService.orderProcess - order has different status - id: [{}]", order.getId());
             return;
         }
 
-
-        var processCounter = orderService.findProcessCounterByWebhook(order.getProcessCounters(), Webhooks.GETCONFIRMATION, order.getId());
+        var processCounter = orderService.getProcessCounter(order, Webhooks.GETCONFIRMATION.value);
         if (processCounter.getCount() >= maxProcessCountFailed) {
             updateStatusAndSaveOrder(order, orderService.buildOrderStatusFailed());
             return;
@@ -125,6 +124,5 @@ public class ConfirmationServiceImpl implements ConfirmationService {
 
     private void updateStatusAndSaveOrder(OrderEntity order, OrderStatusEntity status) {
         orderService.addNewOrderStatus(order, status);
-        orderService.save(order);
     }
 }
