@@ -35,14 +35,25 @@ public class ReservationServiceImpl implements ReservationService {
     private final ConnectorPartnersProxy partnerConnectorProxy;
     private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
-
+    private static final  String PARTNER_RESERVATION_SUCCESS = "LIVPNR-1007";
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId,
                                            String channel, String listPrice) {
         try {
             var orderOptional = this.orderService.findByCommerceOrderId(request.getCommerceOrderId());
-
-            if (this.isSameOrderItems(request, orderOptional)) {
-                orderOptional.ifPresent(this.orderService::delete);
+            if(orderOptional.isPresent()){
+                var order = orderOptional.get();
+                if(this.isSameOrderItems(request, orderOptional)){
+                    var connectorReservationResponse = partnerConnectorProxy.reservationStatus(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode());
+                    if(PARTNER_RESERVATION_SUCCESS.equals(connectorReservationResponse.getStatus().getCode())){
+                        // TODO realizar precificaçao
+                        //TODO atualizar os valores da preficicacao para o orderEntity
+                        this.orderService.save(order);
+                        return reservationMapper.toReservationResponse(order, 15);
+                    }
+                throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, null, null);
+                }else{
+                    orderOptional.ifPresent(this.orderService::delete);
+                }
             }
 
             var partnerReservationResponse = partnerConnectorProxy
@@ -97,8 +108,7 @@ public class ReservationServiceImpl implements ReservationService {
                 }
                 return isSameCommerceItemsId;
             }
-            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_QUANTITY_ITEMS_BUSINESS_ERROR,
-                    "Quantidades de itens diferentes", null);
+            return Boolean.FALSE;
         }).orElse(false);
     }
 
