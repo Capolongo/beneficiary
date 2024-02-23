@@ -17,6 +17,7 @@ public enum OrderFlightErrorType {
     ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR("OFCART500", DEFAULT_MESSAGE_TITLE, DEFAULT_MESSAGE_DESCRIPTION, HttpStatus.BAD_REQUEST, null),
     ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR("OFCART501", "Erro ao adicionar pedido ao carrinho", "Favor tente novamente", HttpStatus.BAD_REQUEST, null),
     ORDER_FLIGHT_DIVERGENT_QUANTITY_ITEMS_BUSINESS_ERROR("OFCART502", "Erro ao adicionar pedido ao carrinho", "Favor tente novamente", HttpStatus.BAD_REQUEST, null),
+    ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR("OFCART503", "Erro ao adicionar pedido ao carrinho", "Favor tente novamente", HttpStatus.BAD_REQUEST, null),
 
     VALIDATION_ORDER_NOT_FOUND("OFCONFIRMATION000", "Ordem não encontrada", "Ordem não foi encontrada na base de dados", HttpStatus.NOT_FOUND, null),
     VALIDATION_OBJECTS_NOT_EQUAL("OFCONFIRMATION001", "Objetos não são iguais", "Objetos do request body e da base de dados não são iguais", HttpStatus.BAD_REQUEST, null),

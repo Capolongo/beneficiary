@@ -2,11 +2,14 @@ package br.com.livelo.orderflight.controller;
 
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
+import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.service.reservation.impl.ReservationServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,4 +28,5 @@ public class ReservationController {
         var response = reservationService.createOrder(reservationRequest, transactionId, customerId, channel, listPrice);
         return ResponseEntity.ok(response);
     }
+
 }
