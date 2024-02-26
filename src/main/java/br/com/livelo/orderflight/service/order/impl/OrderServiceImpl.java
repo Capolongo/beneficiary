@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
 
         return order.get();
     }
-
+    
     public void addNewOrderStatus(OrderEntity order, OrderStatusEntity status) {
         if (isSameStatus(status.getCode(), order.getCurrentStatus().getCode())) {
             return;
@@ -52,7 +52,6 @@ public class OrderServiceImpl implements OrderService {
         order.getStatusHistory().add(status);
         order.setCurrentStatus(status);
     }
-
     public OrderItemEntity getFlightFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
         Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(item -> !item.getSkuId().toLowerCase().contains("tax")).findFirst();
 
