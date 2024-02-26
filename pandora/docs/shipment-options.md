@@ -1,6 +1,6 @@
 # Order Flight - Shipment Options
 
-API responsável por retornar uma lista de opções de envio, buscando pelo id e opções de envio
+API responsável por retornar uma lista de opções de envio, buscando pelo id do pedido e postalCode
 
 ## Endpoint
 
@@ -9,7 +9,7 @@ API responsável por retornar uma lista de opções de envio, buscando pelo id e
 
 ## Contexto
 
-Este endpoint retornará uma lista de opções de envio, passando por parametro o id e a opção de envio.
+Este endpoint retornará uma lista de opções de envio, passando por parâmetro o id do pedido e a o postal code.
 
 ## Regras:
 

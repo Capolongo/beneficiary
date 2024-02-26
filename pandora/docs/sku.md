@@ -1,6 +1,6 @@
 # Order Flight - Shipment Payment Options
 
-API responsável por retornará o sku, passando o id
+API responsável por retornará o sku, passando por parêmtro o id da SKU e o currency. O commerceItemId é opcional.
 
 ## Endpoint
 
@@ -9,12 +9,13 @@ API responsável por retornará o sku, passando o id
 
 ## Contexto
 
-Este endpoint retornará o response do sku, passando por id
+Este endpoint retornará o response do sku, passando por parâmetro de acordo com os querys param
 
 ## Regras:
 
 - Deve ser passado como parametro patch o `id` e por parametro query `commerceItemId`, `currency`, e  como parâmetro na requisição, por exemplo, `id=CVCFLIGHT`, `commerceItemId=1234` e `currency=PTS`.
 - commerceItemId enviado - busca ele na base e retorna os valores de acordo com o que está na base. Se não encontrou, deve retornar uma exceção.
+- commerceItemId não enviado - retorna um payload padrão de acordo com o exemplo 2, destacado abaixo.
 
 
 ## Exemplos de request

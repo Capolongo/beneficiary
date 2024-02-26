@@ -1,6 +1,6 @@
 # Order Flight - Shipment Payment Options
 
-API responsável por retornar uma lista de opções de pagamento, buscando pelo id
+API responsável por retornar uma lista de opções de pagamento, buscando pelo id do pedido e da entrega
 
 ## Endpoint
 
@@ -9,7 +9,7 @@ API responsável por retornar uma lista de opções de pagamento, buscando pelo 
 
 ## Contexto
 
-Este endpoint retornará uma lista de opções de pagamento, passando por parametro o id e a opção de pagamento.
+Este endpoint retornará uma lista de opções de pagamento, passando por parâmetro o id do pedido e da opção de entrega.
 
 ## Regras:
 

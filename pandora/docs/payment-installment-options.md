@@ -9,7 +9,7 @@ API responsável por retornar uma lista de opções de parcelamento de pagamento
 
 ## Contexto
 
-Este endpoint retornará uma lista de opções de parcelamento de pagamento, passando por parametro o id e pagamento de parcelamento
+Este endpoint retornará uma lista de opções de parcelamento de pagamento, passando por parâmetro o id do pedido e id do pagamento
 
 ## Regras:
 
