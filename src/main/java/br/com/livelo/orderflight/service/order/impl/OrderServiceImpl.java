@@ -113,11 +113,11 @@ public class OrderServiceImpl implements OrderService {
         return processCounter.get();
     }
 
-    public OrderStatusEntity buildOrderStatusFailed() {
+    public OrderStatusEntity buildOrderStatusFailed(String cause) {
         return OrderStatusEntity.builder()
                 .partnerCode(String.valueOf(500))
                 .code(StatusConstants.FAILED.getCode())
-                .partnerResponse("")
+                .partnerResponse(cause)
                 .partnerDescription("failed")
                 .description(StatusConstants.FAILED.getDescription())
                 .statusDate(LocalDateTime.now())

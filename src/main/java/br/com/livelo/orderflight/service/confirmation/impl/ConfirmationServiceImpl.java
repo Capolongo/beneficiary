@@ -86,8 +86,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         var processCounter = orderService.getProcessCounter(order, Webhooks.GETCONFIRMATION.value);
         if (processCounter.getCount() >= maxProcessCountFailed) {
             log.warn("ConfirmationService.orderProcess - counter exceeded limit - id: [{}]", order.getId());
-            status = orderService.buildOrderStatusFailed();
-            status.setPartnerResponse("O contador excedeu o limite de tentativas");
+            status = orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
         } else {
             var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getId());
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
