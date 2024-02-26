@@ -12,5 +12,7 @@ import java.math.BigDecimal;
 public interface ReservationOrderPriceDescriptionTaxesMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "pointsAmount", source = "pointsAmount")
+    @Mapping(target = "amount", source = "partnerReservationOrdersPriceDescriptionTaxes.amount")
+    @Mapping(target = "type", source = "partnerReservationOrdersPriceDescriptionTaxes.type")
     OrderPriceDescriptionEntity toOrderPriceDescriptionEntity(PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes, BigDecimal pointsAmount);
 }

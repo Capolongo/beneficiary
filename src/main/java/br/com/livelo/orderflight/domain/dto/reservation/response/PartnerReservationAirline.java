@@ -7,7 +7,8 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PartnerReservationChangeRule {
-	private String type;
-	private String description;
+@ToString
+public class PartnerReservationAirline {
+    private String iata;
+    private String description;
 }

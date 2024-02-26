@@ -1,22 +1,19 @@
 package br.com.livelo.orderflight.service.reservation;
 
-import br.com.livelo.orderflight.domain.dto.reservation.response.*;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePricesDescription;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateTaxes;
+import br.com.livelo.orderflight.domain.dto.reservation.response.*;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.*;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.mappers.ReservationMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.proxies.PricingProxy;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import br.com.livelo.orderflight.service.reservation.impl.ReservationServiceImpl;
-import br.com.livelo.orderflight.mappers.ReservationMapper;
 import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,10 +23,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -64,7 +64,7 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertEquals(transactionId, response.transactionId())
-              );
+        );
     }
 
     @Test
@@ -206,35 +206,57 @@ class ReservationServiceTest {
         return ReservationItem.builder().commerceItemId(commerceItemId).productType(type).build();
     }
 
-    private List<PricingCalculateResponse> buildPricingCalculateResponse(){
-        return List.of(PricingCalculateResponse.builder()
-                .id("QWERT")
-                .prices(
-                        new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price")
-                                .pricesDescription( new ArrayList<>(List.of(PricingCalculatePricesDescription.builder()
-                                        .passengerType("BY_ADULT").pointsAmount(new BigDecimal(7))
-                                        .taxes(new ArrayList<>(List.of(PricingCalculateTaxes.builder()
-                                                .description("TESTE_TAX")
-                                                .pointsAmount(new BigDecimal(7))
-                                                .build())))
-                                        .build()))).build()))
-                ).build());
+    private List<PricingCalculateResponse> buildPricingCalculateResponse() {
+        return List.of(
+                PricingCalculateResponse.builder()
+                        .id("QWERT")
+                        .prices(
+                                List.of(
+                                        PricingCalculatePrice.builder()
+                                                .priceListId("price")
+                                                .pricesDescription(
+                                                        PricingCalculatePricesDescription.builder()
+                                                                .flights(List.of(
+                                                                        PricingCalculateFlight.builder()
+                                                                                .passengerType("BY_ADULT")
+                                                                                .pointsAmount(BigDecimal.TEN)
+                                                                                .build()
+                                                                ))
+                                                                .taxes(
+                                                                        List.of(
+                                                                                PricingCalculateTaxes.builder()
+                                                                                        .type("TESTE_TAX")
+                                                                                        .pointsAmount(new BigDecimal(7))
+                                                                                        .build()
+                                                                        )
+                                                                )
+                                                                .build()
+                                                ).build()
+                                )
+                        ).build());
     }
 
-    private PartnerReservationResponse buildPartnerReservationResponse(){
+    private PartnerReservationResponse buildPartnerReservationResponse() {
         return PartnerReservationResponse.builder()
                 .commerceOrderId("QWERT")
                 .ordersPriceDescription(
-                        List.of(PartnerReservationOrdersPriceDescription.builder()
-                                .amount(new BigDecimal(10))
-                                .type("BY_ADULT")
+                        PartnerReservationOrdersPriceDescription.builder()
+                                .flights(List.of(
+                                                PartnerReservationOrdersPriceDescriptionFlight.builder()
+                                                        .amount(new BigDecimal(10))
+                                                        .passengerType("BY_ADULT")
+                                                        .build()
+                                        )
+                                )
                                 .taxes(
                                         List.of(PartnerReservationOrdersPriceDescriptionTaxes.builder()
                                                 .amount(new BigDecimal(10))
                                                 .description("TESTE_TAX")
-                                                .build())).build())
-                )
-                .items(
+                                                .build()
+                                        )
+                                )
+                                .build()
+                ).items(
                         List.of(
                                 PartnerReservationItem
                                         .builder()
@@ -251,8 +273,11 @@ class ReservationServiceTest {
                                                 .changeRules(List.of(PartnerReservationChangeRule
                                                         .builder()
                                                         .build()))
-                                                .flightsLegs(List.of(PartnerReservationFlightsLeg
+                                                .flightLegs(List.of(PartnerReservationFlightsLeg
                                                         .builder()
+                                                                .airline(PartnerReservationFlightLegAirline.builder()
+                                                                        .managedBy(PartnerReservationAirline.builder().build())
+                                                                        .build())
                                                         .build()))
                                                 .build()))
                                         .build()

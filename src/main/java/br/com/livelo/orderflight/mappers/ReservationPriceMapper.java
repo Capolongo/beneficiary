@@ -1,11 +1,9 @@
 package br.com.livelo.orderflight.mappers;
 
-import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationOrdersPriceDescription;
+import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationOrdersPriceDescriptionFlight;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationOrdersPriceDescriptionTaxes;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePricesDescription;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateTaxes;
 import br.com.livelo.orderflight.domain.entity.OrderPriceDescriptionEntity;
 import br.com.livelo.orderflight.domain.entity.OrderPriceEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
@@ -13,6 +11,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,31 +36,33 @@ public interface ReservationPriceMapper {
         if (partnerReservationResponse.getOrdersPriceDescription() != null) {
             Set<OrderPriceDescriptionEntity> ordersPriceDescription = new HashSet<>();
 
-            for(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription:partnerReservationResponse.getOrdersPriceDescription()) {
+            for (PartnerReservationOrdersPriceDescriptionFlight partnerReservationOrdersPriceDescriptionFlight : partnerReservationResponse.getOrdersPriceDescription().getFlights()) {
                 ordersPriceDescription.add(orderPriceDescriptionMapper.toOrderPriceDescriptionEntity(
-                        partnerReservationOrdersPriceDescription,
-                        getPointsAmountFromPricingCalculate(partnerReservationOrdersPriceDescription,pricingCalculatePrice).getPointsAmount()));
-                for(PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes:partnerReservationOrdersPriceDescription.getTaxes()) {
-                    ordersPriceDescription.add(orderPriceDescriptionTaxesMapper.toOrderPriceDescriptionEntity(
-                            partnerReservationOrdersPriceDescriptionTaxes,
-                            getPointsAmountFromPricingCalculateTaxes(partnerReservationOrdersPriceDescription,partnerReservationOrdersPriceDescriptionTaxes,pricingCalculatePrice).getPointsAmount()));
-                }
+                        partnerReservationOrdersPriceDescriptionFlight,
+                        getPointsAmountFromPricingCalculate(partnerReservationOrdersPriceDescriptionFlight, pricingCalculatePrice)));
+            }
+
+            for (PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes : partnerReservationResponse.getOrdersPriceDescription().getTaxes()) {
+                ordersPriceDescription.add(orderPriceDescriptionTaxesMapper.toOrderPriceDescriptionEntity(
+                        partnerReservationOrdersPriceDescriptionTaxes,
+                        getPointsAmountFromPricingCalculateTaxes(partnerReservationOrdersPriceDescriptionTaxes, pricingCalculatePrice)));
             }
             return ordersPriceDescription;
         }
         return Collections.emptySet();
     }
 
-    default PricingCalculateTaxes getPointsAmountFromPricingCalculateTaxes(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription, PartnerReservationOrdersPriceDescriptionTaxes orderPriceDescriptionEntityTaxes, PricingCalculatePrice pricingCalculatePrice){
-        return getPointsAmountFromPricingCalculate(partnerReservationOrdersPriceDescription,pricingCalculatePrice).getTaxes()
-                .stream().filter(priceDescriptionTaxes -> orderPriceDescriptionEntityTaxes.getDescription().equals(priceDescriptionTaxes.getDescription())).findFirst()
-                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Tax description not found"));
+    default BigDecimal getPointsAmountFromPricingCalculateTaxes(PartnerReservationOrdersPriceDescriptionTaxes orderPriceDescriptionEntityTaxes, PricingCalculatePrice pricingCalculatePrice) {
+        return pricingCalculatePrice.getPricesDescription().getTaxes().stream()
+                .filter(priceDescriptionTaxes -> orderPriceDescriptionEntityTaxes.getDescription().equals(priceDescriptionTaxes.getType()))
+                .findFirst()
+                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Tax description not found")).getPointsAmount();
     }
 
-    default PricingCalculatePricesDescription getPointsAmountFromPricingCalculate(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription, PricingCalculatePrice pricingCalculatePrice){
-        return pricingCalculatePrice.getPricesDescription().stream()
-                .filter(priceDescription -> partnerReservationOrdersPriceDescription.getType().equals(priceDescription.getPassengerType()))
+    default BigDecimal getPointsAmountFromPricingCalculate(PartnerReservationOrdersPriceDescriptionFlight partnerReservationOrdersPriceDescriptionFlight, PricingCalculatePrice pricingCalculatePrice) {
+        return pricingCalculatePrice.getPricesDescription().getFlights().stream()
+                .filter(priceDescription -> partnerReservationOrdersPriceDescriptionFlight.getPassengerType().equals(priceDescription.getPassengerType()))
                 .findFirst()
-                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Passenger type not found"));
+                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Passenger type not found")).getPointsAmount();
     }
 }
