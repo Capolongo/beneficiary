@@ -1,7 +1,6 @@
 package br.com.livelo.orderflight.service.order.impl;
 
 import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
-import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
@@ -9,12 +8,9 @@ import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
-import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
-import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.mappers.OrderProcessMapper;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
-import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -105,11 +101,11 @@ public class OrderServiceImpl implements OrderService {
         processCounter.setCount(processCounter.getCount() + 1);
     }
 
-    public ProcessCounterEntity getProcessCounter(OrderEntity order, String webhook) {
-        var processCounter = order.getProcessCounters().stream().filter(counter -> webhook.equals(counter.getProcess())).findFirst();
+    public ProcessCounterEntity getProcessCounter(OrderEntity order, String process) {
+        var processCounter = order.getProcessCounters().stream().filter(counter -> process.equals(counter.getProcess())).findFirst();
 
         if (processCounter.isEmpty()) {
-            var newProcessCounter = ProcessCounterEntity.builder().process(webhook).count(0).build();
+            var newProcessCounter = ProcessCounterEntity.builder().process(process).count(0).build();
             order.getProcessCounters().add(newProcessCounter);
             return newProcessCounter;
         }

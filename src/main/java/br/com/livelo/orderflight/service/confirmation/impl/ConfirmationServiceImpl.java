@@ -74,13 +74,6 @@ public class ConfirmationServiceImpl implements ConfirmationService {
     }
 
     public void orderProcess(OrderProcess orderProcess) {
-//      1 - consumir mensagem que vai ter o ID do pedido DONE
-//      2 - Com o id, buscar na base DONE
-//      3 - se nao encontrar o processo é finalizado (obs: analizar se realmente está certo)
-//      4 - com os dados do pedido, usaremos o partnercode do pedido para buscar o webhook usando a lib DONE
-//      5 - bater no webhook e salvar o status history e currentStatus q for retornado DONE
-//      6 - incrementar contador que conta quantas vezes o pedido passou no processo e adicionar o status retornado
-
         OrderStatusEntity status = null;
         var order = orderService.getOrderById(orderProcess.getId());
         var currentStatusCode = order.getCurrentStatus().getCode();
@@ -92,7 +85,9 @@ public class ConfirmationServiceImpl implements ConfirmationService {
 
         var processCounter = orderService.getProcessCounter(order, Webhooks.GETCONFIRMATION.value);
         if (processCounter.getCount() >= maxProcessCountFailed) {
+            log.warn("ConfirmationService.orderProcess - counter exceeded limit - id: [{}]", order.getId());
             status = orderService.buildOrderStatusFailed();
+            status.setPartnerResponse("O contador excedeu o limite de tentativas");
         } else {
             var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getId());
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
@@ -116,14 +111,4 @@ public class ConfirmationServiceImpl implements ConfirmationService {
                 .statusDate(LocalDateTime.now())
                 .build();
     }
-
-    private void updateStatusAndSaveOrder(OrderEntity order, OrderStatusEntity status) {
-        orderService.addNewOrderStatus(order, status);
-    }
 }
-//
-//            if (orderService.isSameStatus(status.getCode(), currentStatusCode)) {
-//                    orderService.incrementProcessCounter(processCounter);
-//                    orderService.save(order);
-//                    return;
-//                    }

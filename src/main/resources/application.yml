@@ -50,8 +50,8 @@ management:
             - readinessState
 client:
   partnersconfigflight:
-    endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/partners-config-flight
+    endpoint: http://partners-config-flight.livtravel.svc.cluster.local
 
 order:
   orderProcessMaxRows: 500
-  maxProcessCountFailed: 3
+  maxProcessCountFailed: 48

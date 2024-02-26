@@ -26,7 +26,6 @@ public interface PartnerConnectorClient {
 			@RequestBody PartnerReservationRequest partnerReservationRequest,
 			@RequestHeader(value = "transactionId") String transactionId);
 
-//	@GetMapping("/v1/orders/{id}/confirmation")
 	@GetMapping
 	ResponseEntity<ConnectorConfirmOrderResponse> getConfirmation(URI baseUrl);
 }
