@@ -13,5 +13,5 @@ public class PricingCalculatePrice {
     private BigDecimal amount;
     private PricingCalculateFlight flight;
     private PricingCalculateTaxes taxes;
-    private List<PricingCalculatePricesDescription> pricesDescription;
+    private PricingCalculatePricesDescription pricesDescription;
 }

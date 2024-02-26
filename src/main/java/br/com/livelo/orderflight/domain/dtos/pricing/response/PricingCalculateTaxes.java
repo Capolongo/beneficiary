@@ -12,5 +12,5 @@ import java.math.BigDecimal;
 public class PricingCalculateTaxes {
     private BigDecimal amount;
     private BigDecimal pointsAmount;
-    private String description;
+    private String type;
 }

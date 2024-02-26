@@ -11,9 +11,6 @@ import java.util.List;
 @Builder
 @ToString
 public class PricingCalculatePricesDescription {
-    private BigDecimal amount;
-    private BigDecimal pointsAmount;
-    private PricingCalculateFlight flight;
-    private String passengerType;
+    private List<PricingCalculateFlight> flights;
     private List<PricingCalculateTaxes> taxes;
 }

@@ -52,7 +52,6 @@ public class PricingCalculateRequestMapper {
         for (PartnerReservationSegment segment : partnerReservationItemTypeFlight.getSegments()) {
             var flightsLegs = buildFlightsLegs(segment, partnerReservationItemTypeFlight);
             segments.add(PricingCalculateSegment.builder()
-                    .type(null)
                     .step(Integer.valueOf(segment.getStep()))
                     .originIata(segment.getOriginIata())
                     .originDescription(segment.getOriginDescription())
@@ -148,6 +147,31 @@ public class PricingCalculateRequestMapper {
         var totalFlight = BigDecimal.ZERO;
         var priceDescription = buildPricesDescription(response, partnerReservationResponse.getOrdersPriceDescription(), totalFlight, totalTaxes);
 
+        List<PricingCalculateTaxes> pricingCalculateTaxes = new ArrayList<>();
+        List<PricingCalculateFlight> pricingCalculateFlights = new ArrayList<>();
+        for (PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription : partnerReservationResponse.getOrdersPriceDescription()) {
+            var taxes = BigDecimal.ZERO;
+            for (PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes : partnerReservationOrdersPriceDescription.getTaxes()) {
+                taxes = taxes.add(partnerReservationOrdersPriceDescriptionTaxes.getAmount());
+                pricingCalculateTaxes.add(PricingCalculateTaxes.builder()
+                        .type(partnerReservationOrdersPriceDescriptionTaxes.getDescription())
+                        .amount(partnerReservationOrdersPriceDescriptionTaxes.getAmount())
+                        .build());
+            }
+            totalTaxes = totalTaxes.add(taxes);
+            totalFlight = totalFlight.add(partnerReservationOrdersPriceDescription.getAmount());
+            pricingCalculateFlights.add(PricingCalculateFlight.builder()
+                    .passengerType(partnerReservationOrdersPriceDescription.getType())
+                    .amount(partnerReservationOrdersPriceDescription.getAmount())
+                    .passengerCount(1)
+                    .build());
+        }
+
+        var priceDescription = PricingCalculatePricesDescription.builder()
+                .flights(pricingCalculateFlights)
+                .taxes(pricingCalculateTaxes)
+                .build();
+
         return PricingCalculatePrice.builder()
                 .currency(BRL)
                 .amount(partnerReservationResponse.getAmount())
@@ -155,33 +179,6 @@ public class PricingCalculateRequestMapper {
                 .flight(PricingCalculateFlight.builder().amount(totalFlight).build())
                 .taxes(PricingCalculateTaxes.builder().amount(totalTaxes).build())
                 .build();
-    }
-
-    private static List<PricingCalculatePricesDescription> buildPricesDescription(PartnerReservationResponse response, PartnerReservationOrdersPriceDescription ordersPriceDescription, BigDecimal totalFlight, BigDecimal totalTaxes) {
-        List<PricingCalculatePricesDescription> pricesDescription = new ArrayList<>();
-//        for (PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription : ordersPriceDescription) {
-//            var taxes = BigDecimal.ZERO;
-//            List<PricingCalculateTaxes> pricingCalculateTaxes = new ArrayList<>();
-//            for (PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes : partnerReservationOrdersPriceDescription.getTaxes()) {
-//                taxes = taxes.add(partnerReservationOrdersPriceDescriptionTaxes.getAmount());
-//                pricingCalculateTaxes.add(PricingCalculateTaxes.builder()
-//                        .description(partnerReservationOrdersPriceDescriptionTaxes.getDescription())
-//                        .amount(partnerReservationOrdersPriceDescriptionTaxes.getAmount())
-//                        .build());
-//            }
-//            pricesDescription.add(PricingCalculatePricesDescription.builder()
-//                    .amount(response.getAmount().add(taxes))
-//                    //pegar da nova estrutura flight
-//                    .flight(PricingCalculateFlight.builder().amount(response.getAmount()).build())
-//                    //pegar do local correto
-////                    .passengerType(partnerReservationOrdersPriceDescription.getType())
-//                    .passengerCount(null)
-//                    .taxes(pricingCalculateTaxes)
-//                    .build());
-//            totalTaxes = totalTaxes.add(taxes);
-////            totalFlight = totalFlight.add(partnerReservationOrdersPriceDescription.getAmount());
-//        }
-        return pricesDescription;
     }
 
     private static PartnerReservationItem getItemTypeFlight(PartnerReservationResponse partnerReservationResponse) {

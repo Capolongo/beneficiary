@@ -1,6 +1,7 @@
 package br.com.livelo.orderflight.mappers;
 
 import br.com.livelo.orderflight.domain.dto.reservation.response.*;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateFlight;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePricesDescription;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateTaxes;
@@ -32,13 +33,17 @@ class ReservationPriceMapperTest {
                                                 .build())).build())
                 ).build(),
                 PricingCalculatePrice.builder().priceListId("price")
-                        .pricesDescription( new ArrayList<>(List.of(PricingCalculatePricesDescription.builder()
-                                .passengerType("BY_ADULT").pointsAmount(new BigDecimal(7))
-                                .taxes(new ArrayList<>(List.of(PricingCalculateTaxes.builder()
-                                        .description("TESTE_TAX")
+                        .pricesDescription(PricingCalculatePricesDescription.builder()
+                                .flights(List.of(PricingCalculateFlight.builder()
+                                                .passengerType("BY_ADULT")
+                                                .pointsAmount(new BigDecimal(10))
+                                        .build()))
+
+                                .taxes(List.of(PricingCalculateTaxes.builder()
+                                        .type("TESTE_TAX")
                                                 .pointsAmount(new BigDecimal(7))
-                                        .build())))
-                                .build()))).build());
+                                        .build()))
+                                .build()).build());
         assertNotNull(response);
     }
 }

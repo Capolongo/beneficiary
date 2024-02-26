@@ -9,9 +9,6 @@ import java.util.List;
 @Data
 @Builder
 public class PricingCalculatePricesDescription {
-    private BigDecimal amount;
-    private PricingCalculateFlight flight;
-    private String passengerType;
-    private Integer passengerCount;
+    private List<PricingCalculateFlight> flights;
     private List<PricingCalculateTaxes> taxes;
 }
