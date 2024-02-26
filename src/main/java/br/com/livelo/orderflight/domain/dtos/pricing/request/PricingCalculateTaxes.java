@@ -9,5 +9,5 @@ import lombok.Data;
 @Builder
 public class PricingCalculateTaxes{
 	private BigDecimal amount;
-	private String description;
+	private String type;
 }

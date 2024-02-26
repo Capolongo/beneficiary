@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 @Builder
 public class PricingCalculateSegment {
-    private String type;
     private Integer step;
     private String originIata;
     private String originDescription;

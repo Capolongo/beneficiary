@@ -3,10 +3,7 @@ package br.com.livelo.orderflight.service.reservation;
 import br.com.livelo.orderflight.domain.dto.reservation.response.*;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePricesDescription;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateTaxes;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.*;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
@@ -207,17 +204,32 @@ class ReservationServiceTest {
     }
 
     private List<PricingCalculateResponse> buildPricingCalculateResponse(){
-        return List.of(PricingCalculateResponse.builder()
+        return List.of(
+                PricingCalculateResponse.builder()
                 .id("QWERT")
                 .prices(
-                        new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price")
-                                .pricesDescription( new ArrayList<>(List.of(PricingCalculatePricesDescription.builder()
-                                        .passengerType("BY_ADULT").pointsAmount(new BigDecimal(7))
-                                        .taxes(new ArrayList<>(List.of(PricingCalculateTaxes.builder()
-                                                .description("TESTE_TAX")
-                                                .pointsAmount(new BigDecimal(7))
-                                                .build())))
-                                        .build()))).build()))
+                        List.of(
+                                PricingCalculatePrice.builder()
+                                .priceListId("price")
+                                .pricesDescription(
+                                        PricingCalculatePricesDescription.builder()
+                                                .flights(List.of(
+                                                        PricingCalculateFlight.builder()
+                                                                .passengerType("BY_ADULT")
+                                                                .pointsAmount(BigDecimal.TEN)
+                                                                .build()
+                                                ))
+                                                .taxes(
+                                                        List.of(
+                                                                PricingCalculateTaxes.builder()
+                                                                    .type("TESTE_TAX")
+                                                                    .pointsAmount(new BigDecimal(7))
+                                                                    .build()
+                                                        )
+                                                )
+                                                .build()
+                                ).build()
+                        )
                 ).build());
     }
 
