@@ -4,7 +4,7 @@ API responsável por retornará o sku, passando o id
 
 ## Endpoint
 
-`GET` /v1/skus/{id}
+`GET` /v1/skus/{id}?commerceItemId=1234&currency=PTS
 
 
 ## Contexto
