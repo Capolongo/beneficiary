@@ -5,6 +5,8 @@ nav:
   - APIs:
       - Confirmação de pedido: confirmation.md
       - Processamento do pedido: process-order.md
+  - Listeners:
+      - Order Process: order-process-listener.md
   - Inicializando dependências: use-dependencies.md
   - Mockando as dependências: use-mocks.md
 plugins:
