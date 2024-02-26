@@ -9,6 +9,7 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class PartnerReservationItem {
     private String type;

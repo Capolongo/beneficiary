@@ -9,10 +9,12 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class PartnerReservationOrdersPriceDescription {
-	private BigDecimal amount;
-    private String type;
-    private String description;
+//	private BigDecimal amount;
+//    private String type;
+//    private String description;
+    private List<PartnerReservationOrdersPriceDescriptionFlight> flights;
     private List<PartnerReservationOrdersPriceDescriptionTaxes> taxes;
 }

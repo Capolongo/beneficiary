@@ -1,6 +1,7 @@
 package br.com.livelo.orderflight.client;
 
 import java.net.URI;
+import java.util.Map;
 
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
@@ -20,7 +21,7 @@ public interface PartnerConnectorClient {
 			@RequestBody ConnectorConfirmOrderRequest connectorConfirmOrderRequest);
 
 	@PostMapping
-	ResponseEntity<PartnerReservationResponse> createReserve(
+	ResponseEntity<Map<String, Object>> createReserve(
 			URI baseUrl,
 			@RequestBody PartnerReservationRequest partnerReservationRequest,
 			@RequestHeader(value = "transactionId") String transactionId);

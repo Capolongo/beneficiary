@@ -37,31 +37,31 @@ public interface ReservationPriceMapper {
         if (partnerReservationResponse.getOrdersPriceDescription() != null) {
             Set<OrderPriceDescriptionEntity> ordersPriceDescription = new HashSet<>();
 
-            for(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription:partnerReservationResponse.getOrdersPriceDescription()) {
-                ordersPriceDescription.add(orderPriceDescriptionMapper.toOrderPriceDescriptionEntity(
-                        partnerReservationOrdersPriceDescription,
-                        getPointsAmountFromPricingCalculate(partnerReservationOrdersPriceDescription,pricingCalculatePrice).getPointsAmount()));
-                for(PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes:partnerReservationOrdersPriceDescription.getTaxes()) {
-                    ordersPriceDescription.add(orderPriceDescriptionTaxesMapper.toOrderPriceDescriptionEntity(
-                            partnerReservationOrdersPriceDescriptionTaxes,
-                            getPointsAmountFromPricingCalculateTaxes(partnerReservationOrdersPriceDescription,partnerReservationOrdersPriceDescriptionTaxes,pricingCalculatePrice).getPointsAmount()));
-                }
-            }
+//            for(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription:partnerReservationResponse.getOrdersPriceDescription()) {
+//                ordersPriceDescription.add(orderPriceDescriptionMapper.toOrderPriceDescriptionEntity(
+//                        partnerReservationOrdersPriceDescription,
+//                        getPointsAmountFromPricingCalculate(partnerReservationOrdersPriceDescription,pricingCalculatePrice).getPointsAmount()));
+//                for(PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes:partnerReservationOrdersPriceDescription.getTaxes()) {
+//                    ordersPriceDescription.add(orderPriceDescriptionTaxesMapper.toOrderPriceDescriptionEntity(
+//                            partnerReservationOrdersPriceDescriptionTaxes,
+//                            getPointsAmountFromPricingCalculateTaxes(partnerReservationOrdersPriceDescription,partnerReservationOrdersPriceDescriptionTaxes,pricingCalculatePrice).getPointsAmount()));
+//                }
+//            }
             return ordersPriceDescription;
         }
         return Collections.emptySet();
     }
 
-    default PricingCalculateTaxes getPointsAmountFromPricingCalculateTaxes(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription, PartnerReservationOrdersPriceDescriptionTaxes orderPriceDescriptionEntityTaxes, PricingCalculatePrice pricingCalculatePrice){
-        return getPointsAmountFromPricingCalculate(partnerReservationOrdersPriceDescription,pricingCalculatePrice).getTaxes()
-                .stream().filter(priceDescriptionTaxes -> orderPriceDescriptionEntityTaxes.getDescription().equals(priceDescriptionTaxes.getDescription())).findFirst()
-                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Tax description not found"));
-    }
+//    default PricingCalculateTaxes getPointsAmountFromPricingCalculateTaxes(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription, PartnerReservationOrdersPriceDescriptionTaxes orderPriceDescriptionEntityTaxes, PricingCalculatePrice pricingCalculatePrice){
+//        return getPointsAmountFromPricingCalculate(partnerReservationOrdersPriceDescription,pricingCalculatePrice).getTaxes()
+//                .stream().filter(priceDescriptionTaxes -> orderPriceDescriptionEntityTaxes.getDescription().equals(priceDescriptionTaxes.getDescription())).findFirst()
+//                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Tax description not found"));
+//    }
 
-    default PricingCalculatePricesDescription getPointsAmountFromPricingCalculate(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription, PricingCalculatePrice pricingCalculatePrice){
-        return pricingCalculatePrice.getPricesDescription().stream()
-                .filter(priceDescription -> partnerReservationOrdersPriceDescription.getType().equals(priceDescription.getPassengerType()))
-                .findFirst()
-                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Passenger type not found"));
-    }
+//    default PricingCalculatePricesDescription getPointsAmountFromPricingCalculate(PartnerReservationOrdersPriceDescription partnerReservationOrdersPriceDescription, PricingCalculatePrice pricingCalculatePrice){
+//        return pricingCalculatePrice.getPricesDescription().stream()
+//                .filter(priceDescription -> partnerReservationOrdersPriceDescription.getType().equals(priceDescription.getPassengerType()))
+//                .findFirst()
+//                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Passenger type not found"));
+//    }
 }
