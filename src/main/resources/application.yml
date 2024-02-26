@@ -3,6 +3,7 @@ spring:
     openfeign:
       micrometer:
         enabled: true
+
   config:
     import: "optional:configserver:https://fake-url.com?max-attempts=1"
   datasource:
@@ -12,23 +13,6 @@ spring:
     driver-class-name: oracle.jdbc.OracleDriver
   application:
     name: order-flight
-  rabbitmq:
-    custom:
-      shared:
-        host: ${RABBIT_HOST:localhost}
-        port: ${RABBIT_PORT:5672}
-        username: ${RABBIT_USERNAME:guest}
-        password: ${RABBIT_PASSWORD:guest}
-        ttlRetryMessage: ${RABBIT_TTL_RETRY_MESSAGE:5000}
-        autoCreate: false
-        useQueueNameAsRetryRoutingKey: false
-      order-flight-commands-getconfirmation:
-        exchangeType: topic
-        queueRoutingKey: order.getconfirmation
-        exchange: order-flight.commands
-        autoCreate: false
-        queue: order-flight.flight.commands.order.getconfirmation
-
 management:
   endpoints:
     web:
@@ -51,4 +35,3 @@ client:
 
 order:
   orderProcessMaxRows: 500
-  maxProcessCountFailed: 48
