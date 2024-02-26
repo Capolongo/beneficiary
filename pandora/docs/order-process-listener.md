@@ -33,4 +33,4 @@ Para iniciar o processamento, é fundamental que as seguintes condições sejam 
 - O status da ordem precisa ser `LIVPNR-1007`.
 - O contador de tentativas de processamento da ordem deve ser inferior a `(order.maxProcessCountFailed)`.
 
-> Variável `order.maxProcessCountFailed` do `application.yml`, tem o valor default de 48.
+> Observação: Variável `order.maxProcessCountFailed` do `application.yml`, tem o valor default de 48.
