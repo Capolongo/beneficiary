@@ -64,16 +64,14 @@ public class ConnectorPartnersProxy {
             log.info("call connector partner create reserve. partner: {} url: {} request: {}", request.getPartnerCode(),
                     url, request);
 
-            ResponseEntity<Map<String, Object>> response = partnerConnectorClient.createReserve(
+            ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.createReserve(
                     url,
                     request,
                     transactionId);
-            var tt = new ObjectMapper().registerModule(new JavaTimeModule()).convertValue(response.getBody(), PartnerReservationResponse.class);
             ofNullable(response.getBody())
                     .ifPresent(body -> log.info("create reserve partner connector response: {}", body));
 
-//            return response.getBody();
-            return null;
+            return response.getBody();
         } catch (OrderFlightException e) {
             throw e;
         } catch (FeignException e) {

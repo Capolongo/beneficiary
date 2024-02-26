@@ -8,6 +8,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PartnerReservationFlightsLeg {
+    private String aircraftCode;
+    private String cabinClass;
+    private String fareClass;
 	private String flightNumber;
     private Integer flightDuration;
     private PartnerReservationFlightLegAirline airline;
