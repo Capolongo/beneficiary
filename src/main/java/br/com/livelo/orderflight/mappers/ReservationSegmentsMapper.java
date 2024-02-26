@@ -50,12 +50,10 @@ public interface ReservationSegmentsMapper {
     default Set<FlightLegEntity> mapFlightLeg(PartnerReservationSegment partnerReservationSegment) {
         var flightLegMapper = Mappers.getMapper(ReservationFlightLegMapper.class);
 
-        return partnerReservationSegment.getFlightsLegs()
+        return partnerReservationSegment.getFlightLegs()
                 .stream()
                 .map(flightLegMapper::toFlightLegEntity)
                 .collect(Collectors.toSet());
     }
-
-
 }
 

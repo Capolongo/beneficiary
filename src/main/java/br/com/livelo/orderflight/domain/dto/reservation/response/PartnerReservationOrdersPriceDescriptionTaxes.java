@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class PartnerReservationOrdersPriceDescriptionTaxes {
 	private BigDecimal amount;

@@ -17,5 +17,5 @@ public class PricingCalculatePrice {
     private PricingCalculateFlight flight;
     private PricingCalculateTaxes taxes;
     private Integer accrualPoints;
-    private List<PricingCalculatePricesDescription> pricesDescription;
+    private PricingCalculatePricesDescription pricesDescription;
 }
