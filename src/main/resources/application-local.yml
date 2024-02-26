@@ -22,10 +22,10 @@ spring:
     openfeign:
       micrometer:
         enabled: true
-
-  flyway:
-    enabled: false
-    baseline-on-migrate: false
+#
+#  flyway:
+#    enabled: false
+#    baseline-on-migrate: false
 
   rabbitmq:
     enabled: false
