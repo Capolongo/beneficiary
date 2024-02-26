@@ -4,9 +4,6 @@ spring:
       micrometer:
         enabled: true
 
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
   config:
     import: "optional:configserver:https://fake-url.com?max-attempts=1"
   datasource:
