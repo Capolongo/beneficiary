@@ -21,7 +21,7 @@ Listener responsável consumir a Queue e processar todos os pedidos.
 
 ## Contexto
 
-Este ouvinte permanecerá atento à fila em busca de pedidos disponíveis para processamento. Ao consumir um pedido, será acionado o fluxo de processamento e a ordem será tentada de ser processada. Se o processamento não for bem-sucedido, o contador na tabela `processCounter.counter` será incrementado em +1.
+Este ouvinte permanecerá atento à fila em busca de pedidos disponíveis para processamento. Ao consumir um pedido, será acionado o fluxo de processamento e a ordem será tentada de ser processada. No fim do processamento, o contador na tabela `processCounter.counter` será incrementado em +1.
 
 Se o contador `processCounter.counter` atingir ou exceder `(order.maxProcessCountFailed)` tentativas, o status de falha `LIVPNR-1014` será registrado.
 
