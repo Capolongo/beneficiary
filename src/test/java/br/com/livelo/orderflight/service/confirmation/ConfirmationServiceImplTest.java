@@ -31,6 +31,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.never;
@@ -130,6 +132,31 @@ class ConfirmationServiceImplTest {
     }
 
     @Test
+    void shouldCallProcessOrderTimeDifference() {
+        String process = Webhooks.GETCONFIRMATION.value;
+        OrderStatusEntity statusProcessing = MockBuilder.statusProcessing();
+        statusProcessing.setCreateDate(ZonedDateTime.now());
+
+        OrderEntity order = MockBuilder.orderEntity();
+        order.setCurrentStatus(statusProcessing);
+        OrderProcess orderProcess = MockBuilder.listOfOrderProcess(1).get(0);
+        ConnectorConfirmOrderResponse connectorConfirmOrderResponse = MockBuilder.connectorConfirmOrderResponse().getBody();
+        ProcessCounterEntity processCounter = MockBuilder.processCounterEntity(1, process);
+        OrderItemEntity itemFlight = MockBuilder.orderItemEntity();
+
+        when(orderService.getOrderById(anyString())).thenReturn(order);
+        when(orderService.isSameStatus(anyString(), anyString())).thenReturn(true).thenReturn(false);
+        when(orderService.getProcessCounter(order, process)).thenReturn(processCounter);
+        when(connectorPartnersProxy.getConfirmationOnPartner(anyString(), anyString())).thenReturn(connectorConfirmOrderResponse);
+        when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class))).thenReturn(statusProcessing);
+        when(orderService.getFlightFromOrderItems(any())).thenReturn(itemFlight);
+
+        confirmationService.orderProcess(orderProcess);
+
+        verify(orderService, times(2)).isSameStatus(StatusConstants.PROCESSING.getCode(), order.getCurrentStatus().getCode());
+    }
+
+    @Test
     void shouldFinishOrderProcessBecauseIsNotTheSameStatus() {
         String process = Webhooks.GETCONFIRMATION.value;
         OrderEntity order = MockBuilder.orderEntity();
@@ -155,10 +182,12 @@ class ConfirmationServiceImplTest {
 
         OrderProcess orderProcess = MockBuilder.listOfOrderProcess(1).get(0);
         ProcessCounterEntity processCounter = MockBuilder.processCounterEntity(48, process);
+        OrderStatusEntity statusFailed = MockBuilder.statusFailed();
 
         when(orderService.getOrderById(anyString())).thenReturn(order);
         when(orderService.isSameStatus(anyString(), anyString())).thenReturn(true);
         when(orderService.getProcessCounter(any(OrderEntity.class), anyString())).thenReturn(processCounter);
+        when(orderService.buildOrderStatusFailed(anyString())).thenReturn(statusFailed);
 
         confirmationService.orderProcess(orderProcess);
 

@@ -22,7 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Slf4j
 @Service
@@ -92,14 +94,23 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
             var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
             orderService.updateVoucher(itemFlight, connectorConfirmOrderResponse.getVoucher());
-
             log.info("ConfirmationService.orderProcess - order - statusCode: [{}], partnerCode: [{}]", status.getCode(), order.getPartnerCode());
         }
+
+        if (!orderService.isSameStatus(currentStatusCode, status.getCode())) {
+            processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
+        }
+
         orderService.incrementProcessCounter(processCounter);
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
 
-        log.info("ConfirmationService.orderProcess - order counter - statusCode: [{}]", processCounter.getCount());
+        log.info("ConfirmationService.orderProcess - order process counter - statusCode: [{}]", processCounter.getCount());
+    }
+
+    private void processOrderTimeDifference(ZonedDateTime baseTime) {
+        Duration duration = Duration.between(baseTime.toLocalDateTime(), LocalDateTime.now());
+        log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}]", duration.toMinutes());
     }
 
     private ConnectorConfirmOrderStatusResponse buildStatusToFailed(String cause) {
