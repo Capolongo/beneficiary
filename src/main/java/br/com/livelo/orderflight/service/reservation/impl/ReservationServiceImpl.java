@@ -48,6 +48,7 @@ public class ReservationServiceImpl implements ReservationService {
 
                         // TODO realizar precificaçao
                         //TODO atualizar os valores da preficicacao para o orderEntity
+
                         this.orderService.save(order);
                         return reservationMapper.toReservationResponse(order, 15);
                     }
