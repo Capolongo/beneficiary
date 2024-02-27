@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {ReservationPaxMap.class})
 
-//TODO tenho que mapear os documents da request
-
 public interface ReservationTravelInfoEntityMapper {
 
     @Mapping(target = "paxs", expression = "java(mapPax(reservationRequest))")
