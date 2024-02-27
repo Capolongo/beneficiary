@@ -1,6 +1,6 @@
 # Order Flight - Process Order
 
-Listener responsável consumir a Queue e processar todos os pedidos.
+Listener responsável pelo processo de consulta de pedidos que estão aguardando a confirmação do parceiro.
 
 ## Queue
 
