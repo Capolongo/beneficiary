@@ -54,6 +54,7 @@ class ReservationServiceTest {
         var partnerReservationResponse = buildPartnerReservationResponse();
         var orderMock = mock(OrderEntity.class);
         var requestMock = mock(ReservationRequest.class);
+        when(requestMock.getCommerceOrderId()).thenReturn("QWERT");
         when(orderService.findByCommerceOrderId(requestMock.getCommerceOrderId())).thenReturn(Optional.empty());
         when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
@@ -183,6 +184,7 @@ class ReservationServiceTest {
 
     private ReservationRequest buildResevationRequest(List<ReservationItem> reservationItems, List<String> segmentsPartnersId) {
         return ReservationRequest.builder()
+                .commerceOrderId("QWERT")
                 .items(reservationItems)
                 .segmentsPartnerIds(segmentsPartnersId)
                 .build();
@@ -251,7 +253,7 @@ class ReservationServiceTest {
                                 .taxes(
                                         List.of(PartnerReservationOrdersPriceDescriptionTaxes.builder()
                                                 .amount(new BigDecimal(10))
-                                                .description("TESTE_TAX")
+                                                .type("TESTE_TAX")
                                                 .build()
                                         )
                                 )
