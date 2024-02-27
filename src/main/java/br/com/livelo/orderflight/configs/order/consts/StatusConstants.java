@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum StatusConstants {
     PROCESSING("LIVPNR-1007", "PROCESSING"),
     FAILED("LIVPNR-1014", "FAILED"),
-    INITIAL("LIVPNR-1006", "INITIAL");
+    INITIAL("LIVPNR-1006", "INITIAL"),
+    VOUCHER("LIVPNR-1019", "VOUCHER");
 
     private final String code;
     private final String description;

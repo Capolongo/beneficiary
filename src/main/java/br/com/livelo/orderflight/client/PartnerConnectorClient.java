@@ -28,4 +28,7 @@ public interface PartnerConnectorClient {
 
 	@GetMapping
 	ResponseEntity<ConnectorConfirmOrderResponse> getConfirmation(URI baseUrl);
+
+	@GetMapping
+	ResponseEntity<ConnectorConfirmOrderResponse> getVoucher(URI baseUrl);
 }

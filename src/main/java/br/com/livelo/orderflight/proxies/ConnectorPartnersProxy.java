@@ -96,6 +96,14 @@ public class ConnectorPartnersProxy {
         return connectorGetConfirmation.getBody();
     }
 
+    public ConnectorConfirmOrderResponse getVoucherOnPartner(String partnerCode, String id) {
+        WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.VOUCHER);
+       final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id));
+        var connectorGetVoucher = partnerConnectorClient.getConfirmation(connectorUri);
+
+        return connectorGetVoucher.getBody();
+    }
+
     private ConnectorConfirmOrderResponse getResponseError(FeignException feignException, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws OrderFlightException {
         final String content = feignException.contentUTF8();
         try {

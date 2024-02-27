@@ -13,6 +13,11 @@ spring:
     driver-class-name: oracle.jdbc.OracleDriver
   application:
     name: order-flight
+  rabbitmq:
+    custom:
+      order-flight-commands-getvoucher:
+        queue: order-flight.flight.commands.order.getvoucher
+
 management:
   endpoints:
     web:
