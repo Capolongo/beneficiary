@@ -16,8 +16,8 @@ public interface ReservationFlightLegMapper {
     @Mapping(target = "originDescription", source = "originDescription")
     @Mapping(target = "destinationIata", source = "destinationIata")
     @Mapping(target = "destinationDescription", source = "destinationDescription")
-    @Mapping(target = "departureDate", source = "departureDate")
-    @Mapping(target = "arrivalDate", source = "arrivalDate")
     @Mapping(target = "type", source = "type")
+    @Mapping(target = "departureDate", source = "departureDate",dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    @Mapping(target = "arrivalDate", source = "arrivalDate",dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     FlightLegEntity toFlightLegEntity(PartnerReservationFlightsLeg partnerReservationFlightsLeg);
 }
