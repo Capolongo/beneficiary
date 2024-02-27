@@ -83,8 +83,6 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             return;
         }
 
-        log.info("ConfirmationService.orderProcess - order - currentStatusCode: [{}], partnerCode: [{}], amountProducts: [{}]", order.getCurrentStatus().getCode(), order.getPartnerCode(),  order.getItems().size());
-
         var processCounter = orderService.getProcessCounter(order, Webhooks.GETCONFIRMATION.value);
         if (processCounter.getCount() >= maxProcessCountFailed) {
             log.warn("ConfirmationService.orderProcess - counter exceeded limit - id: [{}]", order.getId());
@@ -94,10 +92,14 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
             var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
             orderService.updateVoucher(itemFlight, connectorConfirmOrderResponse.getVoucher());
+
+            log.info("ConfirmationService.orderProcess - order - statusCode: [{}], partnerCode: [{}]", status.getCode(), order.getPartnerCode());
         }
         orderService.incrementProcessCounter(processCounter);
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
+
+        log.info("ConfirmationService.orderProcess - order counter - statusCode: [{}]", processCounter.getCount());
     }
 
     private ConnectorConfirmOrderStatusResponse buildStatusToFailed(String cause) {
