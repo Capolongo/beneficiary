@@ -124,4 +124,26 @@ class ConnectorPartnersProxyTest {
 
     assertTrue(exception.getMessage().contains("Cannot invoke"));
   }
+
+  @Test
+  void shouldReturnGetConfirmationOnPartner() throws Exception {
+    ResponseEntity<ConnectorConfirmOrderResponse> confirmOrderResponse = MockBuilder.connectorConfirmOrderResponse();
+    when(partnerConnectorClient.getConfirmation(any(URI.class))).thenReturn(confirmOrderResponse);
+
+    ConnectorConfirmOrderResponse response = proxy.getConfirmationOnPartner("CVC", "lf123");
+
+    assertEquals(confirmOrderResponse.getBody(), response);
+    assertEquals(200, confirmOrderResponse.getStatusCode().value());
+    verify(partnerConnectorClient).getConfirmation(any(URI.class));
+    verifyNoMoreInteractions(partnerConnectorClient);
+  }
+
+  @Test
+  void shouldThrowExceptionGetConfirmationOnPartner() {
+    when(partnerConnectorClient.getConfirmation(any(URI.class))).thenThrow(FeignException.class);
+
+    assertThrows(OrderFlightException.class, () -> {
+        proxy.getConfirmationOnPartner("CVC", "lf123");
+    });
+  }
 }
