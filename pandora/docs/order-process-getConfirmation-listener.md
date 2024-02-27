@@ -41,4 +41,4 @@ Para iniciar o processamento, é fundamental que as seguintes condições sejam 
 
 ## Diagrama
 
-![Diagrama de fluxo.](images/listener-getCormation-diagram.jpg)
+![Diagrama de fluxo.](images/listener-getCormation-diagram.png)
