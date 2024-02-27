@@ -92,7 +92,6 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
             var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
             orderService.updateVoucher(itemFlight, connectorConfirmOrderResponse.getVoucher());
-
         }
         orderService.incrementProcessCounter(processCounter);
         orderService.addNewOrderStatus(order, status);
