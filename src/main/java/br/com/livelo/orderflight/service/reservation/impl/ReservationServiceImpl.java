@@ -45,10 +45,8 @@ public class ReservationServiceImpl implements ReservationService {
                 if(this.isSameOrderItems(request, orderOptional)){
                     var connectorReservationResponse = partnerConnectorProxy.reservationStatus(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode());
                     if(PARTNER_RESERVATION_SUCCESS.equals(connectorReservationResponse.getStatus().getCode())){
-
                         // TODO realizar precificaçao
                         //TODO atualizar os valores da preficicacao para o orderEntity
-
                         this.orderService.save(order);
                         return reservationMapper.toReservationResponse(order, 15);
                     }
