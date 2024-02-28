@@ -1,12 +1,14 @@
 package br.com.livelo.orderflight.service.order.impl;
 
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
+import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.OrderProcessMapper;
+import br.com.livelo.orderflight.repository.ItemRepository;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,6 +28,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderProcessMapper orderMapper;
+
+    private final ItemRepository itemRepository;
 
     @Value("${order.orderProcessMaxRows}")
     private int orderProcessMaxRows;
@@ -82,6 +87,17 @@ public class OrderServiceImpl implements OrderService {
         Pageable pagination = PageRequest.of(page, rows);
         var foundOrders = orderRepository.findAllByCurrentStatusCode(statusCode.toUpperCase(), pagination);
         return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
+    }
+
+    public OrderItemEntity findByCommerceItemIdAndSkuId(String commerceItemId, SkuItemResponse skuItemResponseDTO) {
+        final Optional<OrderItemEntity> itemOptional = itemRepository.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO.getSkuId());
+
+        if (itemOptional.isEmpty()) {
+            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND;
+            throw new OrderFlightException(errorType, errorType.getTitle(), null);
+        }
+
+        return itemOptional.get();
     }
 
 }

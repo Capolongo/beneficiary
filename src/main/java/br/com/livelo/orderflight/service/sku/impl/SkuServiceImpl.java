@@ -3,22 +3,19 @@ package br.com.livelo.orderflight.service.sku.impl;
 import br.com.livelo.orderflight.constants.SkuConstant;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.exception.OrderFlightException;
-import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
-import br.com.livelo.orderflight.repository.ItemRepository;
+import br.com.livelo.orderflight.service.order.OrderService;
 import br.com.livelo.orderflight.service.sku.SkuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SkuServiceImpl implements SkuService {
 
-    private final ItemRepository itemRepository;
+    private final OrderService orderService;
 
     private final SkuConstant skuConstant;
 
@@ -57,14 +54,10 @@ public class SkuServiceImpl implements SkuService {
 
     private SkuItemResponse enrichSkuWithCommerceItem(String commerceItemId, SkuItemResponse skuItemResponseDTO){
         log.debug("SkuServiceImpl.enrichSkuWithCommerceItem - start commerceItemId and currency present start sku enrich process for [item]: {}", commerceItemId);
-        final Optional<OrderItemEntity> itemOptional = itemRepository.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO.getSkuId());
 
-        if (itemOptional.isEmpty()) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND;
-            throw new OrderFlightException(errorType, errorType.getTitle(), null);
-        }
+        OrderItemEntity orderItem = orderService.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO);
 
-        double listPrice = itemOptional.get().getPrice() != null && itemOptional.get().getPrice().getPointsAmount() != null ? itemOptional.get().getPrice().getPointsAmount().doubleValue() : skuConstant.getSalePrice();
+        double listPrice = orderItem.getPrice() != null && orderItem.getPrice().getPointsAmount() != null ? orderItem.getPrice().getPointsAmount().doubleValue() : skuConstant.getSalePrice();
 
         return skuItemResponseDTO
                 .toBuilder()
