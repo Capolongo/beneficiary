@@ -2,7 +2,6 @@ package br.com.livelo.orderflight.service.order;
 
 import java.util.Optional;
 
-
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
