@@ -44,7 +44,7 @@ fixed-values:
     sale-price: 1.0
     available: true
     currency: PTS
-    description: Transferência de pontos
+    description: DEFAULT
   shipment-option:
     id: 1
     currency: PTS
