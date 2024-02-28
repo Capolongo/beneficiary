@@ -44,7 +44,7 @@ public class InstallmentServiceImpl implements InstallmentService {
     }
 
     private List<InstallmentDTO> buildInstallmentOptions(OrderEntity order, BigDecimal amount) {
-        log.debug("InstallmentServiceImpl.buildInstallmentOptions - start [orderId]: {}, [installmentOptionConstants]: {}", order.getId(), installmentOptionConstant);
+
         return Collections.singletonList(InstallmentDTO.builder()
                 .id(installmentOptionConstant.getId())
                 .parcels(installmentOptionConstant.getParcels())
