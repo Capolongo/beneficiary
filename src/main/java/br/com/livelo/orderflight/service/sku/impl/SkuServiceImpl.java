@@ -28,7 +28,8 @@ public class SkuServiceImpl implements SkuService {
         SkuItemResponse skuItemResponseDTOBase = buildSku(skuId);
 
         if(currencyAndCommerceItemIdIsPresent(currency, commerceItemId)){
-            skuItemResponseDTOBase = buildSkuCommerceItem(commerceItemId, skuItemResponseDTOBase);
+            OrderItemEntity orderItem = orderService.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTOBase);
+            skuItemResponseDTOBase = buildSkuCommerceItem(commerceItemId, skuItemResponseDTOBase, orderItem);
         }
 
         return skuItemResponseDTOBase;
@@ -53,10 +54,8 @@ public class SkuServiceImpl implements SkuService {
                 .build();
     }
 
-    private SkuItemResponse buildSkuCommerceItem(String commerceItemId, SkuItemResponse skuItemResponseDTO){
+    private SkuItemResponse buildSkuCommerceItem(String commerceItemId, SkuItemResponse skuItemResponseDTO, OrderItemEntity orderItem){
         log.debug("SkuServiceImpl.buildSkuCommerceItem - start commerceItemId and currency present start sku enrich process for [item]: {}", commerceItemId);
-
-        OrderItemEntity orderItem = orderService.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO);
 
         BigDecimal listPrice = orderItem.getPrice() != null && orderItem.getPrice().getPointsAmount() != null ? orderItem.getPrice().getPointsAmount() : skuConstant.getSalePrice();
 
