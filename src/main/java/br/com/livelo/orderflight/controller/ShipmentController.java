@@ -19,9 +19,9 @@ public class ShipmentController {
     private final ShipmentService shipmentService;
     @GetMapping("{id}/shipment-options/{postalCode}")
     public ResponseEntity<?> getShipmentOptions(@PathVariable("id") final String id, @PathVariable("postalCode") final String postalCode){
-        log.info("ShipmentController.getShipmentOptions - start id: [{}], postalCode: [{}]", id, postalCode);
+        log.debug("ShipmentController.getShipmentOptions - start id: [{}], postalCode: [{}]", id, postalCode);
         ShipmentOptionsResponse shipmentOptionsResponseDTO = shipmentService.getShipmentOptions(id, postalCode);
-        log.info("ShipmentController.getShipmentOptions - end shipmentOptionsResponseDTO: [{}]", shipmentOptionsResponseDTO);
+        log.debug("ShipmentController.getShipmentOptions - end shipmentOptionsResponseDTO: [{}]", shipmentOptionsResponseDTO);
         return ResponseEntity.ok().body(shipmentOptionsResponseDTO);
     }
 

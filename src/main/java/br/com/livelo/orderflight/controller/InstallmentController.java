@@ -19,9 +19,9 @@ public class InstallmentController {
 
     @GetMapping("{id}/payment-options/{paymentOptionId}/installment-options")
     public ResponseEntity<InstallmentOptionsResponse> getInstallmentOptions(@PathVariable("id") final String id, @PathVariable("paymentOptionId") final String paymentOptionId){
-        log.info("InstallmentController.getInstallmentptions - start id: [{}], paymentOptionId: [{}]", id, paymentOptionId);
+        log.debug("InstallmentController.getInstallmentptions - start id: [{}], paymentOptionId: [{}]", id, paymentOptionId);
         InstallmentOptionsResponse installmentOptionsResponse = installmentService.getInstallmentOptions(id, paymentOptionId);
-        log.info("InstallmentController.getInstallmentptions - end installmentOptionsResponse: [{}]", installmentOptionsResponse);
+        log.debug("InstallmentController.getInstallmentptions - end installmentOptionsResponse: [{}]", installmentOptionsResponse);
 
         return ResponseEntity.ok().body(installmentOptionsResponse);
     }

@@ -22,9 +22,9 @@ public class PaymentController {
 
     @GetMapping("{id}/shipment-options/{shipmentOptionId}/payment-options")
     public ResponseEntity<PaymentOptionResponse> getPaymentOptions(@PathVariable String id, @PathVariable String shipmentOptionId) {
-        log.info("PaymentController.getPaymentOptions - start id: [{}], shipmentOptionId: [{}]", id, shipmentOptionId);
+        log.debug("PaymentController.getPaymentOptions - start id: [{}], shipmentOptionId: [{}]", id, shipmentOptionId);
         PaymentOptionResponse paymentOptions = paymentService.getPaymentOptions(id, shipmentOptionId);
-        log.info("PaymentController.getPaymentOptions - end id: [{}], shipmentOptionId: [{}]", id, shipmentOptionId);
+        log.debug("PaymentController.getPaymentOptions - end id: [{}], shipmentOptionId: [{}]", id, shipmentOptionId);
         return ResponseEntity.ok().body(paymentOptions);
     }
 
