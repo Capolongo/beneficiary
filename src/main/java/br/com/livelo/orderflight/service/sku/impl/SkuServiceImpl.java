@@ -65,7 +65,7 @@ public class SkuServiceImpl implements SkuService {
         final Optional<OrderItemEntity> itemOptional = itemRepository.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO.getSkuId());
 
         if (itemOptional.isEmpty()) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_NOT_FOUND;
+            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND;
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
 
