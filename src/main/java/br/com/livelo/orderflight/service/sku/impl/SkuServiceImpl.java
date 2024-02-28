@@ -47,6 +47,7 @@ public class SkuServiceImpl implements SkuService {
 
     private SkuItemResponse buildSku(String skuId){
         log.debug("SkuServiceImpl.buildSku - start [skuId]: {}, [skuConstants]: {}", skuId, skuConstant);
+
         return SkuItemResponse
                 .builder()
                 .skuId(skuId)
@@ -55,7 +56,7 @@ public class SkuServiceImpl implements SkuService {
                 .listPrice(skuConstant.getListPrice())
                 .currency(skuConstant.getCurrency())
                 .quantity(skuConstant.getQuantity())
-                .description(skuConstant.getDescription())
+                .description(skuConstant.getDescription() + " " + skuId + " SKU")
                 .build();
     }
 
