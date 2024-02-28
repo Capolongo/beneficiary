@@ -1,18 +1,13 @@
 package br.com.livelo.orderflight.service.payment.impl;
 
-import br.com.livelo.orderflight.constants.InstallmentOptionConstant;
 import br.com.livelo.orderflight.constants.PaymentOptionConstant;
-import br.com.livelo.orderflight.convert.OptionConvert;
-import br.com.livelo.orderflight.domain.dtos.installment.InstallmentOptionsResponse;
 import br.com.livelo.orderflight.domain.dtos.payment.response.PaymentOptionDTO;
 import br.com.livelo.orderflight.domain.dtos.payment.response.PaymentOptionResponse;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.service.order.OrderService;
 import br.com.livelo.orderflight.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.Collections;
 import java.util.List;
 
