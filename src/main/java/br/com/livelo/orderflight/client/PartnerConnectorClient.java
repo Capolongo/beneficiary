@@ -9,6 +9,7 @@ import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmO
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,4 +25,7 @@ public interface PartnerConnectorClient {
 			URI baseUrl,
 			@RequestBody PartnerReservationRequest partnerReservationRequest,
 			@RequestHeader(value = "transactionId") String transactionId);
+
+	@GetMapping
+	ResponseEntity<ConnectorConfirmOrderResponse> getConfirmation(URI baseUrl);
 }

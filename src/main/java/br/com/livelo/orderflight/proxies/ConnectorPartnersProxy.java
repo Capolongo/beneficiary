@@ -15,7 +15,6 @@ import br.com.livelo.partnersconfigflightlibrary.services.PartnersConfigService;
 import br.com.livelo.partnersconfigflightlibrary.utils.ErrorsType;
 import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,6 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.util.Map;
 
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR;
@@ -90,6 +88,19 @@ public class ConnectorPartnersProxy {
         } catch (Exception e) {
             log.error("Unknown error on connector call ", e);
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
+        }
+    }
+
+    public ConnectorConfirmOrderResponse getConfirmationOnPartner(String partnerCode, String id) throws OrderFlightException {
+        try {
+            WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.GETCONFIRMATION);
+            final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id));
+            var connectorGetConfirmation = partnerConnectorClient.getConfirmation(connectorUri);
+
+            return connectorGetConfirmation.getBody();
+        } catch (FeignException exception) {
+            log.error("ConnectorPartnersProxy.getConfirmationOnPartner exception - id: [{}], partnerCode: [{}], exception: [{}]", id, partnerCode, exception.getCause());
+            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR.getDescription(), null, exception);
         }
     }
 
