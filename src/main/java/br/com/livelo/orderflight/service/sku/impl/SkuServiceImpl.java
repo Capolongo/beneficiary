@@ -28,8 +28,7 @@ public class SkuServiceImpl implements SkuService {
         SkuItemResponse skuItemResponseDTOBase = buildSku(skuId);
 
         if(currencyAndCommerceItemIdIsPresent(currency, commerceItemId)){
-            skuItemResponseDTOBase = enrichSkuWithCommerceItem(commerceItemId, skuItemResponseDTOBase);
-            return skuItemResponseDTOBase;
+            skuItemResponseDTOBase = buildSkuCommerceItem(commerceItemId, skuItemResponseDTOBase);
         }
 
         return skuItemResponseDTOBase;
@@ -54,8 +53,8 @@ public class SkuServiceImpl implements SkuService {
                 .build();
     }
 
-    private SkuItemResponse enrichSkuWithCommerceItem(String commerceItemId, SkuItemResponse skuItemResponseDTO){
-        log.debug("SkuServiceImpl.enrichSkuWithCommerceItem - start commerceItemId and currency present start sku enrich process for [item]: {}", commerceItemId);
+    private SkuItemResponse buildSkuCommerceItem(String commerceItemId, SkuItemResponse skuItemResponseDTO){
+        log.debug("SkuServiceImpl.buildSkuCommerceItem - start commerceItemId and currency present start sku enrich process for [item]: {}", commerceItemId);
 
         OrderItemEntity orderItem = orderService.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO);
 

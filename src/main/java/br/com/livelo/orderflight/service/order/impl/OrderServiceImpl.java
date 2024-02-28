@@ -46,8 +46,12 @@ public class OrderServiceImpl implements OrderService {
 
         return order.get();
     }
-    
+
     public void addNewOrderStatus(OrderEntity order, OrderStatusEntity status) {
+        if (isSameStatus(status.getCode(), order.getCurrentStatus().getCode())) {
+            return;
+        }
+
         order.getStatusHistory().add(status);
         order.setCurrentStatus(status);
     }
