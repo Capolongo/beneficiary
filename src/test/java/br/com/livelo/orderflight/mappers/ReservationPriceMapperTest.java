@@ -36,7 +36,7 @@ class ReservationPriceMapperTest {
                                         .taxes(
                                                 List.of(PartnerReservationOrdersPriceDescriptionTaxes.builder()
                                                         .amount(new BigDecimal(10))
-                                                        .description("TESTE_TAX")
+                                                        .type("TESTE_TAX")
                                                         .build())).build()
                         ).build(),
                 PricingCalculatePrice.builder().priceListId("price")

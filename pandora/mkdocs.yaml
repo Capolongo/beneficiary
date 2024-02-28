@@ -3,6 +3,10 @@ site_url: https://stash.livelo.intranet/projects/LIVTRAVEL/repos/order-flight/br
 nav:
   - Home: index.md
   - APIs:
+      - SKU: sku.md
+      - Opções de envio: shipment-options.md
+      - Opções de pagamento: shipment-payment-options.md
+      - Opções parcelamento de pagamento: payment-installment-options.md
       - Confirmação de pedido: confirmation.md
       - Processamento do pedido: process-order.md
   - Inicializando dependências: use-dependencies.md

@@ -49,7 +49,7 @@ public class ReservationServiceImpl implements ReservationService {
                     .createReserve(reservationMapper.toPartnerReservationRequest(request), transactionId);
 
 
-            var pricingCalculatePrice = calculatePricing(listPrice, partnerReservationResponse);
+            var pricingCalculatePrice = calculatePricing(request.getCommerceOrderId(),listPrice, partnerReservationResponse);
 
             var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId,
                     customerId, channel, listPrice, pricingCalculatePrice);
@@ -66,11 +66,11 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    private PricingCalculatePrice calculatePricing(String listPrice, PartnerReservationResponse partnerReservationResponse) {
-        var pricingCalculateResponse = pricingProxy.calculate(PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse));
+    private PricingCalculatePrice calculatePricing(String commerceOrderId, String listPrice, PartnerReservationResponse partnerReservationResponse) {
+        var pricingCalculateResponse = pricingProxy.calculate(PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse,commerceOrderId));
 
         var pricingCalculate = pricingCalculateResponse.stream()
-                .filter(pricing -> partnerReservationResponse.getCommerceOrderId().equals(pricing.getId()))
+                .filter(pricing -> commerceOrderId.equals(pricing.getId()))
                 .findFirst()
                 .orElseThrow(() ->
                         new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Order not found in pricing response. commerceOrderId: " + partnerReservationResponse.getCommerceOrderId())

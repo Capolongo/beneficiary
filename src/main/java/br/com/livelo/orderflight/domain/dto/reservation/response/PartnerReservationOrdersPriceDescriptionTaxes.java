@@ -13,5 +13,4 @@ import lombok.*;
 public class PartnerReservationOrdersPriceDescriptionTaxes {
 	private BigDecimal amount;
     private String type;
-    private String description;
 }

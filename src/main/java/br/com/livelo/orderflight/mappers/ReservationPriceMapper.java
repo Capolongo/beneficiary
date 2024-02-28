@@ -54,7 +54,7 @@ public interface ReservationPriceMapper {
 
     default BigDecimal getPointsAmountFromPricingCalculateTaxes(PartnerReservationOrdersPriceDescriptionTaxes orderPriceDescriptionEntityTaxes, PricingCalculatePrice pricingCalculatePrice) {
         return pricingCalculatePrice.getPricesDescription().getTaxes().stream()
-                .filter(priceDescriptionTaxes -> orderPriceDescriptionEntityTaxes.getDescription().equals(priceDescriptionTaxes.getType()))
+                .filter(priceDescriptionTaxes -> orderPriceDescriptionEntityTaxes.getType().equals(priceDescriptionTaxes.getType()))
                 .findFirst()
                 .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Tax description not found")).getPointsAmount();
     }

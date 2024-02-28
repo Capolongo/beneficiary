@@ -18,11 +18,11 @@ public class PricingCalculateRequestMapper {
     private static final String RESERVATION = "RESERVATION";
     private static final String BRL = "BRL";
 
-    public static PricingCalculateRequest toPricingCalculateRequest(PartnerReservationResponse partnerReservationResponse) {
+    public static PricingCalculateRequest toPricingCalculateRequest(PartnerReservationResponse partnerReservationResponse, String commerceOrderId) {
         var partnerReservationItemTypeFlight = getItemTypeFlight(partnerReservationResponse);
         return PricingCalculateRequest.builder()
                 .travelInfo(buildTravelInfo(partnerReservationItemTypeFlight))
-                .items(buildListPricingCalculateItens(partnerReservationResponse, partnerReservationItemTypeFlight))
+                .items(buildListPricingCalculateItens(partnerReservationResponse, partnerReservationItemTypeFlight,commerceOrderId))
                 .build();
     }
 
@@ -37,9 +37,9 @@ public class PricingCalculateRequestMapper {
                 .build();
     }
 
-    private static List<PricingCalculateItem> buildListPricingCalculateItens(PartnerReservationResponse partnerReservationResponse, PartnerReservationItem partnerReservationItemTypeFlight) {
+    private static List<PricingCalculateItem> buildListPricingCalculateItens(PartnerReservationResponse partnerReservationResponse, PartnerReservationItem partnerReservationItemTypeFlight, String commerceOrderId) {
         var pricingCalculateItem = PricingCalculateItem.builder()
-                .id(partnerReservationResponse.getCommerceOrderId())
+                .id(commerceOrderId)
                 .flightType(partnerReservationItemTypeFlight.getTravelInfo().getType())
                 .price(buildPricingCalculatePrice(partnerReservationResponse, partnerReservationResponse))
                 .segments(buildSegments(partnerReservationItemTypeFlight))
@@ -151,7 +151,7 @@ public class PricingCalculateRequestMapper {
         for(PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes : partnerReservationResponse.getOrdersPriceDescription().getTaxes()) {
             totalTaxes = totalTaxes.add(partnerReservationOrdersPriceDescriptionTaxes.getAmount());
             pricingCalculateTaxes.add(PricingCalculateTaxes.builder()
-                    .type(partnerReservationOrdersPriceDescriptionTaxes.getDescription())
+                    .type(partnerReservationOrdersPriceDescriptionTaxes.getType())
                     .amount(partnerReservationOrdersPriceDescriptionTaxes.getAmount())
                     .build());
         }
