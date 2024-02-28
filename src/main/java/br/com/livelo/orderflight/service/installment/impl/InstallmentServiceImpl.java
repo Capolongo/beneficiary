@@ -9,6 +9,8 @@ import br.com.livelo.orderflight.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class InstallmentServiceImpl implements InstallmentService {
         log.debug("InstallmentServiceImpl.getInstallmentOptions - start. tempPartnerOrderId: [{}], paymentOptionId: [{}]", id, paymentOptionId);
         final OrderEntity orderEntity = orderService.getOrderById(id);
 
-        double amount = orderEntity.getPrice().getPointsAmount().doubleValue();
+        BigDecimal amount = orderEntity.getPrice().getPointsAmount();
 
         InstallmentOptionsResponse installmentOptionsResponse = buildInstallmentOptionsResponse(orderEntity, amount );
 
@@ -35,13 +37,13 @@ public class InstallmentServiceImpl implements InstallmentService {
         return installmentOptionsResponse;
     }
 
-    private InstallmentOptionsResponse buildInstallmentOptionsResponse(OrderEntity order, double amount) {
+    private InstallmentOptionsResponse buildInstallmentOptionsResponse(OrderEntity order, BigDecimal amount) {
         return InstallmentOptionsResponse.builder()
-                .installmentOptions(buildInstallmentOptions(order, installmentOptionConstant, amount))
+                .installmentOptions(buildInstallmentOptions(order, amount))
                 .build();
     }
 
-    private List<InstallmentDTO> buildInstallmentOptions(OrderEntity order, InstallmentOptionConstant installmentOptionConstant, double amount) {
+    private List<InstallmentDTO> buildInstallmentOptions(OrderEntity order, BigDecimal amount) {
         log.debug("InstallmentServiceImpl.buildInstallmentOptions - start [orderId]: {}, [installmentOptionConstants]: {}", order.getId(), installmentOptionConstant);
         return Collections.singletonList(InstallmentDTO.builder()
                 .id(installmentOptionConstant.getId())

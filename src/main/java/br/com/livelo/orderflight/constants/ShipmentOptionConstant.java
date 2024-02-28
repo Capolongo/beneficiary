@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -19,6 +20,6 @@ public class ShipmentOptionConstant implements Serializable {
     private Long id;
     private String currency;
     private String description;
-    private Double price;
+    private BigDecimal price;
     private String type;
 }

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -13,8 +15,8 @@ public class SkuItemResponse {
     private String skuId;
     private String description;
     private boolean available;
-    private double salePrice;
-    private double listPrice;
+    private BigDecimal salePrice;
+    private BigDecimal listPrice;
     private String currency = "PTS";
     private Integer quantity;
     private String commerceItemId;

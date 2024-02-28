@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -18,6 +19,6 @@ import java.io.Serializable;
 public class InstallmentOptionConstant implements Serializable {
     private String id;
     private String currency;
-    private Double interest;
+    private BigDecimal interest;
     private Integer parcels;
 }

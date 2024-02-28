@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -22,7 +24,7 @@ public class ShipmentsDTO {
 
     private String currency;
 
-    private Double price;
+    private BigDecimal price;
 
     private List<String> items;
 
