@@ -54,7 +54,7 @@ public class SkuServiceImpl implements SkuService {
                 .build();
     }
 
-    private SkuItemResponse enrichSkuWithCommerceItem(String commerceItemId, SkuItemResponse skuItemResponseDTO){
+    private SkuItemResponse buildSku(String commerceItemId, SkuItemResponse skuItemResponseDTO, OrderItemEntity orderItem){
         log.debug("SkuServiceImpl.enrichSkuWithCommerceItem - start commerceItemId and currency present start sku enrich process for [item]: {}", commerceItemId);
 
         OrderItemEntity orderItem = orderService.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO);
