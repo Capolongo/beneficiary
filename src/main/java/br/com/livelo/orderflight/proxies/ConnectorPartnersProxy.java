@@ -88,12 +88,17 @@ public class ConnectorPartnersProxy {
         }
     }
 
-    public ConnectorConfirmOrderResponse getConfirmationOnPartner(String partnerCode, String id) {
-        WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.GETCONFIRMATION);
-       final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id));
-        var connectorGetConfirmation = partnerConnectorClient.getConfirmation(connectorUri);
+    public ConnectorConfirmOrderResponse getConfirmationOnPartner(String partnerCode, String id) throws OrderFlightException {
+        try {
+            WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.GETCONFIRMATION);
+            final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id));
+            var connectorGetConfirmation = partnerConnectorClient.getConfirmation(connectorUri);
 
-        return connectorGetConfirmation.getBody();
+            return connectorGetConfirmation.getBody();
+        } catch (FeignException exception) {
+            log.error("ConnectorPartnersProxy.getConfirmationOnPartner exception - id: [{}], partnerCode: [{}]", id, partnerCode);
+            throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR.getDescription(), null, exception);
+        }
     }
 
     public ConnectorConfirmOrderResponse getVoucherOnPartner(String partnerCode, String id) {
