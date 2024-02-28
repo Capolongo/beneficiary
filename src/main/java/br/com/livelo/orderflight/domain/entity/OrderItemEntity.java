@@ -45,4 +45,6 @@ public class OrderItemEntity extends BaseEntity {
     @JoinColumn(name = "ORDER_ITEM_ID")
     private Set<SegmentEntity> segments;
 
+    private String  partnerOrderLinkId;
+
 }

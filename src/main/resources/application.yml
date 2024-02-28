@@ -37,4 +37,27 @@ client:
 
 order:
   orderProcessMaxRows: 500
+fixed-values:
+  sku:
+    list-price: 1.0
+    quantity: 1
+    sale-price: 1.0
+    available: true
+    currency: PTS
+    description: Transferência de pontos
+  shipment-option:
+    id: 1
+    currency: PTS
+    description: Sem entrega física
+    price: 0.0
+    type: Eletrônica
+  payment-option:
+    id: 1
+    description: default
+    name: default
+  installment-option:
+    id: 1
+    currency: PTS
+    interest: 0
+    parcels: 1
 

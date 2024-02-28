@@ -83,4 +83,11 @@ public class OrderServiceImpl implements OrderService {
         var foundOrders = orderRepository.findAllByCurrentStatusCode(statusCode.toUpperCase(), pagination);
         return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
     }
+
+    @Override
+    public Double calculateOrderAmountForInitialOrder(OrderEntity order) {
+        return order.getItems().stream()
+                .mapToDouble(OrderItemEntity::getQuantity)
+                .sum();
+    }
 }

@@ -20,4 +20,6 @@ public interface OrderService {
   void delete(OrderEntity order);
 
   OrderEntity save(OrderEntity order);
+
+  Double calculateOrderAmountForInitialOrder(OrderEntity order);
 }
