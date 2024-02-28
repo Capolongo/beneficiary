@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface PartnerConnectorClient {
 	@PostMapping
 	ResponseEntity<ConnectorConfirmOrderResponse> confirmOrder(URI baseUrl,
-			@RequestBody ConnectorConfirmOrderRequest connectorConfirmOrderRequest);
+                                                               @RequestBody ConnectorConfirmOrderRequest connectorConfirmOrderRequest);
 
 	@PostMapping
 	ResponseEntity<PartnerReservationResponse> createReserve(

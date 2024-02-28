@@ -8,7 +8,5 @@ import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 
 public interface VoucherService {
-    ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest) throws OrderFlightException;
-
     void orderProcess(OrderProcess payload) throws JsonProcessingException;
 }

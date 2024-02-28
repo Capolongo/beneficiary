@@ -4,6 +4,8 @@ package br.com.livelo.orderflight.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.ZonedDateTime;
+
 @Builder
 @Data
 @AllArgsConstructor
@@ -18,4 +20,7 @@ public class ProcessCounterEntity extends BaseEntity {
     private int id;
     private int count;
     private String process;
+    private String orderId;
+    private ZonedDateTime createDate;
+    private ZonedDateTime lastModifiedDate;
 }

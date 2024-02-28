@@ -1,28 +1,19 @@
 package br.com.livelo.orderflight.service.voucher.impl;
 
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
+import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
-import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.exception.OrderFlightException;
-import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
-import br.com.livelo.orderflight.service.order.OrderService;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import br.com.livelo.orderflight.service.voucher.VoucherService;
-import br.com.livelo.orderflight.utils.ConfirmOrderValidation;
 import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,68 +27,27 @@ public class VoucherServiceImpl implements VoucherService {
     private final ConnectorPartnersProxy connectorPartnersProxy;
 
     @Override
-    public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest) throws OrderFlightException {
-        OrderEntity order = null;
-        OrderStatusEntity status = null;
-        try {
-            log.info("ConfirmationService.confirmOrder - Start - id: [{}]", id);
-            order = orderService.getOrderById(id);
-
-            log.info("ConfirmationService.confirmOrder - id: [{}], orderId: [{}], transactionId: [{}],  order: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), order);
-
-            ConfirmOrderValidation.validateOrderPayload(orderRequest, order);
-
-            var connectorConfirmOrderRequest = confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(order);
-            ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(orderRequest.getPartnerCode(), connectorConfirmOrderRequest);
-
-            var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
-
-            orderService.updateVoucher(itemFlight, connectorPartnerConfirmation.getVoucher());
-            order.setPartnerOrderId(connectorPartnerConfirmation.getPartnerOrderId());
-            status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorPartnerConfirmation.getCurrentStatus());
-        } catch (OrderFlightException exception) {
-            if (!exception.getOrderFlightErrorType().equals(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR)) {
-                throw exception;
-            }
-            status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getMessage()));
-        } catch (Exception exception) {
-            if (order != null) {
-                log.error("ConfirmationService.confirmOrder exception - id: [{}], orderId: [{}], transactionId: [{}],  error: [{}]", id, orderRequest.getCommerceOrderId(), order.getTransactionId(), exception);
-            }
-            status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getLocalizedMessage()));
-        }
-        orderService.addNewOrderStatus(order, status);
-        orderService.save(order);
-        if (order != null) {
-            log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}]", id, orderRequest.getCommerceOrderId(), order.getTransactionId());
-        }
-        return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
-    }
-
-    @Override
     public void orderProcess(OrderProcess orderProcess) throws JsonProcessingException {
         OrderStatusEntity status = null;
         var order = orderService.getOrderById(orderProcess.getId());
-        var currentStatusCode = order.getCurrentStatus().getCode();
 
-        if (!orderService.isSameStatus(StatusConstants.PROCESSING.getCode(), currentStatusCode)) {
-            log.warn("ConfirmationService.orderProcess - order has different status - id: [{}]", order.getId());
-            return;
-        }
-
-        var processCounter = orderService.getProcessCounter(order, Webhooks.GETCONFIRMATION.value);
+        var processCounter = orderService.getProcessCounter(order, Webhooks.VOUCHER.value);
         if (ChronoUnit.DAYS.between(processCounter.getCreateDate(), ZonedDateTime.now()) > 2) {
             log.warn("VoucherServiceImpl.orderProcess - counter exceeded limit - id: [{}]", order.getId());
-            status = orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
+            orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
         } else {
             var connectorVoucherOrderResponse = connectorPartnersProxy.getVoucherOnPartner(order.getPartnerCode(), order.getId());
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorVoucherOrderResponse.getCurrentStatus());
-            var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
-            orderService.updateVoucher(itemFlight, connectorVoucherOrderResponse.getVoucher());
 
+            if (!connectorVoucherOrderResponse.getVoucher().isEmpty()) {
+                status.setCode(StatusConstants.COMPLETED.getCode());
+                orderService.addNewOrderStatus(order, status);
+                var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
+                orderService.updateVoucher(itemFlight, connectorVoucherOrderResponse.getVoucher());
+            }
         }
         orderService.incrementProcessCounter(processCounter);
-        orderService.addNewOrderStatus(order, status);
         orderService.save(order);
     }
+
 }
