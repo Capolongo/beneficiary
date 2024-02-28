@@ -8,7 +8,6 @@ import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirm
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
@@ -35,8 +34,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
     private final ConfirmOrderMapper confirmOrderMapper;
     private final ConnectorPartnersProxy connectorPartnersProxy;
 
-    @Value("${order.maxProcessCountFailed}")
-    private int maxProcessCountFailed;
+    @Value("${order.getConfirmationMaxProcessCountFailed}")
+    private int getConfirmationMaxProcessCountFailed;
 
     public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest) throws OrderFlightException {
         OrderEntity order = null;
@@ -78,47 +77,51 @@ public class ConfirmationServiceImpl implements ConfirmationService {
 
     public void orderProcess(OrderProcess orderProcess) {
         OrderStatusEntity status = null;
-        ProcessCounterEntity processCounter = null;
 
         var order = orderService.getOrderById(orderProcess.getId());
         var currentStatusCode = order.getCurrentStatus().getCode();
 
-        try {
-            if (!orderService.isSameStatus(StatusConstants.PROCESSING.getCode(), currentStatusCode)) {
-                log.warn("ConfirmationService.orderProcess - order has different status - id: [{}]", order.getId());
-                return;
-            }
-
-             processCounter = orderService.getProcessCounter(order, Webhooks.GETCONFIRMATION.value);
-            if (processCounter.getCount() >= maxProcessCountFailed) {
-                log.warn("ConfirmationService.orderProcess - counter exceeded limit - id: [{}]", order.getId());
-                status = orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
-            } else {
-                var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getId());
-                status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
-                var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
-                orderService.updateVoucher(itemFlight, connectorConfirmOrderResponse.getVoucher());
-                log.info("ConfirmationService.orderProcess - order - statusCode: [{}], partnerCode: [{}]", status.getCode(), order.getPartnerCode());
-            }
-
-            if (!orderService.isSameStatus(currentStatusCode, status.getCode())) {
-                processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
-            }
-
-            orderService.incrementProcessCounter(processCounter);
-            orderService.addNewOrderStatus(order, status);
-
-            log.info("ConfirmationService.orderProcess - order process counter - statusCode: [{}]", processCounter.getCount());
-        } catch (OrderFlightException exception) {
-            orderService.incrementProcessCounter(processCounter);
+        if (!orderService.isSameStatus(StatusConstants.PROCESSING.getCode(), currentStatusCode)) {
+            log.warn("ConfirmationService.orderProcess - order has different status - id: [{}]", order.getId());
+            return;
         }
 
+         var processCounter = orderService.getProcessCounter(order, Webhooks.GETCONFIRMATION.value);
+        if (processCounter.getCount() >= getConfirmationMaxProcessCountFailed) {
+            log.warn("ConfirmationService.orderProcess - counter exceeded limit - id: [{}]", order.getId());
+            status = orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
+        } else {
+           status = processGetConfirmation(order);
+        }
+
+        if (!orderService.isSameStatus(currentStatusCode, status.getCode())) {
+            Duration duration = processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
+            log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}], orderId: [{}], partnerCode: [{}], oldStatus: [{}], newStatus: [{}]", duration.toMinutes(), order.getId(), order.getPartnerCode(), order.getCurrentStatus(), status);
+        }
+
+        orderService.incrementProcessCounter(processCounter);
+        orderService.addNewOrderStatus(order, status);
         orderService.save(order);
+
+        log.info("ConfirmationService.orderProcess - order process counter - count: [{}]", processCounter.getCount());
     }
 
-    private void processOrderTimeDifference(ZonedDateTime baseTime) {
-        Duration duration = Duration.between(baseTime.toLocalDateTime(), LocalDateTime.now());
-        log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}]", duration.toMinutes());
+    private OrderStatusEntity processGetConfirmation (OrderEntity order) {
+        try {
+            var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getId());
+            var mappedStatus = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
+            var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
+            orderService.updateVoucher(itemFlight, connectorConfirmOrderResponse.getVoucher());
+            log.info("ConfirmationService.orderProcess - order - statusCode: [{}], partnerCode: [{}], orderId: [{}]", mappedStatus.getCode(), order.getPartnerCode(), order.getId());
+
+            return mappedStatus;
+        } catch (OrderFlightException exception) {
+            return order.getCurrentStatus();
+        }
+    }
+
+    private Duration processOrderTimeDifference(ZonedDateTime baseTime) {
+        return Duration.between(baseTime.toLocalDateTime(), LocalDateTime.now());
     }
 
     private ConnectorConfirmOrderStatusResponse buildStatusToFailed(String cause) {
