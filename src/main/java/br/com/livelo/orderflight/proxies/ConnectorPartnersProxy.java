@@ -96,7 +96,7 @@ public class ConnectorPartnersProxy {
 
             return connectorGetConfirmation.getBody();
         } catch (FeignException exception) {
-            log.error("ConnectorPartnersProxy.getConfirmationOnPartner exception - id: [{}], partnerCode: [{}]", id, partnerCode);
+            log.error("ConnectorPartnersProxy.getConfirmationOnPartner exception - id: [{}], partnerCode: [{}], exception: [{}]", id, partnerCode, exception.getCause());
             throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR.getDescription(), null, exception);
         }
     }

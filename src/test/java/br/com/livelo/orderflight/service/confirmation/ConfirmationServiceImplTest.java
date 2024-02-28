@@ -58,7 +58,7 @@ class ConfirmationServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(confirmationService, "maxProcessCountFailed", 48);
+        ReflectionTestUtils.setField(confirmationService, "getConfirmationMaxProcessCountFailed", 48);
     }
 
     @Test
