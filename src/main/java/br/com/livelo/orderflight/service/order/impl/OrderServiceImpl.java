@@ -1,10 +1,12 @@
 package br.com.livelo.orderflight.service.order.impl;
 
+import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.OrderProcessMapper;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 
@@ -57,6 +60,37 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return itemFlight.get();
+    }
+
+    public boolean isSameStatus(String currentStatus, String newStatus) {
+        return currentStatus.equals(newStatus);
+    }
+
+    public OrderStatusEntity buildOrderStatusFailed(String cause) {
+        return OrderStatusEntity.builder()
+                .partnerCode(String.valueOf(500))
+                .code(StatusConstants.FAILED.getCode())
+                .partnerResponse(cause)
+                .partnerDescription("failed")
+                .description(StatusConstants.FAILED.getDescription())
+                .statusDate(LocalDateTime.now())
+                .build();
+    }
+
+    public void incrementProcessCounter(ProcessCounterEntity processCounter) {
+        processCounter.setCount(processCounter.getCount() + 1);
+    }
+
+    public ProcessCounterEntity getProcessCounter(OrderEntity order, String process) {
+        var processCounter = order.getProcessCounters().stream().filter(counter -> process.equals(counter.getProcess())).findFirst();
+
+        if (processCounter.isEmpty()) {
+            var newProcessCounter = ProcessCounterEntity.builder().process(process).count(0).build();
+            order.getProcessCounters().add(newProcessCounter);
+            return newProcessCounter;
+        }
+
+        return processCounter.get();
     }
 
     public void updateVoucher(OrderItemEntity orderItem, String voucher) {
