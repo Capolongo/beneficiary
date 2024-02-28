@@ -23,6 +23,7 @@ import br.com.livelo.orderflight.domain.entity.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -232,6 +233,7 @@ public class MockBuilder {
                 .items(items)
                 .statusHistory(statusHistory)
                 .currentStatus(statusInitial())
+                .lastModifiedDate(ZonedDateTime.now())
                 .build();
     }
 

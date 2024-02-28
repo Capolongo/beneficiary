@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.service.order;
 
+import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mappers.OrderProcessMapper;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
@@ -11,6 +12,7 @@ import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.mock.MockBuilder;
+import br.com.livelo.orderflight.repository.ItemRepository;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
@@ -32,6 +34,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.swing.text.html.Option;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -40,6 +43,9 @@ import java.util.Set;
 class OrderServiceTest {
     @Mock
     private OrderRepository orderRepository;
+    @Mock
+    private ItemRepository itemRepository;
+
     @Mock
     private ConfirmOrderMapper confirmOrderMapper;
     @Mock
@@ -200,6 +206,26 @@ class OrderServiceTest {
 
         assertInstanceOf(ProcessCounterEntity.class, processCounter);
         assertEquals(order.getProcessCounters().stream().findFirst().get(), processCounter);
+    }
+
+    @Test
+    void shouldReturnSucessByCommerceItemIdAndSkuId() {
+
+        when(itemRepository.findByCommerceItemIdAndSkuId(anyString(), anyString())).thenReturn(Optional.of(MockBuilder.orderItemEntity()));
+        
+        OrderItemEntity orderItemEntity = orderService.findByCommerceItemIdAndSkuId("1", SkuItemResponse.builder().skuId("cvc_flight_tax").build());
+
+        assertNotNull(orderItemEntity);
+    }
+
+    @Test
+    void shouldReturnErrorOrderFlightExceptionByCommerceItemIdAndSkuId() {
+
+        when(itemRepository.findByCommerceItemIdAndSkuId(anyString(), anyString())).thenReturn(Optional.empty());
+
+        assertThrows(OrderFlightException.class, () -> {
+            orderService.findByCommerceItemIdAndSkuId("1", SkuItemResponse.builder().skuId("cvc_flight_tax").build());
+        });
     }
 
     @Test
