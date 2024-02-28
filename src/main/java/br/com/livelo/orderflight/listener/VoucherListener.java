@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.listener;
 
+import br.com.livelo.orderflight.service.voucher.VoucherService;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -16,13 +17,13 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class VoucherListener {
     private final ObjectMapper objectMapper;
-    private final ConfirmationService confirmationService;
+    private final VoucherService voucherService;
 
     @RabbitListener(queues = "${spring.rabbitmq.custom.order-flight-commands-getvoucher.queue}")
     public void consumer(Message payload) {
         try {
             final OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);
-            confirmationService.orderProcess(orderProcess);
+            voucherService.orderProcess(orderProcess);
         } catch (Exception exception) {
             throw new AmqpRejectAndDontRequeueException(exception);
         }

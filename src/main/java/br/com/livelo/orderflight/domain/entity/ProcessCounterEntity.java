@@ -20,7 +20,10 @@ public class ProcessCounterEntity extends BaseEntity {
     private int id;
     private int count;
     private String process;
+    @Column(name = "ORDER_ID")
     private String orderId;
+    @Column(name = "CREATE_DATE")
     private ZonedDateTime createDate;
+    @Column(name = "LAST_MODIFIED_DATE")
     private ZonedDateTime lastModifiedDate;
 }

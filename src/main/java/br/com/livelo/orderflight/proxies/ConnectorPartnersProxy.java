@@ -96,17 +96,22 @@ public class ConnectorPartnersProxy {
 
             return connectorGetConfirmation.getBody();
         } catch (FeignException exception) {
-            log.error("ConnectorPartnersProxy.getConfirmationOnPartner exception - id: [{}], partnerCode: [{}], exception: [{}]", id, partnerCode, exception.getCause());
+            log.error("ConnectorPartnersProxy.getConfirmationOnPartner exception - id: [{}], partnerCode: [{}], exception: [{}]", id, partnerCode, exception.getCause(), exception);
             throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR.getDescription(), null, exception);
         }
     }
 
     public ConnectorConfirmOrderResponse getVoucherOnPartner(String partnerCode, String id) {
-        WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.VOUCHER);
-       final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id));
-        var connectorGetVoucher = partnerConnectorClient.getConfirmation(connectorUri);
+        try {
+            WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.VOUCHER);
+            final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id));
+            var connectorGetVoucher = partnerConnectorClient.getConfirmation(connectorUri);
 
-        return connectorGetVoucher.getBody();
+            return connectorGetVoucher.getBody();
+        } catch (FeignException exception) {
+            log.error("ConnectorPartnersProxy.getVoucherOnPartner exception - id: [{}], partnerCode: [{}], exception: [{}]", id, partnerCode, exception.getCause(), exception);
+            throw new OrderFlightException(OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR, OrderFlightErrorType.FLIGHT_CONNECTOR_INTERNAL_ERROR.getDescription(), null, exception);
+        }
     }
 
     private ConnectorConfirmOrderResponse getResponseError(FeignException feignException, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws OrderFlightException {

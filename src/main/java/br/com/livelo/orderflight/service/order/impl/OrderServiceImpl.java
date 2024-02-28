@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.Set;
 
@@ -104,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
         var processCounter = order.getProcessCounters().stream().filter(counter -> process.equals(counter.getProcess())).findFirst();
 
         if (processCounter.isEmpty()) {
-            var newProcessCounter = ProcessCounterEntity.builder().process(process).count(0).build();
+            var newProcessCounter = ProcessCounterEntity.builder().process(process).count(0).createDate(ZonedDateTime.now()).build();
             order.getProcessCounters().add(newProcessCounter);
             return newProcessCounter;
         }

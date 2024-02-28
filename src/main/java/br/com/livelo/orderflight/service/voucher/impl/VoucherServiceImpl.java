@@ -4,6 +4,8 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
+import br.com.livelo.orderflight.domain.entity.OrderEntity;
+import br.com.livelo.orderflight.exception.OrderFlightException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,23 +33,39 @@ public class VoucherServiceImpl implements VoucherService {
         OrderStatusEntity status = null;
         var order = orderService.getOrderById(orderProcess.getId());
 
+        if (!orderService.isSameStatus(StatusConstants.VOUCHER.getCode(), order.getCurrentStatus().getCode())) {
+            log.warn("VoucherServiceImpl.orderProcess - order has different status - id: [{}]", order.getId());
+            return;
+        }
+
         var processCounter = orderService.getProcessCounter(order, Webhooks.VOUCHER.value);
         if (ChronoUnit.DAYS.between(processCounter.getCreateDate(), ZonedDateTime.now()) > 2) {
             log.warn("VoucherServiceImpl.orderProcess - counter exceeded limit - id: [{}]", order.getId());
-            orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
+            status = orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
         } else {
+            status = processVoucher(order);
+        }
+
+        orderService.addNewOrderStatus(order, status);
+        orderService.incrementProcessCounter(processCounter);
+        orderService.save(order);
+
+        log.info("VoucherServiceImpl.orderProcess - order process counter - count: [{}]", processCounter.getCount());
+    }
+    private OrderStatusEntity processVoucher(OrderEntity order) {
+        try {
             var connectorVoucherOrderResponse = connectorPartnersProxy.getVoucherOnPartner(order.getPartnerCode(), order.getId());
-            status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorVoucherOrderResponse.getCurrentStatus());
+            var status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorVoucherOrderResponse.getCurrentStatus());
 
             if (!connectorVoucherOrderResponse.getVoucher().isEmpty()) {
                 status.setCode(StatusConstants.COMPLETED.getCode());
-                orderService.addNewOrderStatus(order, status);
                 var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
                 orderService.updateVoucher(itemFlight, connectorVoucherOrderResponse.getVoucher());
             }
-        }
-        orderService.incrementProcessCounter(processCounter);
-        orderService.save(order);
-    }
 
+            return status;
+        } catch (OrderFlightException exception) {
+            return order.getCurrentStatus();
+        }
+    }
 }
