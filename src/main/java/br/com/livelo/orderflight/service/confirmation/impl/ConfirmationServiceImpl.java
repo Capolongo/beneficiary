@@ -91,27 +91,28 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             log.warn("ConfirmationService.orderProcess - counter exceeded limit - id: [{}]", order.getId());
             status = orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
         } else {
-           status = processGetConfirmationProxy(order);
+           status = processGetConfirmation(order);
         }
 
         if (!orderService.isSameStatus(currentStatusCode, status.getCode())) {
-            processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
+            Duration duration = processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
+            log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}], orderId: [{}], partnerCode: [{}], oldStatus: [{}], newStatus: [{}]", duration.toMinutes(), order.getId(), order.getPartnerCode(), order.getCurrentStatus(), status);
         }
 
         orderService.incrementProcessCounter(processCounter);
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
 
-        log.info("ConfirmationService.orderProcess - order process counter - statusCode: [{}]", processCounter.getCount());
+        log.info("ConfirmationService.orderProcess - order process counter - count: [{}]", processCounter.getCount());
     }
 
-    private OrderStatusEntity processGetConfirmationProxy (OrderEntity order) {
+    private OrderStatusEntity processGetConfirmation (OrderEntity order) {
         try {
             var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getId());
             var mappedStatus = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
             var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
             orderService.updateVoucher(itemFlight, connectorConfirmOrderResponse.getVoucher());
-            log.info("ConfirmationService.orderProcess - order - statusCode: [{}], partnerCode: [{}]", mappedStatus.getCode(), order.getPartnerCode());
+            log.info("ConfirmationService.orderProcess - order - statusCode: [{}], partnerCode: [{}], orderId: [{}]", mappedStatus.getCode(), order.getPartnerCode(), order.getId());
 
             return mappedStatus;
         } catch (OrderFlightException exception) {
@@ -119,9 +120,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         }
     }
 
-    private void processOrderTimeDifference(ZonedDateTime baseTime) {
-        Duration duration = Duration.between(baseTime.toLocalDateTime(), LocalDateTime.now());
-        log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}]", duration.toMinutes());
+    private Duration processOrderTimeDifference(ZonedDateTime baseTime) {
+        return Duration.between(baseTime.toLocalDateTime(), LocalDateTime.now());
     }
 
     private ConnectorConfirmOrderStatusResponse buildStatusToFailed(String cause) {
