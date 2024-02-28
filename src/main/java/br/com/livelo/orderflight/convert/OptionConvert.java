@@ -8,7 +8,7 @@ import br.com.livelo.orderflight.domain.dtos.installment.InstallmentOptionsRespo
 import br.com.livelo.orderflight.domain.dtos.payment.response.PaymentOptionDTO;
 import br.com.livelo.orderflight.domain.dtos.payment.response.PaymentOptionResponse;
 import br.com.livelo.orderflight.domain.dtos.shipment.CommerceItem;
-import br.com.livelo.orderflight.domain.dtos.shipment.PackagesDTO;
+import br.com.livelo.orderflight.domain.dtos.shipment.CommerceItemDTO;
 import br.com.livelo.orderflight.domain.dtos.shipment.ShipmentOptionsResponse;
 import br.com.livelo.orderflight.domain.dtos.shipment.ShipmentsDTO;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
@@ -16,7 +16,6 @@ import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -61,18 +60,24 @@ public class OptionConvert {
                 .currency(shipmentOptionConstant.getCurrency())
                 .price(shipmentOptionConstant.getPrice())
                 .type(shipmentOptionConstant.getType())
+                .items(skusIds(order))
                 .description(shipmentOptionConstant.getDescription())
-                .packages(buildPackages(partnerOrderId, order))
+                .commerceItems(buildPackages(partnerOrderId, order))
                 .build());
     }
 
-    private static List<PackagesDTO> buildPackages(final String partnerOrderId, final OrderEntity order) {
+    private static List<CommerceItemDTO> buildPackages(final String partnerOrderId, final OrderEntity order) {
         return order.getItems().stream()
-                .map(item -> PackagesDTO.builder()
+                .map(item -> CommerceItemDTO.builder()
                         .deliveryDate(Date.from(order.getLastModifiedDate().toInstant()))
-                        .items(Collections.singletonList(item.getSkuId()))
                         .commerceItems(buildCommerceItems(partnerOrderId, item))
                         .build()
+                ).collect(Collectors.toList());
+    }
+
+    private static List<String> skusIds(final OrderEntity order) {
+        return order.getItems().stream()
+                .map(OrderItemEntity::getSkuId
                 ).collect(Collectors.toList());
     }
 

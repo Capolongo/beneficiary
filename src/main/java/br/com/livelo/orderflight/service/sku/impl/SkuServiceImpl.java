@@ -62,7 +62,7 @@ public class SkuServiceImpl implements SkuService {
 
     private SkuItemResponse enrichSkuWithCommerceItem(String commerceItemId, SkuItemResponse skuItemResponseDTO){
         log.debug("SkuServiceImpl.enrichSkuWithCommerceItem - start commerceItemId and currency present start sku enrich process for [item]: {}", commerceItemId);
-        final Optional<OrderItemEntity> itemOptional = itemRepository.findByCommerceItemId(commerceItemId);
+        final Optional<OrderItemEntity> itemOptional = itemRepository.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO.getSkuId());
 
         if (itemOptional.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_NOT_FOUND;

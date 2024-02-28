@@ -21,7 +21,7 @@ public enum OrderFlightErrorType {
 
     VALIDATION_ORDER_NOT_FOUND("OFCONFIRMATION000", "Ordem não encontrada", "Ordem não foi encontrada na base de dados", HttpStatus.NOT_FOUND, null),
 
-    VALIDATION_COMMERCE_ITEM_ID_NOT_FOUND("", "CommerceItemId não encontrada", "CommerceItemId não foi encontrada na base de dados", HttpStatus.NOT_FOUND, null),
+    VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND("OFCART404", "CommerceItemId / idSku não encontrada ", "CommerceItemId / SKU não foi encontrada na base de dados", HttpStatus.NOT_FOUND, null),
 
     VALIDATION_OBJECTS_NOT_EQUAL("OFCONFIRMATION001", "Objetos não são iguais", "Objetos do request body e da base de dados não são iguais", HttpStatus.BAD_REQUEST, null),
     VALIDATION_ALREADY_CONFIRMED("OFCONFIRMATION002", "Ordem já confirmada", "Ordem já foi confirmada anteriormente", HttpStatus.BAD_REQUEST, null),

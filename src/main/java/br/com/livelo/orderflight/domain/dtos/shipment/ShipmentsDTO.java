@@ -24,5 +24,7 @@ public class ShipmentsDTO {
 
     private Double price;
 
-    private List<PackagesDTO> packages;
+    private List<String> items;
+
+    private List<CommerceItemDTO> commerceItems;
 }
