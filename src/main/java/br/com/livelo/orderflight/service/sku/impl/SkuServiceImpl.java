@@ -26,10 +26,6 @@ public class SkuServiceImpl implements SkuService {
     public SkuItemResponse getSku(final String skuId, final String commerceItemId, final String currency){
         log.debug("SkuServiceImpl.getSku - start. [skuId]: {}, [commerceItemId]: {}, [currency]: {}", skuId, commerceItemId, currency);
 
-        return getSkuResponse(skuId, commerceItemId, currency);
-    }
-
-    private SkuItemResponse getSkuResponse(String skuId, String commerceItemId, String currency){
         SkuItemResponse skuItemResponseDTOBase = buildSku(skuId);
 
         if(currencyAndCommerceItemIdIsPresent(currency, commerceItemId)){
@@ -38,7 +34,6 @@ public class SkuServiceImpl implements SkuService {
         }
 
         return skuItemResponseDTOBase;
-
     }
 
     private Boolean currencyAndCommerceItemIdIsPresent(String currency, String commerceItemId){
@@ -69,7 +64,7 @@ public class SkuServiceImpl implements SkuService {
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
 
-        double listPrice = itemOptional.get().getPrice() != null && itemOptional.get().getPrice().getListPrice() != null ? Double.parseDouble(itemOptional.get().getPrice().getListPrice()) : skuConstant.getSalePrice();
+        double listPrice = itemOptional.get().getPrice() != null && itemOptional.get().getPrice().getPointsAmount() != null ? itemOptional.get().getPrice().getPointsAmount().doubleValue() : skuConstant.getSalePrice();
 
         return skuItemResponseDTO
                 .toBuilder()

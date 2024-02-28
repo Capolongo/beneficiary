@@ -50,7 +50,7 @@ public class OptionServiceImpl implements OptionService {
         log.info("OptionServiceImpl.getInstallmentOptions - start. tempPartnerOrderId: [{}], paymentOptionId: [{}]", id, paymentOptionId);
         final OrderEntity orderEntity = orderService.getOrderById(id);
 
-        Double amount = orderService.calculateOrderAmountForInitialOrder(orderEntity);
+        double amount = orderEntity.getPrice().getPointsAmount().doubleValue();
 
         InstallmentOptionsResponse installmentOptionsResponse = OptionConvert.buildInstallmentOptionsResponse(orderEntity, installmentOptionConstant, amount );
 

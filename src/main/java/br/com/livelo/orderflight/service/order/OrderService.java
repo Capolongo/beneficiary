@@ -21,5 +21,4 @@ public interface OrderService {
 
   OrderEntity save(OrderEntity order);
 
-  Double calculateOrderAmountForInitialOrder(OrderEntity order);
 }

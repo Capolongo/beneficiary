@@ -84,10 +84,4 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
     }
 
-    @Override
-    public Double calculateOrderAmountForInitialOrder(OrderEntity order) {
-        return order.getItems().stream()
-                .mapToDouble(OrderItemEntity::getQuantity)
-                .sum();
-    }
 }

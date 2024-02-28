@@ -1,13 +1,15 @@
 package br.com.livelo.orderflight.controller;
 
-import br.com.livelo.orderflight.domain.dtos.payment.response.PaymentOptionResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
-import br.com.livelo.orderflight.service.option.OptionService;
 import br.com.livelo.orderflight.service.sku.SkuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Slf4j
 @RestController

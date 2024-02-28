@@ -35,6 +35,7 @@ public class OrderItemEntity extends BaseEntity {
     private String productId;
     private Integer quantity;
     private String externalCoupon;
+    private String  partnerOrderLinkId;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ORDER_ITEM_PRICE_ID")
     private OrderItemPriceEntity price;
@@ -44,7 +45,4 @@ public class OrderItemEntity extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_ITEM_ID")
     private Set<SegmentEntity> segments;
-
-    private String  partnerOrderLinkId;
-
 }
