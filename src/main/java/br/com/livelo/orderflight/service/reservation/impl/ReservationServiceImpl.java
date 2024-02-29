@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
+import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_PRICING_INTERNAL_ERROR;
 
 @Service
 @RequiredArgsConstructor
@@ -48,20 +50,55 @@ public class ReservationServiceImpl implements ReservationService {
             var orderOptional = this.orderService.findByCommerceOrderId(request.getCommerceOrderId());
             if (orderOptional.isPresent()) {
                 var order = orderOptional.get();
-                if (this.isSameOrderItems(request, orderOptional)) {
+                if (!this.isSameOrderItems(request, orderOptional)) {
+                    orderOptional.ifPresent(this.orderService::delete);
+                } else {
                     var connectorReservationResponse = partnerConnectorProxy.reservationStatus(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode());
                     if (PARTNER_RESERVATION_SUCCESS.equals(connectorReservationResponse.getStatus().getCode())) {
                         var pricingCalculateRequest = priceCalculateRequestMapper.toPricingCalculateRequest(order);
                         var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest);
                         var pricingCalculatePrice = getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse, listPrice);
-                        //TODO atualizar os valores da preficicacao para o orderEntity
+
+                        var taxItem = request.getItems()
+                                .stream()
+                                .filter(item -> item.getProductType()
+                                        .equals("type_flight_tax"))
+                                .findFirst()
+                                .orElse(null);
+                        order.getItems().stream()
+                                .filter(item -> item.getSkuId().equals(taxItem.getSkuId()))
+                                .findFirst()
+                                .map(item -> {
+                                    item.getPrice().setAmount(pricingCalculatePrice.getTaxes().getAmount());
+                                    item.getPrice().setPointsAmount(pricingCalculatePrice.getTaxes().getPointsAmount());
+                                    return item;
+                                })
+                                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, null, "Tax not found in price response"));
+
+
+                        var flightItem = request.getItems()
+                                .stream()
+                                .filter(item -> item.getProductType().equals("type_flight"))
+                                .findFirst()
+                                .orElse(null);
+                        order.getItems().stream().filter(item -> item.getSkuId()
+                                        .equals(flightItem.getSkuId())).findFirst()
+                                .map(item -> {
+                                    item.getPrice().setAmount(pricingCalculatePrice.getFlight().getAmount());
+                                    item.getPrice().setPointsAmount(pricingCalculatePrice.getFlight().getPointsAmount());
+                                    return item;
+                                })
+                                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, null, "Flight not found in price response"));
+
+                        order.getPrice().setAmount(pricingCalculatePrice.getAmount());
+                        order.getPrice().setPointsAmount(BigDecimal.valueOf(pricingCalculatePrice.getPointsAmount()));
+                        order.getPrice().setAccrualPoints(Double.valueOf(pricingCalculatePrice.getAccrualPoints()));
 
                         this.orderService.save(order);
                         return reservationMapper.toReservationResponse(order, 15);
                     }
                     throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, null, null);
-                } else {
-                    orderOptional.ifPresent(this.orderService::delete);
+
                 }
             }
 
