@@ -54,7 +54,6 @@ public class ReservationServiceImpl implements ReservationService {
                         var pricingCalculateRequest = priceCalculateRequestMapper.toPricingCalculateRequest(order);
                         var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest);
                         var pricingCalculatePrice = getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse, listPrice);
-
                         //TODO atualizar os valores da preficicacao para o orderEntity
 
                         this.orderService.save(order);
