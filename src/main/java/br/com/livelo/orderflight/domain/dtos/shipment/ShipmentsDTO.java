@@ -26,7 +26,5 @@ public class ShipmentsDTO {
 
     private BigDecimal price;
 
-    private List<String> items;
-
-    private List<CommerceItemDTO> commerceItems;
+    private List<PackagesDTO> packages;
 }

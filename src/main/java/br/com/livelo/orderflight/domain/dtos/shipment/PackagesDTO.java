@@ -11,11 +11,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class CommerceItemDTO {
+public class PackagesDTO {
 
     private Date deliveryDate;
 
-    private List<CommerceItem> commerceItems;
+    private List<String> items;
 
+    private List<CommerceItem> commerceItems;
 
 }
