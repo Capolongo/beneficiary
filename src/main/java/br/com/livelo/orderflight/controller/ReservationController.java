@@ -18,7 +18,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestHeader(value = "transactionId") String transactionId,
             @RequestHeader(value = "customerId", required = false) String customerId,
-            @RequestHeader(value = "channel") String channel,
+            @RequestHeader(value = "channel", required = false) String channel,
             @RequestHeader(value = "listPrice") String listPrice,
             @RequestBody @Valid ReservationRequest reservationRequest
     ) {

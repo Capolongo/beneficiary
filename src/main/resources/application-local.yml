@@ -1,23 +1,23 @@
 spring:
-  datasource:
-    # Configurar com credenciais do serviço
-    url: jdbc:h2:mem:testdb;Mode=Oracle;NON_KEYWORDS=ORDER
-    username: ${ORACLEDB_USERNAME:order-flight}
-    password: ${ORACLEDB_PASSWORD:order-flight}
-    driver-class-name: org.h2.Driver
-    generate-unique-name: false
-  jpa:
-    open-in-view: false
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create-drop
-  sql:
-    init:
-      data-locations: classpath:data.sql
-      mode: always
-  h2:
-    console:
-      enabled: true
+#  datasource:
+#    # Configurar com credenciais do serviço
+#    url: jdbc:h2:mem:testdb;Mode=Oracle;NON_KEYWORDS=ORDER
+#    username: ${ORACLEDB_USERNAME:order-flight}
+#    password: ${ORACLEDB_PASSWORD:order-flight}
+#    driver-class-name: org.h2.Driver
+#    generate-unique-name: false
+#  jpa:
+#    open-in-view: false
+#    database-platform: org.hibernate.dialect.H2Dialect
+#    hibernate:
+#      ddl-auto: create-drop
+#  sql:
+#    init:
+#      data-locations: classpath:data.sql
+#      mode: always
+#  h2:
+#    console:
+#      enabled: true
   cloud:
     openfeign:
       micrometer:
@@ -29,3 +29,5 @@ spring:
 client:
   partnersconfigflight:
     endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/partners-config-flight
+  pricingcalculatorflight:
+    endpoint: http://localhost:8090/pricing-calculator-flight/v1/calculate
