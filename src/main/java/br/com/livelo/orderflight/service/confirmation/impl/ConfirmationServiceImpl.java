@@ -104,12 +104,12 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
 
-        log.info("ConfirmationService.orderProcess - order process counter - count: [{}]", processCounter.getCount());
+        log.info("ConfirmationService.orderProcess - order process counter - id: [{}], count: [{}]", order.getId(), processCounter.getCount());
     }
 
     private OrderStatusEntity processGetConfirmation (OrderEntity order) {
         try {
-            var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getId());
+            var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getPartnerOrderId());
             var mappedStatus = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
             var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
             orderService.updateVoucher(itemFlight, connectorConfirmOrderResponse.getVoucher());
