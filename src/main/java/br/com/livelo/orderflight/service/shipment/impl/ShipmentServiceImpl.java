@@ -2,7 +2,7 @@ package br.com.livelo.orderflight.service.shipment.impl;
 
 import br.com.livelo.orderflight.constants.ShipmentOptionConstant;
 import br.com.livelo.orderflight.domain.dtos.shipment.CommerceItem;
-import br.com.livelo.orderflight.domain.dtos.shipment.CommerceItemDTO;
+import br.com.livelo.orderflight.domain.dtos.shipment.PackagesDTO;
 import br.com.livelo.orderflight.domain.dtos.shipment.ShipmentOptionsResponse;
 import br.com.livelo.orderflight.domain.dtos.shipment.ShipmentsDTO;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
@@ -48,16 +48,16 @@ public class ShipmentServiceImpl implements ShipmentService {
                 .currency(shipmentOptionConstant.getCurrency())
                 .price(shipmentOptionConstant.getPrice())
                 .type(shipmentOptionConstant.getType())
-                .items(skusIds(order))
+                .packages(buildPackages(partnerOrderId, order))
                 .description(shipmentOptionConstant.getDescription())
-                .commerceItems(buildCommerce(partnerOrderId, order))
                 .build());
     }
 
-    private static List<CommerceItemDTO> buildCommerce(final String partnerOrderId, final OrderEntity order) {
+    private static List<PackagesDTO> buildPackages(final String partnerOrderId, final OrderEntity order) {
         return order.getItems().stream()
-                .map(item -> CommerceItemDTO.builder()
+                .map(item -> PackagesDTO.builder()
                         .deliveryDate(Date.from(order.getLastModifiedDate().toInstant()))
+                        .items(Collections.singletonList(item.getSkuId()))
                         .commerceItems(buildCommerceItems(partnerOrderId, item))
                         .build()
                 ).collect(Collectors.toList());
@@ -70,12 +70,6 @@ public class ShipmentServiceImpl implements ShipmentService {
                 .commerceItemId(item.getCommerceItemId())
                 .partnerOrderLinkId(item.getPartnerOrderLinkId())
                 .build());
-    }
-
-    private List<String> skusIds(final OrderEntity order) {
-        return order.getItems().stream()
-                .map(OrderItemEntity::getSkuId
-                ).collect(Collectors.toList());
     }
 
 }
