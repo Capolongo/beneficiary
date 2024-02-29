@@ -161,7 +161,7 @@ public class PricingCalculateRequestMapper {
             pricingCalculateFlights.add(PricingCalculateFlight.builder()
                     .passengerType(partnerReservationOrdersPriceDescriptionFlight.getPassengerType())
                     .amount(partnerReservationOrdersPriceDescriptionFlight.getAmount())
-                    .passengerCount(1)
+                    .passengerCount(partnerReservationOrdersPriceDescriptionFlight.getPassengerCount())
                     .build());
         }
 
