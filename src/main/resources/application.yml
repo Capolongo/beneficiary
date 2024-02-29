@@ -30,6 +30,7 @@ spring:
         autoCreate: false
         queue: order-flight.flight.commands.order.getconfirmation
       order-flight-commands-getvoucher:
+        concurrency: "4"
         queue: order-flight.flight.commands.order.getvoucher
 
 management:

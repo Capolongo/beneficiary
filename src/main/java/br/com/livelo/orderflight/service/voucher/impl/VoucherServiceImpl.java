@@ -29,7 +29,9 @@ public class VoucherServiceImpl implements VoucherService {
     private final ConnectorPartnersProxy connectorPartnersProxy;
 
     @Override
-    public void orderProcess(OrderProcess orderProcess) throws JsonProcessingException {
+    public void orderProcess(OrderProcess orderProcess) {
+        log.info("VoucherServiceImpl.orderProcess - Confirming the voucher creation - order: [{}]", orderProcess.getId());
+
         OrderStatusEntity status = null;
         var order = orderService.getOrderById(orderProcess.getId());
 
@@ -40,6 +42,7 @@ public class VoucherServiceImpl implements VoucherService {
 
         var processCounter = orderService.getProcessCounter(order, Webhooks.VOUCHER.value);
         if (ChronoUnit.DAYS.between(processCounter.getCreateDate(), ZonedDateTime.now()) > 2) {
+            //TODO :- refactor log message
             log.warn("VoucherServiceImpl.orderProcess - counter exceeded limit - id: [{}]", order.getId());
             status = orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
         } else {
@@ -50,7 +53,7 @@ public class VoucherServiceImpl implements VoucherService {
         orderService.incrementProcessCounter(processCounter);
         orderService.save(order);
 
-        log.info("VoucherServiceImpl.orderProcess - order process counter - count: [{}]", processCounter.getCount());
+        log.info("VoucherServiceImpl.orderProcess - status updated - order: [{}]", order.getId());
     }
     private OrderStatusEntity processVoucher(OrderEntity order) {
         try {
