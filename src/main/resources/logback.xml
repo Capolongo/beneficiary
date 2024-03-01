@@ -32,7 +32,13 @@
                         {
                         "level": "%level",
                         "service": "${springAppName:-}",
-                        "message": "%message"
+                        "trace": "%X{traceId:-}",
+                        "span": "%X{spanId:-}",
+                        "pid": "${PID:-}",
+                        "thread": "%thread",
+                        "class": "%logger{40}",
+                        "message": "%message",
+                        "stack_trace": "%ex"
                         }
                     </pattern>
                 </pattern>
