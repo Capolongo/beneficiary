@@ -272,7 +272,7 @@ class ConnectorPartnersProxyTest {
     setup();
     when(partnerConnectorClient.getConfirmation(any(URI.class))).thenReturn(confirmOrderResponse);
 
-    ConnectorConfirmOrderResponse response = proxy.getConfirmationOnPartner("CVC", "lf123");
+    ConnectorConfirmOrderResponse response = proxy.getConfirmationOnPartner("CVC", "10071014", "lf123");
 
     assertEquals(confirmOrderResponse.getBody(), response);
     assertEquals(200, confirmOrderResponse.getStatusCode().value());
@@ -286,7 +286,7 @@ class ConnectorPartnersProxyTest {
     when(partnerConnectorClient.getConfirmation(any(URI.class))).thenThrow(FeignException.class);
 
     assertThrows(OrderFlightException.class, () -> {
-        proxy.getConfirmationOnPartner("CVC", "lf123");
+        proxy.getConfirmationOnPartner("CVC", "10071014", "lf123");
     });
   }
 }
