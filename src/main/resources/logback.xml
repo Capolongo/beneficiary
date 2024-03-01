@@ -2,7 +2,6 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <springProperty scope="context" name="springAppName" source="spring.application.name"/>
-    <springProperty scope="context" name="ACTIVE_PROFILE" source="spring.profiles.active"/>
     <property name="CONSOLE_LOG_PATTERN"
               value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
 
@@ -10,7 +9,7 @@
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <!-- Minimum logging level to be presented in the console logs-->
-            <level>DEBUG</level>
+            <level>TRACE</level>
         </filter>
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
@@ -18,11 +17,11 @@
         </encoder>
     </appender>
 
-    <!-- Appender to aws stdout --> 
-    <appender name="AWS" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- Appender to ibmcloud stdout -->
+    <appender name="IBMCLOUD" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <!-- Minimum logging level to be presented in the console logs-->
-            <level>DEBUG</level>
+            <level>TRACE</level>
         </filter>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
@@ -31,6 +30,7 @@
                     <pattern>
                         {
                         "level": "%level",
+                        "severity": "%level",
                         "service": "${springAppName:-}",
                         "trace": "%X{traceId:-}",
                         "span": "%X{spanId:-}",
@@ -45,14 +45,12 @@
             </providers>
         </encoder>
     </appender>
-    <springProfile name="dev,tst,prod">
-        <root level="INFO">
-            <appender-ref ref="AWS"/>
-        </root>
-    </springProfile>
-    <springProfile name="!(dev|tst|prod)">
-        <root level="INFO">
+    <root level="INFO">
+        <springProfile name="local">
             <appender-ref ref="console"/>
-        </root>
-    </springProfile>
+        </springProfile>
+        <springProfile name="!local">
+            <appender-ref ref="IBMCLOUD"/>
+        </springProfile>
+    </root>
 </configuration>
