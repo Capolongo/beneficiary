@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(value = "partner-client", url = "http://localhost:8080")
+@FeignClient(value = "partner-client", url = "http://api.k8s")
 public interface PartnerConnectorClient {
 	@PostMapping
 	ResponseEntity<ConnectorConfirmOrderResponse> confirmOrder(URI baseUrl,
