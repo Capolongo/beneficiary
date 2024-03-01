@@ -91,15 +91,17 @@ public class ConnectorPartnersProxy {
         }
     }
 
-    public ConnectorConfirmOrderResponse getConfirmationOnPartner(String partnerCode, String id) throws OrderFlightException {
+    public ConnectorConfirmOrderResponse getConfirmationOnPartner(String partnerCode, String partnerOrderId, String id) throws OrderFlightException {
         try {
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.GETCONFIRMATION);
-            final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id));
+            final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", partnerOrderId));
             var connectorGetConfirmation = partnerConnectorClient.getConfirmation(connectorUri);
+            ConnectorConfirmOrderResponse responseBody = connectorGetConfirmation.getBody();
 
-            return connectorGetConfirmation.getBody();
+            log.info("ConnectorPartnersProxy.getConfirmationOnPartner - success - partnerOrderId: [{}], body: [{}]", id, responseBody);
+            return responseBody;
         } catch (FeignException exception) {
-            log.error("ConnectorPartnersProxy.getConfirmationOnPartner exception - id: [{}], partnerCode: [{}], exception: [{}]", id, partnerCode, exception.getCause());
+            log.error("ConnectorPartnersProxy.getConfirmationOnPartner exception - partnerOrderId: [{}], partnerCode: [{}], exception: [{}]", partnerOrderId, partnerCode, exception.getCause());
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR.getDescription(), null, exception);
         }
     }
