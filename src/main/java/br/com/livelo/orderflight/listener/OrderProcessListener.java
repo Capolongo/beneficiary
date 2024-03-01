@@ -15,7 +15,8 @@ import org.springframework.stereotype.Component;
 public class OrderProcessListener {
     private final ObjectMapper objectMapper;
     private final ConfirmationService confirmationService;
-    @RabbitListener(queues = "${spring.rabbitmq.order-flight-commands-getconfirmation.queue}")
+
+    @RabbitListener(queues = "${spring.rabbitmq.order-flight-commands-getconfirmation.queue}", concurrency = "${spring.rabbitmq.order-flight-commands-getconfirmation.concurrency}")
     public void consumer(Message payload) {
         try {
             final OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);

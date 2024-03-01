@@ -21,6 +21,7 @@ spring:
      autoCreate: false
      useQueueNameAsRetryRoutingKey: false
      order-flight-commands-getconfirmation:
+        concurrency: "4"
         exchangeType: topic
         queueRoutingKey: order.getconfirmation
         exchange: order-flight.commands
