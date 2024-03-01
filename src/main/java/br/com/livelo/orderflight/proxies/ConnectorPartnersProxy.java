@@ -110,7 +110,7 @@ public class ConnectorPartnersProxy {
         try {
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.VOUCHER);
             final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id));
-            var connectorGetVoucher = partnerConnectorClient.getConfirmation(connectorUri);
+            var connectorGetVoucher = partnerConnectorClient.getVoucher(connectorUri);
 
             return connectorGetVoucher.getBody();
         } catch (FeignException exception) {

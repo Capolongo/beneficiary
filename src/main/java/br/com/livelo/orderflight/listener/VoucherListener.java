@@ -17,8 +17,8 @@ public class VoucherListener {
     private final VoucherService voucherService;
 
 
-    @RabbitListener(queues = "${spring.rabbitmq.custom.order-flight-commands-getvoucher.queue}",
-            concurrency = "${spring.rabbitmq.custom.order-flight-commands-getvoucher.concurrency}")
+    @RabbitListener(queues = "${spring.rabbitmq.order-flight-commands-getvoucher.queue}",
+            concurrency = "${spring.rabbitmq.order-flight-commands-getvoucher.concurrency}")
     public void consumer(Message payload) {
         try {
             final OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);

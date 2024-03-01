@@ -280,6 +280,20 @@ class ConnectorPartnersProxyTest {
     verifyNoMoreInteractions(partnerConnectorClient);
   }
 
+    @Test
+    void shouldReturnGetVoucherOnPartner() throws Exception {
+        ResponseEntity<ConnectorConfirmOrderResponse> voucherResponse = MockBuilder.connectorVoucherResponse();
+        setup();
+        when(partnerConnectorClient.getVoucher(any(URI.class))).thenReturn(voucherResponse);
+
+        ConnectorConfirmOrderResponse response = proxy.getVoucherOnPartner("CVC", "lf1");
+
+        assertEquals(voucherResponse.getBody(), response);
+        assertEquals(200, voucherResponse.getStatusCode().value());
+        verify(partnerConnectorClient).getVoucher(any(URI.class));
+        verifyNoMoreInteractions(partnerConnectorClient);
+    }
+
   @Test
   void shouldThrowExceptionGetConfirmationOnPartner() {
     setup();
