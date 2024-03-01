@@ -51,7 +51,7 @@ public class ReservationServiceImpl implements ReservationService {
                 if (!this.isSameOrderItems(request, orderOptional)) {
                     orderOptional.ifPresent(this.orderService::delete);
                 } else {
-                    var connectorReservationResponse = partnerConnectorProxy.reservationStatus(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode());
+                    var connectorReservationResponse = partnerConnectorProxy.getReservation(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode());
                     if (PARTNER_RESERVATION_SUCCESS.equals(connectorReservationResponse.getStatus().getCode())) {
                         var pricingCalculateRequest = priceCalculateRequestMapper.toPricingCalculateRequest(order);
                         var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest);
@@ -62,31 +62,29 @@ public class ReservationServiceImpl implements ReservationService {
                                 .filter(item -> item.getProductType()
                                         .equals("type_flight_tax"))
                                 .findFirst()
-                                .orElse(null);
+                                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, null, "Tax item not found!"));
+
                         order.getItems().stream()
                                 .filter(item -> item.getSkuId().equals(taxItem.getSkuId()))
                                 .findFirst()
-                                .map(item -> {
+                                .ifPresent(item -> {
                                     item.getPrice().setAmount(pricingCalculatePrice.getTaxes().getAmount());
                                     item.getPrice().setPointsAmount(pricingCalculatePrice.getTaxes().getPointsAmount());
-                                    return item;
-                                })
-                                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, null, "Tax not found in price response"));
+                                });
 
 
                         var flightItem = request.getItems()
                                 .stream()
                                 .filter(item -> item.getProductType().equals("type_flight"))
                                 .findFirst()
-                                .orElse(null);
+                                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "flight item not found!"));
+
                         order.getItems().stream().filter(item -> item.getSkuId()
                                         .equals(flightItem.getSkuId())).findFirst()
-                                .map(item -> {
+                                .ifPresent(item -> {
                                     item.getPrice().setAmount(pricingCalculatePrice.getFlight().getAmount());
                                     item.getPrice().setPointsAmount(pricingCalculatePrice.getFlight().getPointsAmount());
-                                    return item;
-                                })
-                                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, null, "Flight not found in price response"));
+                                });
 
                         order.getPrice().setAmount(pricingCalculatePrice.getAmount());
                         order.getPrice().setPointsAmount(BigDecimal.valueOf(pricingCalculatePrice.getPointsAmount()));
@@ -96,7 +94,6 @@ public class ReservationServiceImpl implements ReservationService {
                         return reservationMapper.toReservationResponse(order, 15);
                     }
                     throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, null, null);
-
                 }
             }
 

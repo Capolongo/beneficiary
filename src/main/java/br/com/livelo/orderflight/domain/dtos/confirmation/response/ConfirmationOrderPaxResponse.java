@@ -12,7 +12,7 @@ public class ConfirmationOrderPaxResponse {
     private String firstName;
     private String lastName;
     private String birthDate;
-    private Set<ConfirmationOrderDocumentResponse> document;
+    private Set<ConfirmationOrderDocumentResponse> documents;
     private String email;
     private String areaCode;
     private String phone;

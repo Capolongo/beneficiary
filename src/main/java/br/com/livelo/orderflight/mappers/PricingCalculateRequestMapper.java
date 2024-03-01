@@ -41,7 +41,7 @@ public class PricingCalculateRequestMapper {
         var pricingCalculateItem = PricingCalculateItem.builder()
                 .id(commerceOrderId)
                 .flightType(partnerReservationItemTypeFlight.getTravelInfo().getType())
-                .price(buildPricingCalculatePrice(partnerReservationResponse, partnerReservationResponse))
+                .price(buildPricingCalculatePrice(partnerReservationResponse))
                 .segments(buildSegments(partnerReservationItemTypeFlight))
                 .build();
         return List.of(pricingCalculateItem);
@@ -80,12 +80,12 @@ public class PricingCalculateRequestMapper {
                             .iata(partnerReservationFlightsLeg.getAirline().getManagedBy().getIata())
                             .description(partnerReservationFlightsLeg.getAirline().getManagedBy().getDescription())
                             .managedBy(PricingCalculateManagedBy.builder()
-                                    .iata(partnerReservationFlightsLeg.getManagedBy())
-                                    .description(partnerReservationFlightsLeg.getManagedBy())
+                                    .iata(partnerReservationFlightsLeg.getAirline().getManagedBy().getIata())
+                                    .description(partnerReservationFlightsLeg.getAirline().getManagedBy().getDescription())
                                     .build())
                             .operatedBy(PricingCalculateOperatedBy.builder()
-                                    .iata(partnerReservationFlightsLeg.getOperatedBy())
-                                    .description(partnerReservationFlightsLeg.getOperatedBy())
+                                    .iata(partnerReservationFlightsLeg.getAirline().getOperatedBy().getIata())
+                                    .description(partnerReservationFlightsLeg.getAirline().getOperatedBy().getDescription())
                                     .build())
                             .build())
                     .flightNumber(partnerReservationFlightsLeg.getFlightNumber())
@@ -142,7 +142,7 @@ public class PricingCalculateRequestMapper {
         return luggages;
     }
 
-    private static PricingCalculatePrice buildPricingCalculatePrice(PartnerReservationResponse response, PartnerReservationResponse partnerReservationResponse) {
+    private static PricingCalculatePrice buildPricingCalculatePrice(PartnerReservationResponse partnerReservationResponse) {
         var totalTaxes = BigDecimal.ZERO;
         var totalFlight = BigDecimal.ZERO;
 

@@ -91,7 +91,7 @@ public class ConnectorPartnersProxy {
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
         }
     }
-    public ConnectorReservationResponse reservationStatus(String id , String transactionId, String partnerCode) {
+    public ConnectorReservationResponse getReservation(String id , String transactionId, String partnerCode) {
         try {
             var url = URI.create(this.partnersConfigService
                     .getPartnerWebhook(partnerCode, Webhooks.GETRESERVATION).getConnectorUrl());

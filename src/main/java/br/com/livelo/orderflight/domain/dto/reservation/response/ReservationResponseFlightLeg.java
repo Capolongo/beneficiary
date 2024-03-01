@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record ReservationResponseFlightLeg(String flightNumber,
 											Integer flightDuration,
-											String airline,
+											ReservationResponseAirline airline,
 											String managedBy,
 											Integer timeToWait,
 											String originIata,

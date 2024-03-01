@@ -15,8 +15,8 @@ import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORD
 
 @Mapper(componentModel = "spring")
 public interface PriceCalculateRequestMapper {
-    static final String TYPE_FLIGHT = "flight";
-    static final String TYPE_TAX = "TAX";
+    String TYPE_FLIGHT = "cvc_flight";
+    String TYPE_TAX = "cvc_flight_tax";
 
     @Mapping(target = "travelInfo", source = "orderEntity", qualifiedByName = "buildTravelInfo")
     @Mapping(target = "items", source = "orderEntity", qualifiedByName = "buildListPricingCalculateItems")
@@ -26,7 +26,7 @@ public interface PriceCalculateRequestMapper {
     default PricingCalculateTravelInfo buildTravelInfo(OrderEntity orderEntity) {
 
         return orderEntity.getItems().stream()
-                .filter(item -> TYPE_FLIGHT.equals(item.getProductId()))
+                .filter(item -> TYPE_FLIGHT.equals(item.getSkuId()))
                 .findFirst()
                 .map(item -> PricingCalculateTravelInfo.builder()
                         .type(item.getTravelInfo().getType())
@@ -52,13 +52,17 @@ public interface PriceCalculateRequestMapper {
         List<PricingCalculateSegment> pricingCalculateSegment = new ArrayList<>();
         var orderItemEntity = orderEntity.getItems()
                 .stream()
-                .filter(item -> TYPE_FLIGHT.equals(item.getProductId()))
+                .filter(item -> TYPE_FLIGHT.equals(item.getSkuId()))
                 .findFirst()
                 .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Type Flight not found"));
 
 
         for (SegmentEntity segmentEntity : orderItemEntity.getSegments()) {
-            var airline = segmentEntity.getFlightsLegs().stream().findFirst().map(FlightLegEntity::getAirline).orElse(null);
+            var airline = segmentEntity.getFlightsLegs().stream()
+                    .findFirst()
+                    .map(FlightLegEntity::getAirline)
+                    .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Airline not found in flight legs!"));
+
             pricingCalculateSegment.add(
                     PricingCalculateSegment.builder()
                             .step(Integer.valueOf(segmentEntity.getStep()))
@@ -70,8 +74,7 @@ public interface PriceCalculateRequestMapper {
                             .destinationDate(String.valueOf(segmentEntity.getArrivalDate()))
                             .numberOfStops(segmentEntity.getStops())
                             .flightDuration(segmentEntity.getFlightDuration())
-                            // RECUPERAR IATA
-                            .airline(PricingCalculateAirline.builder().description(airline).build())
+                            .airline(PricingCalculateAirline.builder().iata(airline.getManagedBy().getIata()).description(airline.getManagedBy().getDescription()).build())
                             .flightClass(orderItemEntity.getTravelInfo().getTypeClass())
                             .luggages(buildLuggages(segmentEntity))
                             .cancellationRules(buildCancellationRules(segmentEntity))
@@ -122,8 +125,14 @@ public interface PriceCalculateRequestMapper {
     default PricingCalculateAirline buildPricingCalculateAirline(FlightLegEntity flightLegEntity) {
         return PricingCalculateAirline.builder()
                 .description(flightLegEntity.getManagedBy())
-                .managedBy(PricingCalculateManagedBy.builder().description(flightLegEntity.getManagedBy()).build())
-                .operatedBy(PricingCalculateOperatedBy.builder().description(flightLegEntity.getAirline()).build())
+                .managedBy(PricingCalculateManagedBy.builder()
+                        .iata(flightLegEntity.getAirline().getManagedBy().getIata())
+                        .description(flightLegEntity.getAirline().getManagedBy().getDescription())
+                        .build())
+                .operatedBy(PricingCalculateOperatedBy.builder()
+                        .iata(flightLegEntity.getAirline().getOperatedBy().getIata())
+                        .description(flightLegEntity.getAirline().getOperatedBy().getDescription())
+                        .build())
                 .build();
 
     }
@@ -151,39 +160,45 @@ public interface PriceCalculateRequestMapper {
     }
 
     default PricingCalculatePrice buildPricingCalculatePrice(OrderEntity orderEntity) {
-        var totalTaxes = BigDecimal.ZERO;
-        var totalFlights = BigDecimal.ZERO;
+        var pricingCalculatePriceDescription = buildPricingCalculatePricesDescription(orderEntity);
+
+        var totalFlights = pricingCalculatePriceDescription.getFlights().stream()
+                .map(PricingCalculateFlight::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        var totalTaxes = pricingCalculatePriceDescription.getTaxes().stream()
+                .map(PricingCalculateTaxes::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         return PricingCalculatePrice.builder()
                 .amount(orderEntity.getPrice().getPartnerAmount())
                 .currency("BRL")
-                .pricesDescription(buildPricingCalculatePricesDescription(orderEntity, totalTaxes, totalFlights))
+                .pricesDescription(pricingCalculatePriceDescription)
                 .flight(PricingCalculateFlight.builder().amount(totalFlights).build())
                 .taxes(PricingCalculateTaxes.builder().amount(totalTaxes).build())
                 .build();
     }
 
-    default PricingCalculatePricesDescription buildPricingCalculatePricesDescription(OrderEntity orderEntity, final BigDecimal totalTaxes, final BigDecimal totalFlights) {
+    default PricingCalculatePricesDescription buildPricingCalculatePricesDescription(OrderEntity orderEntity) {
         return PricingCalculatePricesDescription.builder()
-                .flights(buildPricingCalculateFlight(orderEntity, totalFlights))
-                .taxes(buildPricingCalculatePriceTaxes(orderEntity, totalTaxes))
+                .flights(buildPricingCalculateFlight(orderEntity))
+                .taxes(buildPricingCalculatePriceTaxes(orderEntity))
                 .build();
     }
 
-    default List<PricingCalculateFlight> buildPricingCalculateFlight(OrderEntity orderEntity, BigDecimal totalFlights) {
+    default List<PricingCalculateFlight> buildPricingCalculateFlight(OrderEntity orderEntity) {
         List<PricingCalculateFlight> pricingCalculateFlight = new ArrayList<>();
         for (OrderItemEntity orderItemEntity : orderEntity.getItems()) {
-            if (orderItemEntity.getProductId().equals(TYPE_FLIGHT)) {
-                totalFlights = totalFlights.add(orderItemEntity.getPrice().getPartnerAmount());
+            if (orderItemEntity.getSkuId().equals(TYPE_FLIGHT)) {
                 if (orderItemEntity.getTravelInfo().getAdultQuantity() > 0) {
                     pricingCalculateFlight.add(PricingCalculateFlight.builder()
-                            .passengerType("ADULT")
+                            .passengerType("ADT")
                             .amount(orderItemEntity.getPrice().getPartnerAmount())
                             .passengerCount(orderItemEntity.getTravelInfo().getAdultQuantity())
                             .build());
                 }
                 if (orderItemEntity.getTravelInfo().getChildQuantity() > 0) {
                     pricingCalculateFlight.add(PricingCalculateFlight.builder()
-                            .passengerType("CHILD")
+                            .passengerType("CHD")
                             .amount(orderItemEntity.getPrice().getPartnerAmount())
                             .passengerCount(orderItemEntity.getTravelInfo().getChildQuantity())
                             .build());
@@ -191,53 +206,24 @@ public interface PriceCalculateRequestMapper {
 
                 if (orderItemEntity.getTravelInfo().getBabyQuantity() > 0) {
                     pricingCalculateFlight.add(PricingCalculateFlight.builder()
-                            .passengerType("BABY")
+                            .passengerType("INF")
                             .amount(orderItemEntity.getPrice().getPartnerAmount())
                             .passengerCount(orderItemEntity.getTravelInfo().getBabyQuantity())
                             .build());
                 }
             }
         }
-
-        return orderEntity.getItems().stream()
-                .map(item -> {
-                    if (item.getProductId().equals(TYPE_FLIGHT)) {
-                        if (item.getTravelInfo().getAdultQuantity() > 0) {
-                            return PricingCalculateFlight.builder()
-                                    .passengerType("ADULT")
-                                    .amount(item.getPrice().getPartnerAmount())
-                                    .passengerCount(item.getTravelInfo().getAdultQuantity())
-                                    .build();
-                        }
-                        if (item.getTravelInfo().getChildQuantity() > 0) {
-                            return PricingCalculateFlight.builder()
-                                    .passengerType("CHILD")
-                                    .amount(item.getPrice().getPartnerAmount())
-                                    .passengerCount(item.getTravelInfo().getChildQuantity())
-                                    .build();
-                        }
-
-                        if (item.getTravelInfo().getBabyQuantity() > 0) {
-                            return PricingCalculateFlight.builder()
-                                    .passengerType("BABY")
-                                    .amount(item.getPrice().getPartnerAmount())
-                                    .passengerCount(item.getTravelInfo().getBabyQuantity())
-                                    .build();
-                        }
-                    }
-                    return null;
-                }).toList();
+        return pricingCalculateFlight;
     }
 
 
-    default List<PricingCalculateTaxes> buildPricingCalculatePriceTaxes(OrderEntity orderEntity, BigDecimal totalTaxes) {
+    default List<PricingCalculateTaxes> buildPricingCalculatePriceTaxes(OrderEntity orderEntity) {
         List<PricingCalculateTaxes> pricingCalculateTaxes = new ArrayList<>();
         for (OrderItemEntity orderItemEntity : orderEntity.getItems()) {
-            if (orderItemEntity.getProductId().equals("flight_tax")) {
-                totalTaxes = totalTaxes.add(orderItemEntity.getPrice().getPartnerAmount());
+            if (orderItemEntity.getSkuId().equals(TYPE_TAX)) {
                 pricingCalculateTaxes.add(PricingCalculateTaxes.builder()
-                        .type(TYPE_TAX)
-                        .amount(totalTaxes)
+                        .type("TAX")
+                        .amount(orderItemEntity.getPrice().getPartnerAmount())
                         .build());
             }
         }
