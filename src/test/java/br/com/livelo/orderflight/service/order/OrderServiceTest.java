@@ -184,7 +184,7 @@ class OrderServiceTest {
 
     @Test
     void shouldIncrementProcessCounter() {
-        ProcessCounterEntity processCounter = MockBuilder.processCounterEntity(1, Webhooks.GETCONFIRMATION.value, ZonedDateTime.now());
+        ProcessCounterEntity processCounter = MockBuilder.processCounterEntity(1, Webhooks.GETCONFIRMATION.value);
         orderService.incrementProcessCounter(processCounter);
         assertEquals(2, processCounter.getCount());
     }
@@ -196,17 +196,16 @@ class OrderServiceTest {
         order.setProcessCounters(new HashSet<>());
 
         ProcessCounterEntity processCounter = orderService.getProcessCounter(order, process);
-        ZonedDateTime createDate = processCounter.getCreateDate();
 
         assertInstanceOf(ProcessCounterEntity.class, processCounter);
-        assertEquals(MockBuilder.processCounterEntity(0, process, createDate), processCounter);
+        assertEquals(MockBuilder.processCounterEntity(0, process), processCounter);
     }
 
     @Test
     void shouldReturnProcessCounter() {
         String process = Webhooks.GETCONFIRMATION.value;
         OrderEntity order = MockBuilder.orderEntity();
-        order.setProcessCounters(Set.of(MockBuilder.processCounterEntity(12, process, ZonedDateTime.now())));
+        order.setProcessCounters(Set.of(MockBuilder.processCounterEntity(12, process)));
 
         ProcessCounterEntity processCounter = orderService.getProcessCounter(order, process);
 

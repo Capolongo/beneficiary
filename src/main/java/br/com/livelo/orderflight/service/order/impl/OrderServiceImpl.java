@@ -90,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
         var processCounter = order.getProcessCounters().stream().filter(counter -> process.equals(counter.getProcess())).findFirst();
 
         if (processCounter.isEmpty()) {
-            var newProcessCounter = ProcessCounterEntity.builder().process(process).count(0).createDate(ZonedDateTime.now()).build();
+            var newProcessCounter = ProcessCounterEntity.builder().process(process).count(0).build();
             order.getProcessCounters().add(newProcessCounter);
             return newProcessCounter;
         }

@@ -438,12 +438,11 @@ public class MockBuilder {
         .totalPages(total / orders.size())
         .build();
     }
-    public static ProcessCounterEntity processCounterEntity(int count, String process, ZonedDateTime createDate) {
+    public static ProcessCounterEntity processCounterEntity(int count, String process) {
         return ProcessCounterEntity.builder()
                 .id(0)
                 .count(count)
                 .process(process)
-                .createDate(createDate)
                 .build();
     }
 }

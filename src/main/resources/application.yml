@@ -55,6 +55,7 @@ client:
 order:
   orderProcessMaxRows: 500
   getConfirmationMaxProcessCountFailed: 48
+  getVoucherMaxProcessCountFailed: 192
 
 fixed-values:
   sku:

@@ -6,6 +6,8 @@ import java.time.temporal.ChronoUnit;
 import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,11 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class VoucherServiceImpl implements VoucherService {
     private final OrderServiceImpl orderService;
     private final ConfirmOrderMapper confirmOrderMapper;
     private final ConnectorPartnersProxy connectorPartnersProxy;
+
+    @Value("${order.getVoucherMaxProcessCountFailed}")
+    private int errorCount;
 
     @Override
     public void orderProcess(OrderProcess orderProcess) {
@@ -35,14 +40,13 @@ public class VoucherServiceImpl implements VoucherService {
         OrderStatusEntity status = null;
         var order = orderService.getOrderById(orderProcess.getId());
 
-        if (!orderService.isSameStatus(StatusConstants.VOUCHER.getCode(), order.getCurrentStatus().getCode())) {
+        if (!orderService.isSameStatus(StatusConstants.WAIT_VOUCHER.getCode(), order.getCurrentStatus().getCode())) {
             log.warn("VoucherServiceImpl.orderProcess - order has different status - id: [{}]", order.getId());
             return;
         }
 
         var processCounter = orderService.getProcessCounter(order, Webhooks.VOUCHER.value);
-        if (ChronoUnit.DAYS.between(processCounter.getCreateDate(), ZonedDateTime.now()) > 2) {
-            //TODO :- refactor log message
+        if (processCounter.getCount() >  errorCount) {
             log.warn("VoucherServiceImpl.orderProcess - counter exceeded limit - id: [{}]", order.getId());
             status = orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
         } else {
@@ -57,11 +61,13 @@ public class VoucherServiceImpl implements VoucherService {
     }
     private OrderStatusEntity processVoucher(OrderEntity order) {
         try {
+            log.info("VoucherServiceImpl.processVoucher - Checking voucher at partner - order: [{}] partner: [{}]", order.getId(), order.getPartnerCode());
             var connectorVoucherOrderResponse = connectorPartnersProxy.getVoucherOnPartner(order.getPartnerCode(), order.getId());
             var status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorVoucherOrderResponse.getCurrentStatus());
 
             if (!connectorVoucherOrderResponse.getVoucher().isEmpty()) {
-                status.setCode(StatusConstants.COMPLETED.getCode());
+                log.info("VoucherServiceImpl.processVoucher - Voucher generated. Updating status - order: [{}]", order.getId());
+                status.setCode(StatusConstants.VOUCHER_SENT.getCode());
                 var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
                 orderService.updateVoucher(itemFlight, connectorVoucherOrderResponse.getVoucher());
             }

@@ -112,6 +112,7 @@ public class ConnectorPartnersProxy {
             final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", id));
             var connectorGetVoucher = partnerConnectorClient.getVoucher(connectorUri);
 
+            log.info("ConnectorPartnersProxy.getVoucherOnPartner - Partner response - body: [{}] id: [{}]", connectorGetVoucher.getBody(), id);
             return connectorGetVoucher.getBody();
         } catch (FeignException exception) {
             log.error("ConnectorPartnersProxy.getVoucherOnPartner exception - id: [{}], partnerCode: [{}], exception: [{}]", id, partnerCode, exception.getCause(), exception);

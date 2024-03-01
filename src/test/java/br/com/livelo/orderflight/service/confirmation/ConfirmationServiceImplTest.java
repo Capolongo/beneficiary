@@ -140,7 +140,7 @@ class ConfirmationServiceImplTest {
         order.setCurrentStatus(statusProcessing);
         OrderProcess orderProcess = MockBuilder.listOfOrderProcess(1).get(0);
         ConnectorConfirmOrderResponse connectorConfirmOrderResponse = MockBuilder.connectorConfirmOrderResponse().getBody();
-        ProcessCounterEntity processCounter = MockBuilder.processCounterEntity(1, process, ZonedDateTime.now());
+        ProcessCounterEntity processCounter = MockBuilder.processCounterEntity(1, process);
         OrderItemEntity itemFlight = MockBuilder.orderItemEntity();
 
         when(orderService.getOrderById(anyString())).thenReturn(order);
@@ -180,7 +180,7 @@ class ConfirmationServiceImplTest {
         OrderEntity order = MockBuilder.orderEntity();
 
         OrderProcess orderProcess = MockBuilder.listOfOrderProcess(1).get(0);
-        ProcessCounterEntity processCounter = MockBuilder.processCounterEntity(48, process, ZonedDateTime.now());
+        ProcessCounterEntity processCounter = MockBuilder.processCounterEntity(48, process);
         OrderStatusEntity statusFailed = MockBuilder.statusFailed();
 
         when(orderService.getOrderById(anyString())).thenReturn(order);
@@ -205,7 +205,7 @@ class ConfirmationServiceImplTest {
 
         OrderProcess orderProcess = MockBuilder.listOfOrderProcess(1).get(0);
         ConnectorConfirmOrderResponse connectorConfirmOrderResponse = MockBuilder.connectorConfirmOrderResponse().getBody();
-        ProcessCounterEntity processCounter = MockBuilder.processCounterEntity(1, process, ZonedDateTime.now());
+        ProcessCounterEntity processCounter = MockBuilder.processCounterEntity(1, process);
         OrderItemEntity itemFlight = MockBuilder.orderItemEntity();
 
         when(orderService.getOrderById(anyString())).thenReturn(order);

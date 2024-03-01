@@ -54,15 +54,17 @@ class VoucherServiceImplTest {
     private ConfirmOrderMapper confirmOrderMapper;
     @Mock
     private ConnectorPartnersProxy connectorPartnersProxy;
-
     @InjectMocks
     private VoucherServiceImpl voucherService;
 
+    @BeforeEach
+    public void setUp() {
+        ReflectionTestUtils.setField(voucherService, "errorCount", 192);
+    }
+
     @Test
     void shouldChangeStatusSuccessfully() {
-        String process = Webhooks.VOUCHER.value;
-
-        OrderEntity order = buildOrderEntity(StatusConstants.VOUCHER.getCode());
+        OrderEntity order = buildOrderEntity(StatusConstants.WAIT_VOUCHER.getCode());
 
         OrderProcess orderProcess = buildOrderProcess();
 
@@ -80,7 +82,7 @@ class VoucherServiceImplTest {
                         .voucher("https://fake-url.com")
                         .build());
         when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class)))
-                .thenReturn(OrderStatusEntity.builder().code(StatusConstants.VOUCHER.getCode()).build());
+                .thenReturn(OrderStatusEntity.builder().code(StatusConstants.WAIT_VOUCHER.getCode()).build());
         when(orderService.getFlightFromOrderItems(any())).thenReturn(OrderItemEntity.builder().build());
         doNothing().when(orderService).incrementProcessCounter(any(ProcessCounterEntity.class));
         doNothing().when(orderService).addNewOrderStatus(any(OrderEntity.class), any(OrderStatusEntity.class));
@@ -96,12 +98,11 @@ class VoucherServiceImplTest {
 
     @Test
     void shouldSetOrderFailedBecauseMaxProcessExtrapolate() {
-        OrderEntity order = buildOrderEntity(StatusConstants.VOUCHER.getCode());
+        OrderEntity order = buildOrderEntity(StatusConstants.WAIT_VOUCHER.getCode());
         OrderProcess orderProcess = buildOrderProcess();
 
         ProcessCounterEntity processCounter = ProcessCounterEntity.builder()
-                .count(100)
-                .createDate(ZonedDateTime.of(2023, 5, 20, 0, 0, 0, 0, ZoneId.of("America/Sao_Paulo")))
+                .count(193)
                 .build();
 
         OrderStatusEntity statusFailed = MockBuilder.statusFailed();
@@ -114,7 +115,7 @@ class VoucherServiceImplTest {
         voucherService.orderProcess(orderProcess);
 
         verify(orderService, times(1)).getOrderById(anyString());
-        verify(orderService, times(1)).isSameStatus(StatusConstants.VOUCHER.getCode(), order.getCurrentStatus().getCode());
+        verify(orderService, times(1)).isSameStatus(StatusConstants.WAIT_VOUCHER.getCode(), order.getCurrentStatus().getCode());
         verify(orderService, times(1)).buildOrderStatusFailed("O contador excedeu o limite de tentativas");
     }
 
@@ -131,7 +132,7 @@ class VoucherServiceImplTest {
         voucherService.orderProcess(orderProcess);
 
         verify(orderService, times(1)).getOrderById(anyString());
-        verify(orderService, times(1)).isSameStatus(StatusConstants.VOUCHER.getCode(), order.getCurrentStatus().getCode());
+        verify(orderService, times(1)).isSameStatus(StatusConstants.WAIT_VOUCHER.getCode(), order.getCurrentStatus().getCode());
         verify(orderService, never()).getProcessCounter(order, process);
 
         verifyNoMoreInteractions(orderService);
