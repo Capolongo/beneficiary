@@ -17,15 +17,15 @@ public class ReservationDocument {
     @NotBlank
     private String type;
 
-    @NotBlank
+    
     private String issueDate;
 
-    @NotBlank
+
     private String issuingCountry;
 
-    @NotBlank
+
     private String expirationDate;
 
-    @NotBlank
+
     private String residenceCountry;
 }
