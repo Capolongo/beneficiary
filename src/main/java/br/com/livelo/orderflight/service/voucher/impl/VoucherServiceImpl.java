@@ -46,6 +46,7 @@ public class VoucherServiceImpl implements VoucherService {
         }
 
         var processCounter = orderService.getProcessCounter(order, Webhooks.VOUCHER.value);
+
         if (processCounter.getCount() >  errorCount) {
             log.warn("VoucherServiceImpl.orderProcess - counter exceeded limit - id: [{}]", order.getId());
             status = orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
@@ -62,7 +63,7 @@ public class VoucherServiceImpl implements VoucherService {
     private OrderStatusEntity processVoucher(OrderEntity order) {
         try {
             log.info("VoucherServiceImpl.processVoucher - Checking voucher at partner - order: [{}] partner: [{}]", order.getId(), order.getPartnerCode());
-            var connectorVoucherOrderResponse = connectorPartnersProxy.getVoucherOnPartner(order.getPartnerCode(), order.getId());
+            var connectorVoucherOrderResponse = connectorPartnersProxy.getVoucherOnPartner(order.getPartnerCode(), order.getPartnerOrderId(), order.getId());
             var status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorVoucherOrderResponse.getCurrentStatus());
 
             if (!connectorVoucherOrderResponse.getVoucher().isEmpty()) {

@@ -286,7 +286,7 @@ class ConnectorPartnersProxyTest {
         setup();
         when(partnerConnectorClient.getVoucher(any(URI.class))).thenReturn(voucherResponse);
 
-        ConnectorConfirmOrderResponse response = proxy.getVoucherOnPartner("CVC", "lf1");
+        ConnectorConfirmOrderResponse response = proxy.getVoucherOnPartner("CVC", "partnerOrderId", "orderId");
 
         assertEquals(voucherResponse.getBody(), response);
         assertEquals(200, voucherResponse.getStatusCode().value());

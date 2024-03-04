@@ -75,7 +75,7 @@ class VoucherServiceImplTest {
                         .process(Webhooks.VOUCHER.value)
                         .createDate(ZonedDateTime.now())
                 .count(0).build());
-        when(connectorPartnersProxy.getVoucherOnPartner(anyString(), anyString()))
+        when(connectorPartnersProxy.getVoucherOnPartner(anyString(), anyString(), anyString()))
                 .thenReturn(ConnectorConfirmOrderResponse.builder()
                         .currentStatus(ConnectorConfirmOrderStatusResponse.builder().build())
                         .voucher("https://fake-url.com")
@@ -142,6 +142,7 @@ class VoucherServiceImplTest {
         return OrderEntity.builder()
                 .id("lf1")
                 .partnerCode("CVC")
+                .partnerOrderId("partnerOrderId")
                 .currentStatus(OrderStatusEntity.builder()
                         .code(status)
                         .build()).build();
