@@ -23,6 +23,14 @@ public enum OrderFlightErrorType {
 
     VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND("OFCART404", "CommerceItemId / idSku não encontrada ", "CommerceItemId / SKU não foi encontrada na base de dados", HttpStatus.NOT_FOUND, null),
 
+    VALIDATION_STATUS_COMMERCE_ORDER_ID_NOT_EQUAL_ORDER_ID("OFCART405", "CommerceOrderId e orderId não são iguais", "CommerceOrderId e orderId não são iguais", HttpStatus.BAD_REQUEST, null),
+
+    VALIDATION_STATUS_ITEMS_COMMERCE_ITEM_ID_NOT_EQUAL_COMMERCE_ITEM_ID("OFCART406", "CommerceItemId não são iguais com a base", "CommerceItemId não são iguais com a base", HttpStatus.BAD_REQUEST, null),
+
+    VALIDATION_STATUS_INITIAL_CANNOT_PROCESSING("OFCART407", "Pedido com status INITIAL não pode alterar o status para Processando", "Pedido com status INITIAL não pode alterar o status para Processando", HttpStatus.BAD_REQUEST, null),
+
+    VALIDATION_STATUS_CANCELED_OR_COMPLETED("OFCART408", "O pedido com status Cancelado / Completo, não pode alterar o pedido", "O pedido com status Cancelado / Completo, não pode alterar o pedido", HttpStatus.BAD_REQUEST, null),
+
     VALIDATION_OBJECTS_NOT_EQUAL("OFCONFIRMATION001", "Objetos não são iguais", "Objetos do request body e da base de dados não são iguais", HttpStatus.BAD_REQUEST, null),
     VALIDATION_ALREADY_CONFIRMED("OFCONFIRMATION002", "Ordem já confirmada", "Ordem já foi confirmada anteriormente", HttpStatus.BAD_REQUEST, null),
     
