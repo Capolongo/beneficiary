@@ -280,6 +280,16 @@ class ConnectorPartnersProxyTest {
     verifyNoMoreInteractions(partnerConnectorClient);
   }
 
+  @Test
+  void shouldThrowExceptionGetConfirmationOnPartner() {
+    setup();
+    when(partnerConnectorClient.getConfirmation(any(URI.class))).thenThrow(FeignException.class);
+
+    assertThrows(OrderFlightException.class, () -> {
+        proxy.getConfirmationOnPartner("CVC", "10071014", "lf123");
+    });
+  }
+
     @Test
     void shouldReturnGetVoucherOnPartner() throws Exception {
         ResponseEntity<ConnectorConfirmOrderResponse> voucherResponse = MockBuilder.connectorVoucherResponse();
@@ -294,13 +304,13 @@ class ConnectorPartnersProxyTest {
         verifyNoMoreInteractions(partnerConnectorClient);
     }
 
-  @Test
-  void shouldThrowExceptionGetConfirmationOnPartner() {
-    setup();
-    when(partnerConnectorClient.getConfirmation(any(URI.class))).thenThrow(FeignException.class);
+    @Test
+    void shouldThrowExceptionGetVoucherOnPartner() {
+        setup();
+        when(partnerConnectorClient.getVoucher(any(URI.class))).thenThrow(FeignException.class);
 
-    assertThrows(OrderFlightException.class, () -> {
-        proxy.getConfirmationOnPartner("CVC", "10071014", "lf123");
-    });
-  }
+        assertThrows(OrderFlightException.class, () -> {
+            proxy.getVoucherOnPartner("CVC", "10071014", "lf123");
+        });
+    }
 }
