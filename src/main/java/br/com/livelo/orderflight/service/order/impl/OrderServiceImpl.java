@@ -101,6 +101,10 @@ public class OrderServiceImpl implements OrderService {
         orderItem.getTravelInfo().setVoucher(voucher);
     }
 
+    public void updateSubmittedDate(OrderEntity order, String date) {
+        order.setSubmittedDate(LocalDateTime.parse(date));
+    }
+
     public Optional<OrderEntity> findByCommerceOrderId(String commerceOrderId) {
         return this.orderRepository.findByCommerceOrderId(commerceOrderId);
     }
