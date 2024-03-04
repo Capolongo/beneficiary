@@ -45,18 +45,12 @@ public class ReservationServiceImpl implements ReservationService {
                 orderOptional.ifPresent(this.orderService::delete);
             }
 
-            var partnerReservationResponse = partnerConnectorProxy
-                    .createReserve(reservationMapper.toPartnerReservationRequest(request), transactionId);
-
-
+            var partnerReservationResponse = partnerConnectorProxy.createReserve(reservationMapper.toPartnerReservationRequest(request), transactionId);
             var pricingCalculatePrice = calculatePricing(request.getCommerceOrderId(),listPrice, partnerReservationResponse);
-
-            var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId,
-                    customerId, channel, listPrice, pricingCalculatePrice);
+            var orderEntity = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPrice, pricingCalculatePrice);
 
             this.orderService.save(orderEntity);
-            log.info("Order created Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId,
-                    listPrice);
+            log.info("Order created Order: {} transactionId: {} listPrice: {}", orderEntity.toString(), transactionId, listPrice);
             // deve vir do connector
             return reservationMapper.toReservationResponse(orderEntity, 15);
         } catch (OrderFlightException e) {

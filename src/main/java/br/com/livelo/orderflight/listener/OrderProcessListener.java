@@ -5,6 +5,7 @@ import br.com.livelo.orderflight.service.confirmation.ConfirmationService;
 import br.com.livelo.orderflight.utils.MessageUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class OrderProcessListener {
     private final ObjectMapper objectMapper;
     private final ConfirmationService confirmationService;
@@ -22,6 +24,8 @@ public class OrderProcessListener {
             final OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);
             confirmationService.orderProcess(orderProcess);
         } catch (Exception exception) {
+            log.error("OrderProcessListener.consumer - error in processing payload [{}]", payload.getBody());
+            log.error("OrderProcessListener.consumer - error", exception);
             throw new AmqpRejectAndDontRequeueException(exception);
         }
     }
