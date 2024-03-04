@@ -18,7 +18,7 @@
         </encoder>
     </appender>
 
-    <!-- Appender to aws stdout --> 
+    <!-- Appender to aws stdout -->
     <appender name="AWS" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <!-- Minimum logging level to be presented in the console logs-->
