@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ItemRepository extends JpaRepository<OrderItemEntity, String> {
+public interface ItemRepository extends JpaRepository<OrderItemEntity, Long> {
         Optional<OrderItemEntity> findByCommerceItemIdAndSkuId(String commerceOrderId, String skuId);
 
 }

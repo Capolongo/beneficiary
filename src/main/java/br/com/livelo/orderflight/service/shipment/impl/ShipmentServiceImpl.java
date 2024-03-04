@@ -2,7 +2,7 @@ package br.com.livelo.orderflight.service.shipment.impl;
 
 import br.com.livelo.orderflight.constants.ShipmentOptionConstant;
 import br.com.livelo.orderflight.domain.dtos.shipment.CommerceItem;
-import br.com.livelo.orderflight.domain.dtos.shipment.CommerceItemDTO;
+import br.com.livelo.orderflight.domain.dtos.shipment.PackagesDTO;
 import br.com.livelo.orderflight.domain.dtos.shipment.ShipmentOptionsResponse;
 import br.com.livelo.orderflight.domain.dtos.shipment.ShipmentsDTO;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
@@ -12,10 +12,13 @@ import br.com.livelo.orderflight.service.shipment.ShipmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
@@ -48,34 +51,32 @@ public class ShipmentServiceImpl implements ShipmentService {
                 .currency(shipmentOptionConstant.getCurrency())
                 .price(shipmentOptionConstant.getPrice())
                 .type(shipmentOptionConstant.getType())
-                .items(skusIds(order))
                 .description(shipmentOptionConstant.getDescription())
-                .commerceItems(buildCommerce(partnerOrderId, order))
+                .packages(buildPackages(partnerOrderId, order))
                 .build());
     }
 
-    private static List<CommerceItemDTO> buildCommerce(final String partnerOrderId, final OrderEntity order) {
-        return order.getItems().stream()
-                .map(item -> CommerceItemDTO.builder()
-                        .deliveryDate(Date.from(order.getLastModifiedDate().toInstant()))
-                        .commerceItems(buildCommerceItems(partnerOrderId, item))
-                        .build()
-                ).collect(Collectors.toList());
+    private static List<PackagesDTO> buildPackages(final String partnerOrderId, final OrderEntity order) {
+
+        PackagesDTO packageDTO = PackagesDTO
+                .builder()
+                .deliveryDate(Date.from(order.getLastModifiedDate().toInstant()))
+                .items(order.getItems().stream().map(OrderItemEntity::getSkuId).collect(Collectors.toList()))
+                .commerceItems(buildCommerceItems(partnerOrderId,order.getItems()))
+                .build();
+
+        return List.of(packageDTO);
     }
 
-    private static List<CommerceItem> buildCommerceItems(final String partnerOrderId, final OrderItemEntity item) {
-        return Collections.singletonList(CommerceItem.builder()
+    private static List<CommerceItem> buildCommerceItems(final String partnerOrderId, final Set<OrderItemEntity> items) {
+
+        return items.stream().map(item -> CommerceItem.builder()
                 .id(item.getSkuId())
                 .partnerOrderId(partnerOrderId)
                 .commerceItemId(item.getCommerceItemId())
                 .partnerOrderLinkId(item.getPartnerOrderLinkId())
-                .build());
-    }
+                .build()).collect(Collectors.toList());
 
-    private List<String> skusIds(final OrderEntity order) {
-        return order.getItems().stream()
-                .map(OrderItemEntity::getSkuId
-                ).collect(Collectors.toList());
     }
 
 }

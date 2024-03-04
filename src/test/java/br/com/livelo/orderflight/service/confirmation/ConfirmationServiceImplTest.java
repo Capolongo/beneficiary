@@ -65,6 +65,8 @@ class ConfirmationServiceImplTest {
         when(orderService.getOrderById(anyString())).thenReturn(MockBuilder.orderEntity());
         when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class)))
                 .thenReturn(MockBuilder.connectorConfirmOrderRequest());
+        when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class)))
+                .thenReturn(MockBuilder.statusProcessing());
         when(connectorPartnersProxy.confirmOnPartner(anyString(), any(ConnectorConfirmOrderRequest.class)))
                 .thenReturn(MockBuilder.connectorConfirmOrderResponse().getBody());
         when(confirmOrderMapper.orderEntityToConfirmOrderResponse(any()))
@@ -124,6 +126,7 @@ class ConfirmationServiceImplTest {
 
         when(orderService.getOrderById(anyString())).thenReturn(MockBuilder.orderEntity());
         when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class))).thenReturn(MockBuilder.connectorConfirmOrderRequest());
+        when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class))).thenReturn(MockBuilder.statusProcessing());
         when(connectorPartnersProxy.confirmOnPartner(anyString(), any(ConnectorConfirmOrderRequest.class))).thenThrow(FeignException.class);
         when(confirmOrderMapper.orderEntityToConfirmOrderResponse(any())).thenReturn(responseWithFailedStatus);
         ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest());
@@ -146,7 +149,7 @@ class ConfirmationServiceImplTest {
         when(orderService.getOrderById(anyString())).thenReturn(order);
         when(orderService.isSameStatus(anyString(), anyString())).thenReturn(true).thenReturn(false);
         when(orderService.getProcessCounter(order, process)).thenReturn(processCounter);
-        when(connectorPartnersProxy.getConfirmationOnPartner(anyString(), anyString())).thenReturn(connectorConfirmOrderResponse);
+        when(connectorPartnersProxy.getConfirmationOnPartner(anyString(), anyString(), anyString())).thenReturn(connectorConfirmOrderResponse);
         when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class))).thenReturn(statusProcessing);
         when(orderService.getFlightFromOrderItems(any())).thenReturn(itemFlight);
 
@@ -211,7 +214,7 @@ class ConfirmationServiceImplTest {
         when(orderService.getOrderById(anyString())).thenReturn(order);
         when(orderService.isSameStatus(anyString(), anyString())).thenReturn(true);
         when(orderService.getProcessCounter(order, process)).thenReturn(processCounter);
-        when(connectorPartnersProxy.getConfirmationOnPartner(anyString(), anyString())).thenReturn(connectorConfirmOrderResponse);
+        when(connectorPartnersProxy.getConfirmationOnPartner(anyString(), anyString(), anyString())).thenReturn(connectorConfirmOrderResponse);
         when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class))).thenReturn(statusProcessing);
         when(orderService.getFlightFromOrderItems(any())).thenReturn(itemFlight);
 
