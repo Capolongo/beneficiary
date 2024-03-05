@@ -114,7 +114,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             var mappedStatus = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
             var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
             orderService.updateVoucher(itemFlight, connectorConfirmOrderResponse.getVoucher());
-            log.info("ConfirmationService.orderProcess - order - statusCode: [{}], partnerCode: [{}], orderId: [{}]", mappedStatus.getCode(), order.getPartnerCode(), order.getId());
+            log.info("ConfirmationService.orderProcess - order - statusCode: [{}], partnerCode: [{}], itemFlight: [{}], orderId: [{}]", mappedStatus.getCode(), order.getPartnerCode(), itemFlight, order.getId());
 
             return mappedStatus;
         } catch (OrderFlightException exception) {

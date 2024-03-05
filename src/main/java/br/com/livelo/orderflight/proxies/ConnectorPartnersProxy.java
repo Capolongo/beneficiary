@@ -95,6 +95,7 @@ public class ConnectorPartnersProxy {
         try {
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.GETCONFIRMATION);
             final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", partnerOrderId));
+            log.info("ConnectorPartnersProxy.getConfirmationOnPartner - connectorUri - partnerOrderId: [{}], uri: [{}]", id, connectorUri);
             var connectorGetConfirmation = partnerConnectorClient.getConfirmation(connectorUri);
             ConnectorConfirmOrderResponse responseBody = connectorGetConfirmation.getBody();
 
