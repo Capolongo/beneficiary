@@ -208,6 +208,7 @@ class ReservationServiceTest {
 
     private OrderEntity buildOrderEntity(Set<OrderItemEntity> orderItems, String transactionId) {
         return OrderEntity.builder()
+                .partnerCode("CVC")
                 .transactionId(transactionId)
                 .price(OrderPriceEntity.builder().partnerAmount(BigDecimal.TEN).build())
                 .items(orderItems)

@@ -2,6 +2,7 @@ package br.com.livelo.orderflight.mappers;
 
 import br.com.livelo.orderflight.domain.dtos.pricing.request.*;
 import br.com.livelo.orderflight.domain.entity.*;
+import br.com.livelo.orderflight.enuns.Partner;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,8 +16,7 @@ import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORD
 
 @Mapper(componentModel = "spring")
 public interface PriceCalculateRequestMapper {
-    String TYPE_FLIGHT = "cvc_flight";
-    String TYPE_TAX = "cvc_flight_tax";
+    String STAGE_JOURNEY = "RESERVATION";
 
     @Mapping(target = "travelInfo", source = "orderEntity", qualifiedByName = "buildTravelInfo")
     @Mapping(target = "items", source = "orderEntity", qualifiedByName = "buildListPricingCalculateItems")
@@ -24,9 +24,10 @@ public interface PriceCalculateRequestMapper {
 
     @Named("buildTravelInfo")
     default PricingCalculateTravelInfo buildTravelInfo(OrderEntity orderEntity) {
+        var partner = Partner.findByName(orderEntity.getPartnerCode());
 
         return orderEntity.getItems().stream()
-                .filter(item -> TYPE_FLIGHT.equals(item.getSkuId()))
+                .filter(item -> partner.getSkuFlight().equals(item.getSkuId()))
                 .findFirst()
                 .map(item -> PricingCalculateTravelInfo.builder()
                         .type(item.getTravelInfo().getType())
@@ -34,25 +35,34 @@ public interface PriceCalculateRequestMapper {
                         .babyQuantity(item.getTravelInfo().getBabyQuantity())
                         .childQuantity(item.getTravelInfo().getChildQuantity())
                         .typeClass(item.getTravelInfo().getTypeClass())
-                        .stageJourney("RESERVATION")
-                        .build()).orElse(null);
+                        .stageJourney(STAGE_JOURNEY)
+                        .build())
+                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Travel info not found on order!"));
     }
 
     @Named("buildListPricingCalculateItems")
     default List<PricingCalculateItem> buildListPricingCalculateItems(OrderEntity orderEntity) {
+        var partner = Partner.valueOf(orderEntity.getPartnerCode());
+
+        var flightType = orderEntity.getItems().stream()
+                .filter(item -> partner.getSkuFlight().equals(item.getSkuId()))
+                .findFirst()
+                .map(item -> item.getTravelInfo().getType())
+                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "ITEM FLIGHT NOT FOUND ON ORDER ITEMS!"));
+
         return List.of(PricingCalculateItem.builder()
                 .id(orderEntity.getCommerceOrderId())
-                .flightType(TYPE_FLIGHT)
-                .price(buildPricingCalculatePrice(orderEntity))
-                .segments(buildSegments(orderEntity))
+                .flightType(flightType)
+                .price(buildPricingCalculatePrice(orderEntity, partner.getSkuFlight(), partner.getSkuTax()))
+                .segments(buildSegments(orderEntity, partner.getSkuFlight()))
                 .build());
     }
 
-    default List<PricingCalculateSegment> buildSegments(OrderEntity orderEntity) {
+    default List<PricingCalculateSegment> buildSegments(OrderEntity orderEntity, String sku) {
         List<PricingCalculateSegment> pricingCalculateSegment = new ArrayList<>();
         var orderItemEntity = orderEntity.getItems()
                 .stream()
-                .filter(item -> TYPE_FLIGHT.equals(item.getSkuId()))
+                .filter(item -> sku.equals(item.getSkuId()))
                 .findFirst()
                 .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Type Flight not found"));
 
@@ -86,7 +96,7 @@ public interface PriceCalculateRequestMapper {
         return pricingCalculateSegment;
     }
 
-    default List<PricingCalculateFlightsLeg> buildFlightsLegs(SegmentEntity segmentEntity, String typeClassParam) {
+    default List<PricingCalculateFlightsLeg> buildFlightsLegs(SegmentEntity segmentEntity, String typeClass) {
         List<PricingCalculateFlightsLeg> flightsLegs = new ArrayList<>();
         for (FlightLegEntity flightLegEntity : segmentEntity.getFlightsLegs()) {
             flightsLegs.add(
@@ -101,7 +111,7 @@ public interface PriceCalculateRequestMapper {
                             .destinationIata(flightLegEntity.getDestinationIata())
                             .destinationDescription(flightLegEntity.getDestinationDescription())
                             .arrivalDate(String.valueOf(flightLegEntity.getArrivalDate()))
-                            .flightClass(typeClassParam)
+                            .flightClass(typeClass)
                             .build()
             );
         }
@@ -159,8 +169,8 @@ public interface PriceCalculateRequestMapper {
         return changeRules;
     }
 
-    default PricingCalculatePrice buildPricingCalculatePrice(OrderEntity orderEntity) {
-        var pricingCalculatePriceDescription = buildPricingCalculatePricesDescription(orderEntity);
+    default PricingCalculatePrice buildPricingCalculatePrice(OrderEntity orderEntity, String skuFlight, String skuTax) {
+        var pricingCalculatePriceDescription = buildPricingCalculatePricesDescription(orderEntity, skuFlight, skuTax);
 
         var totalFlights = pricingCalculatePriceDescription.getFlights().stream()
                 .map(PricingCalculateFlight::getAmount)
@@ -178,17 +188,17 @@ public interface PriceCalculateRequestMapper {
                 .build();
     }
 
-    default PricingCalculatePricesDescription buildPricingCalculatePricesDescription(OrderEntity orderEntity) {
+    default PricingCalculatePricesDescription buildPricingCalculatePricesDescription(OrderEntity orderEntity, String skuFlight, String skuTax) {
         return PricingCalculatePricesDescription.builder()
-                .flights(buildPricingCalculateFlight(orderEntity))
-                .taxes(buildPricingCalculatePriceTaxes(orderEntity))
+                .flights(buildPricingCalculateFlight(orderEntity, skuFlight))
+                .taxes(buildPricingCalculatePriceTaxes(orderEntity, skuTax))
                 .build();
     }
 
-    default List<PricingCalculateFlight> buildPricingCalculateFlight(OrderEntity orderEntity) {
+    default List<PricingCalculateFlight> buildPricingCalculateFlight(OrderEntity orderEntity, String sku) {
         List<PricingCalculateFlight> pricingCalculateFlight = new ArrayList<>();
         for (OrderItemEntity orderItemEntity : orderEntity.getItems()) {
-            if (orderItemEntity.getSkuId().equals(TYPE_FLIGHT)) {
+            if (sku.equals(orderItemEntity.getSkuId())) {
                 if (orderItemEntity.getTravelInfo().getAdultQuantity() > 0) {
                     pricingCalculateFlight.add(PricingCalculateFlight.builder()
                             .passengerType("ADT")
@@ -217,10 +227,10 @@ public interface PriceCalculateRequestMapper {
     }
 
 
-    default List<PricingCalculateTaxes> buildPricingCalculatePriceTaxes(OrderEntity orderEntity) {
+    default List<PricingCalculateTaxes> buildPricingCalculatePriceTaxes(OrderEntity orderEntity, String sku) {
         List<PricingCalculateTaxes> pricingCalculateTaxes = new ArrayList<>();
         for (OrderItemEntity orderItemEntity : orderEntity.getItems()) {
-            if (orderItemEntity.getSkuId().equals(TYPE_TAX)) {
+            if (sku.equals(orderItemEntity.getSkuId())) {
                 pricingCalculateTaxes.add(PricingCalculateTaxes.builder()
                         .type("TAX")
                         .amount(orderItemEntity.getPrice().getPartnerAmount())
