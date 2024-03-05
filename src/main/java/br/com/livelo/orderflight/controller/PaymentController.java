@@ -1,8 +1,6 @@
 package br.com.livelo.orderflight.controller;
 
-import br.com.livelo.orderflight.domain.dtos.installment.InstallmentOptionsResponse;
 import br.com.livelo.orderflight.domain.dtos.payment.response.PaymentOptionResponse;
-import br.com.livelo.orderflight.domain.dtos.shipment.ShipmentOptionsResponse;
 import br.com.livelo.orderflight.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

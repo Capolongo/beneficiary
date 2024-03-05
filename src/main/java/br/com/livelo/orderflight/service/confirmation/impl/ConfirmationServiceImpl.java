@@ -119,6 +119,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             return mappedStatus;
         } catch (OrderFlightException exception) {
             return order.getCurrentStatus();
+        } catch (Exception exception) {
+           return orderService.buildOrderStatusFailed(exception.getMessage());
         }
     }
 

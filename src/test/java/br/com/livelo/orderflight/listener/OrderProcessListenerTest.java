@@ -32,7 +32,7 @@ class OrderProcessListenerTest {
   private ConfirmationService confirmationService;
 
   @InjectMocks
-  private OrderProcessListener listener;
+  private GetConfirmationListener listener;
 
   @Test
   void shouldProcessSuccessOrder() throws JsonProcessingException {

@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 @AllArgsConstructor
 @Slf4j
-public class OrderProcessListener {
+public class GetConfirmationListener {
     private final ObjectMapper objectMapper;
     private final ConfirmationService confirmationService;
 
