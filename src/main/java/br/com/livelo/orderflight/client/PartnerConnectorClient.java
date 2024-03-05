@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface PartnerConnectorClient {
 	@PostMapping
 	ResponseEntity<ConnectorConfirmOrderResponse> confirmOrder(URI baseUrl,
-			@RequestBody ConnectorConfirmOrderRequest connectorConfirmOrderRequest);
+                                                               @RequestBody ConnectorConfirmOrderRequest connectorConfirmOrderRequest);
 
 	@PostMapping
 	ResponseEntity<PartnerReservationResponse> createReserve(
@@ -28,4 +28,7 @@ public interface PartnerConnectorClient {
 
 	@GetMapping
 	ResponseEntity<ConnectorConfirmOrderResponse> getConfirmation(URI baseUrl);
+
+	@GetMapping
+	ResponseEntity<ConnectorConfirmOrderResponse> getVoucher(URI baseUrl);
 }
