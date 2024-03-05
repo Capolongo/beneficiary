@@ -14,6 +14,7 @@ import br.com.livelo.orderflight.repository.ItemRepository;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,7 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -100,6 +102,9 @@ public class OrderServiceImpl implements OrderService {
 
     public void updateVoucher(OrderItemEntity orderItem, String voucher) {
         orderItem.getTravelInfo().setVoucher(voucher);
+        if(voucher != null) {
+            log.info("OrderService.updateVoucher - voucher updated - orderId: [{}]", orderItem.getId());
+        }
     }
 
     public void updateSubmittedDate(OrderEntity order, String date) {
