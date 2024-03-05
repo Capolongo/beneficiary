@@ -71,9 +71,7 @@ public class StatusServiceImpl implements StatusService {
     }
 
     private void updateOrderStatus(OrderEntity order, UpdateStatusDTO updateStatusDTO){
-        final OrderStatusEntity statusEntity = statusMapper.convert(updateStatusDTO, order.getCurrentStatus());
-        statusEntity.setId(null);
-        statusEntity.setStatusDate(LocalDateTime.now());
+        final OrderStatusEntity statusEntity = statusMapper.convert(updateStatusDTO);
         orderService.addNewOrderStatus(order, statusEntity);
     }
 

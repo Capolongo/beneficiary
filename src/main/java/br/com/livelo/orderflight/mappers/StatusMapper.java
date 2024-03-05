@@ -11,9 +11,7 @@ public interface StatusMapper {
     @Mapping(target = "description", source = "status.message")
     @Mapping(target = "code", source = "status.code")
     @Mapping(target = "partnerCode", source = "status.code")
-    @Mapping(target = "partnerDescription", source = "status.message")
-    @Mapping(target = "partnerResponse", source = "oldStatus.partnerResponse")
-    @Mapping(target = "statusDate", source = "oldStatus.statusDate")
-    OrderStatusEntity convert(UpdateStatusDTO status, OrderStatusEntity oldStatus);
+    @Mapping(target = "statusDate", expression = "java(java.time.LocalDateTime.now())")
+    OrderStatusEntity convert(UpdateStatusDTO status);
 
 }
