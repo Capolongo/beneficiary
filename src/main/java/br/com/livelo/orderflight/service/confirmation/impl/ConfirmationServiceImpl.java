@@ -120,6 +120,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         } catch (OrderFlightException exception) {
             return order.getCurrentStatus();
         } catch (Exception exception) {
+            log.error("ConfirmationService.orderProcess - error", exception);
            return orderService.buildOrderStatusFailed(exception.getMessage());
         }
     }
