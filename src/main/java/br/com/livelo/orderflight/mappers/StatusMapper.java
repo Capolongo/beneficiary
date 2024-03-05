@@ -8,7 +8,12 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface StatusMapper {
 
-    @Mapping(source = "message", target = "description")
-    OrderStatusEntity convert(UpdateStatusDTO statusDTO);
+    @Mapping(target = "description", source = "status.message")
+    @Mapping(target = "code", source = "status.code")
+    @Mapping(target = "partnerCode", source = "status.code")
+    @Mapping(target = "partnerDescription", source = "status.message")
+    @Mapping(target = "partnerResponse", source = "oldStatus.partnerResponse")
+    @Mapping(target = "statusDate", source = "oldStatus.statusDate")
+    OrderStatusEntity convert(UpdateStatusDTO status, OrderStatusEntity oldStatus);
 
 }

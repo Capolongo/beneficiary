@@ -42,19 +42,13 @@ public class StatusServiceImpl implements StatusService {
 
         final OrderEntity order = orderService.getOrderById(id);
 
-        UpdateStatusValidate.validCommerceOrderIdEqualOrderId(request, order);
-
-        UpdateStatusValidate.validItemsCommerceItemIdEqualCommerceItemId(request, order);
-
-        UpdateStatusValidate.validStatusInitial(request, order);
-
-        UpdateStatusValidate.validStatusCanceledOrCompleted(order);
+        UpdateStatusValidate.validadionUpdateStatus(request, order);
 
         final UpdateStatusDTO statusDTO = getStatusFromItem(request);
 
-        convertUpdateStatusToOrderStatusEntity(order, statusDTO);
-
         Duration duration = changeStatusTimeDifference(order.getCurrentStatus().getCreateDate());
+
+        updateOrderStatus(order, statusDTO);
 
         orderService.save(order);
 
@@ -80,13 +74,12 @@ public class StatusServiceImpl implements StatusService {
         return new OrderFlightException(errorType, errorType.getTitle(), null);
     }
 
-    private void convertUpdateStatusToOrderStatusEntity(OrderEntity orderEntity, UpdateStatusDTO updateStatusDTO){
-        final OrderStatusEntity statusEntity = statusMapper.convert(updateStatusDTO);
-        statusEntity.setId(orderEntity.getCurrentStatus().getId());
-        orderEntity.setCurrentStatus(statusEntity);
+    private void updateOrderStatus(OrderEntity orderOldEntity, UpdateStatusDTO updateStatusDTO){
+        final OrderStatusEntity statusEntity = statusMapper.convert(updateStatusDTO, orderOldEntity.getCurrentStatus());
+        statusEntity.setCreateDate(orderOldEntity.getCreateDate());
+        statusEntity.setLastModifiedDate(orderOldEntity.getLastModifiedDate());
+        orderService.addNewOrderStatus(orderOldEntity, statusEntity);
     }
-
-
 
     private Duration changeStatusTimeDifference(ZonedDateTime baseTime) {
         return Duration.between(baseTime.toLocalDateTime(), LocalDateTime.now());

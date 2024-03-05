@@ -10,14 +10,22 @@ public class UpdateStatusValidate {
 
     private static final String process = "PROCESS";
 
-    public static void validCommerceOrderIdEqualOrderId(UpdateStatusRequest request, OrderEntity order) {
+    public static void validadionUpdateStatus(UpdateStatusRequest request, OrderEntity order) {
+        validCommerceOrderIdEqualOrderId(request, order);
+        validItemsCommerceItemIdEqualCommerceItemId(request, order);
+        validStatusInitial(request, order);
+        validStatusCanceledOrCompleted(order);
+
+    }
+
+    private static void validCommerceOrderIdEqualOrderId(UpdateStatusRequest request, OrderEntity order) {
         if(!order.getCommerceOrderId().equals(request.getOrderId())) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_STATUS_COMMERCE_ORDER_ID_NOT_EQUAL_ORDER_ID;
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
     }
 
-    public static void validItemsCommerceItemIdEqualCommerceItemId(UpdateStatusRequest request, OrderEntity order) {
+    private static void validItemsCommerceItemIdEqualCommerceItemId(UpdateStatusRequest request, OrderEntity order) {
         order.getItems().forEach(itemStatus -> {
             Boolean itemsIsEmpty = validCommerceItemId(request, itemStatus.getCommerceItemId());
             if(itemsIsEmpty) {
@@ -33,7 +41,7 @@ public class UpdateStatusValidate {
         ).findFirst().isEmpty();
     }
 
-    public static void validStatusInitial(UpdateStatusRequest request, OrderEntity order) {
+    private static void validStatusInitial(UpdateStatusRequest request, OrderEntity order) {
         if(order.getCurrentStatus().getCode().equals(StatusLivelo.INITIAL.getCode()) && validIsProcess(request)) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_STATUS_INITIAL_CANNOT_PROCESSING;
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
@@ -44,7 +52,7 @@ public class UpdateStatusValidate {
         return request.getItems().stream().anyMatch(item -> item.getStatus().getMessage().toUpperCase().contains(process));
     }
 
-    public static void validStatusCanceledOrCompleted(OrderEntity order) {
+    private static void validStatusCanceledOrCompleted(OrderEntity order) {
         if(order.getCurrentStatus().getCode().equals(StatusLivelo.CANCELED.getCode()) || order.getCurrentStatus().getCode().equals(StatusLivelo.COMPLETED.getCode())) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_STATUS_CANCELED_OR_COMPLETED;
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
