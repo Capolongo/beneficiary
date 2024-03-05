@@ -45,7 +45,7 @@ public class StatusServiceImpl implements StatusService {
 
         final UpdateStatusDTO statusDTO = getStatusFromItem(request);
 
-        setOrderNewStatus(order, statusDTO);
+        orderNewStatus(order, statusDTO);
 
         orderService.save(order);
 
@@ -93,11 +93,10 @@ public class StatusServiceImpl implements StatusService {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    private OrderEntity setOrderNewStatus(OrderEntity orderEntity, UpdateStatusDTO newStatus){
+    private void orderNewStatus(OrderEntity orderEntity, UpdateStatusDTO newStatus){
         final OrderStatusEntity statusEntity = statusMapper.convert(newStatus);
         statusEntity.setId(orderEntity.getCurrentStatus().getId());
         orderEntity.setCurrentStatus(statusEntity);
-        return orderEntity;
     }
 
     private static Boolean validCommerceItemId(UpdateStatusRequest request, String commerceItemId) {
