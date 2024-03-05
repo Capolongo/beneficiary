@@ -60,12 +60,7 @@ public class StatusServiceImpl implements StatusService {
                 .stream()
                 .map(UpdateStatusItemDTO::getStatus)
                 .findFirst()
-                .orElseThrow(this::throwOrderFlightStatusFromItem);
-    }
-
-    private OrderFlightException throwOrderFlightStatusFromItem() {
-        OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_STATUS_FROM_ITEM;
-        return new OrderFlightException(errorType, errorType.getTitle(), null);
+                .orElse(UpdateStatusDTO.builder().build());
     }
 
     private void updateOrderStatus(OrderEntity order, UpdateStatusDTO updateStatusDTO){
