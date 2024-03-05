@@ -72,7 +72,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
         if (order != null) {
-            log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}], statusCode: [{}], partnerCode: [{}]", id, orderRequest.getCommerceOrderId(), order.getTransactionId(), status.getCode(), order.getPartnerCode());
+            log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}], statusCode: [{}], partnerCode: [{}] ", id, orderRequest.getCommerceOrderId(), order.getTransactionId(), status.getCode(), order.getPartnerCode());
         }
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
