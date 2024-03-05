@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+
 public class UpdateStatusRequest {
     private String orderId;
     private List<UpdateStatusItemDTO> items;

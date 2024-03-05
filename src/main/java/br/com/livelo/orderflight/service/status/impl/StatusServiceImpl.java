@@ -13,6 +13,7 @@ import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mappers.StatusMapper;
 import br.com.livelo.orderflight.service.order.OrderService;
 import br.com.livelo.orderflight.service.status.StatusService;
+import br.com.livelo.orderflight.utils.UpdateStatusValidate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+
+import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
 
 @Slf4j
 @Service
@@ -39,79 +42,51 @@ public class StatusServiceImpl implements StatusService {
 
         final OrderEntity order = orderService.getOrderById(id);
 
-        validCommerceOrderIdEqualOrderId(request, order);
+        UpdateStatusValidate.validCommerceOrderIdEqualOrderId(request, order);
 
-        validItemsCommerceItemIdEqualCommerceItemId(request, order);
+        UpdateStatusValidate.validItemsCommerceItemIdEqualCommerceItemId(request, order);
 
-        validStatusInitial(request, order);
+        UpdateStatusValidate.validStatusInitial(request, order);
 
-        validStatusCanceledOrCompleted(order);
+        UpdateStatusValidate.validStatusCanceledOrCompleted(order);
 
         final UpdateStatusDTO statusDTO = getStatusFromItem(request);
 
-        orderNewStatus(order, statusDTO);
-
-        orderService.save(order);
+        convertUpdateStatusToOrderStatusEntity(order, statusDTO);
 
         Duration duration = changeStatusTimeDifference(order.getCurrentStatus().getCreateDate());
 
-        log.info("StatusServiceImpl.changeStatusTimeDifference  - minutes: [{}]", duration.toMinutes());
+        orderService.save(order);
 
-        log.info("StatusServiceImpl.updateStatus() - end - code: [{}], partnerCode[{}]", order.getCurrentStatus().getCode(), order.getPartnerCode() );
+        log.info("StatusServiceImpl.updateStatus - changeStatusTimeDifference minutes: [{}]", duration.toMinutes());
+
+        log.info("StatusServiceImpl.updateStatus() - end - id: [{}], code: [{}], partnerCode[{}]", order.getId(), order.getCurrentStatus().getCode(), order.getPartnerCode() );
 
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
 
-    private static void validStatusCanceledOrCompleted(OrderEntity order) {
-        if(order.getCurrentStatus().getCode().equals(StatusLivelo.CANCELED.getCode()) || order.getCurrentStatus().getCode().equals(StatusLivelo.COMPLETED.getCode())) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_STATUS_CANCELED_OR_COMPLETED;
-            throw new OrderFlightException(errorType, errorType.getTitle(), null);
-        }
-    }
 
-    private static void validStatusInitial(UpdateStatusRequest request, OrderEntity order) {
-        if(order.getCurrentStatus().getCode().equals(StatusLivelo.INITIAL.getCode()) && request.getItems().stream().anyMatch(item -> item.getStatus().getMessage().toUpperCase().contains("PROCESS"))) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_STATUS_INITIAL_CANNOT_PROCESSING;
-            throw new OrderFlightException(errorType, errorType.getTitle(), null);
-        }
-    }
-
-    private static void validItemsCommerceItemIdEqualCommerceItemId(UpdateStatusRequest request, OrderEntity order) {
-        order.getItems().forEach(itemStatus -> {
-            Boolean itemsIsEmpty = validCommerceItemId(request, itemStatus.getCommerceItemId());
-            if(itemsIsEmpty) {
-                OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_STATUS_ITEMS_COMMERCE_ITEM_ID_NOT_EQUAL_COMMERCE_ITEM_ID;
-                throw new OrderFlightException(errorType, errorType.getTitle(), null);
-            }
-        });
-    }
-
-    private static void validCommerceOrderIdEqualOrderId(UpdateStatusRequest request, OrderEntity order) {
-        if(!order.getCommerceOrderId().equals(request.getOrderId())) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_STATUS_COMMERCE_ORDER_ID_NOT_EQUAL_ORDER_ID;
-            throw new OrderFlightException(errorType, errorType.getTitle(), null);
-        }
-    }
 
     private UpdateStatusDTO getStatusFromItem(UpdateStatusRequest updateStatusRequestDTO){
         return updateStatusRequestDTO.getItems()
                 .stream()
                 .map(UpdateStatusItemDTO::getStatus)
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(this::throwOrderFlightStatusFromItem);
     }
 
-    private void orderNewStatus(OrderEntity orderEntity, UpdateStatusDTO newStatus){
-        final OrderStatusEntity statusEntity = statusMapper.convert(newStatus);
+    private OrderFlightException throwOrderFlightStatusFromItem() {
+        OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_STATUS_FROM_ITEM;
+        return new OrderFlightException(errorType, errorType.getTitle(), null);
+    }
+
+    private void convertUpdateStatusToOrderStatusEntity(OrderEntity orderEntity, UpdateStatusDTO updateStatusDTO){
+        final OrderStatusEntity statusEntity = statusMapper.convert(updateStatusDTO);
         statusEntity.setId(orderEntity.getCurrentStatus().getId());
         orderEntity.setCurrentStatus(statusEntity);
     }
 
-    private static Boolean validCommerceItemId(UpdateStatusRequest request, String commerceItemId) {
-        return request.getItems().stream().filter(item ->
-                item.getCommerceItemId().equals(commerceItemId)
-        ).findFirst().isEmpty();
-    }
+
 
     private Duration changeStatusTimeDifference(ZonedDateTime baseTime) {
         return Duration.between(baseTime.toLocalDateTime(), LocalDateTime.now());
