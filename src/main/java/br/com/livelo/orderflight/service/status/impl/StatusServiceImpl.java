@@ -49,6 +49,8 @@ public class StatusServiceImpl implements StatusService {
 
         orderService.save(order);
 
+        log.info("StatusServiceImpl.updateStatus() - end - code: [{}]", order.getCurrentStatus().getCode());
+
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
 
