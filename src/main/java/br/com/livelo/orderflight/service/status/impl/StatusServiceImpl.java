@@ -17,6 +17,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -49,7 +53,11 @@ public class StatusServiceImpl implements StatusService {
 
         orderService.save(order);
 
-        log.info("StatusServiceImpl.updateStatus() - end - code: [{}]", order.getCurrentStatus().getCode());
+        Duration duration = changeStatusTimeDifference(order.getCurrentStatus().getCreateDate());
+
+        log.info("StatusServiceImpl.changeStatusTimeDifference  - minutes: [{}]", duration.toMinutes());
+
+        log.info("StatusServiceImpl.updateStatus() - end - code: [{}], partnerCode[{}]", order.getCurrentStatus().getCode(), order.getPartnerCode() );
 
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
@@ -103,5 +111,9 @@ public class StatusServiceImpl implements StatusService {
         return request.getItems().stream().filter(item ->
                 item.getCommerceItemId().equals(commerceItemId)
         ).findFirst().isEmpty();
+    }
+
+    private Duration changeStatusTimeDifference(ZonedDateTime baseTime) {
+        return Duration.between(baseTime.toLocalDateTime(), LocalDateTime.now());
     }
 }
