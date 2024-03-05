@@ -64,7 +64,7 @@ public interface ReservationMapper {
                                                 .getProductType()))
                                 .toList().getFirst(),
                         listPrice,
-                        pricingCalculatePrice.getPricesDescription()
+                        pricingCalculatePrice
                 ))
                 .collect(Collectors.toSet());
     }

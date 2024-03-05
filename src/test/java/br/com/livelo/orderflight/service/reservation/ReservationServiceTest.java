@@ -216,6 +216,8 @@ class ReservationServiceTest {
                                 List.of(
                                         PricingCalculatePrice.builder()
                                                 .priceListId("price")
+                                                .flight(PricingCalculateFlight.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).build())
+                                                .taxes(PricingCalculateTaxes.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).build())
                                                 .pricesDescription(
                                                         PricingCalculatePricesDescription.builder()
                                                                 .flights(List.of(
