@@ -27,6 +27,10 @@ spring:
         exchange: order-flight.commands
         queue: order-flight.flight.commands.order.getconfirmation
         autoCreate: false
+     order-flight-commands-getvoucher:
+        concurrency: "4"
+        queue: order-flight.flight.commands.order.getvoucher
+        autoCreate: false
 management:
   endpoints:
     web:
@@ -52,6 +56,7 @@ client:
 order:
   orderProcessMaxRows: 500
   getConfirmationMaxProcessCountFailed: 48
+  getVoucherMaxProcessCountFailed: 192
 
 fixed-values:
   sku:
