@@ -27,7 +27,7 @@ Se o contador `processCounter.counter` atingir ou exceder `(order.getVoucherMaxP
 
 ## Fluxo
 
-O fluxo de processamento se da inicio no MS [order-flight-scheduler](https://stash.livelo.intranet/projects/LIVTRAVEL/repos/order-flight-scheduler/browse), onde ele busca e adiciona à fila uma quantidade específica de pedidos para processamento. Em seguida, o MS order-flight consome os pedidos da fila de forma individual, realizando diversas validações. Após essas validações, o sistema acessa o webhook getVoucher do parceiro para verificar se o voucher está disponível. Caso retorne o voucher, o status será atualizado para LIVPNR-1030 e o link disponibilizado. Por fim, o sistema registra a atualização do pedido na base de dados e incrementa o contador de processamento.
+O fluxo de processamento inicia no MS [order-flight-scheduler](https://stash.livelo.intranet/projects/LIVTRAVEL/repos/order-flight-scheduler/browse), onde ele busca e adiciona à fila uma quantidade específica de pedidos para processamento. Em seguida, o MS order-flight consome os pedidos da fila de forma individual, realizando diversas validações. Após essas validações, o sistema acessa o webhook getVoucher do parceiro para verificar se o voucher está disponível. Caso retorne o voucher, o status será atualizado para LIVPNR-1030 e o link disponibilizado. Por fim, o sistema registra a atualização do pedido na base de dados e incrementa o contador de processamento.
 
 ## Regras:
 
