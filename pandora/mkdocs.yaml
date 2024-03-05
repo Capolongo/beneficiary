@@ -10,7 +10,8 @@ nav:
       - Confirmação de pedido: confirmation.md
       - Processamento do pedido: process-order.md
   - Listeners:
-      - Order Process GetConfirmation: order-process-getConfirmation-listener.md.md
+      - Order Process GetConfirmation: order-process-getConfirmation-listener.md
+      - Order Process GetVoucher: order-process-getVoucher-listener.md
   - Inicializando dependências: use-dependencies.md
   - Mockando as dependências: use-mocks.md
 plugins:
