@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 @Slf4j
 @Service
@@ -38,11 +37,11 @@ public class StatusServiceImpl implements StatusService {
 
         final OrderEntity order = orderService.getOrderById(id);
 
-        UpdateStatusValidate.validadionUpdateStatus(request, order);
+        UpdateStatusValidate.validationUpdateStatus(request, order);
 
         final UpdateStatusDTO statusDTO = getStatusFromItem(request);
 
-        Duration duration = changeStatusTimeDifference(order.getCurrentStatus().getCreateDate());
+        Duration duration = changeStatusTimeDifference(order.getCurrentStatus().getStatusDate());
 
         updateOrderStatus(order, statusDTO);
 
@@ -54,7 +53,6 @@ public class StatusServiceImpl implements StatusService {
 
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
-
 
 
     private UpdateStatusDTO getStatusFromItem(UpdateStatusRequest updateStatusRequestDTO){
@@ -75,7 +73,7 @@ public class StatusServiceImpl implements StatusService {
         orderService.addNewOrderStatus(order, statusEntity);
     }
 
-    private Duration changeStatusTimeDifference(ZonedDateTime baseTime) {
-        return Duration.between(baseTime.toLocalDateTime(), LocalDateTime.now());
+    private Duration changeStatusTimeDifference(LocalDateTime baseTime) {
+        return Duration.between(baseTime, LocalDateTime.now());
     }
 }

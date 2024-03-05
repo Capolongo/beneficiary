@@ -12,7 +12,7 @@ public class UpdateStatusValidate {
 
     private static final String process = "PROCESS";
 
-    public static void validadionUpdateStatus(UpdateStatusRequest request, OrderEntity order) {
+    public static void validationUpdateStatus(UpdateStatusRequest request, OrderEntity order) {
         validCommerceOrderIdEqualOrderId(request, order);
         validItemsCommerceItemIdEqualCommerceItemId(request, order);
         validStatusInitial(request, order);
