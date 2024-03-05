@@ -26,7 +26,7 @@ class ReservationItemPriceMapperTest {
                 PricingCalculateFlight.builder().pointsAmount(BigDecimal.TWO).build()
         ).build();
         var response = this.mapper.pointsAmount(partnerReservationItem,pricingCalculatePrice);
-        assertEquals(response,BigDecimal.TWO);
+        assertEquals(BigDecimal.TWO, response);
     }
 
     @Test
@@ -36,7 +36,7 @@ class ReservationItemPriceMapperTest {
                 PricingCalculateTaxes.builder().pointsAmount(BigDecimal.ONE).build()
         ).build();
         var response = this.mapper.pointsAmount(partnerReservationItem,pricingCalculatePrice);
-        assertEquals(response,BigDecimal.ONE);
+        assertEquals(BigDecimal.ONE, response);
     }
 
     @Test
@@ -46,7 +46,7 @@ class ReservationItemPriceMapperTest {
                 PricingCalculateFlight.builder().amount(BigDecimal.TWO).build()
         ).build();
         var response = this.mapper.amount(partnerReservationItem,pricingCalculatePrice);
-        assertEquals(response,BigDecimal.TWO);
+        assertEquals(BigDecimal.TWO, response);
     }
 
     @Test
@@ -56,6 +56,6 @@ class ReservationItemPriceMapperTest {
                 PricingCalculateTaxes.builder().amount(BigDecimal.TEN).build()
         ).build();
         var response = this.mapper.amount(partnerReservationItem,pricingCalculatePrice);
-        assertEquals(response,BigDecimal.TEN);
+        assertEquals(BigDecimal.TEN, response);
     }
 }
