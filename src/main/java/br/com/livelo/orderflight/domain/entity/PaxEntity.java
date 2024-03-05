@@ -24,6 +24,7 @@ public class PaxEntity extends BaseEntity {
     private String lastName;
     private String email;
     private String areaCode;
+    @Column(name = "PHONE_NUMBER")
     private String phoneNumber;
     private String gender;
     private String birthDate;
