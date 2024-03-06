@@ -22,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.Set;
 
@@ -68,6 +67,23 @@ public class OrderServiceImpl implements OrderService {
 
         return itemFlight.get();
     }
+
+    public OrderItemEntity getTaxFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
+        Optional<OrderItemEntity> itemTax = orderItemsEntity.stream().filter(item -> item.getSkuId().toLowerCase().contains("tax")).findFirst();
+
+        if (itemTax.isEmpty()) {
+            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;
+            throw new OrderFlightException(errorType, errorType.getTitle(), null);
+        }
+
+        return itemTax.get();
+    }
+
+    public void confirmationProcessLog(String newStatusCode, OrderEntity order) {
+        OrderItemEntity flightItem =  getFlightFromOrderItems(order.getItems());
+        OrderItemEntity taxItem =  getTaxFromOrderItems(order.getItems());
+        log.info("OrderService.confirmationProcessLog - confirmationProcessLog - orderId: [{}], partnerCode: [{}], statusCode: [{}], amount: [{}], pointsAmount: [{}], partnerAmount: [{}], flightAmount: [{}], flightPointsAmount: [{}], flightPartnerAmount: [{}], taxAmount: [{}], taxPointsAmount: [{}], taxPartnerAmount: [{}],", order.getId(), order.getPartnerCode(), newStatusCode, order.getPrice().getAmount(), order.getPrice().getPointsAmount(), order.getPrice().getPartnerAmount(), flightItem.getPrice().getAmount(),  flightItem.getPrice().getPointsAmount(),  flightItem.getPrice().getPartnerAmount(), taxItem.getPrice().getAmount(),  taxItem.getPrice().getPointsAmount(),  taxItem.getPrice().getPartnerAmount());
+      }
 
     public boolean isSameStatus(String currentStatus, String newStatus) {
         return currentStatus.equals(newStatus);

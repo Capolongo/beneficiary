@@ -72,6 +72,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
         if (order != null) {
+            orderService.confirmationProcessLog(status.getCode(), order);
             log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}], statusCode: [{}], partnerCode: [{}] ", id, orderRequest.getCommerceOrderId(), order.getTransactionId(), status.getCode(), order.getPartnerCode());
         }
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
@@ -106,6 +107,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.save(order);
 
         log.info("ConfirmationService.orderProcess - order process counter - id: [{}], count: [{}]", order.getId(), processCounter.getCount());
+        orderService.confirmationProcessLog(status.getCode(), order);
     }
 
     private OrderStatusEntity processGetConfirmation (OrderEntity order) {
