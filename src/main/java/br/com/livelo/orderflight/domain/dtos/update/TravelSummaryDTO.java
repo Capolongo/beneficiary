@@ -14,11 +14,10 @@ import java.util.List;
 public class TravelSummaryDTO {
 
 	private TourDTO tour;
-	private List<Object> flights;
+	private List<FlightSummaryDTO> flights;
 	private List<Object> accommodations;
 	private List<Object> vehicles;
 	private List<Object> services;
-//	private List<FlightSummaryDTO> flights;
 //	private List<AccommodationSummaryDTO> accommodations;
 //	private List<VehicleSummaryDTO> vehicles;
 //	private List<ServiceSummaryDTO> services;
