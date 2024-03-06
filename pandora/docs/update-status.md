@@ -352,7 +352,54 @@ Sucesso:
 </pre>
 </details>
 
-3. Pedido do id enviado pelo path, o commerceOrderId não é igual ao orderId:
+3. Pedido estiver com o status de CANCELED ou COMPLETED:
+
+`PATCH` /v1/orders/lf344/status
+
+<details>
+    <summary>Clique para ver o request</summary>
+    <pre>
+{
+  "orderId": "o1002",
+  "items": [
+    {
+      "id": "CVCFLIGHTTAX",
+      "commerceItemId": "ci16238303923791",
+      "reason": "string",
+      "user": "string",
+      "status": {
+        "code": "LIVPNR-9001",
+        "message": "CANCELED",
+        "details": "CANCELED"
+      }
+    },{
+      "id": "CVCFLIGHT",
+      "commerceItemId": "ci13406264327442",
+      "reason": "string",
+      "user": "string",
+      "status": {
+        "code": "LIVPNR-9001",
+        "message": "CANCELED",
+        "details": "CANCELED"
+      }
+    }
+  ]
+}
+</pre>
+</details>
+
+<details>
+    <summary>Clique para ver o response</summary>
+    <pre>
+{
+    "code": "OFUPDATESTATUS004",
+    "title": "O pedido com status Cancelado / Completo, não pode alterar o pedido",
+    "description": "O pedido com status Cancelado / Completo, não pode alterar o pedido"
+}
+</pre>
+</details>
+
+4. Pedido do id enviado pelo path, o commerceOrderId não é igual ao orderId:
 
 `PATCH` /v1/orders/lf344/status
 
@@ -399,7 +446,7 @@ Sucesso:
 </pre>
 </details>
 
-4. Pedido enviado, se o items os commerceItemIds não são iguais aos da base:
+5. Pedido enviado, se o items os commerceItemIds não são iguais aos da base:
 
 `PATCH` /v1/orders/lf344/status
 
