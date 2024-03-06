@@ -1,26 +1,19 @@
 package br.com.livelo.orderflight.service.voucher.impl;
 
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-
 import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.exception.OrderFlightException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
+import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import br.com.livelo.orderflight.service.voucher.VoucherService;
 import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -65,13 +58,8 @@ public class VoucherServiceImpl implements VoucherService {
             log.info("VoucherServiceImpl.processVoucher - Checking voucher at partner - order: [{}] partner: [{}]", order.getId(), order.getPartnerCode());
             var connectorVoucherOrderResponse = connectorPartnersProxy.getVoucherOnPartner(order.getPartnerCode(), order.getPartnerOrderId(), order.getId());
             var status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorVoucherOrderResponse.getCurrentStatus());
-
-            if (!connectorVoucherOrderResponse.getVoucher().isEmpty()) {
-                log.info("VoucherServiceImpl.processVoucher - Voucher generated. Updating status - order: [{}]", order.getId());
-                status.setCode(StatusConstants.VOUCHER_SENT.getCode());
-                var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
-                orderService.updateVoucher(itemFlight, connectorVoucherOrderResponse.getVoucher());
-            }
+            var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
+            orderService.updateVoucher(itemFlight, connectorVoucherOrderResponse.getVoucher());
 
             return status;
         } catch (OrderFlightException exception) {
