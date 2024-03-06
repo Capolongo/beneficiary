@@ -23,6 +23,7 @@ import br.com.livelo.orderflight.domain.entity.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -209,6 +210,19 @@ public class MockBuilder {
                 .build());
     }
 
+    public static ResponseEntity<ConnectorConfirmOrderResponse> connectorVoucherResponse() {
+        return ResponseEntity.ok().body(ConnectorConfirmOrderResponse
+                .builder()
+                .partnerOrderId("partnerOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate("date")
+                .expirationDate("date")
+                .transactionId("transactionId")
+                .currentStatus(ConnectorConfirmOrderStatusResponse.builder().build())
+                .voucher("voucher")
+                .build());
+    }
+
     public static OrderEntity orderEntity() {
         Set<OrderItemEntity> items = new HashSet<>();
         items.add(orderItemEntity());
@@ -232,6 +246,7 @@ public class MockBuilder {
                 .items(items)
                 .statusHistory(statusHistory)
                 .currentStatus(statusInitial())
+                .lastModifiedDate(ZonedDateTime.now())
                 .build();
     }
 
@@ -422,5 +437,12 @@ public class MockBuilder {
         .total(total)
         .totalPages(total / orders.size())
         .build();
+    }
+    public static ProcessCounterEntity processCounterEntity(int count, String process) {
+        return ProcessCounterEntity.builder()
+                .id(0)
+                .count(count)
+                .process(process)
+                .build();
     }
 }

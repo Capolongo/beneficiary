@@ -1,18 +1,36 @@
 spring:
+  application:
+    name: order-flight
+  config:
+    import: "optional:configserver:https://fake-url.com?max-attempts=1"
   cloud:
     openfeign:
       micrometer:
         enabled: true
-
-  config:
-    import: "optional:configserver:https://fake-url.com?max-attempts=1"
   datasource:
     url: jdbc:oracle:thin:@//${ORACLEDB_HOST:localhost}:${ORACLEDB_PORT:1521}/${ORACLEDB_SERVICENAME:xe}
     username: ${ORACLEDB_USERNAME:order_flight}
     password: ${ORACLEDB_PASSWORD:order_flight}
     driver-class-name: oracle.jdbc.OracleDriver
-  application:
-    name: order-flight
+  rabbitmq:
+     host: ${RABBIT_HOST:localhost}
+     port: ${RABBIT_PORT:5672}
+     username: ${RABBIT_USERNAME:guest}
+     password: ${RABBIT_PASSWORD:guest}
+     ttlRetryMessage: ${RABBIT_TTL_RETRY_MESSAGE:5000}
+     autoCreate: false
+     useQueueNameAsRetryRoutingKey: false
+     order-flight-commands-getconfirmation:
+        concurrency: "4"
+        exchangeType: topic
+        queueRoutingKey: order.getconfirmation
+        exchange: order-flight.commands
+        queue: order-flight.flight.commands.order.getconfirmation
+        autoCreate: false
+     order-flight-commands-getvoucher:
+        concurrency: "4"
+        queue: order-flight.flight.commands.order.getvoucher
+        autoCreate: false
 management:
   endpoints:
     web:
@@ -37,4 +55,29 @@ client:
 
 order:
   orderProcessMaxRows: 500
+  getConfirmationMaxProcessCountFailed: 48
+  getVoucherMaxProcessCountFailed: 192
 
+fixed-values:
+  sku:
+    list-price: 1.0
+    quantity: 1
+    sale-price: 1.0
+    available: true
+    currency: PTS
+    description: DEFAULT
+  shipment-option:
+    id: 1
+    currency: PTS
+    description: Sem entrega física
+    price: 0.0
+    type: Eletrônica
+  payment-option:
+    id: 1
+    description: default
+    name: default
+  installment-option:
+    id: 1
+    currency: PTS
+    interest: 0
+    parcels: 1
