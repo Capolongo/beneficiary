@@ -9,6 +9,7 @@ nav:
       - Opções parcelamento de pagamento: payment-installment-options.md
       - Confirmação de pedido: confirmation.md
       - Processamento do pedido: process-order.md
+      - Atualização de status: update-status.md
   - Listeners:
       - Order Process GetConfirmation: order-process-getConfirmation-listener.md
       - Order Process GetVoucher: order-process-getVoucher-listener.md
