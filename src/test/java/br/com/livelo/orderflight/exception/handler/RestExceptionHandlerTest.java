@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.bind.MissingRequestHeaderException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class RestExceptionHandlerTest {
@@ -23,6 +25,16 @@ class RestExceptionHandlerTest {
         var response = this.restExceptionHandler.handleException(exception);
         assertAll(
                 () -> assertTrue(response.getStatusCode().is5xxServerError()),
+                () -> assertInstanceOf(ErrorResponse.class, response.getBody()));
+    }
+
+    @Test
+    void shouldReturnErrorResponse_WhenMissingHeader() {
+        var exception = mock(MissingRequestHeaderException.class);
+
+        var response = this.restExceptionHandler.handleException(exception);
+        assertAll(
+                () -> assertTrue(response.getStatusCode().is4xxClientError()),
                 () -> assertInstanceOf(ErrorResponse.class, response.getBody()));
     }
 }

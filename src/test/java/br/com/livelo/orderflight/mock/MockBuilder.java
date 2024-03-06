@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.mock;
 
-import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
+import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderItemRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderPriceRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
@@ -15,12 +15,15 @@ import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmO
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.entity.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -98,16 +101,16 @@ public class MockBuilder {
 
     public static ConfirmOrderStatusResponse confirmOrderStatusResponse() {
         return ConfirmOrderStatusResponse.builder()
-                .code(StatusConstants.INITIAL.getCode())
-                .description(StatusConstants.INITIAL.getDescription())
+                .code(StatusLivelo.INITIAL.getCode())
+                .description(StatusLivelo.INITIAL.getDescription())
                 .details("partnerResponse")
                 .build();
     }
 
     public static ConfirmOrderStatusResponse confirmOrderStatusFailed() {
         return ConfirmOrderStatusResponse.builder()
-                .code(StatusConstants.FAILED.getCode())
-                .description(StatusConstants.FAILED.getDescription())
+                .code(StatusLivelo.FAILED.getCode())
+                .description(StatusLivelo.FAILED.getDescription())
                 .details("partnerDescription")
                 .build();
     }
@@ -187,6 +190,13 @@ public class MockBuilder {
                 .build();
     }
 
+    public static ResponseEntity<PricingCalculateResponse[]> pricingCalculateResponse(){
+        return  ResponseEntity.ok().body(new PricingCalculateResponse[]{PricingCalculateResponse.builder()
+                .prices(
+                        new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price").build()))
+                ).build()});
+    }
+
     public static ResponseEntity<ConnectorConfirmOrderResponse> connectorConfirmOrderResponse() {
         return ResponseEntity.ok().body(ConnectorConfirmOrderResponse
                 .builder()
@@ -197,6 +207,19 @@ public class MockBuilder {
                 .transactionId("transactionId")
                 .currentStatus(ConnectorConfirmOrderStatusResponse.builder().build())
                 .voucher(null)
+                .build());
+    }
+
+    public static ResponseEntity<ConnectorConfirmOrderResponse> connectorVoucherResponse() {
+        return ResponseEntity.ok().body(ConnectorConfirmOrderResponse
+                .builder()
+                .partnerOrderId("partnerOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate("date")
+                .expirationDate("date")
+                .transactionId("transactionId")
+                .currentStatus(ConnectorConfirmOrderStatusResponse.builder().build())
+                .voucher("voucher")
                 .build());
     }
 
@@ -223,6 +246,7 @@ public class MockBuilder {
                 .items(items)
                 .statusHistory(statusHistory)
                 .currentStatus(statusInitial())
+                .lastModifiedDate(ZonedDateTime.now())
                 .build();
     }
 
@@ -337,8 +361,8 @@ public class MockBuilder {
     public static OrderStatusEntity statusInitial() {
         return OrderStatusEntity.builder()
                 .id(1L)
-                .code(StatusConstants.INITIAL.getCode())
-                .description(StatusConstants.INITIAL.getDescription())
+                .code(StatusLivelo.INITIAL.getCode())
+                .description(StatusLivelo.INITIAL.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("partnerResponse")
@@ -349,8 +373,8 @@ public class MockBuilder {
     public static OrderStatusEntity statusProcessing() {
         return OrderStatusEntity.builder()
                 .id(1L)
-                .code(StatusConstants.PROCESSING.getCode())
-                .description(StatusConstants.PROCESSING.getDescription())
+                .code(StatusLivelo.PROCESSING.getCode())
+                .description(StatusLivelo.PROCESSING.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("response")
@@ -361,8 +385,8 @@ public class MockBuilder {
     public static OrderStatusEntity statusFailed() {
         return OrderStatusEntity.builder()
                 .id(1L)
-                .code(StatusConstants.FAILED.getCode())
-                .description(StatusConstants.FAILED.getDescription())
+                .code(StatusLivelo.FAILED.getCode())
+                .description(StatusLivelo.FAILED.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("response")
@@ -373,8 +397,8 @@ public class MockBuilder {
     public static ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse() {
         return ConnectorConfirmOrderStatusResponse.builder()
                 .id(1L)
-                .code(StatusConstants.INITIAL.getCode())
-                .description(StatusConstants.INITIAL.getDescription())
+                .code(StatusLivelo.INITIAL.getCode())
+                .description(StatusLivelo.INITIAL.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("partnerResponse")
@@ -413,5 +437,12 @@ public class MockBuilder {
         .total(total)
         .totalPages(total / orders.size())
         .build();
+    }
+    public static ProcessCounterEntity processCounterEntity(int count, String process) {
+        return ProcessCounterEntity.builder()
+                .id(0)
+                .count(count)
+                .process(process)
+                .build();
     }
 }
