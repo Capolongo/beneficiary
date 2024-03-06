@@ -79,10 +79,10 @@ public class OrderServiceImpl implements OrderService {
         return itemTax.get();
     }
 
-    public void confirmationProcessLog(String newStatusCode, OrderEntity order) {
+    public void orderDetailLog(String invokedBy, String newStatusCode, OrderEntity order) {
         OrderItemEntity flightItem =  getFlightFromOrderItems(order.getItems());
         OrderItemEntity taxItem =  getTaxFromOrderItems(order.getItems());
-        log.info("OrderService.confirmationProcessLog - confirmationProcessLog - orderId: [{}], partnerCode: [{}], statusCode: [{}], amount: [{}], pointsAmount: [{}], partnerAmount: [{}], flightAmount: [{}], flightPointsAmount: [{}], flightPartnerAmount: [{}], taxAmount: [{}], taxPointsAmount: [{}], taxPartnerAmount: [{}],", order.getId(), order.getPartnerCode(), newStatusCode, order.getPrice().getAmount(), order.getPrice().getPointsAmount(), order.getPrice().getPartnerAmount(), flightItem.getPrice().getAmount(),  flightItem.getPrice().getPointsAmount(),  flightItem.getPrice().getPartnerAmount(), taxItem.getPrice().getAmount(),  taxItem.getPrice().getPointsAmount(),  taxItem.getPrice().getPartnerAmount());
+        log.info("OrderService.orderDetailLog - " + invokedBy + " - orderId: [{}], partnerCode: [{}], statusCode: [{}], amount: [{}], pointsAmount: [{}], partnerAmount: [{}], flightAmount: [{}], flightPointsAmount: [{}], flightPartnerAmount: [{}], taxAmount: [{}], taxPointsAmount: [{}], taxPartnerAmount: [{}],", order.getId(), order.getPartnerCode(), newStatusCode, order.getPrice().getAmount(), order.getPrice().getPointsAmount(), order.getPrice().getPartnerAmount(), flightItem.getPrice().getAmount(),  flightItem.getPrice().getPointsAmount(),  flightItem.getPrice().getPartnerAmount(), taxItem.getPrice().getAmount(),  taxItem.getPrice().getPointsAmount(),  taxItem.getPrice().getPartnerAmount());
       }
 
     public boolean isSameStatus(String currentStatus, String newStatus) {
