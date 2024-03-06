@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.service.confirmation.impl;
 
+import br.com.livelo.orderflight.domain.dtos.update.UpdateOrderDTO;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
@@ -12,7 +13,9 @@ import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
+import br.com.livelo.orderflight.mappers.LiveloPartnersMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
+import br.com.livelo.orderflight.proxies.LiveloPartnersProxy;
 import br.com.livelo.orderflight.service.confirmation.ConfirmationService;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import br.com.livelo.orderflight.utils.ConfirmOrderValidation;
@@ -34,6 +37,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
     private final OrderServiceImpl orderService;
     private final ConfirmOrderMapper confirmOrderMapper;
     private final ConnectorPartnersProxy connectorPartnersProxy;
+    private final LiveloPartnersProxy liveloPartnersProxy;
+    private final LiveloPartnersMapper liveloPartnersMapper;
 
     @Value("${order.getConfirmationMaxProcessCountFailed}")
     private int getConfirmationMaxProcessCountFailed;
@@ -97,6 +102,10 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         }
 
         if (!orderService.isSameStatus(currentStatusCode, status.getCode())) {
+            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
+            System.out.println(updateOrderDTO);
+            liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
+
             Duration duration = processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
             log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}], orderId: [{}], partnerCode: [{}], oldStatus: [{}], newStatus: [{}]", duration.toMinutes(), order.getId(), order.getPartnerCode(), order.getCurrentStatus(), status);
         }
