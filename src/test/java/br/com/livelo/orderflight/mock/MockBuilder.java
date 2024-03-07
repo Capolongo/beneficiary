@@ -24,10 +24,7 @@ import br.com.livelo.orderflight.domain.entity.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.springframework.http.ResponseEntity;
 
@@ -217,6 +214,11 @@ public class MockBuilder {
         Set<OrderStatusEntity> statusHistory = new HashSet<>();
         statusHistory.add(statusInitial());
 
+        Set<ProcessCounterEntity> processCounter = new HashSet<>();
+        processCounter.add(ProcessCounterEntity.builder().process("getConfirmation")
+                        .count(10)
+                .build());
+
         return OrderEntity.builder()
                 .id("id")
                 .commerceOrderId("commerceOrderId")
@@ -234,6 +236,7 @@ public class MockBuilder {
                 .statusHistory(statusHistory)
                 .currentStatus(statusInitial())
                 .lastModifiedDate(ZonedDateTime.now())
+                .processCounters(processCounter)
                 .build();
     }
 
@@ -356,6 +359,20 @@ public class MockBuilder {
                 .statusDate(LocalDateTime.now())
                 .build();
     }
+
+    public static OrderStatusEntity statusFaill() {
+        return OrderStatusEntity.builder()
+                .id(1L)
+                .code(StatusLivelo.FAILED.getCode())
+                .description(StatusLivelo.FAILED.getDescription())
+                .partnerCode("partnerCode")
+                .partnerDescription("partnerDescription")
+                .partnerResponse("partnerResponse")
+                .statusDate(LocalDateTime.now())
+                .build();
+    }
+
+
 
     public static OrderStatusEntity statusProcessing() {
         return OrderStatusEntity.builder()

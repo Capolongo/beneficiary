@@ -9,8 +9,8 @@ import java.util.Arrays;
 @AllArgsConstructor
 @Getter
 public enum CountStatusLivelo {
-    PROCESSING("LIVPNR-1007", Webhooks.GETCONFIRMATION.value),
-    VOUCHER("LIVPNR-1019", Webhooks.VOUCHER.value);
+    PROCESSING("LIVPNR-1007", "getConfirmation"),
+    VOUCHER("LIVPNR-1019", "voucher");
 
     private final String code;
     private final String description;
