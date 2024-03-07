@@ -1,7 +1,7 @@
 package br.com.livelo.orderflight.listener;
 
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
-import br.com.livelo.orderflight.service.confirmation.ConfirmationService;
+import br.com.livelo.orderflight.service.voucher.VoucherService;
 import br.com.livelo.orderflight.utils.MessageUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -12,14 +12,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class OrderProcessListener {
+public class VoucherListener {
     private final ObjectMapper objectMapper;
-    private final ConfirmationService confirmationService;
-    @RabbitListener(queues = "${spring.rabbitmq.order-flight-commands-getconfirmation.queue}")
+    private final VoucherService voucherService;
+
+
+    @RabbitListener(queues = "${spring.rabbitmq.order-flight-commands-getvoucher.queue}",
+            concurrency = "${spring.rabbitmq.order-flight-commands-getvoucher.concurrency}")
     public void consumer(Message payload) {
         try {
             final OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);
-            confirmationService.orderProcess(orderProcess);
+            voucherService.orderProcess(orderProcess);
         } catch (Exception exception) {
             throw new AmqpRejectAndDontRequeueException(exception);
         }

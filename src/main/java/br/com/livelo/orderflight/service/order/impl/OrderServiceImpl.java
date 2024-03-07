@@ -14,6 +14,7 @@ import br.com.livelo.orderflight.repository.ItemRepository;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -66,6 +68,23 @@ public class OrderServiceImpl implements OrderService {
         return itemFlight.get();
     }
 
+    public OrderItemEntity getTaxFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
+        Optional<OrderItemEntity> itemTax = orderItemsEntity.stream().filter(item -> item.getSkuId().toLowerCase().contains("tax")).findFirst();
+
+        if (itemTax.isEmpty()) {
+            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;
+            throw new OrderFlightException(errorType, errorType.getTitle(), null);
+        }
+
+        return itemTax.get();
+    }
+
+    public void orderDetailLog(String invokedBy, String newStatusCode, OrderEntity order) {
+        OrderItemEntity flightItem =  getFlightFromOrderItems(order.getItems());
+        OrderItemEntity taxItem =  getTaxFromOrderItems(order.getItems());
+        log.info("OrderService.orderDetailLog - " + invokedBy + " - orderId: [{}], partnerCode: [{}], statusCode: [{}], amount: [{}], pointsAmount: [{}], partnerAmount: [{}], flightAmount: [{}], flightPointsAmount: [{}], flightPartnerAmount: [{}], taxAmount: [{}], taxPointsAmount: [{}], taxPartnerAmount: [{}],", order.getId(), order.getPartnerCode(), newStatusCode, order.getPrice().getAmount(), order.getPrice().getPointsAmount(), order.getPrice().getPartnerAmount(), flightItem.getPrice().getAmount(),  flightItem.getPrice().getPointsAmount(),  flightItem.getPrice().getPartnerAmount(), taxItem.getPrice().getAmount(),  taxItem.getPrice().getPointsAmount(),  taxItem.getPrice().getPartnerAmount());
+      }
+
     public boolean isSameStatus(String currentStatus, String newStatus) {
         return currentStatus.equals(newStatus);
     }
@@ -99,6 +118,13 @@ public class OrderServiceImpl implements OrderService {
 
     public void updateVoucher(OrderItemEntity orderItem, String voucher) {
         orderItem.getTravelInfo().setVoucher(voucher);
+        if(voucher != null) {
+            log.info("OrderService.updateVoucher - voucher updated - orderId: [{}]", orderItem.getId());
+        }
+    }
+
+    public void updateSubmittedDate(OrderEntity order, String date) {
+        order.setSubmittedDate(LocalDateTime.parse(date));
     }
 
     public Optional<OrderEntity> findByCommerceOrderId(String commerceOrderId) {

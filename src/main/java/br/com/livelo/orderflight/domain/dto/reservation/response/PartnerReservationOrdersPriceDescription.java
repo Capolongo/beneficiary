@@ -1,9 +1,8 @@
 package br.com.livelo.orderflight.domain.dto.reservation.response;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter

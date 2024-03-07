@@ -210,6 +210,19 @@ public class MockBuilder {
                 .build());
     }
 
+    public static ResponseEntity<ConnectorConfirmOrderResponse> connectorVoucherResponse() {
+        return ResponseEntity.ok().body(ConnectorConfirmOrderResponse
+                .builder()
+                .partnerOrderId("partnerOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate("date")
+                .expirationDate("date")
+                .transactionId("transactionId")
+                .currentStatus(ConnectorConfirmOrderStatusResponse.builder().build())
+                .voucher("voucher")
+                .build());
+    }
+
     public static OrderEntity orderEntity() {
         Set<OrderItemEntity> items = new HashSet<>();
         items.add(orderItemEntity());
@@ -427,9 +440,9 @@ public class MockBuilder {
     }
     public static ProcessCounterEntity processCounterEntity(int count, String process) {
         return ProcessCounterEntity.builder()
-        .id(0)
-        .count(count)
-        .process(process)
-        .build();
+                .id(0)
+                .count(count)
+                .process(process)
+                .build();
     }
 }

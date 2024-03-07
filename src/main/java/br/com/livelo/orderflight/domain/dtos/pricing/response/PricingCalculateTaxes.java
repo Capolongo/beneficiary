@@ -1,16 +1,16 @@
 package br.com.livelo.orderflight.domain.dtos.pricing.response;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
 @Data
 @Builder
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class PricingCalculateTaxes {
+public class PricingCalculateTaxes{
+    private String type;
     private BigDecimal amount;
     private BigDecimal pointsAmount;
-    private String type;
 }
