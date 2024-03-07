@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.service.order;
 
+import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -276,6 +278,18 @@ class OrderServiceTest {
 
         assertThrows(OrderFlightException.class, () -> {
            orderService.getTaxFromOrderItems(taxItemMock);
+        });
+    }
+
+    @Test
+    void shouldLogOrderDetail() {
+        OrderEntity order = MockBuilder.orderEntity();
+        OrderItemEntity taxItemMock = MockBuilder.orderItemEntity();
+        taxItemMock.setSkuId("tax");
+        order.getItems().add(taxItemMock);
+
+        assertAll(() -> {
+            orderService.orderDetailLog("test", StatusConstants.PROCESSING.getCode(), order);
         });
     }
 }
