@@ -47,25 +47,25 @@ class OrderProcessControllerTest {
   }
 
   @Test
-  void shouldReturnSuccessGetOrdersByStatusCodeAndlimitExpirationDate() throws Exception {
+  void shouldReturnSuccessGetOrdersByStatusCodeAndlimitArrivalDate() throws Exception {
 
     String statusCode = "LIVPNR-1006";
     int page = 1;
     int rows = 4;
-    String limitExpirationDate = "2000-01-01";
+    String limitArrivalDate = "2000-01-01";
 
     PaginationOrderProcessResponse responseBody = MockBuilder.paginationOrderProcessResponse(page, rows);
 
-    when(orderService.getOrdersByStatusCodeAndlimitExpirationDate(statusCode, limitExpirationDate, page, rows))
+    when(orderService.getOrdersByStatusCodeAndLimitArrivalDate(statusCode, limitArrivalDate, page, rows))
         .thenReturn(responseBody);
 
     ResponseEntity<PaginationOrderProcessResponse> response = controller.getOrdersByStatus(statusCode,
-        limitExpirationDate, page, rows);
+        limitArrivalDate, page, rows);
 
     assertEquals(responseBody, response.getBody());
     assertEquals(responseBody.getOrders().size(), response.getBody().getRows());
     assertEquals(200, response.getStatusCode().value());
-    verify(orderService).getOrdersByStatusCodeAndlimitExpirationDate(statusCode, limitExpirationDate, page, rows);
+    verify(orderService).getOrdersByStatusCodeAndLimitArrivalDate(statusCode, limitArrivalDate, page, rows);
     verifyNoMoreInteractions(orderService);
   }
 

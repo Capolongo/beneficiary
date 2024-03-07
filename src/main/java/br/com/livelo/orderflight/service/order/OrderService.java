@@ -15,7 +15,7 @@ public interface OrderService {
   PaginationOrderProcessResponse getOrdersByStatusCode(String status, Integer page, Integer rows)
       throws OrderFlightException;
 
-  PaginationOrderProcessResponse getOrdersByStatusCodeAndlimitExpirationDate(String status, String limitExpirationDate,
+  PaginationOrderProcessResponse getOrdersByStatusCodeAndLimitArrivalDate(String status, String limitArrivalDate,
       Integer page, Integer rows) throws OrderFlightException;
 
   void addNewOrderStatus(OrderEntity order, OrderStatusEntity status);

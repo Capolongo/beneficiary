@@ -22,17 +22,17 @@ public class OrderProcessController {
 
   @GetMapping("/process")
   public ResponseEntity<PaginationOrderProcessResponse> getOrdersByStatus(@RequestParam String statusCode,
-      @RequestParam(required = false) String limitExpirationDate,
+      @RequestParam(required = false) String limitArrivalDate,
       @RequestParam(required = false, defaultValue = "1") Integer page,
       @RequestParam(required = false, defaultValue = "${order.orderProcessMaxRows}") Integer rows) {
     log.debug(
-        "ConfirmationController.getOrdersByStatus() - Start - statusCode: [{}], limitExpirationDate: [{}], page: [{}], rows: [{}]",
-        statusCode, limitExpirationDate, page, rows);
+        "ConfirmationController.getOrdersByStatus() - Start - statusCode: [{}], limitArrivalDate: [{}], page: [{}], rows: [{}]",
+        statusCode, limitArrivalDate, page, rows);
     PaginationOrderProcessResponse orders;
-    if (limitExpirationDate == null) {
+    if (limitArrivalDate == null) {
       orders = orderService.getOrdersByStatusCode(statusCode, page, rows);
     } else {
-      orders = orderService.getOrdersByStatusCodeAndlimitExpirationDate(statusCode, limitExpirationDate, page, rows);
+      orders = orderService.getOrdersByStatusCodeAndLimitArrivalDate(statusCode, limitArrivalDate, page, rows);
     }
     log.debug("ConfirmationController.getOrdersByStatus() - End - response: [{}]", orders);
     return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(orders);
