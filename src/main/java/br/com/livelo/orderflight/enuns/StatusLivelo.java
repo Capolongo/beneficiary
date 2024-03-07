@@ -10,7 +10,8 @@ public enum StatusLivelo {
     FAILED("LIVPNR-1014", "FAILED"),
     INITIAL("LIVPNR-1006", "INITIAL"),
     CANCELED("LIVPNR-9001", "CANCELED"),
-    COMPLETED("LIVPNR-1011", "COMPLETED");
+    COMPLETED("LIVPNR-1011", "COMPLETED"),
+    VOUCHER("LIVPNR-1019", "VOUCHER");
 
     private final String code;
     private final String description;

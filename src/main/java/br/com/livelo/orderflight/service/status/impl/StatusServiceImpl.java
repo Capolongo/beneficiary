@@ -6,8 +6,7 @@ import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusItemDTO;
 import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusRequest;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.exception.OrderFlightException;
-import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.enuns.CountStatusLivelo;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mappers.StatusMapper;
 import br.com.livelo.orderflight.service.order.OrderService;
@@ -65,7 +64,24 @@ public class StatusServiceImpl implements StatusService {
 
     private void updateOrderStatus(OrderEntity order, UpdateStatusDTO updateStatusDTO){
         final OrderStatusEntity statusEntity = statusMapper.convert(updateStatusDTO);
+
+        setStatusCount(order, updateStatusDTO.getCode());
+
         orderService.addNewOrderStatus(order, statusEntity);
+    }
+
+    private static void setStatusCount(OrderEntity order, String status) {
+
+        CountStatusLivelo getStatus = CountStatusLivelo.getStatus(status);
+
+        if(getStatus != null) {
+            order.getProcessCounters().forEach(item -> {
+                if(item.getProcess().equalsIgnoreCase(getStatus.getDescription())) {
+                    item.setCount(0);
+                }
+            });
+        }
+
     }
 
     private Duration changeStatusTimeDifference(LocalDateTime baseTime) {
