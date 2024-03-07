@@ -26,7 +26,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -130,6 +133,34 @@ class OrderServiceTest {
     }
 
     @Test
+    void shouldReturnSuccessGetOrdersByStatusCodeAndLimitArrivalDate() throws OrderFlightException {
+        ReflectionTestUtils.setField(orderService, "orderProcessMaxRows", 500);
+
+        String statusCode = "LIVPNR-1030";
+        String limitArrivalDate = "2000-01-01";
+        int page = 1;
+        int rows = 4;
+
+        Page<OrderProcess> repositoryResponse = Page.empty();
+        PaginationOrderProcessResponse mappedRepositoryResponse = MockBuilder.paginationOrderProcessResponse(page,
+                rows);
+
+        when(orderRepository.findAllByCurrentStatusCodeAndArrivalDateLessThan(anyString(), any(LocalDateTime.class),
+                any(Pageable.class))).thenReturn(repositoryResponse);
+        when(orderProcessMapper.pageRepositoryToPaginationResponse(any())).thenReturn(mappedRepositoryResponse);
+
+        PaginationOrderProcessResponse response = orderService.getOrdersByStatusCodeAndLimitArrivalDate(statusCode,
+                limitArrivalDate, page, rows);
+
+        assertEquals(mappedRepositoryResponse, response);
+        assertEquals(mappedRepositoryResponse.getOrders().size(), response.getRows());
+        verify(orderRepository).findAllByCurrentStatusCodeAndArrivalDateLessThan(statusCode,
+                LocalDate.parse(limitArrivalDate, DateTimeFormatter.ISO_DATE).atTime(0, 0),
+                PageRequest.of(page - 1, rows));
+        verifyNoMoreInteractions(orderRepository);
+    }
+
+    @Test
     void shouldReturnSuccessGetOrdersByStatusCode() throws OrderFlightException {
         ReflectionTestUtils.setField(orderService, "orderProcessMaxRows", 500);
 
@@ -138,16 +169,18 @@ class OrderServiceTest {
         int rows = 4;
 
         Page<OrderProcess> repositoryResponse = Page.empty();
-        PaginationOrderProcessResponse mappedRepositoryResponse = MockBuilder.paginationOrderProcessResponse(page, rows);
+        PaginationOrderProcessResponse mappedRepositoryResponse = MockBuilder.paginationOrderProcessResponse(page,
+                rows);
 
-        when(orderRepository.findAllByCurrentStatusCode(anyString(), any(Pageable.class))).thenReturn(repositoryResponse);
+        when(orderRepository.findAllByCurrentStatusCode(anyString(), any(Pageable.class)))
+                .thenReturn(repositoryResponse);
         when(orderProcessMapper.pageRepositoryToPaginationResponse(any())).thenReturn(mappedRepositoryResponse);
 
         PaginationOrderProcessResponse response = orderService.getOrdersByStatusCode(statusCode, page, rows);
 
         assertEquals(mappedRepositoryResponse, response);
         assertEquals(mappedRepositoryResponse.getOrders().size(), response.getRows());
-        verify(orderRepository).findAllByCurrentStatusCode(statusCode, PageRequest.of(page -  1, rows));
+        verify(orderRepository).findAllByCurrentStatusCode(statusCode, PageRequest.of(page - 1, rows));
         verifyNoMoreInteractions(orderRepository);
     }
 
@@ -160,16 +193,18 @@ class OrderServiceTest {
         int rows = 600;
 
         Page<OrderProcess> repositoryResponse = Page.empty();
-        PaginationOrderProcessResponse mappedRepositoryResponse = MockBuilder.paginationOrderProcessResponse(page, rows);
+        PaginationOrderProcessResponse mappedRepositoryResponse = MockBuilder.paginationOrderProcessResponse(page,
+                rows);
 
-        when(orderRepository.findAllByCurrentStatusCode(anyString(), any(Pageable.class))).thenReturn(repositoryResponse);
+        when(orderRepository.findAllByCurrentStatusCode(anyString(), any(Pageable.class)))
+                .thenReturn(repositoryResponse);
         when(orderProcessMapper.pageRepositoryToPaginationResponse(any())).thenReturn(mappedRepositoryResponse);
 
         PaginationOrderProcessResponse response = orderService.getOrdersByStatusCode(statusCode, page, rows);
 
         assertEquals(mappedRepositoryResponse, response);
         assertEquals(mappedRepositoryResponse.getOrders().size(), response.getRows());
-        verify(orderRepository).findAllByCurrentStatusCode(statusCode, PageRequest.of(page -  1, 500));
+        verify(orderRepository).findAllByCurrentStatusCode(statusCode, PageRequest.of(page - 1, 500));
         verifyNoMoreInteractions(orderRepository);
     }
 
@@ -216,9 +251,11 @@ class OrderServiceTest {
     @Test
     void shouldReturnSucessByCommerceItemIdAndSkuId() {
 
-        when(itemRepository.findByCommerceItemIdAndSkuId(anyString(), anyString())).thenReturn(Optional.of(MockBuilder.orderItemEntity()));
-        
-        OrderItemEntity orderItemEntity = orderService.findByCommerceItemIdAndSkuId("1", SkuItemResponse.builder().skuId("cvc_flight_tax").build());
+        when(itemRepository.findByCommerceItemIdAndSkuId(anyString(), anyString()))
+                .thenReturn(Optional.of(MockBuilder.orderItemEntity()));
+
+        OrderItemEntity orderItemEntity = orderService.findByCommerceItemIdAndSkuId("1",
+                SkuItemResponse.builder().skuId("cvc_flight_tax").build());
 
         assertNotNull(orderItemEntity);
     }
