@@ -77,7 +77,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
         if (order != null) {
-            log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}], statusCode: [{}], partnerCode: [{}]", id, orderRequest.getCommerceOrderId(), order.getTransactionId(), status.getCode(), order.getPartnerCode());
+            orderService.orderDetailLog("confirmOrder",status.getCode(), order);
+            log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}], statusCode: [{}], partnerCode: [{}] ", id, orderRequest.getCommerceOrderId(), order.getTransactionId(), status.getCode(), order.getPartnerCode());
         }
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
@@ -115,6 +116,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.save(order);
 
         log.info("ConfirmationService.orderProcess - order process counter - id: [{}], count: [{}]", order.getId(), processCounter.getCount());
+        orderService.orderDetailLog("orderProcess",status.getCode(), order);
     }
 
     private OrderStatusEntity processGetConfirmation (OrderEntity order) {
@@ -129,6 +131,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         } catch (OrderFlightException exception) {
             return order.getCurrentStatus();
         } catch (Exception exception) {
+            log.error("ConfirmationService.orderProcess - error - orderId: [{}], exception: [{}]", order.getId(), exception);
            return orderService.buildOrderStatusFailed(exception.getMessage());
         }
     }

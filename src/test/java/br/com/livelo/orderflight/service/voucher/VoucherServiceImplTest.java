@@ -1,8 +1,6 @@
 package br.com.livelo.orderflight.service.voucher;
 
 import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
@@ -10,8 +8,6 @@ import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
-import br.com.livelo.orderflight.exception.OrderFlightException;
-import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
@@ -19,22 +15,16 @@ import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import br.com.livelo.orderflight.service.voucher.impl.VoucherServiceImpl;
 import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.math.BigDecimal;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -78,7 +68,6 @@ class VoucherServiceImplTest {
         when(connectorPartnersProxy.getVoucherOnPartner(anyString(), anyString(), anyString()))
                 .thenReturn(ConnectorConfirmOrderResponse.builder()
                         .currentStatus(ConnectorConfirmOrderStatusResponse.builder().build())
-                        .voucher("https://fake-url.com")
                         .voucher("https://fake-url.com")
                         .build());
         when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class)))
@@ -136,6 +125,25 @@ class VoucherServiceImplTest {
         verify(orderService, never()).getProcessCounter(order, process);
 
         verifyNoMoreInteractions(orderService);
+    }
+
+    @Test
+    void shouldSetOrderFailedBecauseThrowException() {
+        OrderEntity order = buildOrderEntity(StatusConstants.WAIT_VOUCHER.getCode());
+        order.setPartnerOrderId(null);
+
+        ProcessCounterEntity counter = ProcessCounterEntity.builder().build();
+        OrderProcess orderProcess = buildOrderProcess();
+
+        when(orderService.getOrderById(anyString())).thenReturn(order);
+        when(orderService.isSameStatus(anyString(), anyString())).thenReturn(true);
+        when(orderService.getProcessCounter(any(OrderEntity.class), anyString())).thenReturn(counter);
+
+        voucherService.orderProcess(orderProcess);
+
+        verify(confirmOrderMapper, times(0)).connectorConfirmOrderStatusResponseToStatusEntity(any());
+        verify(orderService, times(0)).getFlightFromOrderItems(any());
+        verify(orderService, times(1)).buildOrderStatusFailed(anyString());
     }
 
     private OrderEntity buildOrderEntity(String status) {
