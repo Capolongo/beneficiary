@@ -21,8 +21,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.Set;
 
@@ -58,8 +59,10 @@ public class OrderServiceImpl implements OrderService {
         order.getStatusHistory().add(status);
         order.setCurrentStatus(status);
     }
+
     public OrderItemEntity getFlightFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
-        Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(item -> !item.getSkuId().toLowerCase().contains("tax")).findFirst();
+        Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream()
+                .filter(item -> !item.getSkuId().toLowerCase().contains("tax")).findFirst();
 
         if (itemFlight.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;
@@ -89,7 +92,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public ProcessCounterEntity getProcessCounter(OrderEntity order, String process) {
-        var processCounter = order.getProcessCounters().stream().filter(counter -> process.equals(counter.getProcess())).findFirst();
+        var processCounter = order.getProcessCounters().stream().filter(counter -> process.equals(counter.getProcess()))
+                .findFirst();
 
         if (processCounter.isEmpty()) {
             var newProcessCounter = ProcessCounterEntity.builder().process(process).count(0).build();
@@ -102,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
 
     public void updateVoucher(OrderItemEntity orderItem, String voucher) {
         orderItem.getTravelInfo().setVoucher(voucher);
-        if(voucher != null) {
+        if (voucher != null) {
             log.info("OrderService.updateVoucher - voucher updated - orderId: [{}]", orderItem.getId());
         }
     }
@@ -123,21 +127,26 @@ public class OrderServiceImpl implements OrderService {
         return this.orderRepository.save(order);
     }
 
-    public PaginationOrderProcessResponse getOrdersByStatusCode(String statusCode, Integer page, Integer rows) throws OrderFlightException {
-        if (page <= 0) {
-            throw new OrderFlightException(OrderFlightErrorType.VALIDATION_INVALID_PAGINATION, OrderFlightErrorType.VALIDATION_INVALID_PAGINATION.getDescription(), null);
-        }
-
-        rows = rows > orderProcessMaxRows ? orderProcessMaxRows : rows;
-        page = page - 1;
-
-        Pageable pagination = PageRequest.of(page, rows);
+    public PaginationOrderProcessResponse getOrdersByStatusCode(String statusCode, Integer page, Integer rows)
+            throws OrderFlightException {
+        Pageable pagination = pageRequestOf(page, rows);
         var foundOrders = orderRepository.findAllByCurrentStatusCode(statusCode.toUpperCase(), pagination);
         return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
     }
 
+    public PaginationOrderProcessResponse getOrdersByStatusCodeAndlimitExpirationDate(String statusCode,
+            String limitExpirationDate, Integer page,
+            Integer rows) throws OrderFlightException {
+        Pageable pagination = pageRequestOf(page, rows);
+        var arglimitExpirationDate = LocalDate.parse(limitExpirationDate, DateTimeFormatter.ISO_DATE).atTime(0, 0);
+        var foundOrders = orderRepository.findAllByCurrentStatusCodeAndExpirationDateLessThan(statusCode.toUpperCase(),
+                arglimitExpirationDate, pagination);
+        return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
+    }
+
     public OrderItemEntity findByCommerceItemIdAndSkuId(String commerceItemId, SkuItemResponse skuItemResponseDTO) {
-        final Optional<OrderItemEntity> itemOptional = itemRepository.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO.getSkuId());
+        final Optional<OrderItemEntity> itemOptional = itemRepository.findByCommerceItemIdAndSkuId(commerceItemId,
+                skuItemResponseDTO.getSkuId());
 
         if (itemOptional.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND;
@@ -145,6 +154,14 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return itemOptional.get();
+    }
+
+    private Pageable pageRequestOf(Integer page, Integer rows) throws OrderFlightException {
+        if (page <= 0) {
+            throw new OrderFlightException(OrderFlightErrorType.VALIDATION_INVALID_PAGINATION,
+                    OrderFlightErrorType.VALIDATION_INVALID_PAGINATION.getDescription(), null);
+        }
+        return PageRequest.of(page - 1, rows > orderProcessMaxRows ? orderProcessMaxRows : rows);
     }
 
 }
