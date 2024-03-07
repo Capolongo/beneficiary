@@ -19,7 +19,10 @@ class ReservationResponseFlightLegTest {
         var object = new ReservationResponseFlightLeg(
                 "",
                 1,
-                new ReservationResponseAirline(new ReservationResponseAirlineDescription("", ""), new ReservationResponseAirlineDescription("", "")),
+                "",
+                "",
+                "",
+                "",
                 "",
                 1,
                 "",
