@@ -230,6 +230,11 @@ public class MockBuilder {
         Set<OrderStatusEntity> statusHistory = new HashSet<>();
         statusHistory.add(statusInitial());
 
+        Set<ProcessCounterEntity> processCounter = new HashSet<>();
+        processCounter.add(ProcessCounterEntity.builder().process("getConfirmation")
+                        .count(10)
+                .build());
+
         return OrderEntity.builder()
                 .id("id")
                 .commerceOrderId("commerceOrderId")
@@ -247,6 +252,7 @@ public class MockBuilder {
                 .statusHistory(statusHistory)
                 .currentStatus(statusInitial())
                 .lastModifiedDate(ZonedDateTime.now())
+                .processCounters(processCounter)
                 .build();
     }
 
@@ -369,6 +375,20 @@ public class MockBuilder {
                 .statusDate(LocalDateTime.now())
                 .build();
     }
+
+    public static OrderStatusEntity statusFaill() {
+        return OrderStatusEntity.builder()
+                .id(1L)
+                .code(StatusLivelo.FAILED.getCode())
+                .description(StatusLivelo.FAILED.getDescription())
+                .partnerCode("partnerCode")
+                .partnerDescription("partnerDescription")
+                .partnerResponse("partnerResponse")
+                .statusDate(LocalDateTime.now())
+                .build();
+    }
+
+
 
     public static OrderStatusEntity statusProcessing() {
         return OrderStatusEntity.builder()

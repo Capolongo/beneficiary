@@ -6,8 +6,7 @@ import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusItemDTO;
 import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusRequest;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.exception.OrderFlightException;
-import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.enuns.CountStatusLivelo;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mappers.StatusMapper;
 import br.com.livelo.orderflight.service.order.OrderService;
@@ -47,9 +46,9 @@ public class StatusServiceImpl implements StatusService {
 
         orderService.save(order);
 
-        log.info("StatusServiceImpl.updateStatus - changeStatusTimeDifference minutes: [{}]", duration.toMinutes());
+        log.info("StatusServiceImpl.updateStatus - changeStatusTimeDifference minutes: [{}], id: [{}] .", duration.toMinutes(), order.getId());
 
-        log.info("StatusServiceImpl.updateStatus() - end - id: [{}], code: [{}], partnerCode[{}]", order.getId(), order.getCurrentStatus().getCode(), order.getPartnerCode() );
+        log.info("StatusServiceImpl.updateStatus() - end - id: [{}], partnerCode: [{}] .", order.getId(), order.getCurrentStatus().getPartnerCode(), order.getPartnerCode());
 
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
@@ -65,7 +64,19 @@ public class StatusServiceImpl implements StatusService {
 
     private void updateOrderStatus(OrderEntity order, UpdateStatusDTO updateStatusDTO){
         final OrderStatusEntity statusEntity = statusMapper.convert(updateStatusDTO);
+
+        setStatusCount(order, updateStatusDTO.getCode());
+
         orderService.addNewOrderStatus(order, statusEntity);
+    }
+
+    private static void setStatusCount(OrderEntity order, String status) {
+
+        CountStatusLivelo countProcess = CountStatusLivelo.getStatus(status);
+
+        var processCounter = order.getProcessCounters().stream().filter(counter -> countProcess.getDescription().equals(counter.getProcess())).findFirst();
+
+        processCounter.ifPresent(processCounterEntity -> processCounterEntity.setCount(0));
     }
 
     private Duration changeStatusTimeDifference(LocalDateTime baseTime) {

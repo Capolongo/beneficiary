@@ -51,8 +51,8 @@ public class StatusServiceImplTest {
         OrderStatusEntity orderStatus =  mockOrderStatus();
 
         OrderEntity mockedOrder = MockBuilder.orderEntity();
-
-        UpdateStatusDTO updateStatus = mockBuildUpdateStatusDTO(StatusLivelo.COMPLETED.getCode(), StatusLivelo.COMPLETED.getDescription(), StatusLivelo.COMPLETED.getDescription());
+        mockedOrder.setCurrentStatus(MockBuilder.statusFaill());
+        UpdateStatusDTO updateStatus = mockBuildUpdateStatusDTO(StatusLivelo.PROCESSING.getCode(), StatusLivelo.PROCESSING.getDescription(), StatusLivelo.PROCESSING.getDescription());
 
         UpdateStatusItemDTO items = mockBuildStatusItemDTO(updateStatus, "commerceItemId");
 
