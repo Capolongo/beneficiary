@@ -48,7 +48,7 @@ public class StatusServiceImpl implements StatusService {
 
         log.info("StatusServiceImpl.updateStatus - changeStatusTimeDifference minutes: [{}], id: [{}] .", duration.toMinutes(), order.getId());
 
-        log.info("StatusServiceImpl.updateStatus() - end - id: [{}], status: [{}], partnerCode: [{}] .", order.getId(), order.getCurrentStatus().geCode(), order.getPartnerCode());
+        log.info("StatusServiceImpl.updateStatus() - end - id: [{}], status: [{}], partnerCode: [{}] .", order.getId(), order.getCurrentStatus().getCode(), order.getPartnerCode());
 
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
