@@ -167,8 +167,7 @@ public class OrderServiceImpl implements OrderService {
         var arglimitArrivalDate = LocalDate.parse(limitArrivalDate, DateTimeFormatter.ISO_DATE).atTime(0, 0);
         var foundOrders = orderRepository.findAllByCurrentStatusCodeAndArrivalDateLessThan(statusCode.toUpperCase(),
                 arglimitArrivalDate, pagination);
-        var response = foundOrders.map(OrderProcess::fromOrderEntity);
-        return orderMapper.pageRepositoryToPaginationResponse(response);
+        return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
     }
 
     public OrderItemEntity findByCommerceItemIdAndSkuId(String commerceItemId, SkuItemResponse skuItemResponseDTO) {

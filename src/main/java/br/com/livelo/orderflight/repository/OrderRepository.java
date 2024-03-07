@@ -12,19 +12,19 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<OrderEntity, String> {
-    Optional<OrderEntity> findByCommerceOrderId(String commerceOrderId);
+        Optional<OrderEntity> findByCommerceOrderId(String commerceOrderId);
 
-    Page<OrderProcess> findAllByCurrentStatusCode(String statusCode, Pageable pageable);
+        Page<OrderProcess> findAllByCurrentStatusCode(String statusCode, Pageable pageable);
 
-    @Query("select o.id, o.commerceOrderId from OrderEntity o " +
-            " inner join o.currentStatus os " +
-            " inner join o.items oi " +
-            " inner join oi.segments s " +
-            " where os.code = ?1 " +
-            " group by o.id, o.commerceOrderId " +
-            " having ?2 < max(s.arrivalDate) ")
-    Page<OrderEntity> findAllByCurrentStatusCodeAndArrivalDateLessThan(String statusCode,
-            LocalDateTime expirationDate, Pageable pageable);
-
+        @Query("select new br.com.livelo.orderflight.domain.dtos.repository.OrderProcess(o.id, o.commerceOrderId) " +
+                        " from OrderEntity o " +
+                        " inner join o.currentStatus os " +
+                        " inner join o.items oi " +
+                        " inner join oi.segments s " +
+                        " where os.code = ?1 " +
+                        " group by o.id, o.commerceOrderId " +
+                        " having max(s.arrivalDate) < ?2 ")
+        Page<OrderProcess> findAllByCurrentStatusCodeAndArrivalDateLessThan(String statusCode,
+                        LocalDateTime expirationDate, Pageable pageable);
 
 }
