@@ -8,7 +8,9 @@ import lombok.Getter;
 public enum StatusLivelo {
     PROCESSING("LIVPNR-1007", "PROCESSING"),
     FAILED("LIVPNR-1014", "FAILED"),
-    INITIAL("LIVPNR-1006", "INITIAL");
+    INITIAL("LIVPNR-1006", "INITIAL"),
+    CANCELED("LIVPNR-9001", "CANCELED"),
+    COMPLETED("LIVPNR-1011", "COMPLETED");
 
     private final String code;
     private final String description;
