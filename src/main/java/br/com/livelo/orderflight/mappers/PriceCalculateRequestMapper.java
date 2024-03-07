@@ -68,9 +68,8 @@ public interface PriceCalculateRequestMapper {
 
 
         for (SegmentEntity segmentEntity : orderItemEntity.getSegments()) {
-            var airline = segmentEntity.getFlightsLegs().stream()
+            var flightLeg = segmentEntity.getFlightsLegs().stream()
                     .findFirst()
-                    .map(FlightLegEntity::getAirline)
                     .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Airline not found in flight legs!"));
 
             pricingCalculateSegment.add(
@@ -84,7 +83,7 @@ public interface PriceCalculateRequestMapper {
                             .destinationDate(String.valueOf(segmentEntity.getArrivalDate()))
                             .numberOfStops(segmentEntity.getStops())
                             .flightDuration(segmentEntity.getFlightDuration())
-                            .airline(PricingCalculateAirline.builder().iata(airline.getManagedBy().getIata()).description(airline.getManagedBy().getDescription()).build())
+                            .airline(PricingCalculateAirline.builder().iata(flightLeg.getAirlineManagedByIata()).description(flightLeg.getAirlineManagedByDescription()).build())
                             .flightClass(orderItemEntity.getTravelInfo().getTypeClass())
                             .luggages(buildLuggages(segmentEntity))
                             .cancellationRules(buildCancellationRules(segmentEntity))
@@ -136,12 +135,12 @@ public interface PriceCalculateRequestMapper {
         return PricingCalculateAirline.builder()
                 .description(flightLegEntity.getManagedBy())
                 .managedBy(PricingCalculateManagedBy.builder()
-                        .iata(flightLegEntity.getAirline().getManagedBy().getIata())
-                        .description(flightLegEntity.getAirline().getManagedBy().getDescription())
+                        .iata(flightLegEntity.getAirlineManagedByIata())
+                        .description(flightLegEntity.getAirlineManagedByDescription())
                         .build())
                 .operatedBy(PricingCalculateOperatedBy.builder()
-                        .iata(flightLegEntity.getAirline().getOperatedBy().getIata())
-                        .description(flightLegEntity.getAirline().getOperatedBy().getDescription())
+                        .iata(flightLegEntity.getAirlineOperatedByIata())
+                        .description(flightLegEntity.getAirlineOperatedByDescription())
                         .build())
                 .build();
 

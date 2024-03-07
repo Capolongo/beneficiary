@@ -232,16 +232,16 @@ class ReservationServiceTest {
                         .stops(1)
                         .flightDuration(30)
                         .flightsLegs(Set.of(FlightLegEntity.builder()
-                                .airline(AirlineEntity.builder()
-                                        .managedBy(AirlineManagedByEntity.builder().iata("").description("").build())
-                                        .operatedBy(AirlineOperatedByEntity.builder().iata("").description("").build())
-                                        .build())
+                                .airlineManagedByIata("")
+                                .airlineManagedByDescription("")
+                                .airlineOperatedByIata("")
+                                .airlineOperatedByDescription("")
                                 .build()))
                         .luggages(Set.of(LuggageEntity.builder().build()))
                         .cancelationRules(Set.of(CancelationRuleEntity.builder().build()))
                         .changeRules(Set.of(ChangeRuleEntity.builder().build()))
-                        .partnerId(token
-                        ).build()))
+                        .partnerId(token)
+                        .build()))
                 .price(OrderItemPriceEntity.builder().partnerAmount(BigDecimal.TEN).build())
                 .build();
     }
@@ -257,6 +257,8 @@ class ReservationServiceTest {
                         .prices(
                                 List.of(
                                         PricingCalculatePrice.builder()
+                                                .pointsAmount(10)
+                                                .accrualPoints(10)
                                                 .priceListId("price")
                                                 .flight(PricingCalculateFlight.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).build())
                                                 .taxes(PricingCalculateTaxes.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).build())

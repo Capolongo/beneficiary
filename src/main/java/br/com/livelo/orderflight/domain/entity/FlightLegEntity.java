@@ -20,9 +20,10 @@ public class FlightLegEntity extends BaseEntity {
     private Long id;
     private String flightNumber;
     private Integer flightDuration;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "AIRLINE_ID")
-    private AirlineEntity airline;
+    private String airlineManagedByIata;
+    private String airlineManagedByDescription;
+    private String airlineOperatedByIata;
+    private String airlineOperatedByDescription;
     private String managedBy;
     private Integer timeToWait;
     private String originIata;
