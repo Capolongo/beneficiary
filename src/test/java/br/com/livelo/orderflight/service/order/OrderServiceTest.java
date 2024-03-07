@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -238,5 +239,43 @@ class OrderServiceTest {
         OrderStatusEntity statusFailed = orderService.buildOrderStatusFailed("any cause");
 
         assertInstanceOf(OrderStatusEntity.class, statusFailed);
+    }
+
+    @Test
+    void shouldReturnOnlyFlightItemFromOrder() {
+        Set<OrderItemEntity> flightItemMock = MockBuilder.orderEntity().getItems();
+
+        OrderItemEntity flightItem = orderService.getFlightFromOrderItems(flightItemMock);
+
+        assertInstanceOf(OrderItemEntity.class, flightItem);
+        assertEquals(flightItemMock, Set.of(flightItem));
+    }
+
+    @Test
+    void shouldThrowFlightItemFromOrderWhenNotFound() {
+        Set<OrderItemEntity> flightItemMock = Set.of();
+
+        assertThrows(OrderFlightException.class, () -> {
+           orderService.getFlightFromOrderItems(flightItemMock);
+        });
+    }
+
+    @Test
+    void shouldReturnOnlyTaxItemFromOrder() {
+        OrderItemEntity taxItemMock = MockBuilder.orderItemEntity();
+        taxItemMock.setSkuId("tax");
+
+        OrderItemEntity taxItem = orderService.getTaxFromOrderItems(Set.of(taxItemMock));
+
+        assertInstanceOf(OrderItemEntity.class, taxItem);
+        assertEquals(taxItemMock, taxItem);
+    }
+    @Test
+    void shouldThrowTaxItemFromOrderWhenNotFound() {
+        Set<OrderItemEntity> taxItemMock = Set.of();
+
+        assertThrows(OrderFlightException.class, () -> {
+           orderService.getTaxFromOrderItems(taxItemMock);
+        });
     }
 }
