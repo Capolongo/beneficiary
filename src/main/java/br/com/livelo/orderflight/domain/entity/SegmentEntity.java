@@ -2,10 +2,8 @@ package br.com.livelo.orderflight.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 @Getter

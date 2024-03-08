@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {ReservationItemMapper.class, ReservationPriceMapper.class})
 public interface ReservationMapper {
-    @Mapping(target = "items", expression = "java(mapItems(reservationRequest, partnerReservationResponse, listPrice))")
+    @Mapping(target = "items", expression = "java(mapItems(reservationRequest, partnerReservationResponse, listPrice,pricingCalculatePrice))")
     @Mapping(target = "expirationDate", source = "partnerReservationResponse.expirationDate")
     @Mapping(target = "commerceOrderId", source = "reservationRequest.commerceOrderId")
     @Mapping(target = "partnerOrderId", source = "partnerReservationResponse.partnerOrderId")
@@ -49,7 +49,7 @@ public interface ReservationMapper {
     }
 
     default Set<OrderItemEntity> mapItems(ReservationRequest reservationRequest,
-                                          PartnerReservationResponse partnerReservationResponse, String listPrice) {
+            PartnerReservationResponse partnerReservationResponse, String listPrice,PricingCalculatePrice pricingCalculatePrice) {
         var reservationItemMapper = Mappers.getMapper(ReservationItemMapper.class);
 
         return reservationRequest.getItems()
@@ -63,7 +63,9 @@ public interface ReservationMapper {
                                         .equals(currentRequestItem
                                                 .getProductType()))
                                 .toList().getFirst(),
-                        listPrice))
+                        listPrice,
+                        pricingCalculatePrice
+                ))
                 .collect(Collectors.toSet());
     }
 

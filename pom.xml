@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.2</version>
+        <version>3.2.3</version>
     </parent>
     <artifactId>order-flight</artifactId>
     <modelVersion>4.0.0</modelVersion>
@@ -25,7 +25,7 @@
 
         <livelo-models.version>0.0.9</livelo-models.version>
         <log.version>1.0.0</log.version>
-        <logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
+        <logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <lombok.version>1.18.30</lombok.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
@@ -39,9 +39,11 @@
 
     <scm>
         <connection>
-            scm:git:ssh://git@stash.pontoslivelo.com.br:7999/livtravel/order-flight.git</connection>
+            scm:git:ssh://git@stash.pontoslivelo.com.br:7999/livtravel/order-flight.git
+        </connection>
         <developerConnection>
-            scm:git:ssh://git@stash.pontoslivelo.com.br:7999/livtravel/order-flight.git</developerConnection>
+            scm:git:ssh://git@stash.pontoslivelo.com.br:7999/livtravel/order-flight.git
+        </developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -65,17 +67,18 @@
             <version>${logstash-logback-encoder.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.4.14</version>
-            <scope>test</scope>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing-bridge-brave</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.4.14</version>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.18.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -112,6 +115,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>6.1.4</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -124,17 +138,6 @@
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
             <artifactId>ojdbc8</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.4.14</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.4.14</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

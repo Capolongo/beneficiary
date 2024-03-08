@@ -48,4 +48,7 @@ public class OrderEntity extends BaseEntity {
         @OneToOne(cascade = CascadeType.ALL)
         @JoinColumn(name = "STATUS")
         private OrderStatusEntity currentStatus;
+        @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+        @JoinColumn(name = "ORDER_ID")
+        private Set<ProcessCounterEntity> processCounters;
 }

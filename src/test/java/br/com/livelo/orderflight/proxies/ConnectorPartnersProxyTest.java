@@ -17,6 +17,8 @@ import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,17 +36,6 @@ import static br.com.livelo.partnersconfigflightlibrary.utils.ErrorsType.UNKNOWN
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import br.com.livelo.orderflight.client.PartnerConnectorClient;
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
-import br.com.livelo.orderflight.exception.OrderFlightException;
-import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
-import br.com.livelo.orderflight.mock.MockBuilder;
-import br.com.livelo.partnersconfigflightlibrary.dto.WebhookDTO;
-import br.com.livelo.partnersconfigflightlibrary.services.impl.PartnersConfigServiceImpl;
-import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
-import feign.FeignException;
-
 
 @ExtendWith(MockitoExtension.class)
 class ConnectorPartnersProxyTest {
@@ -59,13 +50,15 @@ class ConnectorPartnersProxyTest {
     @InjectMocks
     private ConnectorPartnersProxy proxy;
 
+    private void setup() {
+        WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
+        when(partnersConfigService.getPartnerWebhook(anyString(), any(Webhooks.class))).thenReturn(webhook);
+    }
+
     @Test
     void shouldReturnConfirmOnPartner() {
         ResponseEntity<ConnectorConfirmOrderResponse> confirmOrderResponse = MockBuilder.connectorConfirmOrderResponse();
-        WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
-        when(partnersConfigService.getPartnerWebhook(anyString(),
-                any(Webhooks.class)))
-                .thenReturn(webhook);
+        setup();
         when(partnerConnectorClient.confirmOrder(any(URI.class), any(ConnectorConfirmOrderRequest.class)))
                 .thenReturn(confirmOrderResponse);
 
@@ -80,10 +73,7 @@ class ConnectorPartnersProxyTest {
     @Test
     void shouldReturnFailedWhenCatchFeignException() throws OrderFlightException, JsonProcessingException {
         FeignException mockException = Mockito.mock(FeignException.class);
-        WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
-        when(partnersConfigService.getPartnerWebhook(anyString(),
-                any(Webhooks.class)))
-                .thenReturn(webhook);
+        setup();
         when(mockException.contentUTF8())
                 .thenReturn(
                         new String(MockBuilder.connectorConfirmOrderResponse().getBody().toString().getBytes(),
@@ -112,8 +102,9 @@ class ConnectorPartnersProxyTest {
 
         assertTrue(exception.getMessage().contains("Cannot invoke"));
     }
+
     @Test
-    void should() throws OrderFlightException, JsonProcessingException {
+    void shouldThrowOrderFlightExceptionOnConfirmOnPartner() throws OrderFlightException, JsonProcessingException {
         FeignException mockException = Mockito.mock(FeignException.class);
         when(mockException.contentUTF8())
                 .thenReturn(
@@ -139,14 +130,12 @@ class ConnectorPartnersProxyTest {
             assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
         }
     }
+
     @Test
     void shouldMakeReservation() {
         var request = mock(PartnerReservationRequest.class);
         var response = mock(PartnerReservationResponse.class);
-        WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
-        when(partnersConfigService.getPartnerWebhook(anyString(),
-                any(Webhooks.class)))
-                .thenReturn(webhook);
+        setup();
 
         when(request.getPartnerCode()).thenReturn("cvc");
         when(partnerConnectorClient.createReserve(any(), any(), any()))
@@ -159,10 +148,7 @@ class ConnectorPartnersProxyTest {
     @Test
     void shouldThrowsException_WhenFeignResponse5xxStatus() {
         var request = mock(PartnerReservationRequest.class);
-        WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
-        when(partnersConfigService.getPartnerWebhook(anyString(),
-                any(Webhooks.class)))
-                .thenReturn(webhook);
+        setup();
         var feignException = makeFeignMockExceptionWithStatus(500);
         makeException(request, feignException);
 
@@ -176,10 +162,7 @@ class ConnectorPartnersProxyTest {
     void shouldThrowsException_WhenFeignExceptionResponseIsDifferentOf5xxxStatus() {
         var request = mock(PartnerReservationRequest.class);
         var feignException = makeFeignMockExceptionWithStatus(400);
-        WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
-        when(partnersConfigService.getPartnerWebhook(anyString(),
-                any(Webhooks.class)))
-                .thenReturn(webhook);
+        setup();
         makeException(request, feignException);
 
         var exception = assertThrows(ConnectorReservationBusinessException.class,
@@ -191,10 +174,7 @@ class ConnectorPartnersProxyTest {
     @Test
     void shouldThrowsOrderFlightException_WhenFeignExceptionResponseIsDifferentOf5xxxStatus() {
         var request = mock(PartnerReservationRequest.class);
-        WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
-        when(partnersConfigService.getPartnerWebhook(anyString(),
-                any(Webhooks.class)))
-                .thenReturn(webhook);
+        setup();
         when(request.getPartnerCode()).thenReturn("cvc");
         doThrow(OrderFlightException.class).when(partnerConnectorClient).createReserve(any(), any(), anyString());
 
@@ -204,10 +184,8 @@ class ConnectorPartnersProxyTest {
     @Test
     void shouldThrowException_WhenFeignReturnSomethingWrong() {
         var request = mock(PartnerReservationRequest.class);
-        var partnerWebhook = WebhookDTO.builder().connectorUrl("http://test").build();
-
+        setup();
         when(partnerConnectorClient.createReserve(any(), any(), any())).thenThrow(new RuntimeException("Simulated internal error"));
-        when(partnersConfigService.getPartnerWebhook(anyString(), any())).thenReturn(partnerWebhook);
 
         assertThrows(OrderFlightException.class,
                 () -> proxy.createReserve(mock(PartnerReservationRequest.class), "transactionId"));
@@ -222,6 +200,7 @@ class ConnectorPartnersProxyTest {
     void shouldThrowFlightConnectorBusinessError_WhenThereIsBadRequest() {
         var request = mock(PartnerReservationRequest.class);
         var feignException = makeFeignMockExceptionWithStatus(400);
+
         WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
         when(partnersConfigService.getPartnerWebhook(anyString(),
                 any(Webhooks.class)))
@@ -232,7 +211,6 @@ class ConnectorPartnersProxyTest {
                 () -> proxy.createReserve(request, "transactionId"));
 
         assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
-
     }
 
     @Test
@@ -240,10 +218,7 @@ class ConnectorPartnersProxyTest {
         var request = mock(PartnerReservationRequest.class);
         var feignException = makeFeignMockExceptionWithStatus(400);
         makeException(request, feignException);
-        WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
-        when(partnersConfigService.getPartnerWebhook(anyString(),
-                any(Webhooks.class)))
-                .thenReturn(webhook);
+        setup();
         var exception = assertThrows(OrderFlightException.class,
                 () -> proxy.createReserve(request, "transactionId"));
 
@@ -256,6 +231,7 @@ class ConnectorPartnersProxyTest {
         var request = mock(PartnerReservationRequest.class);
         var exceptionExpected = mock(WebhookException.class);
         doThrow(exceptionExpected).when(partnersConfigService).getPartnerWebhook(any(), any());
+
         when(exceptionExpected.getError()).thenReturn(UNKNOWN);
 
         var exception = assertThrows(OrderFlightException.class,
@@ -268,7 +244,9 @@ class ConnectorPartnersProxyTest {
     void shouldThrowBusinessErrorException_WhenCallPartnerInactive() {
         var request = mock(PartnerReservationRequest.class);
         var exceptionExpected = mock(WebhookException.class);
+        
         doThrow(exceptionExpected).when(partnersConfigService).getPartnerWebhook(any(), any());
+
         when(exceptionExpected.getError()).thenReturn(PARTNER_INACTIVE);
 
         var exception = assertThrows(OrderFlightException.class,
@@ -286,5 +264,53 @@ class ConnectorPartnersProxyTest {
         var feignException = Mockito.mock(FeignException.class);
         Mockito.when(feignException.status()).thenReturn(statusCode);
         return feignException;
+    }
+
+  @Test
+  void shouldReturnGetConfirmationOnPartner() throws Exception {
+    ResponseEntity<ConnectorConfirmOrderResponse> confirmOrderResponse = MockBuilder.connectorConfirmOrderResponse();
+    setup();
+    when(partnerConnectorClient.getConfirmation(any(URI.class))).thenReturn(confirmOrderResponse);
+
+    ConnectorConfirmOrderResponse response = proxy.getConfirmationOnPartner("CVC", "10071014", "lf123");
+
+    assertEquals(confirmOrderResponse.getBody(), response);
+    assertEquals(200, confirmOrderResponse.getStatusCode().value());
+    verify(partnerConnectorClient).getConfirmation(any(URI.class));
+    verifyNoMoreInteractions(partnerConnectorClient);
+  }
+
+  @Test
+  void shouldThrowExceptionGetConfirmationOnPartner() {
+    setup();
+    when(partnerConnectorClient.getConfirmation(any(URI.class))).thenThrow(FeignException.class);
+
+    assertThrows(OrderFlightException.class, () -> {
+        proxy.getConfirmationOnPartner("CVC", "10071014", "lf123");
+    });
+  }
+
+    @Test
+    void shouldReturnGetVoucherOnPartner() throws Exception {
+        ResponseEntity<ConnectorConfirmOrderResponse> voucherResponse = MockBuilder.connectorVoucherResponse();
+        setup();
+        when(partnerConnectorClient.getVoucher(any(URI.class))).thenReturn(voucherResponse);
+
+        ConnectorConfirmOrderResponse response = proxy.getVoucherOnPartner("CVC", "partnerOrderId", "orderId");
+
+        assertEquals(voucherResponse.getBody(), response);
+        assertEquals(200, voucherResponse.getStatusCode().value());
+        verify(partnerConnectorClient).getVoucher(any(URI.class));
+        verifyNoMoreInteractions(partnerConnectorClient);
+    }
+
+    @Test
+    void shouldThrowExceptionGetVoucherOnPartner() {
+        setup();
+        when(partnerConnectorClient.getVoucher(any(URI.class))).thenThrow(FeignException.class);
+
+        assertThrows(OrderFlightException.class, () -> {
+            proxy.getVoucherOnPartner("CVC", "10071014", "lf123");
+        });
     }
 }
