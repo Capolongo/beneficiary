@@ -44,6 +44,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId,
                                            String channel, String listPrice) {
+        log.info("Creating Order: {} transactionId: {} listPrice: {}", request, transactionId, listPrice);
         try {
             var orderOptional = this.orderService.findByCommerceOrderId(request.getCommerceOrderId());
             if (orderOptional.isPresent()) {
@@ -148,7 +149,7 @@ public class ReservationServiceImpl implements ReservationService {
                 }
                 return isSameCommerceItemsId;
             }
-            return Boolean.FALSE;
+            return false;
         }).orElse(false);
     }
 
