@@ -22,7 +22,7 @@ public interface LiveloPartnersMapper {
     @Mapping(source = "skuId", target = "id")
     @Mapping(source = "price.amount", target = "price")
     @Mapping(target = "currency", constant = "PTS")
-    @Mapping(target = "partnerInfo.travel.legs", source = "segments.flightLegs")
+//    @Mapping(target = "partnerInfo.travel.legs", source = "segments.flightLegs")
     ItemDTO orderItemEntityToItemDTO(OrderItemEntity orderItemEntity);
 
 
@@ -36,11 +36,19 @@ public interface LiveloPartnersMapper {
 
 
 
+    @Mapping(target = "managedAirline.name", source = "managedBy")
+    @Mapping(target = "managedAirline.iata", source = "managedBy")
+    @Mapping(target = "operationAirline.name", source = "airline")
+    @Mapping(target = "operationAirline.iata", source = "airline")
+    @Mapping(target = "departure.iata", source = "destinationIata")
+    @Mapping(target = "arrival.iata", source = "originIata")
     LegSummaryDTO flightLegEntityToLegSummaryDTO(FlightLegEntity flightLegEntity);
 
 
 //    default List<LegSummaryDTO> mapLegs(OrderEntity order) {
 //        return order.getItems().stream().map(orderItemEntity -> orderItemEntity.getSegments().stream().map(segment -> segment.getFlightsLegs().stream().map(this::flightLegEntityToLegSummaryDTO).toList()))
+//
+//    }
 //        return order.getItems().stream().map(orderItemEntity -> orderItemEntity.getSegments().stream().map(segment -> segment.getFlightsLegs().stream().map(this::flightLegEntityToLegSummaryDTO).toList()))
 
 
