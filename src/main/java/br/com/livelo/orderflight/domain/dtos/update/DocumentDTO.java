@@ -10,11 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DocumentDTO {
-
-	public String name;
-	public String code;
-	public String type;
-	public String descriptor;
-	public String url;
-
+	private String doc;
+	private String type;
+	private String issuingCountry;
+	private String expirationDate;
+	private String residenceCountry;
+	private String issuingDate;
 }
