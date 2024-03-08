@@ -12,11 +12,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateOrderDTO {
+	private static final String PTS = "PTS";
 
-	public Long amount;
-	public String currency;
-	public String partnerCode;
-	public List<ItemDTO> items;
-	public List<DeliveryDTO> deliveries;
+	private Long amount;
+	private String currency = PTS;
+	private String partnerCode;
+	private List<ItemDTO> items;
+	private List<DeliveryDTO> deliveries;
 
 }

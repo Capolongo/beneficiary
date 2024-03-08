@@ -13,6 +13,7 @@ import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
+//import br.com.livelo.orderflight.mappers.LiveloPartnersMapper;
 import br.com.livelo.orderflight.mappers.LiveloPartnersMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.proxies.LiveloPartnersProxy;
@@ -77,9 +78,12 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
         if (order != null) {
-            orderService.orderDetailLog("confirmOrder",status.getCode(), order);
+            orderService.orderDetailLog("confirmOrder", status.getCode(), order);
             log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}], statusCode: [{}], partnerCode: [{}] ", id, orderRequest.getCommerceOrderId(), order.getTransactionId(), status.getCode(), order.getPartnerCode());
         }
+        UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
+        System.out.println(updateOrderDTO);
+
         return confirmOrderMapper.orderEntityToConfirmOrderResponse(order);
     }
 
@@ -94,18 +98,18 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             return;
         }
 
-         var processCounter = orderService.getProcessCounter(order, Webhooks.GETCONFIRMATION.value);
+        var processCounter = orderService.getProcessCounter(order, Webhooks.GETCONFIRMATION.value);
         if (processCounter.getCount() >= getConfirmationMaxProcessCountFailed) {
             log.warn("ConfirmationService.orderProcess - counter exceeded limit - id: [{}]", order.getId());
             status = orderService.buildOrderStatusFailed("O contador excedeu o limite de tentativas");
         } else {
-           status = processGetConfirmation(order);
+            status = processGetConfirmation(order);
         }
 
         if (!orderService.isSameStatus(currentStatusCode, status.getCode())) {
-            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-            System.out.println(updateOrderDTO);
-            liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
+//            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
+//            System.out.println(updateOrderDTO);
+//            liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
 
             Duration duration = processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
             log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}], orderId: [{}], partnerCode: [{}], oldStatus: [{}], newStatus: [{}]", duration.toMinutes(), order.getId(), order.getPartnerCode(), order.getCurrentStatus(), status);
@@ -116,10 +120,10 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.save(order);
 
         log.info("ConfirmationService.orderProcess - order process counter - id: [{}], count: [{}]", order.getId(), processCounter.getCount());
-        orderService.orderDetailLog("orderProcess",status.getCode(), order);
+        orderService.orderDetailLog("orderProcess", status.getCode(), order);
     }
 
-    private OrderStatusEntity processGetConfirmation (OrderEntity order) {
+    private OrderStatusEntity processGetConfirmation(OrderEntity order) {
         try {
             var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getPartnerOrderId(), order.getId());
             var mappedStatus = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());
@@ -132,7 +136,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             return order.getCurrentStatus();
         } catch (Exception exception) {
             log.error("ConfirmationService.orderProcess - error - orderId: [{}], exception: [{}]", order.getId(), exception);
-           return orderService.buildOrderStatusFailed(exception.getMessage());
+            return orderService.buildOrderStatusFailed(exception.getMessage());
         }
     }
 

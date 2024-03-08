@@ -3,6 +3,7 @@ package br.com.livelo.orderflight.controller;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusRequest;
 import br.com.livelo.orderflight.service.status.StatusService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/v1/orders")
 public class OrderStatusController {
 
