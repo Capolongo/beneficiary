@@ -78,11 +78,7 @@ public class ConnectorPartnersProxy {
         } catch (WebhookException e) {
             throw handleWebhookException(e);
         } catch (Exception e) {
-            throw new OrderFlightException(
-                    OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR,
-                    e.getMessage(),
-                    "Unknown error on connector create reserve call! partner: " + request.getPartnerCode(),
-                    e
+            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), "Unknown error on connector create reserve call! partner: " + request.getPartnerCode(), e
             );
         }
     }
