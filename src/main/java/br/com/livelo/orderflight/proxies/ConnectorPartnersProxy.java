@@ -74,9 +74,9 @@ public class ConnectorPartnersProxy {
         } catch (OrderFlightException e) {
             throw e;
         } catch (FeignException e) {
-            handleFeignException(e, "Error on partner connector calls. httpStatus: %s ResponseBody: %s");
+            throw handleFeignException(e, "Error on partner connector calls. httpStatus: %s ResponseBody: %s");
         } catch (WebhookException e) {
-            handleWebhookException(e);
+            throw handleWebhookException(e);
         } catch (Exception e) {
             throw new OrderFlightException(
                     OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR,
@@ -85,7 +85,6 @@ public class ConnectorPartnersProxy {
                     e
             );
         }
-        throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, null, null);
     }
 
     public ConnectorReservationResponse getReservation(String id, String transactionId, String partnerCode) {
@@ -95,9 +94,9 @@ public class ConnectorPartnersProxy {
             ResponseEntity<ConnectorReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId);
             return response.getBody();
         } catch (FeignException e) {
-            handleFeignException(e, "Error on partner get reservation connector calls. httpStatus: %s ResponseBody: %s");
+            throw handleFeignException(e, "Error on partner get reservation connector calls. httpStatus: %s ResponseBody: %s");
         } catch (WebhookException e) {
-            handleWebhookException(e);
+            throw handleWebhookException(e);
         } catch (Exception e) {
             throw new OrderFlightException(
                     OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR,
@@ -106,23 +105,22 @@ public class ConnectorPartnersProxy {
                     e
             );
         }
-        throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, null, "Unknown error on connector getReservation call! partner: " + partnerCode);
     }
 
-    private static void handleFeignException(FeignException e, String format) {
+    private static OrderFlightException handleFeignException(FeignException e, String format) {
         var status = HttpStatus.valueOf(e.status());
         var message = String.format(format, e.status(), e.responseBody());
 
         if (status.is4xxClientError()) {
-            throw new ConnectorReservationBusinessException(message, e);
+           return new ConnectorReservationBusinessException(message, e);
         }
-        throw new ConnectorReservationInternalException(message, e);
+        return new ConnectorReservationInternalException(message, e);
     }
 
-    private static void handleWebhookException(WebhookException e) {
+    private static OrderFlightException handleWebhookException(WebhookException e) {
         var orderFlightErrorType = ErrorsType.UNKNOWN.equals(e.getError()) ? ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR : ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR;
         var message = String.format("Error on connector calls! error: %S", e.getError());
-        throw new OrderFlightException(orderFlightErrorType, e.getMessage(), message, e);
+        return new OrderFlightException(orderFlightErrorType, e.getMessage(), message, e);
     }
 
     public ConnectorConfirmOrderResponse getConfirmationOnPartner(String partnerCode, String partnerOrderId, String id) throws OrderFlightException {
