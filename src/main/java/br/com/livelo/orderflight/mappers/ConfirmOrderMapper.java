@@ -27,11 +27,12 @@ public interface ConfirmOrderMapper {
     ConfirmOrderItemResponse orderItemEntityToConfirmOrderItemResponse(OrderItemEntity orderItemEntity);
 
     @Mapping(target = "operatedBy", source = "managedBy")
+    @Mapping(target = "airline", ignore = true)
     ConfirmationOrderFlightsLegsResponse flightLegEntityToConfirmationOrderFlightsLegsResponse(FlightLegEntity flightLegEntity);
 
     ConfirmationOrderDocumentResponse paxEntityToConfirmationOrderPaxResponse(DocumentEntity documentEntity);
 
-    @Mapping(target = "phone", source = "phoneNumber")
+    @Mapping(target = "phone", source = "phone")
     ConfirmationOrderPaxResponse paxEntityToConfirmationOrderPaxResponse(PaxEntity paxEntity);
 
     @Mapping(source = "currentStatus.partnerResponse", target = "status.details")
@@ -41,7 +42,7 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "paxs", expression = "java(reducePaxs(orderEntity))")
     ConnectorConfirmOrderRequest orderEntityToConnectorConfirmOrderRequest(OrderEntity orderEntity);
 
-    @Mapping(target = "phone", source = "phoneNumber")
+    @Mapping(target = "phone", source = "phone")
     ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
     OrderStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);

@@ -10,6 +10,6 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class ReservationDocument {
-	private String number;
+	private String documentNumber;
     private String type;
 }

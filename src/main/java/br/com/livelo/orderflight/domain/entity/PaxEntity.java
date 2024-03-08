@@ -24,10 +24,10 @@ public class PaxEntity extends BaseEntity {
     private String lastName;
     private String email;
     private String areaCode;
-    private String phoneNumber;
+    private String phone;
     private String gender;
     private String birthDate;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "PAX_ID")
-    private Set<DocumentEntity> document;
+    private Set<DocumentEntity> documents;
 }

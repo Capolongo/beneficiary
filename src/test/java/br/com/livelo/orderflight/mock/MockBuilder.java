@@ -128,7 +128,7 @@ public class MockBuilder {
                 .firstName("firstName")
                 .lastName("lastName")
                 .birthDate("birthDate")
-                .document(Set.of())
+                .documents(Set.of())
                 .email("email")
                 .areaCode("areaCode")
                 .phone("phone")
@@ -183,7 +183,7 @@ public class MockBuilder {
                 .lastName("lastName")
                 .gender("gender")
                 .birthDate("birthDate")
-                .document(Set.of())
+                .documents(Set.of())
                 .email("email")
                 .areaCode("areaCode")
                 .phone("phone")
@@ -329,10 +329,10 @@ public class MockBuilder {
                 .lastName("lastName")
                 .email("email")
                 .areaCode("areaCode")
-                .phoneNumber("phone")
+                .phone("phone")
                 .gender("gender")
                 .birthDate("birthDate")
-                .document(Set.of())
+                .documents(Set.of())
                 .build();
     }
 
