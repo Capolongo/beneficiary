@@ -174,7 +174,7 @@ public class ReservationServiceImpl implements ReservationService {
     private void hasSameTokens(Set<String> orderTokens, Set<String> requestTokens) {
         if (orderTokens.size() != requestTokens.size() || !orderTokens.containsAll(requestTokens)) {
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR,
-                    "Tokens do parceiro divergentes", null);
+                    "Partner tokens are different!", null);
         }
     }
 }
