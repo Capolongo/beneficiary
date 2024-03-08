@@ -15,7 +15,7 @@ public class ReservationDocument {
     private String documentNumber;
 
     @NotBlank
-    private String type;
+	private String type;
 
     
     private String issueDate;

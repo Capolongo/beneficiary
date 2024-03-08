@@ -9,15 +9,17 @@ import org.mapstruct.Mapping;
 public interface ReservationFlightLegMapper {
     @Mapping(target = "flightNumber", source = "flightNumber")
     @Mapping(target = "flightDuration", source = "flightDuration")
-    @Mapping(target = "airline", source = "operatedBy")
-    @Mapping(target = "managedBy", source = "managedBy")
+    @Mapping(target = "airlineManagedByIata", source = "partnerReservationFlightsLeg.airline.managedBy.iata")
+    @Mapping(target = "airlineManagedByDescription", source = "partnerReservationFlightsLeg.airline.managedBy.description")
+    @Mapping(target = "airlineOperatedByIata", source = "partnerReservationFlightsLeg.airline.operatedBy.iata")
+    @Mapping(target = "airlineOperatedByDescription", source = "partnerReservationFlightsLeg.airline.operatedBy.description")
     @Mapping(target = "timeToWait", source = "timeToWait")
     @Mapping(target = "originIata", source = "originIata")
     @Mapping(target = "originDescription", source = "originDescription")
     @Mapping(target = "destinationIata", source = "destinationIata")
     @Mapping(target = "destinationDescription", source = "destinationDescription")
     @Mapping(target = "type", source = "type")
-    @Mapping(target = "departureDate", source = "departureDate",dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    @Mapping(target = "arrivalDate", source = "arrivalDate",dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    @Mapping(target = "departureDate", source = "departureDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    @Mapping(target = "arrivalDate", source = "arrivalDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     FlightLegEntity toFlightLegEntity(PartnerReservationFlightsLeg partnerReservationFlightsLeg);
 }
