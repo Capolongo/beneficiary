@@ -23,4 +23,5 @@ public interface ReservationTravelInfoEntityMapper {
         travelInfoEntity.setType(Objects.nonNull(partnerReservationTravelInfo.getType()) ? partnerReservationTravelInfo.getType() : "");
     }
 
+
 }
