@@ -83,10 +83,10 @@ class ReservationServiceTest {
                 ),
                 List.of(segmentsPartnersId, segmentsPartnersId)
         );
-        var connectorReservationResponse = mock(ConnectorReservationResponse.class);
-        var connectorReservationStatus = mock(ConnectorReservationStatus.class);
+        var connectorReservationResponse = mock(PartnerReservationResponse.class);
+        var connectorReservationStatus = mock(PartnerResponseStatus.class);
 
-        when(connectorPartnersProxy.getReservation(any(), any(), any())).thenReturn(connectorReservationResponse);
+        when(connectorPartnersProxy.getReservation(any(), any(), any(), any())).thenReturn(connectorReservationResponse);
         when(connectorReservationResponse.getStatus()).thenReturn(connectorReservationStatus);
         when(connectorReservationStatus.getCode()).thenReturn("LIVPNR-1007");
         when(orderService.save(any())).thenReturn(orderMock);
