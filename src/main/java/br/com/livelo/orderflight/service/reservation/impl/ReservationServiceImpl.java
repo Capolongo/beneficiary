@@ -14,7 +14,6 @@ import br.com.livelo.orderflight.domain.entity.SegmentEntity;
 import br.com.livelo.orderflight.enuns.Partner;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
-import br.com.livelo.orderflight.mappers.PriceCalculateRequestMapper;
 import br.com.livelo.orderflight.mappers.PricingCalculateRequestMapper;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
@@ -40,7 +39,6 @@ public class ReservationServiceImpl implements ReservationService {
     private final ConnectorPartnersProxy partnerConnectorProxy;
     private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
-    private final PriceCalculateRequestMapper priceCalculateRequestMapper;
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId) {
         log.info("Creating Order: {} transactionId: {} listPriceId: {}", request, transactionId, listPriceId);
