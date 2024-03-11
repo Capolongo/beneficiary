@@ -32,7 +32,7 @@ public interface LiveloPartnersMapper {
         return order.getItems().stream().map(item -> {
             var mappedItem = orderItemEntityToItemDTO(item);
             mappedItem.setStatus(statusDTO);
-            mappedItem.setPartnerInfo();
+            mappedItem.setPartnerInfo(partnerInfo);
             return mappedItem;
         }).toList();
 
