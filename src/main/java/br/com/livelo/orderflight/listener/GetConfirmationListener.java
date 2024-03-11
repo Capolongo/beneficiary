@@ -26,7 +26,7 @@ public class GetConfirmationListener {
             confirmationService.orderProcess(orderProcess);
         } catch (Exception exception) {
             log.error("OrderProcessListener.consumer - error in processing payload [{}]", new String(payload.getBody(), StandardCharsets.UTF_8));
-            log.error("OrderProcessListener.consumer - error", exception);
+            log.error("OrderProcessListener.consumer - error ", exception);
             throw new AmqpRejectAndDontRequeueException(exception);
         }
     }
