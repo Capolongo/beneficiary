@@ -17,5 +17,5 @@ public class ConnectorConfirmOrderPaxRequest {
 	private String email;
 	private String areaCode;
 	private String phone;
-	private Set<DocumentEntity> document;
+	private Set<DocumentEntity> documents;
 }

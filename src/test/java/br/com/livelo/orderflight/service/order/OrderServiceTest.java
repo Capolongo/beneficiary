@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.service.order;
 
+import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -275,5 +278,55 @@ class OrderServiceTest {
         OrderStatusEntity statusFailed = orderService.buildOrderStatusFailed("any cause");
 
         assertInstanceOf(OrderStatusEntity.class, statusFailed);
+    }
+
+    @Test
+    void shouldReturnOnlyFlightItemFromOrder() {
+        Set<OrderItemEntity> flightItemMock = MockBuilder.orderEntity().getItems();
+
+        OrderItemEntity flightItem = orderService.getFlightFromOrderItems(flightItemMock);
+
+        assertInstanceOf(OrderItemEntity.class, flightItem);
+        assertEquals(flightItemMock, Set.of(flightItem));
+    }
+
+    @Test
+    void shouldThrowFlightItemFromOrderWhenNotFound() {
+        Set<OrderItemEntity> flightItemMock = Set.of();
+
+        assertThrows(OrderFlightException.class, () -> {
+           orderService.getFlightFromOrderItems(flightItemMock);
+        });
+    }
+
+    @Test
+    void shouldReturnOnlyTaxItemFromOrder() {
+        OrderItemEntity taxItemMock = MockBuilder.orderItemEntity();
+        taxItemMock.setSkuId("tax");
+
+        OrderItemEntity taxItem = orderService.getTaxFromOrderItems(Set.of(taxItemMock));
+
+        assertInstanceOf(OrderItemEntity.class, taxItem);
+        assertEquals(taxItemMock, taxItem);
+    }
+    @Test
+    void shouldThrowTaxItemFromOrderWhenNotFound() {
+        Set<OrderItemEntity> taxItemMock = Set.of();
+
+        assertThrows(OrderFlightException.class, () -> {
+           orderService.getTaxFromOrderItems(taxItemMock);
+        });
+    }
+
+    @Test
+    void shouldLogOrderDetail() {
+        OrderEntity order = MockBuilder.orderEntity();
+        OrderItemEntity taxItemMock = MockBuilder.orderItemEntity();
+        taxItemMock.setSkuId("tax");
+        order.getItems().add(taxItemMock);
+
+        assertAll(() -> {
+            orderService.orderDetailLog("test", StatusConstants.PROCESSING.getCode(), order);
+        });
     }
 }

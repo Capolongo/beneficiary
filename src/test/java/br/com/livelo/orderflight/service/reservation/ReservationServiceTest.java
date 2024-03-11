@@ -3,12 +3,13 @@ package br.com.livelo.orderflight.service.reservation;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.*;
+import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorReservationResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorReservationStatus;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.*;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.domain.entity.SegmentEntity;
+import br.com.livelo.orderflight.domain.entity.*;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.mappers.PriceCalculateRequestMapper;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.proxies.PricingProxy;
@@ -46,7 +47,8 @@ class ReservationServiceTest {
     @BeforeEach
     void setup() {
         var reservationMapper = Mappers.getMapper(ReservationMapper.class);
-        this.reservationService = new ReservationServiceImpl(orderService, connectorPartnersProxy, pricingProxy, reservationMapper);
+        var priceCalculateRequestMapper = Mappers.getMapper(PriceCalculateRequestMapper.class);
+        this.reservationService = new ReservationServiceImpl(orderService, connectorPartnersProxy, pricingProxy, reservationMapper, priceCalculateRequestMapper);
     }
 
     @Test
@@ -69,21 +71,28 @@ class ReservationServiceTest {
     }
 
     @Test
-    void shouldCreateOrder_WhenOrderItemsQuantityEqualsAndTokensEquals() {
+    void shouldCreateOrder_WhenReservationExistsInPartner() {
         var transactionId = "123";
         var id = 1L;
         var type = "type_flight";
         var segmentsPartnersId = "asdf";
         var orderMock = mock(OrderEntity.class);
+        var request = this.buildResevationRequest(
+                List.of(this.buildReservationItem(transactionId, type, "cvc_flight"),
+                        this.buildReservationItem(transactionId, "type_flight_tax", "cvc_flight_tax")
+                ),
+                List.of(segmentsPartnersId, segmentsPartnersId)
+        );
+        var connectorReservationResponse = mock(ConnectorReservationResponse.class);
+        var connectorReservationStatus = mock(ConnectorReservationStatus.class);
 
-        var partnerReservationResponse = buildPartnerReservationResponse();
-
-        when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
+        when(connectorPartnersProxy.getReservation(any(), any(), any())).thenReturn(connectorReservationResponse);
+        when(connectorReservationResponse.getStatus()).thenReturn(connectorReservationStatus);
+        when(connectorReservationStatus.getCode()).thenReturn("LIVPNR-1007");
         when(orderService.save(any())).thenReturn(orderMock);
 
-        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
 
-        var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, transactionId, segmentsPartnersId)));
+        var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, transactionId, segmentsPartnersId, "cvc_flight"), this.buildOrderItem(2L, transactionId, segmentsPartnersId, "cvc_flight_tax")), transactionId);
 
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
         when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
@@ -105,8 +114,8 @@ class ReservationServiceTest {
         var partnerReservationResponse = buildPartnerReservationResponse();
         when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
         when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
-        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
-        var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, commerceItemId, segmentsPartnersId)));
+        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
+        var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, commerceItemId, segmentsPartnersId, "cvc_flight")), transactionId);
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price");
         assertAll(
@@ -121,18 +130,25 @@ class ReservationServiceTest {
         var type = "type_flight";
         var segmentsPartnersId = "asdf";
 
-        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
+        var partnerReservationResponse = buildPartnerReservationResponse();
+        when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
+        when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
+        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
 
         var order = this.buildOrderEntity(
                 Set.of(
-                        this.buildOrderItem(1L, transactionId, segmentsPartnersId),
-                        this.buildOrderItem(2L, transactionId, segmentsPartnersId)
-                )
+                        this.buildOrderItem(1L, transactionId, segmentsPartnersId, "cvc_flight"),
+                        this.buildOrderItem(2L, transactionId, segmentsPartnersId, "cvc_flight_tax")
+                ),
+                transactionId
         );
 
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
-        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price"));
-        assertEquals(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_QUANTITY_ITEMS_BUSINESS_ERROR, exception.getOrderFlightErrorType());
+        var response = this.reservationService.createOrder(request, "123", "123", "WEB", "price");
+        assertAll(
+                () -> assertNotNull(response),
+                () -> assertEquals(transactionId, response.transactionId())
+        );
     }
 
     @Test
@@ -143,9 +159,9 @@ class ReservationServiceTest {
         var token = "asdf";
         var id = 1L;
 
-        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
+        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
 
-        var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, transactionId, token)));
+        var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, transactionId, token, "cvc_flight")), transactionId);
 
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
         var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price"));
@@ -160,9 +176,9 @@ class ReservationServiceTest {
         var token = "asdf";
         var id = 1L;
 
-        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId, segmentsPartnersId));
+        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId, segmentsPartnersId));
 
-        var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, transactionId, token)));
+        var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, transactionId, token, "cvc_flight")), transactionId);
 
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
         var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price"));
@@ -175,7 +191,7 @@ class ReservationServiceTest {
         var type = "type_flight";
         var segmentsPartnersId = "asdfg";
 
-        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type)), List.of(segmentsPartnersId, segmentsPartnersId));
+        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
 
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenThrow(PersistenceException.class);
         var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price"));
@@ -190,22 +206,48 @@ class ReservationServiceTest {
                 .build();
     }
 
-    private OrderEntity buildOrderEntity(Set<OrderItemEntity> orderItems) {
+    private OrderEntity buildOrderEntity(Set<OrderItemEntity> orderItems, String transactionId) {
         return OrderEntity.builder()
+                .partnerCode("CVC")
+                .transactionId(transactionId)
+                .price(OrderPriceEntity.builder().partnerAmount(BigDecimal.TEN).build())
                 .items(orderItems)
                 .build();
     }
 
-    private OrderItemEntity buildOrderItem(Long id, String commerceItemId, String token) {
+    private OrderItemEntity buildOrderItem(Long id, String commerceItemId, String token, String skuId) {
         return OrderItemEntity.builder()
                 .id(id)
+                .skuId(skuId)
+                .productId("flight")
+                .travelInfo(TravelInfoEntity.builder()
+                        .adultQuantity(1)
+                        .childQuantity(0)
+                        .babyQuantity(0)
+                        .type("test")
+                        .build())
                 .commerceItemId(commerceItemId)
-                .segments(Set.of(SegmentEntity.builder().partnerId(token).build()))
+                .segments(Set.of(SegmentEntity.builder()
+                        .step("1")
+                        .stops(1)
+                        .flightDuration(30)
+                        .flightsLegs(Set.of(FlightLegEntity.builder()
+                                .airlineManagedByIata("")
+                                .airlineManagedByDescription("")
+                                .airlineOperatedByIata("")
+                                .airlineOperatedByDescription("")
+                                .build()))
+                        .luggages(Set.of(LuggageEntity.builder().build()))
+                        .cancelationRules(Set.of(CancelationRuleEntity.builder().build()))
+                        .changeRules(Set.of(ChangeRuleEntity.builder().build()))
+                        .partnerId(token)
+                        .build()))
+                .price(OrderItemPriceEntity.builder().partnerAmount(BigDecimal.TEN).build())
                 .build();
     }
 
-    private ReservationItem buildReservationItem(String commerceItemId, String type) {
-        return ReservationItem.builder().commerceItemId(commerceItemId).productType(type).build();
+    private ReservationItem buildReservationItem(String commerceItemId, String type, String skuId) {
+        return ReservationItem.builder().skuId(skuId).commerceItemId(commerceItemId).productType(type).build();
     }
 
     private List<PricingCalculateResponse> buildPricingCalculateResponse() {
@@ -215,7 +257,11 @@ class ReservationServiceTest {
                         .prices(
                                 List.of(
                                         PricingCalculatePrice.builder()
+                                                .pointsAmount(10)
+                                                .accrualPoints(10)
                                                 .priceListId("price")
+                                                .flight(PricingCalculateFlight.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).build())
+                                                .taxes(PricingCalculateTaxes.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).build())
                                                 .pricesDescription(
                                                         PricingCalculatePricesDescription.builder()
                                                                 .flights(List.of(
@@ -228,12 +274,15 @@ class ReservationServiceTest {
                                                                         List.of(
                                                                                 PricingCalculateTaxes.builder()
                                                                                         .type("TESTE_TAX")
-                                                                                        .pointsAmount(new BigDecimal(7))
+                                                                                        .amount(BigDecimal.TEN)
+                                                                                        .pointsAmount(BigDecimal.TEN)
                                                                                         .build()
                                                                         )
                                                                 )
                                                                 .build()
-                                                ).build()
+                                                ).taxes(PricingCalculateTaxes.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).build())
+                                                .flight(PricingCalculateFlight.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).build())
+                                                .build()
                                 )
                         ).build());
     }
@@ -277,9 +326,10 @@ class ReservationServiceTest {
                                                         .build()))
                                                 .flightLegs(List.of(PartnerReservationFlightsLeg
                                                         .builder()
-                                                                .airline(PartnerReservationFlightLegAirline.builder()
-                                                                        .managedBy(PartnerReservationAirline.builder().build())
-                                                                        .build())
+                                                        .airline(PartnerReservationFlightLegAirline.builder()
+                                                                .operatedBy(PartnerReservationAirline.builder().build())
+                                                                .managedBy(PartnerReservationAirline.builder().build())
+                                                                .build())
                                                         .build()))
                                                 .build()))
                                         .build()

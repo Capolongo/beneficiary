@@ -8,8 +8,8 @@ import br.com.livelo.orderflight.domain.entity.OrderEntity;
 
 public interface ReservationService {
   ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId,
-      String channel,
-      String listPrice);
+                                  String channel,
+                                  String listPrice);
 
   boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional);
 }
