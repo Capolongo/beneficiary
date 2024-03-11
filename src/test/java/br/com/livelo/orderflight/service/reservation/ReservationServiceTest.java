@@ -3,8 +3,6 @@ package br.com.livelo.orderflight.service.reservation;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.*;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorReservationResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorReservationStatus;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.*;
 import br.com.livelo.orderflight.domain.entity.*;
 import br.com.livelo.orderflight.exception.OrderFlightException;
@@ -83,12 +81,9 @@ class ReservationServiceTest {
                 ),
                 List.of(segmentsPartnersId, segmentsPartnersId)
         );
-        var connectorReservationResponse = mock(PartnerReservationResponse.class);
-        var connectorReservationStatus = mock(PartnerResponseStatus.class);
+        var connectorReservationResponse = buildPartnerReservationResponse();
 
         when(connectorPartnersProxy.getReservation(any(), any(), any(), any())).thenReturn(connectorReservationResponse);
-        when(connectorReservationResponse.getStatus()).thenReturn(connectorReservationStatus);
-        when(connectorReservationStatus.getCode()).thenReturn("LIVPNR-1007");
         when(orderService.save(any())).thenReturn(orderMock);
 
 
@@ -210,7 +205,7 @@ class ReservationServiceTest {
         return OrderEntity.builder()
                 .partnerCode("CVC")
                 .transactionId(transactionId)
-                .price(OrderPriceEntity.builder().partnerAmount(BigDecimal.TEN).build())
+                .price(OrderPriceEntity.builder().partnerAmount(BigDecimal.TEN).ordersPriceDescription(Set.of(OrderPriceDescriptionEntity.builder().build())).build())
                 .items(orderItems)
                 .build();
     }
@@ -260,7 +255,7 @@ class ReservationServiceTest {
                                                 .pointsAmount(10)
                                                 .accrualPoints(10)
                                                 .priceListId("price")
-                                                .flight(PricingCalculateFlight.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).build())
+                                                .flight(PricingCalculateFlight.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).passengerType("ADULT").build())
                                                 .taxes(PricingCalculateTaxes.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).build())
                                                 .pricesDescription(
                                                         PricingCalculatePricesDescription.builder()
@@ -290,6 +285,8 @@ class ReservationServiceTest {
     private PartnerReservationResponse buildPartnerReservationResponse() {
         return PartnerReservationResponse.builder()
                 .commerceOrderId("QWERT")
+                .partnerCode("CVC")
+                .status(PartnerResponseStatus.builder().code("LIVPNR-1007").build())
                 .ordersPriceDescription(
                         PartnerReservationOrdersPriceDescription.builder()
                                 .flights(List.of(
@@ -332,6 +329,10 @@ class ReservationServiceTest {
                                                                 .build())
                                                         .build()))
                                                 .build()))
+                                        .build(),
+                                PartnerReservationItem
+                                        .builder()
+                                        .type("type_flight_tax")
                                         .build()
                         )
                 )
