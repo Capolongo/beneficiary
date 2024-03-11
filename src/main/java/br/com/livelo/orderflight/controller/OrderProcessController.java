@@ -25,8 +25,7 @@ public class OrderProcessController {
       @RequestParam(required = false) String limitArrivalDate,
       @RequestParam(required = false, defaultValue = "1") Integer page,
       @RequestParam(required = false, defaultValue = "${order.orderProcessMaxRows}") Integer rows) {
-    log.debug(
-        "ConfirmationController.getOrdersByStatus() - Start - statusCode: [{}], limitArrivalDate: [{}], page: [{}], rows: [{}]",
+    log.debug("ConfirmationController.getOrdersByStatus() - Start - statusCode: [{}], limitArrivalDate: [{}], page: [{}], rows: [{}]",
         statusCode, limitArrivalDate, page, rows);
     PaginationOrderProcessResponse orders;
     if (limitArrivalDate == null) {
