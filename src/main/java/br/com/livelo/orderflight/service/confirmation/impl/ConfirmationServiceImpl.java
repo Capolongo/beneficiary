@@ -53,9 +53,14 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             order = orderService.getOrderById(id);
 
         //        UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-        var leg = liveloPartnersMapper.flightLegEntityToLegSummaryDTO(order.getItems().stream().filter(item -> item.getSkuId().equals("cvc_flight")).findFirst().get().getSegments().stream().findFirst().get().getFlightsLegs().stream().findFirst().get());
-        System.out.println(leg);
-//        System.out.println(updateOrderDTO);
+        var flight = orderService.getFlightFromOrderItems(order.getItems());
+
+        var services = liveloPartnersMapper.segmentEntityToFlightSummaryDTO(flight.getSegments().stream().findFirst().get());
+        
+        // var passenger = liveloPartnersMapper.paxEntityToCustomerDTO(flight.getTravelInfo().getPaxs().stream().findFirst().get());
+        // var leg = liveloPartnersMapper.paxEntityToCustomerDTO(order.getItems().stream().filter(item -> item.().equals("cvc_flight")).findFirst().get().getSegments().stream().findFirst().get().getFlightsLegs().stream().findFirst().get());
+        System.out.println(services);
+        // System.out.println(updateOrderDTO);
 
             log.info("ConfirmationService.confirmOrder - id: [{}], orderId: [{}], transactionId: [{}],  order: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), order);
 

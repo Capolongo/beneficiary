@@ -2,9 +2,13 @@ package br.com.livelo.orderflight.mappers;
 
 import br.com.livelo.orderflight.domain.dtos.update.*;
 import br.com.livelo.orderflight.domain.entity.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
 
 @Mapper(componentModel = "spring")
 public interface LiveloPartnersMapper {
@@ -36,20 +40,37 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "arrivalName", source = "destinationDescription")
     LegSummaryDTO flightLegEntityToLegSummaryDTO(FlightLegEntity flightLegEntity);
 
+    @Mapping(target = "documents", source = "document")
     CustomerDTO paxEntityToCustomerDTO(PaxEntity paxEntity);
 
     @Mapping(target = "doc", source = "documentNumber")
     @Mapping(target = "issuingDate", source = "issueDate")
     DocumentDTO documentEntityToDocumentDTO(DocumentEntity documentEntity);
-    
-    // ServiceDTO EntityToServiceDTO(Object Entity);
-    // BaggageDTO EntityToBaggageDTO(Object Entity);
-    // TourDTO EntityToTourDTO( Entity);
-    
+
     @Mapping(target = "date", source = "departureDate")
     @Mapping(target = "airportName", source = "originIata")
     @Mapping(target = "iata", source = "originIata")
     DepartureArrivalDTO flightLegEntityToDepartureArrivalDTO(FlightLegEntity flightLegEntity);
+
+    List<ServiceDTO> segmentEntityToServiceDTO(Set<SegmentEntity> segmentEntity);
     
+    @Mapping(target = "services", expression = "java(mapServices(segmentEntity.getCancelationRules(), segmentEntity.getLuggages(), segmentEntity.getChangeRules()))")
+    FlightSummaryDTO segmentEntityToFlightSummaryDTO(SegmentEntity segmentEntity); // PRecisamos saber se é TravelSummaryDTO ou FlightSummaryDTO
+
+    @Mapping(target = "isIncluded", constant = "false") // isIncluded não existe no Object do parâmetro, por default estou colocando false mas deve ser validado quando deve ser true. 
+    ServiceDTO cancellationRuleEntityToServiceDTO(CancelationRuleEntity cancelationRuleEntity);
+    @Mapping(target = "isIncluded", constant = "false") // isIncluded não existe no Object do parâmetro, por default estou colocando false mas deve ser validado quando deve ser true. 
+    ServiceDTO luggageEntityEntityToServiceDTO(LuggageEntity luggageEntity);
+    @Mapping(target = "isIncluded", constant = "false") // isIncluded não existe no Object do parâmetro, por default estou colocando false mas deve ser validado quando deve ser true. 
+    ServiceDTO changeRuleEntityToServiceDTO(ChangeRuleEntity changeRuleEntity);
+
+    default ArrayList<ServiceDTO> mapServices(Set<CancelationRuleEntity> cancellationRules, Set<LuggageEntity> luggages, Set<ChangeRuleEntity> changeRules) {
+        ArrayList<ServiceDTO> services = new ArrayList<ServiceDTO>();
+        cancellationRules.forEach(rule -> services.add(cancellationRuleEntityToServiceDTO(rule)));
+        luggages.forEach(luggage -> services.add(luggageEntityEntityToServiceDTO(luggage)));
+        changeRules.forEach(rule -> services.add(changeRuleEntityToServiceDTO(rule)));
+        return services;
+    }
+
     // DestinationDTO segmentEntityToDestinationDTO(SegmentEntity segmentEntity);
 }
