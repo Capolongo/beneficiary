@@ -6,7 +6,6 @@ import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationDocum
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
-import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderPriceEntity;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {ReservationItemMapper.class, ReservationPriceMapper.class})
 public interface ReservationMapper {
-    @Mapping(target = "items", expression = "java(mapItems(reservationRequest, partnerReservationResponse, listPrice,pricingCalculatePrice))")
+    @Mapping(target = "items", expression = "java(mapItems(reservationRequest, partnerReservationResponse, listPrice))")
     @Mapping(target = "expirationDate", source = "partnerReservationResponse.expirationDate")
     @Mapping(target = "commerceOrderId", source = "reservationRequest.commerceOrderId")
     @Mapping(target = "partnerOrderId", source = "partnerReservationResponse.partnerOrderId")
@@ -32,15 +31,14 @@ public interface ReservationMapper {
     @Mapping(target = "customerIdentifier", source = "customerId")
     @Mapping(target = "statusHistory", expression = "java(Set.of(mapStatus(partnerReservationResponse)))")
     @Mapping(target = "currentStatus", expression = "java(mapStatus(partnerReservationResponse))")
-    @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice,pricingCalculatePrice))")
+    @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice))")
     @Mapping(target = "createDate", ignore = true)
     OrderEntity toOrderEntity(ReservationRequest reservationRequest,
-                              PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId,
-                              String channel, String listPrice, PricingCalculatePrice pricingCalculatePrice);
+                              PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId, String channel, String listPrice);
 
-    default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse, String listPrice, PricingCalculatePrice pricingCalculatePrice) {
+    default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse, String listPrice) {
         var reservationPriceMapper = Mappers.getMapper(ReservationPriceMapper.class);
-        return reservationPriceMapper.toOrderPriceEntity(partnerReservationResponse, listPrice, pricingCalculatePrice);
+        return reservationPriceMapper.toOrderPriceEntity(partnerReservationResponse, listPrice);
     }
 
     default OrderStatusEntity mapStatus(PartnerReservationResponse partnerReservationResponse) {
@@ -48,8 +46,7 @@ public interface ReservationMapper {
         return reservationStatusMapper.toOrderStatus(partnerReservationResponse);
     }
 
-    default Set<OrderItemEntity> mapItems(ReservationRequest reservationRequest,
-            PartnerReservationResponse partnerReservationResponse, String listPrice,PricingCalculatePrice pricingCalculatePrice) {
+    default Set<OrderItemEntity> mapItems(ReservationRequest reservationRequest, PartnerReservationResponse partnerReservationResponse, String listPrice) {
         var reservationItemMapper = Mappers.getMapper(ReservationItemMapper.class);
 
         return reservationRequest.getItems()
@@ -63,8 +60,7 @@ public interface ReservationMapper {
                                         .equals(currentRequestItem
                                                 .getProductType()))
                                 .toList().getFirst(),
-                        listPrice,
-                        pricingCalculatePrice
+                        listPrice
                 ))
                 .collect(Collectors.toSet());
     }

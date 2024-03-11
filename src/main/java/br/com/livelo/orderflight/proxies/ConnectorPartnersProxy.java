@@ -6,7 +6,6 @@ import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservati
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorReservationResponse;
 import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
 import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.OrderFlightException;
@@ -25,10 +24,10 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.util.List;
 
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR;
-import static java.util.Optional.ofNullable;
 
 @Slf4j
 @Component
@@ -58,46 +57,43 @@ public class ConnectorPartnersProxy {
     @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
     public PartnerReservationResponse createReserve(PartnerReservationRequest request, String transactionId) {
         try {
-            var url = URI.create(this.partnersConfigService
-                    .getPartnerWebhook(request.getPartnerCode(), Webhooks.RESERVATION).getConnectorUrl());
-            log.info("call connector partner create reserve. partner: {} url: {} request: {}", request.getPartnerCode(),
+            var webhook = this.partnersConfigService.getPartnerWebhook(request.getPartnerCode(), Webhooks.RESERVATION);
+            var url = URI.create(webhook.getConnectorUrl());
+            log.info("ConnectorPartnersProxy.createReserve: call connector partner create reserve. partner: [{}] url: [{}] request: [{}]", request.getPartnerCode(),
                     url, request);
 
             ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.createReserve(
                     url,
                     request,
                     transactionId);
-            ofNullable(response.getBody())
-                    .ifPresent(body -> log.info("create reserve partner connector response: {}", body));
+            log.info("ConnectorPartnersProxy.createReserve: create reserve partner connector response: [{}]", response);
 
             return response.getBody();
-        } catch (OrderFlightException e) {
-            throw e;
         } catch (FeignException e) {
-            throw handleFeignException(e, "Error on partner connector calls. httpStatus: %s ResponseBody: %s");
+            throw handleFeignException(e, "ConnectorPartnersProxy.createReserve: Error on partner connector calls. httpStatus: [%s] ResponseBody: [%s]");
         } catch (WebhookException e) {
             throw handleWebhookException(e);
         } catch (Exception e) {
-            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), "Unknown error on connector create reserve call! partner: " + request.getPartnerCode(), e
+            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), "ConnectorPartnersProxy.createReserve: Unknown error on connector create reserve call! partner: " + request.getPartnerCode(), e
             );
         }
     }
 
-    public ConnectorReservationResponse getReservation(String id, String transactionId, String partnerCode) {
+    public PartnerReservationResponse getReservation(String id, String transactionId, String partnerCode, List<String> segmentsPartnerIds) {
         try {
-            var url = URI.create(this.partnersConfigService
-                    .getPartnerWebhook(partnerCode, Webhooks.GETRESERVATION).getConnectorUrl());
-            ResponseEntity<ConnectorReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId);
+            var webhook = this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.GETRESERVATION);
+            var url = URI.create(webhook.getConnectorUrl());
+            ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId, segmentsPartnerIds);
             return response.getBody();
         } catch (FeignException e) {
-            throw handleFeignException(e, "Error on partner get reservation connector calls. httpStatus: %s ResponseBody: %s");
+            throw handleFeignException(e, "ConnectorPartnersProxy.getReservation: Error on partner get reservation connector calls. httpStatus: [%s] ResponseBody: [%s]");
         } catch (WebhookException e) {
             throw handleWebhookException(e);
         } catch (Exception e) {
             throw new OrderFlightException(
                     OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR,
                     e.getMessage(),
-                    "Unknown error on connector getReservation call! partner: " + partnerCode,
+                    "ConnectorPartnersProxy.getReservation: Unknown error on connector getReservation call! partner: " + partnerCode,
                     e
             );
         }
@@ -108,7 +104,7 @@ public class ConnectorPartnersProxy {
         var message = String.format(format, e.status(), e.responseBody());
 
         if (status.is4xxClientError()) {
-           return new ConnectorReservationBusinessException(message, e);
+            return new ConnectorReservationBusinessException(message, e);
         }
         return new ConnectorReservationInternalException(message, e);
     }

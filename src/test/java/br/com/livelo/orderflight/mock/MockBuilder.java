@@ -329,7 +329,7 @@ public class MockBuilder {
                 .lastName("lastName")
                 .email("email")
                 .areaCode("areaCode")
-                .phone("phone")
+                .phoneNumber("phone")
                 .gender("gender")
                 .birthDate("birthDate")
                 .documents(Set.of())

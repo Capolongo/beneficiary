@@ -7,7 +7,7 @@ public record ReservationResponsePax(String type,
 									 String lastName,
 									 String email,
 									 String areaCode,
-									 String phone,
+									 String phoneNumber,
 									 String gender,
 									 String birthDate,
 									 Set<ReservationResponseDocument> documents) {
