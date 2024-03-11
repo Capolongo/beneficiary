@@ -1,9 +1,9 @@
 package br.com.livelo.orderflight.domain.entity;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,7 +24,6 @@ public class FlightLegEntity extends BaseEntity {
     private String airlineManagedByDescription;
     private String airlineOperatedByIata;
     private String airlineOperatedByDescription;
-    private String managedBy;
     private Integer timeToWait;
     private String originIata;
     private String originDescription;

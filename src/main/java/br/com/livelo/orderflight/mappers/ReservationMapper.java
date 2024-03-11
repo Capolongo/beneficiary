@@ -18,7 +18,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring", uses = { ReservationItemMapper.class, ReservationPriceMapper.class })
+@Mapper(componentModel = "spring", uses = {ReservationItemMapper.class, ReservationPriceMapper.class})
 public interface ReservationMapper {
     @Mapping(target = "items", expression = "java(mapItems(reservationRequest, partnerReservationResponse, listPrice,pricingCalculatePrice))")
     @Mapping(target = "expirationDate", source = "partnerReservationResponse.expirationDate")
@@ -35,12 +35,12 @@ public interface ReservationMapper {
     @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice,pricingCalculatePrice))")
     @Mapping(target = "createDate", ignore = true)
     OrderEntity toOrderEntity(ReservationRequest reservationRequest,
-            PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId,
-            String channel, String listPrice, PricingCalculatePrice pricingCalculatePrice);
+                              PartnerReservationResponse partnerReservationResponse, String transactionId, String customerId,
+                              String channel, String listPrice, PricingCalculatePrice pricingCalculatePrice);
 
-    default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse, String listPrice,PricingCalculatePrice pricingCalculatePrice) {
+    default OrderPriceEntity mapPrice(PartnerReservationResponse partnerReservationResponse, String listPrice, PricingCalculatePrice pricingCalculatePrice) {
         var reservationPriceMapper = Mappers.getMapper(ReservationPriceMapper.class);
-        return reservationPriceMapper.toOrderPriceEntity(partnerReservationResponse, listPrice,pricingCalculatePrice);
+        return reservationPriceMapper.toOrderPriceEntity(partnerReservationResponse, listPrice, pricingCalculatePrice);
     }
 
     default OrderStatusEntity mapStatus(PartnerReservationResponse partnerReservationResponse) {

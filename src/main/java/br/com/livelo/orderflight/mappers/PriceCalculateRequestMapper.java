@@ -133,7 +133,8 @@ public interface PriceCalculateRequestMapper {
 
     default PricingCalculateAirline buildPricingCalculateAirline(FlightLegEntity flightLegEntity) {
         return PricingCalculateAirline.builder()
-                .description(flightLegEntity.getManagedBy())
+                .iata(flightLegEntity.getAirlineManagedByIata())
+                .description(flightLegEntity.getAirlineManagedByDescription())
                 .managedBy(PricingCalculateManagedBy.builder()
                         .iata(flightLegEntity.getAirlineManagedByIata())
                         .description(flightLegEntity.getAirlineManagedByDescription())
