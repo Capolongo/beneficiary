@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class DepartureArrivalDTO {
+public class ArrivalDTO {
 
 	private String date;
 	@JsonInclude(JsonInclude.Include.NON_NULL)

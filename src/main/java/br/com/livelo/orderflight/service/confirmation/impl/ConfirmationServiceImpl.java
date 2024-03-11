@@ -52,15 +52,16 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             log.info("ConfirmationService.confirmOrder - Start - id: [{}]", id);
             order = orderService.getOrderById(id);
 
-        //        UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-        var flight = orderService.getFlightFromOrderItems(order.getItems());
+            var flight = orderService.getFlightFromOrderItems(order.getItems());
+            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
 
-        var services = liveloPartnersMapper.segmentEntityToFlightSummaryDTO(flight.getSegments().stream().findFirst().get());
-        
-        // var passenger = liveloPartnersMapper.paxEntityToCustomerDTO(flight.getTravelInfo().getPaxs().stream().findFirst().get());
-        // var leg = liveloPartnersMapper.paxEntityToCustomerDTO(order.getItems().stream().filter(item -> item.().equals("cvc_flight")).findFirst().get().getSegments().stream().findFirst().get().getFlightsLegs().stream().findFirst().get());
-        System.out.println(services);
-        // System.out.println(updateOrderDTO);
+
+//            var hello = liveloPartnersMapper.flightLegEntityToDepartureDTO(flight.getSegments().stream().findFirst().get().getFlightsLegs().stream().findFirst().get());
+//            var hello1 = liveloPartnersMapper.flightLegEntityToArrivalDTO(flight.getSegments().stream().findFirst().get().getFlightsLegs().stream().findFirst().get());
+//            var services = liveloPartnersMapper.segmentEntityToFlightSummaryDTO(flight.getSegments().stream().findFirst().get());
+//            var passenger = liveloPartnersMapper.paxEntityToCustomerDTO(flight.getTravelInfo().getPaxs().stream().findFirst().get());
+//            var leg = liveloPartnersMapper.paxEntityToCustomerDTO(order.getItems().stream().filter(item -> item.
+            System.out.println(updateOrderDTO);
 
             log.info("ConfirmationService.confirmOrder - id: [{}], orderId: [{}], transactionId: [{}],  order: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), order);
 

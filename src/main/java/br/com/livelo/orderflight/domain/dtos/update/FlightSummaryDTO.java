@@ -14,8 +14,8 @@ import java.util.List;
 public class FlightSummaryDTO {
 
     private ValidatingAirlineDTO airline;
-    private DepartureArrivalDTO departure;
-    private DepartureArrivalDTO arrival;
+    private DepartureDTO departure;
+    private ArrivalDTO arrival;
     private Integer duration;
     private BaggageDTO baggage;
     private List<ServiceDTO> services;
