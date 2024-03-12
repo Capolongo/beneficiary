@@ -16,9 +16,8 @@ import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -153,20 +152,19 @@ public class OrderServiceImpl implements OrderService {
         return this.orderRepository.save(order);
     }
 
-    public PaginationOrderProcessResponse getOrdersByStatusCode(String statusCode, Integer page, Integer rows)
+    public PaginationOrderProcessResponse getOrdersByStatusCode(String statusCode, Optional<String> limitArrivalDate, Integer page, Integer rows)
             throws OrderFlightException {
         Pageable pagination = pageRequestOf(page, rows);
-        var foundOrders = orderRepository.findAllByCurrentStatusCode(statusCode.toUpperCase(), pagination);
-        return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
-    }
 
-    public PaginationOrderProcessResponse getOrdersByStatusCodeAndLimitArrivalDate(String statusCode,
-            String limitArrivalDate, Integer page,
-            Integer rows) throws OrderFlightException {
-        Pageable pagination = pageRequestOf(page, rows);
-        var arglimitArrivalDate = LocalDate.parse(limitArrivalDate, DateTimeFormatter.ISO_DATE).atTime(0, 0);
-        var foundOrders = orderRepository.findAllByCurrentStatusCodeAndArrivalDateLessThan(statusCode.toUpperCase(),
-                arglimitArrivalDate, pagination);
+        Page<OrderProcess> foundOrders;
+        if (limitArrivalDate.isPresent()) {
+            var arglimitArrivalDate = LocalDate.parse(limitArrivalDate.get(), DateTimeFormatter.ISO_DATE).atTime(0, 0);
+            foundOrders = orderRepository.findAllByCurrentStatusCodeAndArrivalDateLessThan(statusCode.toUpperCase(),
+                    arglimitArrivalDate, pagination);
+        } else {
+            foundOrders = orderRepository.findAllByCurrentStatusCode(statusCode.toUpperCase(), pagination);
+        }
+
         return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
     }
 
