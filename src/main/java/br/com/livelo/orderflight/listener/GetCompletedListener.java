@@ -1,8 +1,7 @@
 package br.com.livelo.orderflight.listener;
 
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
-import br.com.livelo.orderflight.service.completed.impl.CompletedService;
-import br.com.livelo.orderflight.service.voucher.VoucherService;
+import br.com.livelo.orderflight.service.completed.CompletedService;
 import br.com.livelo.orderflight.utils.MessageUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;

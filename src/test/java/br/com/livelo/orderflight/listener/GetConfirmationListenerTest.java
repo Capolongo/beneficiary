@@ -23,7 +23,7 @@ import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 
 @ExtendWith(MockitoExtension.class)
-class OrderProcessListenerTest {
+class GetConfirmationListenerTest {
 
   @Mock
   private ObjectMapper objectMapper;

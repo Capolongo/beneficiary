@@ -1,16 +1,16 @@
-package br.com.livelo.orderflight.service.completed;
+package br.com.livelo.orderflight.service.completed.impl;
 
 import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
-import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
-import br.com.livelo.orderflight.service.completed.impl.CompletedService;
+import br.com.livelo.orderflight.service.completed.CompletedService;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -32,9 +32,16 @@ public class CompletedServiceImpl implements CompletedService {
             return;
         }
 
-        currentStatus.setCode(StatusConstants.COMPLETED.getCode());
+        var newStatus = OrderStatusEntity.builder()
+                .code(StatusConstants.COMPLETED.getCode())
+                .description(StatusConstants.COMPLETED.getDescription())
+                .partnerCode(currentStatus.getPartnerCode())
+                .statusDate(LocalDateTime.now())
+                .partnerResponse(currentStatus.getPartnerResponse())
+                .partnerDescription(currentStatus.getPartnerDescription())
+                .build();
 
-        orderService.addNewOrderStatus(order, currentStatus);
+        orderService.addNewOrderStatus(order, newStatus);
         orderService.save(order);
 
         log.info("CompletedServiceImpl.orderProcess - order completed - id: [{}]", order.getId());
