@@ -41,7 +41,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationMapper reservationMapper;
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId) {
-        log.info("Creating Order: {} transactionId: {} listPriceId: {}", request, transactionId, listPriceId);
+        log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {}", request, transactionId, listPriceId);
         OrderEntity order = null;
         try {
             PartnerReservationResponse partnerReservationResponse = null;
@@ -55,19 +55,20 @@ public class ReservationServiceImpl implements ReservationService {
                 }
             }
 
-            if (Objects.isNull(partnerReservationResponse)) {
+            if (this.hasPartnerReserveExpired(partnerReservationResponse)) {
                 var partnerReservationRequest = reservationMapper.toPartnerReservationRequest(request);
                 partnerReservationResponse = partnerConnectorProxy.createReserve(partnerReservationRequest, transactionId);
             }
 
-            if (Objects.isNull(order)) {
+            if (this.isNewOrder(order)) {
                 order = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPriceId);
             }
 
-            this.priceOrder(request, listPriceId, partnerReservationResponse, order);
+            var pricingCalculatePrice = this.priceOrder(request, listPriceId, partnerReservationResponse);
+            this.setPrices(order, pricingCalculatePrice);
 
             this.orderService.save(order);
-            log.info("Order created Order: {} transactionId: {} listPriceId: {}", order, transactionId, listPriceId);
+            log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {}", order, transactionId, listPriceId);
             // deve vir do connector
             return reservationMapper.toReservationResponse(order, 15);
         } catch (OrderFlightException e) {
@@ -77,12 +78,19 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    private void priceOrder(ReservationRequest request, String listPriceId, PartnerReservationResponse partnerReservationResponse, OrderEntity order) {
+    private boolean isNewOrder(OrderEntity order) {
+        return Objects.isNull(order);
+    }
+
+    private boolean hasPartnerReserveExpired(PartnerReservationResponse partnerReservationResponse) {
+        return Objects.isNull(partnerReservationResponse);
+    }
+
+    private PricingCalculatePrice priceOrder(ReservationRequest request, String listPriceId, PartnerReservationResponse partnerReservationResponse) {
         var pricingCalculateRequest = PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse, request.getCommerceOrderId());
         var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest);
 
-        var pricingCalculatePrice = getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse, listPriceId);
-        this.setPrices(order, pricingCalculatePrice);
+        return getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse, listPriceId);
     }
 
     private PartnerReservationResponse getPartnerOrder(String partnerOrderId, String transactionId, String partnerCode, List<String> segmentsPartnerIds) {
@@ -100,12 +108,12 @@ public class ReservationServiceImpl implements ReservationService {
                 .filter(pricing -> commerceOrderId.equals(pricing.getId()))
                 .findFirst()
                 .orElseThrow(() ->
-                        new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Order not found in pricing response. commerceOrderId: " + commerceOrderId)
+                        new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "ReservationServiceImpl.getPricingCalculateByCommerceOrderId - Order not found in pricing response. commerceOrderId: " + commerceOrderId)
                 );
 
         return pricingCalculate.getPrices().stream()
                 .filter(price -> listPrice.equals(price.getPriceListId())).findFirst()
-                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "PriceListId not found in pricing calculate response. listPrice: " + listPrice));
+                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "ReservationServiceImpl.getPricingCalculateByCommerceOrderId - PriceListId not found in pricing calculate response. listPrice: " + listPrice));
     }
 
     private void setPrices(OrderEntity order, PricingCalculatePrice price) {
@@ -197,7 +205,7 @@ public class ReservationServiceImpl implements ReservationService {
     private void hasSameTokens(Set<String> orderTokens, Set<String> requestTokens) {
         if (orderTokens.size() != requestTokens.size() || !orderTokens.containsAll(requestTokens)) {
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR,
-                    "Partner tokens are different!", null);
+                    "ReservationServiceImpl.hasSameTokens - Partner tokens are different!", null);
         }
     }
 }

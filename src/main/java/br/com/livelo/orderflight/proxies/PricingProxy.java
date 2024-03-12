@@ -26,21 +26,22 @@ public class PricingProxy {
 
     public List<PricingCalculateResponse> calculate(PricingCalculateRequest request) {
         try {
-            log.info("PricingProxy.calculate: call pricing calculate. request: {}", request);
+            log.info("PricingProxy.calculate - call pricing calculate. request: {}", request);
             ResponseEntity<PricingCalculateResponse[]> response = pricingClient.calculate(request);
-            log.info(" pricing calculate response: {}", response);
+            log.info("PricingProxy.calculate -  pricing calculate response: {}", response);
 
-            var body = ofNullable(response.getBody()).orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, null, "PricingProxy.calculate: body pricing is null!"));
+            var body = ofNullable(response.getBody())
+                    .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, null, "PricingProxy.calculate - body pricing is null!"));
             return Arrays.stream(body).toList();
         } catch (FeignException e) {
             var status = HttpStatus.valueOf(e.status());
-            var message = String.format("Error on pricing call, HttpStatus: %s", status);
+            var message = String.format("PricingProxy.calculate - Error on pricing call, HttpStatus: %s", status);
             var errorType = status.is4xxClientError() ? ORDER_FLIGHT_PRICING_BUSINESS_ERROR : ORDER_FLIGHT_PRICING_INTERNAL_ERROR;
             throw new OrderFlightException(errorType, e.getMessage(), message, e);
         } catch (OrderFlightException e) {
             throw e;
         } catch (Exception e) {
-            throw new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, e.getMessage(), "Unknown error on pricing call", e);
+            throw new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, e.getMessage(), "PricingProxy.calculate - Unknown error on pricing call", e);
         }
     }
 }
