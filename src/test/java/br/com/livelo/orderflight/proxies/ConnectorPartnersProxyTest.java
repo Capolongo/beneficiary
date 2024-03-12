@@ -18,6 +18,7 @@ import br.com.livelo.partnersconfigflightlibrary.utils.Webhooks;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import feign.Request;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -151,6 +152,10 @@ class ConnectorPartnersProxyTest {
         setup();
         var feignException = makeFeignMockExceptionWithStatus(500);
         makeException(request, feignException);
+        var requestMock = mock(Request.class);
+
+        doReturn(requestMock).when(feignException).request();
+        doReturn("http://test").when(requestMock).url();
 
         var exception = assertThrows(ConnectorReservationInternalException.class,
                 () -> proxy.createReserve(request, "transactionId"));
@@ -162,6 +167,11 @@ class ConnectorPartnersProxyTest {
     void shouldThrowsException_WhenFeignExceptionResponseIsDifferentOf5xxxStatus() {
         var request = mock(PartnerReservationRequest.class);
         var feignException = makeFeignMockExceptionWithStatus(400);
+
+        var requestMock = mock(Request.class);
+
+        doReturn(requestMock).when(feignException).request();
+        doReturn("http://test").when(requestMock).url();
         setup();
         makeException(request, feignException);
 
@@ -200,12 +210,13 @@ class ConnectorPartnersProxyTest {
     void shouldThrowFlightConnectorBusinessError_WhenThereIsBadRequest() {
         var request = mock(PartnerReservationRequest.class);
         var feignException = makeFeignMockExceptionWithStatus(400);
+        var requestMock = mock(Request.class);
 
         WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
-        when(partnersConfigService.getPartnerWebhook(anyString(),
-                any(Webhooks.class)))
-                .thenReturn(webhook);
+        when(partnersConfigService.getPartnerWebhook(anyString(), any(Webhooks.class))).thenReturn(webhook);
         makeException(request, feignException);
+        doReturn(requestMock).when(feignException).request();
+        doReturn("http://test").when(requestMock).url();
 
         var exception = assertThrows(ConnectorReservationBusinessException.class,
                 () -> proxy.createReserve(request, "transactionId"));
@@ -217,6 +228,10 @@ class ConnectorPartnersProxyTest {
     void shouldThrowFlightConnectorInternalError_WhenThereIsSomeInternalError() {
         var request = mock(PartnerReservationRequest.class);
         var feignException = makeFeignMockExceptionWithStatus(400);
+        var requestMock = mock(Request.class);
+
+        doReturn(requestMock).when(feignException).request();
+        doReturn("http://test").when(requestMock).url();
         makeException(request, feignException);
         setup();
         var exception = assertThrows(OrderFlightException.class,
@@ -295,9 +310,12 @@ class ConnectorPartnersProxyTest {
     void shouldThrowInternalError_WhenStatus400() {
         var segmentsPartnerIds = List.of("asdf", "fdsa");
         var exceptionExpected = mock(FeignException.class);
+        var requestMock = mock(Request.class);
 
         doReturn(400).when(exceptionExpected).status();
         doThrow(exceptionExpected).when(partnersConfigService).getPartnerWebhook(any(), any());
+        doReturn(requestMock).when(exceptionExpected).request();
+        doReturn("http://test").when(requestMock).url();
         var exception = assertThrows(OrderFlightException.class,
                 () -> this.proxy.getReservation("123", "123", "123", segmentsPartnerIds));
         assertEquals(ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
@@ -307,9 +325,12 @@ class ConnectorPartnersProxyTest {
     void shouldThrowInternalError_WhenStatus500() {
         var segmentsPartnerIds = List.of("asdf", "fdsa");
         var exceptionExpected = mock(FeignException.class);
+        var requestMock = mock(Request.class);
 
         doReturn(500).when(exceptionExpected).status();
         doThrow(exceptionExpected).when(partnersConfigService).getPartnerWebhook(any(), any());
+        doReturn(requestMock).when(exceptionExpected).request();
+        doReturn("http://test").when(requestMock).url();
         var exception = assertThrows(OrderFlightException.class,
                 () -> this.proxy.getReservation("123", "123", "123", segmentsPartnerIds));
         assertEquals(ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
