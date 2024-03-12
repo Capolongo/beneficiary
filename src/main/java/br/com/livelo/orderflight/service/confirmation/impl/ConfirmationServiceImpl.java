@@ -52,15 +52,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             log.info("ConfirmationService.confirmOrder - Start - id: [{}]", id);
             order = orderService.getOrderById(id);
 
-            var flight = orderService.getFlightFromOrderItems(order.getItems());
+//            var flight = orderService.getFlightFromOrderItems(order.getItems());
             UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-
-
-//            var hello = liveloPartnersMapper.flightLegEntityToDepartureDTO(flight.getSegments().stream().findFirst().get().getFlightsLegs().stream().findFirst().get());
-//            var hello1 = liveloPartnersMapper.flightLegEntityToArrivalDTO(flight.getSegments().stream().findFirst().get().getFlightsLegs().stream().findFirst().get());
-//            var services = liveloPartnersMapper.segmentEntityToFlightSummaryDTO(flight.getSegments().stream().findFirst().get());
-//            var passenger = liveloPartnersMapper.paxEntityToCustomerDTO(flight.getTravelInfo().getPaxs().stream().findFirst().get());
-//            var leg = liveloPartnersMapper.paxEntityToCustomerDTO(order.getItems().stream().filter(item -> item.
             System.out.println(updateOrderDTO);
 
             log.info("ConfirmationService.confirmOrder - id: [{}], orderId: [{}], transactionId: [{}],  order: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), order);

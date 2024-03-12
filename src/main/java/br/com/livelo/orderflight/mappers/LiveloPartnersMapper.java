@@ -18,42 +18,46 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "items", expression = "java(buildItemsDTO(order))")
     UpdateOrderDTO orderEntityToUpdateOrderDTO(OrderEntity order);
 
+    default boolean isTaxItem(String skuId) {
+        return skuId.toUpperCase().contains("TAX");
+    }
+
     default List<ItemDTO> buildItemsDTO(OrderEntity order) {
         StatusDTO statusDTO = orderStatusEntityToStatusDTO(order.getCurrentStatus());
 
+        var flight = order.getItems().stream().filter(item -> !isTaxItem(item.getSkuId())).toList();
 
         var travelSummary = TravelSummaryDTO.builder()
                 .tour(null)
-                .flights(null)
+//                .flights(buildFlights(flight.get(0).getSegments()))
+                .flights(buildFlights(flight.get(0).getSegments(), flight.get(0).getTravelInfo()))
                 .build();
         var partnerInfo = PartnerInfoSummaryDTO.builder().travel(travelSummary).build();
-
 
         return order.getItems().stream().map(item -> {
             var mappedItem = orderItemEntityToItemDTO(item);
             mappedItem.setStatus(statusDTO);
-            mappedItem.setPartnerInfo(partnerInfo);
+
+            if (!isTaxItem(item.getSkuId())) {
+                mappedItem.setPartnerInfo(partnerInfo);
+            }
+
             return mappedItem;
         }).toList();
 
     }
-//
-//    default StatusDTO setStatus(OrderStatusEntity status) {
-//        return orderStatusEntityToStatusDTO(status);
-//    }
-//
-//    @AfterMapping
-//    default void setStatus(OrderEntity order, @MappingTarget UpdateOrderDTO updateOrder) {
-//        var statusDTO = orderStatusEntityToStatusDTO(order.getCurrentStatus());
-//        updateOrder.getItems().forEach(itemDTO -> itemDTO.setStatus(statusDTO));
-//    }
 
-//    @AfterMapping
-//    default void setStatus(OrderEntity order, @MappingTarget UpdateOrderDTO updateOrder) {
-//        var statusDTO = orderStatusEntityToStatusDTO(order.getCurrentStatus());
-//        updateOrder.getItems().forEach(item -> item.setStatus(statusDTO));
-//    }
+    default List<FlightSummaryDTO> buildFlights(Set<SegmentEntity> segments, TravelInfoEntity travelInfo) {
+        var gds = GlobalDistribuitionSystemDTO.builder().reservationCode(travelInfo.getReservationCode()).build();
 
+        List<CustomerDTO> mappedPaxs = travelInfo.getPaxs().stream().map(this::paxEntityToCustomerDTO).toList();
+        return segments.stream().map(segment -> {
+            var flight = segmentEntityToFlightSummaryDTO(segment);
+            flight.setPassengers(mappedPaxs);
+            flight.setGlobalDistribuitionSystem(gds);
+            return flight;
+        }).toList();
+    }
 
     @Mapping(target = "partnerOrderId", source = "partnerOrderLinkId")
     @Mapping(target = "id", source = "skuId")
@@ -88,8 +92,13 @@ public interface LiveloPartnersMapper {
 
     List<ServiceDTO> segmentEntityToServiceDTO(Set<SegmentEntity> segmentEntity);
 
+
+//    finalizar esse mapper
     @Mapping(target = "services", expression = "java(mapServices(segmentEntity.getCancelationRules(), segmentEntity.getLuggages(), segmentEntity.getChangeRules()))")
     @Mapping(target = "duration", source = "flightDuration")
+    @Mapping(target = "legs", source = "flightsLegs")
+    @Mapping(target = "baggage", expression = "java(setBaggage(segmentEntity.getLuggages()))")
+//    @Mapping(target = "arrival")
     FlightSummaryDTO segmentEntityToFlightSummaryDTO(SegmentEntity segmentEntity); // PRecisamos saber se é TravelSummaryDTO ou FlightSummaryDTO
 
     @Mapping(target = "isIncluded", constant = "false")
@@ -116,7 +125,18 @@ public interface LiveloPartnersMapper {
 //    @Mapping(target = "numberOfStops", source = "stops")
     ArrivalDTO flightLegEntityToArrivalDTO(FlightLegEntity flightLegEntity);
 
-//    OriginDTO ToOriginDTO( origin);
+    BaggageDTO luggageToBaggageDTO(LuggageEntity luggageEntity);
+
+    default BaggageDTO setBaggage(Set<LuggageEntity> luggages) {
+        var bagLuggage = luggages.stream().filter(luggage -> "BAG".equals(luggage.getType())).toList().stream().findFirst();
+
+        if (bagLuggage.isPresent()) {
+            return luggageToBaggageDTO(bagLuggage.get());
+        }
+
+        var firstLuggage = luggages.stream().findFirst();
+        return firstLuggage.map(this::luggageToBaggageDTO).orElse(null);
+    }
 
     default ArrayList<ServiceDTO> mapServices(Set<CancelationRuleEntity> cancellationRules, Set<LuggageEntity> luggages, Set<ChangeRuleEntity> changeRules) {
         ArrayList<ServiceDTO> services = new ArrayList<ServiceDTO>();
