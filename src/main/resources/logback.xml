@@ -38,6 +38,8 @@
                         "pid": "${PID:-}",
                         "thread": "%thread",
                         "class": "%logger{40}",
+                        "transactionId": "%X{transactionId}",
+                        "Flow": "%X{flow}",
                         "message": "%message",
                         "stack_trace": "%ex"
                         }

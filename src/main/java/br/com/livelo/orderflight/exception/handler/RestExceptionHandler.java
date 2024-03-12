@@ -24,12 +24,11 @@ import static java.util.Optional.ofNullable;
 @Slf4j
 public class RestExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(OrderFlightException.class)
     public ResponseEntity<ErrorResponse> handleException(OrderFlightException e) {
         var message = ofNullable(e.getArgs()).orElse(e.getMessage());
         ofNullable(e.getOrderFlightErrorType().getLevel()).ifPresent(level -> this.logMessage(level, message, e.getOrderFlightErrorType(), e));
 
-        MDC.clear();
         return ResponseEntity.status(e.getOrderFlightErrorType().getStatus())
                 .body(this.buildError(e.getOrderFlightErrorType()));
     }
@@ -39,7 +38,6 @@ public class RestExceptionHandler {
         var message = String.format("Required header %s is missing!", e.getHeaderName());
         this.logMessage(Level.ERROR, message, OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e);
 
-        MDC.clear();
         return ResponseEntity.status(400)
                 .body(this.buildError(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR));
     }
