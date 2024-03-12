@@ -26,8 +26,7 @@ import org.springframework.stereotype.Component;
 import java.net.URI;
 import java.util.List;
 
-import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR;
-import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR;
+import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.*;
 
 @Slf4j
 @Component
@@ -110,7 +109,7 @@ public class ConnectorPartnersProxy {
     }
 
     private static OrderFlightException handleWebhookException(WebhookException e) {
-        var orderFlightErrorType = ErrorsType.UNKNOWN.equals(e.getError()) ? ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR : ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR;
+        var orderFlightErrorType = ErrorsType.UNKNOWN.equals(e.getError()) ? ORDER_FLIGHT_CONFIG_FLIGHT_INTERNAL_ERROR : ORDER_FLIGHT_CONFIG_FLIGHT_BUSINESS_ERROR;
         var message = String.format("Error on connector calls! error: %S", e.getError());
         return new OrderFlightException(orderFlightErrorType, e.getMessage(), message, e);
     }
