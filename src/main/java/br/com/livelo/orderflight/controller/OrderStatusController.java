@@ -3,7 +3,6 @@ package br.com.livelo.orderflight.controller;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusRequest;
 import br.com.livelo.orderflight.service.status.StatusService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
