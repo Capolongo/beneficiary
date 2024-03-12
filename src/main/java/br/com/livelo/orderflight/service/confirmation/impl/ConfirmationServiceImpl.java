@@ -13,7 +13,6 @@ import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
-//import br.com.livelo.orderflight.mappers.LiveloPartnersMapper;
 import br.com.livelo.orderflight.mappers.LiveloPartnersMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.proxies.LiveloPartnersProxy;
