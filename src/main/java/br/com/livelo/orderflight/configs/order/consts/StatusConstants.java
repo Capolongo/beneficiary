@@ -10,7 +10,8 @@ public enum StatusConstants {
     FAILED("LIVPNR-1014", "FAILED"),
     INITIAL("LIVPNR-1006", "INITIAL"),
     WAIT_VOUCHER("LIVPNR-1019", "PROCESSING"),
-    VOUCHER_SENT("LIVPNR-1030", "PROCESSING");
+    VOUCHER_SENT("LIVPNR-1030", "PROCESSING"),
+    COMPLETED("LIVPNR-1011", "COMPLETED");
 
     private final String code;
     private final String description;

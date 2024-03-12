@@ -13,6 +13,8 @@ import br.com.livelo.orderflight.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -27,12 +29,8 @@ public class OrderProcessController {
       @RequestParam(required = false, defaultValue = "${order.orderProcessMaxRows}") Integer rows) {
     log.debug("ConfirmationController.getOrdersByStatus() - Start - statusCode: [{}], limitArrivalDate: [{}], page: [{}], rows: [{}]",
         statusCode, limitArrivalDate, page, rows);
-    PaginationOrderProcessResponse orders;
-    if (limitArrivalDate == null) {
-      orders = orderService.getOrdersByStatusCode(statusCode, page, rows);
-    } else {
-      orders = orderService.getOrdersByStatusCodeAndLimitArrivalDate(statusCode, limitArrivalDate, page, rows);
-    }
+    var orders = orderService.getOrdersByStatusCode(statusCode, Optional.ofNullable(limitArrivalDate), page, rows);
+
     log.debug("ConfirmationController.getOrdersByStatus() - End - response: [{}]", orders);
     return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(orders);
   }

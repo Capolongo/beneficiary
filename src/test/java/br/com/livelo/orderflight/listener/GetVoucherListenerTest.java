@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class VoucherListenerTest {
+class GetVoucherListenerTest {
 
   @Mock
   private ObjectMapper objectMapper;
@@ -32,7 +32,7 @@ class VoucherListenerTest {
   private VoucherService voucherService;
 
   @InjectMocks
-  private VoucherListener listener;
+  private GetVoucherListener listener;
 
   @Test
   void shouldProcessSuccessOrder() throws JsonProcessingException {
