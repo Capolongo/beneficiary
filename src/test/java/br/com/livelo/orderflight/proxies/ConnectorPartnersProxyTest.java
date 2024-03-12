@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.*;
 import static br.com.livelo.partnersconfigflightlibrary.utils.ErrorsType.PARTNER_INACTIVE;
@@ -236,7 +237,7 @@ class ConnectorPartnersProxyTest {
         var exception = assertThrows(OrderFlightException.class,
                 () -> proxy.createReserve(request, "transactionId"));
 
-        assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
+        assertEquals(ORDER_FLIGHT_CONFIG_FLIGHT_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
@@ -251,70 +252,75 @@ class ConnectorPartnersProxyTest {
         var exception = assertThrows(OrderFlightException.class,
                 () -> proxy.createReserve(request, "transactionId"));
 
-        assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
+        assertEquals(ORDER_FLIGHT_CONFIG_FLIGHT_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
     void shouldGetReservation() {
-        var expected = mock(ConnectorReservationResponse.class);
+        var expected = mock(PartnerReservationResponse.class);
 
         WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
         when(partnersConfigService.getPartnerWebhook(anyString(),
                 any(Webhooks.class)))
                 .thenReturn(webhook);
-        when(partnerConnectorClient.getReservation(any(), any(), any()))
+        when(partnerConnectorClient.getReservation(any(), any(), any(), any()))
                 .thenReturn(ResponseEntity.ok(expected));
-        var response = this.proxy.getReservation("123", "123", "123");
+        var response = this.proxy.getReservation("123", "123", "123", List.of("asdf", "fdsa"));
         assertEquals(expected, response);
     }
 
     @Test
     void shouldThrowInternalError_WhenGetReservation() {
+        var segmentsPartnerIds = List.of("asdf", "fdsa");
         var exceptionExpected = new WebhookException(UNKNOWN, "");
 
         doThrow(exceptionExpected).when(partnersConfigService).getPartnerWebhook(any(), any());
         var exception = assertThrows(OrderFlightException.class,
-                () -> this.proxy.getReservation("123", "123", "123"));
-        assertEquals(ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
+                () -> this.proxy.getReservation("123", "123", "123", segmentsPartnerIds));
+        assertEquals(ORDER_FLIGHT_CONFIG_FLIGHT_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
     void shouldThrowBusinessError_WhenGetReservation() {
+        var segmentsPartnerIds = List.of("asdf", "fdsa");
         var exceptionExpected = new WebhookException(PARTNER_INACTIVE, "");
 
         doThrow(exceptionExpected).when(partnersConfigService).getPartnerWebhook(any(), any());
         var exception = assertThrows(OrderFlightException.class,
-                () -> this.proxy.getReservation("123", "123", "123"));
-        assertEquals(ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
+                () -> this.proxy.getReservation("123", "123", "123", segmentsPartnerIds));
+        assertEquals(ORDER_FLIGHT_CONFIG_FLIGHT_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
     void shouldThrowInternalError_WhenStatus400() {
+        var segmentsPartnerIds = List.of("asdf", "fdsa");
         var exceptionExpected = mock(FeignException.class);
 
         doReturn(400).when(exceptionExpected).status();
         doThrow(exceptionExpected).when(partnersConfigService).getPartnerWebhook(any(), any());
         var exception = assertThrows(OrderFlightException.class,
-                () -> this.proxy.getReservation("123", "123", "123"));
+                () -> this.proxy.getReservation("123", "123", "123", segmentsPartnerIds));
         assertEquals(ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
     void shouldThrowInternalError_WhenStatus500() {
+        var segmentsPartnerIds = List.of("asdf", "fdsa");
         var exceptionExpected = mock(FeignException.class);
 
         doReturn(500).when(exceptionExpected).status();
         doThrow(exceptionExpected).when(partnersConfigService).getPartnerWebhook(any(), any());
         var exception = assertThrows(OrderFlightException.class,
-                () -> this.proxy.getReservation("123", "123", "123"));
+                () -> this.proxy.getReservation("123", "123", "123", segmentsPartnerIds));
         assertEquals(ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
     void shouldThrowInternalError_WhenUnknownError() {
+        var segmentsPartnerIds = List.of("asdf", "fdsa");
 
         var exception = assertThrows(OrderFlightException.class,
-                () -> this.proxy.getReservation("123", "123", "123"));
+                () -> this.proxy.getReservation("123", "123", "123", segmentsPartnerIds));
         assertEquals(ORDER_FLIGHT_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
 

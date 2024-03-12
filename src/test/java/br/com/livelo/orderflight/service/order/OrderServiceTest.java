@@ -152,8 +152,8 @@ class OrderServiceTest {
                 any(Pageable.class))).thenReturn(repositoryResponse);
         when(orderProcessMapper.pageRepositoryToPaginationResponse(any())).thenReturn(mappedRepositoryResponse);
 
-        PaginationOrderProcessResponse response = orderService.getOrdersByStatusCodeAndLimitArrivalDate(statusCode,
-                limitArrivalDate, page, rows);
+        PaginationOrderProcessResponse response = orderService.getOrdersByStatusCode(statusCode,
+                Optional.of(limitArrivalDate), page, rows);
 
         assertEquals(mappedRepositoryResponse, response);
         assertEquals(mappedRepositoryResponse.getOrders().size(), response.getRows());

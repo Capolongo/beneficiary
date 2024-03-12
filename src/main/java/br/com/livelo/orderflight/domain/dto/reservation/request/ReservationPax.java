@@ -42,7 +42,7 @@ public class ReservationPax {
     private String areaCode;
 
     @NotBlank
-    private String phone;
+    private String phoneNumber;
 
     @Valid
     @NotNull

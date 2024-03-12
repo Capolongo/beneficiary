@@ -49,7 +49,7 @@ class OrderProcessControllerTest {
   }
 
   @Test
-  void shouldReturnSuccessGetOrdersByStatusCodeAndlimitArrivalDate() throws Exception {
+  void shouldReturnSuccessGetOrdersByStatusCodeAndLimitArrivalDate() throws Exception {
 
     String statusCode = "LIVPNR-1006";
     int page = 1;
@@ -58,7 +58,7 @@ class OrderProcessControllerTest {
 
     PaginationOrderProcessResponse responseBody = MockBuilder.paginationOrderProcessResponse(page, rows);
 
-    when(orderService.getOrdersByStatusCodeAndLimitArrivalDate(statusCode, limitArrivalDate, page, rows))
+    when(orderService.getOrdersByStatusCode(statusCode, Optional.of(limitArrivalDate), page, rows))
         .thenReturn(responseBody);
 
     ResponseEntity<PaginationOrderProcessResponse> response = controller.getOrdersByStatus(statusCode,
@@ -67,8 +67,7 @@ class OrderProcessControllerTest {
     assertEquals(responseBody, response.getBody());
     assertEquals(responseBody.getOrders().size(), response.getBody().getRows());
     assertEquals(200, response.getStatusCode().value());
-    verify(orderService).getOrdersByStatusCodeAndLimitArrivalDate(statusCode, limitArrivalDate, page, rows);
+    verify(orderService).getOrdersByStatusCode(statusCode, Optional.of(limitArrivalDate), page, rows);
     verifyNoMoreInteractions(orderService);
   }
-
 }

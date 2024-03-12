@@ -4,6 +4,7 @@ import br.com.livelo.orderflight.exception.ErrorResponse;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.slf4j.event.Level;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ public class RestExceptionHandler {
         var message = ofNullable(e.getArgs()).orElse(e.getMessage());
         ofNullable(e.getOrderFlightErrorType().getLevel()).ifPresent(level -> this.logMessage(level, message, e.getOrderFlightErrorType(), e));
 
+        MDC.clear();
         return ResponseEntity.status(e.getOrderFlightErrorType().getStatus())
                 .body(this.buildError(e.getOrderFlightErrorType()));
     }
@@ -37,6 +39,7 @@ public class RestExceptionHandler {
         var message = String.format("Required header %s is missing!", e.getHeaderName());
         this.logMessage(Level.ERROR, message, OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e);
 
+        MDC.clear();
         return ResponseEntity.status(400)
                 .body(this.buildError(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR));
     }
