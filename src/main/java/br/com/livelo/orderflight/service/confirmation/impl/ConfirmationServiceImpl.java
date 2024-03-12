@@ -52,10 +52,6 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             log.info("ConfirmationService.confirmOrder - Start - id: [{}]", id);
             order = orderService.getOrderById(id);
 
-//            var flight = orderService.getFlightFromOrderItems(order.getItems());
-            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-            System.out.println(updateOrderDTO);
-
             log.info("ConfirmationService.confirmOrder - id: [{}], orderId: [{}], transactionId: [{}],  order: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), order);
 
             ConfirmOrderValidation.validateOrderPayload(orderRequest, order);
@@ -109,9 +105,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         }
 
         if (!orderService.isSameStatus(currentStatusCode, status.getCode())) {
-//            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-//            System.out.println(updateOrderDTO);
-//            liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
+            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
+            liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
 
             Duration duration = processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
             log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}], orderId: [{}], partnerCode: [{}], oldStatus: [{}], newStatus: [{}]", duration.toMinutes(), order.getId(), order.getPartnerCode(), order.getCurrentStatus(), status);

@@ -18,46 +18,6 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "items", expression = "java(buildItemsDTO(order))")
     UpdateOrderDTO orderEntityToUpdateOrderDTO(OrderEntity order);
 
-    default boolean isTaxItem(String skuId) {
-        return skuId.toUpperCase().contains("TAX");
-    }
-
-    default List<ItemDTO> buildItemsDTO(OrderEntity order) {
-        StatusDTO statusDTO = orderStatusEntityToStatusDTO(order.getCurrentStatus());
-
-        var flight = order.getItems().stream().filter(item -> !isTaxItem(item.getSkuId())).toList();
-
-        var travelSummary = TravelSummaryDTO.builder()
-                .tour(null)
-//                .flights(buildFlights(flight.get(0).getSegments()))
-                .flights(buildFlights(flight.get(0).getSegments(), flight.get(0).getTravelInfo()))
-                .build();
-        var partnerInfo = PartnerInfoSummaryDTO.builder().travel(travelSummary).build();
-
-        return order.getItems().stream().map(item -> {
-            var mappedItem = orderItemEntityToItemDTO(item);
-            mappedItem.setStatus(statusDTO);
-
-            if (!isTaxItem(item.getSkuId())) {
-                mappedItem.setPartnerInfo(partnerInfo);
-            }
-
-            return mappedItem;
-        }).toList();
-
-    }
-
-    default List<FlightSummaryDTO> buildFlights(Set<SegmentEntity> segments, TravelInfoEntity travelInfo) {
-        var gds = GlobalDistribuitionSystemDTO.builder().reservationCode(travelInfo.getReservationCode()).build();
-
-        List<CustomerDTO> mappedPaxs = travelInfo.getPaxs().stream().map(this::paxEntityToCustomerDTO).toList();
-        return segments.stream().map(segment -> {
-            var flight = segmentEntityToFlightSummaryDTO(segment);
-            flight.setPassengers(mappedPaxs);
-            flight.setGlobalDistribuitionSystem(gds);
-            return flight;
-        }).toList();
-    }
 
     @Mapping(target = "partnerOrderId", source = "partnerOrderLinkId")
     @Mapping(target = "id", source = "skuId")
@@ -89,11 +49,8 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "issuingDate", source = "issueDate")
     DocumentDTO documentEntityToDocumentDTO(DocumentEntity documentEntity);
 
-
     List<ServiceDTO> segmentEntityToServiceDTO(Set<SegmentEntity> segmentEntity);
 
-
-//    finalizar esse mapper
     @Mapping(target = "services", expression = "java(mapServices(segmentEntity.getCancelationRules(), segmentEntity.getLuggages(), segmentEntity.getChangeRules()))")
     @Mapping(target = "duration", source = "flightDuration")
     @Mapping(target = "legs", source = "flightsLegs")
@@ -102,13 +59,10 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "departure.airportName", source = "originIata")
     @Mapping(target = "departure.iata", source = "originIata")
     @Mapping(target = "departure.numberOfStops", source = "stops")
-
-
     @Mapping(target = "arrival.date", source = "arrivalDate")
     @Mapping(target = "arrival.airportName", source = "destinationIata")
     @Mapping(target = "arrival.iata", source = "destinationIata")
     @Mapping(target = "arrival.numberOfStops", source = "stops")
-//    @Mapping(target = "arrival")
     FlightSummaryDTO segmentEntityToFlightSummaryDTO(SegmentEntity segmentEntity); // PRecisamos saber se é TravelSummaryDTO ou FlightSummaryDTO
 
     @Mapping(target = "isIncluded", constant = "false")
@@ -122,18 +76,6 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "isIncluded", constant = "false")
         // isIncluded não existe no Object do parâmetro, por default estou colocando false mas deve ser validado quando deve ser true.
     ServiceDTO changeRuleEntityToServiceDTO(ChangeRuleEntity changeRuleEntity);
-
-    @Mapping(target = "date", source = "departureDate")
-    @Mapping(target = "airportName", source = "originIata")
-    @Mapping(target = "iata", source = "originIata")
-//    @Mapping(target = "numberOfStops", source = "stops")
-    DepartureDTO flightLegEntityToDepartureDTO(FlightLegEntity flightLegEntity);
-
-    @Mapping(target = "date", source = "arrivalDate")
-    @Mapping(target = "airportName", source = "destinationIata")
-    @Mapping(target = "iata", source = "destinationIata")
-//    @Mapping(target = "numberOfStops", source = "stops")
-    ArrivalDTO flightLegEntityToArrivalDTO(FlightLegEntity flightLegEntity);
 
     BaggageDTO luggageToBaggageDTO(LuggageEntity luggageEntity);
 
@@ -156,5 +98,42 @@ public interface LiveloPartnersMapper {
         return services;
     }
 
-    // DestinationDTO segmentEntityToDestinationDTO(SegmentEntity segmentEntity);
+    default boolean isTaxItem(String skuId) {
+        return skuId.toUpperCase().contains("TAX");
+    }
+    default List<ItemDTO> buildItemsDTO(OrderEntity order) {
+        StatusDTO statusDTO = orderStatusEntityToStatusDTO(order.getCurrentStatus());
+
+        var flight = order.getItems().stream().filter(item -> !isTaxItem(item.getSkuId())).toList();
+
+        var travelSummary = TravelSummaryDTO.builder()
+                .tour(null)
+                .flights(buildFlights(flight.get(0).getSegments(), flight.get(0).getTravelInfo()))
+                .build();
+        var partnerInfo = PartnerInfoSummaryDTO.builder().travel(travelSummary).build();
+
+        return order.getItems().stream().map(item -> {
+            var mappedItem = orderItemEntityToItemDTO(item);
+            mappedItem.setStatus(statusDTO);
+
+            if (!isTaxItem(item.getSkuId())) {
+                mappedItem.setPartnerInfo(partnerInfo);
+            }
+
+            return mappedItem;
+        }).toList();
+
+    }
+
+    default List<FlightSummaryDTO> buildFlights(Set<SegmentEntity> segments, TravelInfoEntity travelInfo) {
+        var gds = GlobalDistribuitionSystemDTO.builder().reservationCode(travelInfo.getReservationCode()).build();
+
+        List<CustomerDTO> mappedPaxs = travelInfo.getPaxs().stream().map(this::paxEntityToCustomerDTO).toList();
+        return segments.stream().map(segment -> {
+            var flight = segmentEntityToFlightSummaryDTO(segment);
+            flight.setPassengers(mappedPaxs);
+            flight.setGlobalDistribuitionSystem(gds);
+            return flight;
+        }).toList();
+    }
 }
