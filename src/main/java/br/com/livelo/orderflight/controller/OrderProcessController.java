@@ -18,22 +18,23 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RequestMapping("/v1/orders")
 public class OrderProcessController {
-  private final OrderService orderService;
+    private final OrderService orderService;
 
-  @GetMapping("/process")
-  public ResponseEntity<PaginationOrderProcessResponse> getOrdersByStatus(@RequestParam String statusCode,
-      @RequestParam(required = false) String limitArrivalDate,
-      @RequestParam(required = false, defaultValue = "1") Integer page,
-      @RequestParam(required = false, defaultValue = "${order.orderProcessMaxRows}") Integer rows) {
-    log.debug("ConfirmationController.getOrdersByStatus() - Start - statusCode: [{}], limitArrivalDate: [{}], page: [{}], rows: [{}]",
-        statusCode, limitArrivalDate, page, rows);
-    PaginationOrderProcessResponse orders;
-    if (limitArrivalDate == null) {
-      orders = orderService.getOrdersByStatusCode(statusCode, page, rows);
-    } else {
-      orders = orderService.getOrdersByStatusCodeAndLimitArrivalDate(statusCode, limitArrivalDate, page, rows);
+    @GetMapping("/process")
+    public ResponseEntity<PaginationOrderProcessResponse> getOrdersByStatus(@RequestParam String statusCode,
+                                                                            @RequestParam(required = false) String limitArrivalDate,
+                                                                            @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                                            @RequestParam(required = false, defaultValue = "${order.orderProcessMaxRows}") Integer rows) {
+        log.debug("ConfirmationController.getOrdersByStatus() - Start - statusCode: [{}], limitArrivalDate: [{}], page: [{}], rows: [{}]", statusCode, limitArrivalDate, page, rows);
+        PaginationOrderProcessResponse orders;
+        if (limitArrivalDate == null) {
+            log.info("ConfirmationController.getOrdersByStatus() - call getOrdersByStatusCode");
+            orders = orderService.getOrdersByStatusCode(statusCode, page, rows);
+        } else {
+            log.info("ConfirmationController.getOrdersByStatus() - call getOrdersByStatusCodeAndLimitArrivalDate");
+            orders = orderService.getOrdersByStatusCodeAndLimitArrivalDate(statusCode, limitArrivalDate, page, rows);
+        }
+        log.debug("ConfirmationController.getOrdersByStatus() - End - response: [{}]", orders);
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(orders);
     }
-    log.debug("ConfirmationController.getOrdersByStatus() - End - response: [{}]", orders);
-    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(orders);
-  }
 }
