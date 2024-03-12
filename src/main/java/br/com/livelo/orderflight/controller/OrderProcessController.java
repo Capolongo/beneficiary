@@ -13,6 +13,8 @@ import br.com.livelo.orderflight.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -25,16 +27,11 @@ public class OrderProcessController {
                                                                             @RequestParam(required = false) String limitArrivalDate,
                                                                             @RequestParam(required = false, defaultValue = "1") Integer page,
                                                                             @RequestParam(required = false, defaultValue = "${order.orderProcessMaxRows}") Integer rows) {
-        log.debug("ConfirmationController.getOrdersByStatus() - Start - statusCode: [{}], limitArrivalDate: [{}], page: [{}], rows: [{}]", statusCode, limitArrivalDate, page, rows);
-        PaginationOrderProcessResponse orders;
-        if (limitArrivalDate == null) {
-            log.info("ConfirmationController.getOrdersByStatus() - call getOrdersByStatusCode");
-            orders = orderService.getOrdersByStatusCode(statusCode, page, rows);
-        } else {
-            log.info("ConfirmationController.getOrdersByStatus() - call getOrdersByStatusCodeAndLimitArrivalDate");
-            orders = orderService.getOrdersByStatusCodeAndLimitArrivalDate(statusCode, limitArrivalDate, page, rows);
-        }
-        log.debug("ConfirmationController.getOrdersByStatus() - End - response: [{}]", orders);
+        log.debug("OrderProcessController.getOrdersByStatus() - Start - statusCode: [{}], limitArrivalDate: [{}], page: [{}], rows: [{}]", statusCode, limitArrivalDate, page, rows);
+
+            var orders = orderService.getOrdersByStatusCode(statusCode, Optional.ofNullable(limitArrivalDate), page, rows);
+
+        log.debug("OrderProcessController.getOrdersByStatus() - End - response: [{}]", orders);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(orders);
     }
 }
