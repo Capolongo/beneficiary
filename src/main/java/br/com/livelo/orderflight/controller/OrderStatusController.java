@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-//@RequiredArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/v1/orders")
 public class OrderStatusController {
 

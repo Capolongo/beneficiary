@@ -98,6 +98,16 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "duration", source = "flightDuration")
     @Mapping(target = "legs", source = "flightsLegs")
     @Mapping(target = "baggage", expression = "java(setBaggage(segmentEntity.getLuggages()))")
+    @Mapping(target = "departure.date", source = "departureDate")
+    @Mapping(target = "departure.airportName", source = "originIata")
+    @Mapping(target = "departure.iata", source = "originIata")
+    @Mapping(target = "departure.numberOfStops", source = "stops")
+
+
+    @Mapping(target = "arrival.date", source = "arrivalDate")
+    @Mapping(target = "arrival.airportName", source = "destinationIata")
+    @Mapping(target = "arrival.iata", source = "destinationIata")
+    @Mapping(target = "arrival.numberOfStops", source = "stops")
 //    @Mapping(target = "arrival")
     FlightSummaryDTO segmentEntityToFlightSummaryDTO(SegmentEntity segmentEntity); // PRecisamos saber se é TravelSummaryDTO ou FlightSummaryDTO
 
