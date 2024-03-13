@@ -103,8 +103,10 @@ public class ConnectorPartnersProxy {
         var message = String.format(format, e.status(), e.responseBody());
 
         if (status.is4xxClientError()) {
+            log.warn("Business error on connector call url: {} status: {} body: {}", e.request().url(), e.status(), e.responseBody(), e);
             return new ConnectorReservationBusinessException(message, e);
         }
+        log.warn("Internal error on connector call url: {} status: {} body: {}", e.request().url(), e.status(), e.responseBody(), e);
         return new ConnectorReservationInternalException(message, e);
     }
 

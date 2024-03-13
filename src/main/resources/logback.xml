@@ -33,11 +33,13 @@
                         "level": "%level",
                         "severity": "%level",
                         "service": "${springAppName:-}",
-                        "trace": "%X{traceId:-}",
-                        "span": "%X{spanId:-}",
-                        "pid": "${PID:-}",
-                        "thread": "%thread",
                         "class": "%logger{40}",
+                        "status": "%X{status}",
+                        "transactionId": "%X{transactionId}",
+                        "flow": "%X{flow}",
+                        "partner": "%X{partner}",
+                        "errorType": "%X{errorType}",
+                        "errorMessage": "%X{errorMessage}",
                         "message": "%message",
                         "stack_trace": "%ex"
                         }
