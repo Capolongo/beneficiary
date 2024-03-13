@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static br.com.livelo.orderflight.constants.DynatraceConstants.*;
 import static java.util.Optional.ofNullable;
 
 @ControllerAdvice
@@ -26,11 +27,19 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(OrderFlightException.class)
     public ResponseEntity<ErrorResponse> handleException(OrderFlightException e) {
+        setDynatraceEntries(e);
+
         var message = ofNullable(e.getArgs()).orElse(e.getMessage());
         ofNullable(e.getOrderFlightErrorType().getLevel()).ifPresent(level -> this.logMessage(level, message, e.getOrderFlightErrorType(), e));
 
         return ResponseEntity.status(e.getOrderFlightErrorType().getStatus())
                 .body(this.buildError(e.getOrderFlightErrorType()));
+    }
+
+    private void setDynatraceEntries(OrderFlightException e) {
+        MDC.put(STATUS, "ERROR");
+        MDC.put(ERROR_TYPE, e.getOrderFlightErrorType().name());
+        MDC.put(ERROR_MESSAGE, e.getArgs());
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)

@@ -22,12 +22,14 @@ import br.com.livelo.orderflight.service.order.OrderService;
 import br.com.livelo.orderflight.service.reservation.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static br.com.livelo.orderflight.constants.DynatraceConstants.STATUS;
 import static br.com.livelo.orderflight.enuns.StatusLivelo.PROCESSING;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
 
@@ -50,6 +52,7 @@ public class ReservationServiceImpl implements ReservationService {
                 order = orderOptional.get();
                 if (this.isSameOrderItems(request, orderOptional)) {
                     partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), request.getSegmentsPartnerIds());
+                    log.info("Order reserved on partner! Proceed with price. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
                 } else {
                     this.orderService.delete(order);
                 }
@@ -68,6 +71,8 @@ public class ReservationServiceImpl implements ReservationService {
             this.setPrices(order, pricingCalculatePrice);
 
             this.orderService.save(order);
+
+            MDC.put(STATUS, "SUCCESS");
             log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {}", order, transactionId, listPriceId);
             // deve vir do connector
             return reservationMapper.toReservationResponse(order, 15);
