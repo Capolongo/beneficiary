@@ -19,10 +19,8 @@ public class CompletedServiceImpl implements CompletedService {
     private final OrderServiceImpl orderService;
 
     @Override
-    public void orderProcess(OrderProcess orderProcess) throws JsonProcessingException {
+    public void orderProcess(OrderProcess orderProcess) {
         log.info("CompletedServiceImpl.orderProcess - Start - id: [{}]", orderProcess.getId());
-
-        OrderStatusEntity status = null;
 
         var order = orderService.getOrderById(orderProcess.getId());
         var currentStatus = order.getCurrentStatus();
