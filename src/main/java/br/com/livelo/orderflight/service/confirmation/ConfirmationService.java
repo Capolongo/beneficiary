@@ -9,5 +9,5 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public interface ConfirmationService {
     ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest) throws OrderFlightException;
 
-    void orderProcess(OrderProcess payload);
+    void orderProcess(OrderProcess payload) throws JsonProcessingException;
 }
