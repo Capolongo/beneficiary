@@ -43,6 +43,7 @@ public interface LiveloPartnersMapper {
     LegSummaryDTO flightLegEntityToLegSummaryDTO(FlightLegEntity flightLegEntity);
 
     @Mapping(target = "documents", source = "document")
+    @Mapping(target = "phones", expression = "java(setPhone(paxEntity))")
     CustomerDTO paxEntityToCustomerDTO(PaxEntity paxEntity);
 
     @Mapping(target = "doc", source = "documentNumber")
@@ -65,16 +66,13 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "arrival.numberOfStops", source = "stops")
     FlightSummaryDTO segmentEntityToFlightSummaryDTO(SegmentEntity segmentEntity); // PRecisamos saber se é TravelSummaryDTO ou FlightSummaryDTO
 
-    @Mapping(target = "isIncluded", constant = "false")
-        // isIncluded não existe no Object do parâmetro, por default estou colocando false mas deve ser validado quando deve ser true.
+    @Mapping(target = "isIncluded", constant = "true")
     ServiceDTO cancellationRuleEntityToServiceDTO(CancelationRuleEntity cancelationRuleEntity);
 
-    @Mapping(target = "isIncluded", constant = "false")
-        // isIncluded não existe no Object do parâmetro, por default estou colocando false mas deve ser validado quando deve ser true.
+    @Mapping(target = "isIncluded", constant = "true")
     ServiceDTO luggageEntityEntityToServiceDTO(LuggageEntity luggageEntity);
 
-    @Mapping(target = "isIncluded", constant = "false")
-        // isIncluded não existe no Object do parâmetro, por default estou colocando false mas deve ser validado quando deve ser true.
+    @Mapping(target = "isIncluded", constant = "true")
     ServiceDTO changeRuleEntityToServiceDTO(ChangeRuleEntity changeRuleEntity);
 
     BaggageDTO luggageToBaggageDTO(LuggageEntity luggageEntity);
@@ -122,7 +120,16 @@ public interface LiveloPartnersMapper {
 
             return mappedItem;
         }).toList();
+    }
 
+    @Mapping(target = "number", source = "phoneNumber")
+    @Mapping(target = "localCode", source = "areaCode")
+    @Mapping(target = "internationalCode", constant = "55")
+    @Mapping(target = "type", constant = "_")
+    Phone passengerToPhone(PaxEntity pax);
+
+    default List<Phone> setPhone(PaxEntity pax) {
+        return List.of(passengerToPhone(pax));
     }
 
     default List<FlightSummaryDTO> buildFlights(Set<SegmentEntity> segments, TravelInfoEntity travelInfo) {
