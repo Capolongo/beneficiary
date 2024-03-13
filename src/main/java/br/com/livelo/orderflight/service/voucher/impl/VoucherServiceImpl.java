@@ -1,9 +1,9 @@
 package br.com.livelo.orderflight.service.voucher.impl;
 
-import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
@@ -33,7 +33,7 @@ public class VoucherServiceImpl implements VoucherService {
         OrderStatusEntity status = null;
         var order = orderService.getOrderById(orderProcess.getId());
 
-        if (!orderService.isSameStatus(StatusConstants.WAIT_VOUCHER.getCode(), order.getCurrentStatus().getCode())) {
+        if (!orderService.isSameStatus(StatusLivelo.WAIT_VOUCHER.getCode(), order.getCurrentStatus().getCode())) {
             log.warn("VoucherServiceImpl.orderProcess - order has different status - id: [{}]", order.getId());
             return;
         }

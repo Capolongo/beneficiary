@@ -1,12 +1,13 @@
 package br.com.livelo.orderflight.service.order.impl;
 
-import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
+
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
+import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.OrderProcessMapper;
@@ -92,10 +93,10 @@ public class OrderServiceImpl implements OrderService {
     public OrderStatusEntity buildOrderStatusFailed(String cause) {
         return OrderStatusEntity.builder()
                 .partnerCode(String.valueOf(500))
-                .code(StatusConstants.FAILED.getCode())
+                .code(StatusLivelo.FAILED.getCode())
                 .partnerResponse(cause)
                 .partnerDescription("failed")
-                .description(StatusConstants.FAILED.getDescription())
+                .description(StatusLivelo.FAILED.getDescription())
                 .statusDate(LocalDateTime.now())
                 .build();
     }

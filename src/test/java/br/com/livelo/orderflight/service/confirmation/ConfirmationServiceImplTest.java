@@ -1,6 +1,5 @@
 package br.com.livelo.orderflight.service.confirmation;
 
-import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
@@ -10,6 +9,7 @@ import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
+import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
@@ -155,7 +155,7 @@ class ConfirmationServiceImplTest {
 
         confirmationService.orderProcess(orderProcess);
 
-        verify(orderService, times(2)).isSameStatus(StatusConstants.PROCESSING.getCode(), order.getCurrentStatus().getCode());
+        verify(orderService, times(2)).isSameStatus(StatusLivelo.PROCESSING.getCode(), order.getCurrentStatus().getCode());
     }
 
     @Test
@@ -171,7 +171,7 @@ class ConfirmationServiceImplTest {
         confirmationService.orderProcess(orderProcess);
 
         verify(orderService, times(1)).getOrderById(anyString());
-        verify(orderService, times(1)).isSameStatus(StatusConstants.PROCESSING.getCode(), order.getCurrentStatus().getCode());
+        verify(orderService, times(1)).isSameStatus(StatusLivelo.PROCESSING.getCode(), order.getCurrentStatus().getCode());
         verify(orderService, never()).getProcessCounter(order, process);
 
         verifyNoMoreInteractions(orderService);
@@ -194,7 +194,7 @@ class ConfirmationServiceImplTest {
         confirmationService.orderProcess(orderProcess);
 
         verify(orderService, times(1)).getOrderById(anyString());
-        verify(orderService, times(1)).isSameStatus(StatusConstants.PROCESSING.getCode(), order.getCurrentStatus().getCode());
+        verify(orderService, times(1)).isSameStatus(StatusLivelo.PROCESSING.getCode(), order.getCurrentStatus().getCode());
         verify(orderService, times(1)).buildOrderStatusFailed("O contador excedeu o limite de tentativas");
     }
 

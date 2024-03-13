@@ -3,7 +3,6 @@ package br.com.livelo.orderflight.service.confirmation.impl;
 import br.com.livelo.orderflight.domain.dtos.update.UpdateOrderDTO;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
-import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
@@ -51,6 +50,9 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             log.info("ConfirmationService.confirmOrder - Start - id: [{}]", id);
             order = orderService.getOrderById(id);
 
+//            var updateDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
+//            System.out.println(updateDTO);
+
             log.info("ConfirmationService.confirmOrder - id: [{}], orderId: [{}], transactionId: [{}],  order: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), order);
 
             ConfirmOrderValidation.validateOrderPayload(orderRequest, order);
@@ -90,7 +92,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         var order = orderService.getOrderById(orderProcess.getId());
         var currentStatusCode = order.getCurrentStatus().getCode();
 
-        if (!orderService.isSameStatus(StatusConstants.PROCESSING.getCode(), currentStatusCode)) {
+        if (!orderService.isSameStatus(StatusLivelo.PROCESSING.getCode(), currentStatusCode)) {
             log.warn("ConfirmationService.orderProcess - order has different status - id: [{}]", order.getId());
             return;
         }
@@ -104,8 +106,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         }
 
         if (!orderService.isSameStatus(currentStatusCode, status.getCode())) {
-            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-            liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
+//            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
+//            liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
 
             Duration duration = processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
             log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}], orderId: [{}], partnerCode: [{}], oldStatus: [{}], newStatus: [{}]", duration.toMinutes(), order.getId(), order.getPartnerCode(), order.getCurrentStatus(), status);
