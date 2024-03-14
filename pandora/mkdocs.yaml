@@ -11,6 +11,7 @@ nav:
       - Processamento do pedido: process-order.md
       - Atualização de status: update-status.md
   - Listeners:
+      - Order Process GetCompleted: order-process-getCompleted-listener.md
       - Order Process GetConfirmation: order-process-getConfirmation-listener.md
       - Order Process GetVoucher: order-process-getVoucher-listener.md
   - Inicializando dependências: use-dependencies.md
