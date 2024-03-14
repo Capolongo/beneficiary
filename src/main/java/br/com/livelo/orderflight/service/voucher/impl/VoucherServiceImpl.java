@@ -32,6 +32,7 @@ public class VoucherServiceImpl implements VoucherService {
 
         OrderStatusEntity status = null;
         var order = orderService.getOrderById(orderProcess.getId());
+        var oldStatus = order.getCurrentStatus().getCode();
 
         if (!orderService.isSameStatus(StatusLivelo.WAIT_VOUCHER.getCode(), order.getCurrentStatus().getCode())) {
             log.warn("VoucherServiceImpl.orderProcess - order has different status - id: [{}]", order.getId());
@@ -50,6 +51,7 @@ public class VoucherServiceImpl implements VoucherService {
         orderService.addNewOrderStatus(order, status);
         orderService.incrementProcessCounter(processCounter);
         orderService.save(order);
+        orderService.updateOrderOnLiveloPartners(order, oldStatus);
 
         log.info("VoucherServiceImpl.orderProcess - status updated - order: [{}]", order.getId());
     }

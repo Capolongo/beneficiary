@@ -138,7 +138,6 @@ class VoucherServiceImplTest {
         when(orderService.getOrderById(anyString())).thenReturn(order);
         when(orderService.isSameStatus(anyString(), anyString())).thenReturn(true);
         when(orderService.getProcessCounter(any(OrderEntity.class), anyString())).thenReturn(counter);
-
         voucherService.orderProcess(orderProcess);
 
         verify(confirmOrderMapper, times(0)).connectorConfirmOrderStatusResponseToStatusEntity(any());

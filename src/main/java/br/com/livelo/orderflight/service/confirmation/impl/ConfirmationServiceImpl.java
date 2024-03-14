@@ -36,8 +36,6 @@ public class ConfirmationServiceImpl implements ConfirmationService {
     private final OrderServiceImpl orderService;
     private final ConfirmOrderMapper confirmOrderMapper;
     private final ConnectorPartnersProxy connectorPartnersProxy;
-    private final LiveloPartnersProxy liveloPartnersProxy;
-    private final LiveloPartnersMapper liveloPartnersMapper;
 
     @Value("${order.getConfirmationMaxProcessCountFailed}")
     private int getConfirmationMaxProcessCountFailed;
@@ -103,9 +101,6 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         }
 
         if (!orderService.isSameStatus(currentStatusCode, status.getCode())) {
-            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-            liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
-
             Duration duration = processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
             log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}], orderId: [{}], partnerCode: [{}], oldStatus: [{}], newStatus: [{}]", duration.toMinutes(), order.getId(), order.getPartnerCode(), order.getCurrentStatus(), status);
         }
@@ -113,7 +108,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.incrementProcessCounter(processCounter);
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
-        orderService.updateOrderOnLiveloPartners(order, status.getCode());
+        orderService.updateOrderOnLiveloPartners(order, currentStatusCode);
 
         log.info("ConfirmationService.orderProcess - order process counter - id: [{}], count: [{}]", order.getId(), processCounter.getCount());
         orderService.orderDetailLog("orderProcess", status.getCode(), order);
