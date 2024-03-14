@@ -50,9 +50,6 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             log.info("ConfirmationService.confirmOrder - Start - id: [{}]", id);
             order = orderService.getOrderById(id);
 
-//            var updateDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-//            System.out.println(updateDTO);
-
             log.info("ConfirmationService.confirmOrder - id: [{}], orderId: [{}], transactionId: [{}],  order: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), order);
 
             ConfirmOrderValidation.validateOrderPayload(orderRequest, order);
@@ -106,8 +103,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         }
 
         if (!orderService.isSameStatus(currentStatusCode, status.getCode())) {
-//            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-//            liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
+            UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
+            liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
 
             Duration duration = processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
             log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}], orderId: [{}], partnerCode: [{}], oldStatus: [{}], newStatus: [{}]", duration.toMinutes(), order.getId(), order.getPartnerCode(), order.getCurrentStatus(), status);
@@ -116,6 +113,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.incrementProcessCounter(processCounter);
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
+        orderService.updateOrderOnLiveloPartners(order, status.getCode());
 
         log.info("ConfirmationService.orderProcess - order process counter - id: [{}], count: [{}]", order.getId(), processCounter.getCount());
         orderService.orderDetailLog("orderProcess", status.getCode(), order);

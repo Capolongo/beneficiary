@@ -13,8 +13,10 @@ import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
+import br.com.livelo.orderflight.mappers.LiveloPartnersMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
+import br.com.livelo.orderflight.proxies.LiveloPartnersProxy;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.confirmation.impl.ConfirmationServiceImpl;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
@@ -51,7 +53,10 @@ class ConfirmationServiceImplTest {
     private ConfirmOrderMapper confirmOrderMapper;
     @Mock
     private ConnectorPartnersProxy connectorPartnersProxy;
-
+    @Mock
+    private LiveloPartnersProxy liveloPartnersProxy;
+    @Mock
+    private LiveloPartnersMapper liveloPartnersMapper;
     @InjectMocks
     private ConfirmationServiceImpl confirmationService;
 

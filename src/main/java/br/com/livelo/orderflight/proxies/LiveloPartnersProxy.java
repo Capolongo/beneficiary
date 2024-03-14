@@ -6,6 +6,7 @@ import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class LiveloPartnersProxy {
     private final LiveloPartnersClient liveloPartnersClient;
 
+    @Async
     public void updateOrder(String orderId, UpdateOrderDTO updateOrder) {
         try {
             log.info("LiveloPartnersProxy.updateOrder - Start - id: [{}], body: [{}]", orderId, updateOrder);

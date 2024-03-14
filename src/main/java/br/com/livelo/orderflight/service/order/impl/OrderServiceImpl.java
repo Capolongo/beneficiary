@@ -3,6 +3,7 @@ package br.com.livelo.orderflight.service.order.impl;
 
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
+import br.com.livelo.orderflight.domain.dtos.update.UpdateOrderDTO;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
@@ -10,7 +11,9 @@ import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.mappers.LiveloPartnersMapper;
 import br.com.livelo.orderflight.mappers.OrderProcessMapper;
+import br.com.livelo.orderflight.proxies.LiveloPartnersProxy;
 import br.com.livelo.orderflight.repository.ItemRepository;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
@@ -33,8 +36,9 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderProcessMapper orderMapper;
-
     private final ItemRepository itemRepository;
+    private final LiveloPartnersProxy liveloPartnersProxy;
+    private final LiveloPartnersMapper liveloPartnersMapper;
 
     @Value("${order.orderProcessMaxRows}")
     private int orderProcessMaxRows;
@@ -164,4 +168,12 @@ public class OrderServiceImpl implements OrderService {
         return itemOptional.get();
     }
 
+    public void updateOrderOnLiveloPartners(OrderEntity order, String newStatus) {
+        if (isSameStatus(order.getCurrentStatus().getCode(), newStatus)) {
+            return;
+        }
+
+        UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
+        liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
+    }
 }
