@@ -1,20 +1,10 @@
 package br.com.livelo.orderflight.mappers;
 
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.*;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderItemResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderDocumentResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderFlightsLegsResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderPaxResponse;
-import br.com.livelo.orderflight.domain.entity.DocumentEntity;
-import br.com.livelo.orderflight.domain.entity.FlightLegEntity;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.domain.entity.PaxEntity;
-
+import br.com.livelo.orderflight.domain.entity.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -26,7 +16,8 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "productType", source = "productId")
     ConfirmOrderItemResponse orderItemEntityToConfirmOrderItemResponse(OrderItemEntity orderItemEntity);
 
-    @Mapping(target = "operatedBy", source = "managedBy")
+    @Mapping(target = "operatedBy", source = "flightLegEntity.airlineOperatedByIata")
+    @Mapping(target = "airline", ignore = true)
     ConfirmationOrderFlightsLegsResponse flightLegEntityToConfirmationOrderFlightsLegsResponse(FlightLegEntity flightLegEntity);
 
     ConfirmationOrderDocumentResponse paxEntityToConfirmationOrderPaxResponse(DocumentEntity documentEntity);

@@ -17,5 +17,4 @@ public record ReservationResponseSegment(String partnerId,
                                          Set<ReservationResponseCancelationRule> cancelationRules,
                                          Set<ReservationResponseChangeRule> changeRules,
                                          Set<ReservationResponseFlightLeg> flightsLegs) {
-
 }

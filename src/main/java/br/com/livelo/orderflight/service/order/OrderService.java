@@ -12,7 +12,9 @@ import br.com.livelo.orderflight.exception.OrderFlightException;
 public interface OrderService {
   OrderEntity getOrderById(String id) throws OrderFlightException;
 
-  PaginationOrderProcessResponse getOrdersByStatusCode(String status, Integer page, Integer rows) throws OrderFlightException;
+  PaginationOrderProcessResponse getOrdersByStatusCode(String status, Optional<String> limitArrivalDate, Integer page, Integer rows)
+      throws OrderFlightException;
+
 
   void addNewOrderStatus(OrderEntity order, OrderStatusEntity status);
 

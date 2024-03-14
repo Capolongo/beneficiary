@@ -29,5 +29,5 @@ public class PaxEntity extends BaseEntity {
     private String birthDate;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "PAX_ID")
-    private Set<DocumentEntity> document;
+    private Set<DocumentEntity> documents;
 }

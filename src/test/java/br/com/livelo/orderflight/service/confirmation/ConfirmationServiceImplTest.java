@@ -224,6 +224,7 @@ class ConfirmationServiceImplTest {
         verify(orderService, times(1)).incrementProcessCounter(processCounter);
         verify(orderService, times(1)).addNewOrderStatus(order, statusProcessing);
         verify(orderService, times(1)).save(order);
+        verify(orderService, times(1)).orderDetailLog("orderProcess", statusProcessing.getCode(), order);
         verifyNoMoreInteractions(orderService);
     }
 }

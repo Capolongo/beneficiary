@@ -38,19 +38,7 @@ class ReservationPriceMapperTest {
                                                         .amount(new BigDecimal(10))
                                                         .type("TESTE_TAX")
                                                         .build())).build()
-                        ).build(),
-                PricingCalculatePrice.builder().priceListId("price")
-                        .pricesDescription(PricingCalculatePricesDescription.builder()
-                                .flights(List.of(PricingCalculateFlight.builder()
-                                        .passengerType("BY_ADULT")
-                                        .pointsAmount(new BigDecimal(10))
-                                        .build()))
-
-                                .taxes(List.of(PricingCalculateTaxes.builder()
-                                        .type("TESTE_TAX")
-                                        .pointsAmount(new BigDecimal(7))
-                                        .build()))
-                                .build()).build());
+                        ).build());
         assertNotNull(response);
     }
 }
