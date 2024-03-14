@@ -85,9 +85,9 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         OrderStatusEntity status = null;
 
         var order = orderService.getOrderById(orderProcess.getId());
-        var currentStatusCode = order.getCurrentStatus().getCode();
+        var oldStatusCode = order.getCurrentStatus().getCode();
 
-        if (!orderService.isSameStatus(StatusLivelo.PROCESSING.getCode(), currentStatusCode)) {
+        if (!orderService.isSameStatus(StatusLivelo.PROCESSING.getCode(), oldStatusCode)) {
             log.warn("ConfirmationService.orderProcess - order has different status - id: [{}]", order.getId());
             return;
         }
@@ -100,7 +100,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             status = processGetConfirmation(order);
         }
 
-        if (!orderService.isSameStatus(currentStatusCode, status.getCode())) {
+        if (!orderService.isSameStatus(oldStatusCode, status.getCode())) {
             Duration duration = processOrderTimeDifference(order.getCurrentStatus().getCreateDate());
             log.info("ConfirmationService.processOrderTimeDifference - process order diff time - minutes: [{}], orderId: [{}], partnerCode: [{}], oldStatus: [{}], newStatus: [{}]", duration.toMinutes(), order.getId(), order.getPartnerCode(), order.getCurrentStatus(), status);
         }
@@ -108,7 +108,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.incrementProcessCounter(processCounter);
         orderService.addNewOrderStatus(order, status);
         orderService.save(order);
-        orderService.updateOrderOnLiveloPartners(order, currentStatusCode);
+        orderService.updateOrderOnLiveloPartners(order, oldStatusCode);
 
         log.info("ConfirmationService.orderProcess - order process counter - id: [{}], count: [{}]", order.getId(), processCounter.getCount());
         orderService.orderDetailLog("orderProcess", status.getCode(), order);
