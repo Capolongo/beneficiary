@@ -174,8 +174,8 @@ public class OrderServiceImpl implements OrderService {
         return itemOptional.get();
     }
 
-    public void updateOrderOnLiveloPartners(OrderEntity order, String newStatus) {
-        if (isSameStatus(order.getCurrentStatus().getCode(), newStatus)) {
+    public void updateOrderOnLiveloPartners(OrderEntity order, String oldStatus) {
+        if (isSameStatus(order.getCurrentStatus().getCode(), oldStatus)) {
             return;
         }
 
