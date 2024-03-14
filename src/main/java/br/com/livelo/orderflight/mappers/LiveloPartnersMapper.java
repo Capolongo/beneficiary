@@ -29,10 +29,10 @@ public interface LiveloPartnersMapper {
     @Mapping(source = "partnerDescription", target = "details")
     StatusDTO orderStatusEntityToStatusDTO(OrderStatusEntity orderStatusEntity);
 
-    @Mapping(target = "managedAirline.name", source = "managedBy")
-    @Mapping(target = "managedAirline.iata", source = "managedBy")
-    @Mapping(target = "operationAirline.name", source = "airline")
-    @Mapping(target = "operationAirline.iata", source = "airline")
+    @Mapping(target = "managedAirline.name", source = "airlineManagedByDescription")
+    @Mapping(target = "managedAirline.iata", source = "airlineManagedByIata")
+    @Mapping(target = "operationAirline.name", source = "airlineOperatedByDescription")
+    @Mapping(target = "operationAirline.iata", source = "airlineOperatedByIata")
     @Mapping(target = "departure.date", source = "departureDate")
     @Mapping(target = "departure.iata", source = "originIata")
     @Mapping(target = "arrival.iata", source = "destinationIata")
@@ -42,7 +42,6 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "arrivalName", source = "destinationDescription")
     LegSummaryDTO flightLegEntityToLegSummaryDTO(FlightLegEntity flightLegEntity);
 
-    @Mapping(target = "documents", source = "document")
     @Mapping(target = "phones", expression = "java(setPhone(paxEntity))")
     CustomerDTO paxEntityToCustomerDTO(PaxEntity paxEntity);
 
