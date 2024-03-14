@@ -1,11 +1,8 @@
 package br.com.livelo.orderflight.domain.dto.reservation.response;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,7 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @NoArgsConstructor
 @ToString
 public class PartnerReservationSegment {
-	private String partnerId;
+    private String partnerId;
     private String type;
     private String step;
     private Integer stops;

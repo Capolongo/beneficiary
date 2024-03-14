@@ -1,14 +1,14 @@
 package br.com.livelo.orderflight.domain.dtos.pricing.response;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
 @Data
 @Builder
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PricingCalculateResponse {
     private String id;
     private List<PricingCalculatePrice> prices;

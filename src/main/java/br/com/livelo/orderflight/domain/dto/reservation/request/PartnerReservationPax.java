@@ -19,6 +19,6 @@ public class PartnerReservationPax {
 	private String birthDate;
 	private String email;
 	private String areaCode;
-	private String phone;
+	private String phoneNumber;
 	private List<PartnerReservationDocument> documents;
 }

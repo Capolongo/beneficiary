@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.service.order.impl;
 
-
+import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
 import br.com.livelo.orderflight.domain.dtos.update.UpdateOrderDTO;
@@ -19,13 +19,15 @@ import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.Set;
 
@@ -62,6 +64,7 @@ public class OrderServiceImpl implements OrderService {
         order.getStatusHistory().add(status);
         order.setCurrentStatus(status);
     }
+
     public OrderItemEntity getFlightFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
         Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(item -> !item.getSkuId().toLowerCase().contains("tax")).findFirst();
 
@@ -88,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
         OrderItemEntity flightItem =  getFlightFromOrderItems(order.getItems());
         OrderItemEntity taxItem =  getTaxFromOrderItems(order.getItems());
         log.info("OrderService.orderDetailLog - " + invokedBy + " - orderId: [{}], partnerCode: [{}], statusCode: [{}], amount: [{}], pointsAmount: [{}], partnerAmount: [{}], flightAmount: [{}], flightPointsAmount: [{}], flightPartnerAmount: [{}], taxAmount: [{}], taxPointsAmount: [{}], taxPartnerAmount: [{}],", order.getId(), order.getPartnerCode(), newStatusCode, order.getPrice().getAmount(), order.getPrice().getPointsAmount(), order.getPrice().getPartnerAmount(), flightItem.getPrice().getAmount(),  flightItem.getPrice().getPointsAmount(),  flightItem.getPrice().getPartnerAmount(), taxItem.getPrice().getAmount(),  taxItem.getPrice().getPointsAmount(),  taxItem.getPrice().getPartnerAmount());
-      }
+    }
 
     public boolean isSameStatus(String currentStatus, String newStatus) {
         return currentStatus.equals(newStatus);
@@ -123,7 +126,7 @@ public class OrderServiceImpl implements OrderService {
 
     public void updateVoucher(OrderItemEntity orderItem, String voucher) {
         orderItem.getTravelInfo().setVoucher(voucher);
-        if(voucher != null) {
+        if (voucher != null) {
             log.info("OrderService.updateVoucher - voucher updated - orderId: [{}]", orderItem.getId());
         }
     }
@@ -144,16 +147,19 @@ public class OrderServiceImpl implements OrderService {
         return this.orderRepository.save(order);
     }
 
-    public PaginationOrderProcessResponse getOrdersByStatusCode(String statusCode, Integer page, Integer rows) throws OrderFlightException {
-        if (page <= 0) {
-            throw new OrderFlightException(OrderFlightErrorType.VALIDATION_INVALID_PAGINATION, OrderFlightErrorType.VALIDATION_INVALID_PAGINATION.getDescription(), null);
+    public PaginationOrderProcessResponse getOrdersByStatusCode(String statusCode, Optional<String> limitArrivalDate, Integer page, Integer rows)
+            throws OrderFlightException {
+        Pageable pagination = pageRequestOf(page, rows);
+
+        Page<OrderProcess> foundOrders;
+        if (limitArrivalDate.isPresent()) {
+            var arglimitArrivalDate = LocalDate.parse(limitArrivalDate.get(), DateTimeFormatter.ISO_DATE).atTime(0, 0);
+            foundOrders = orderRepository.findAllByCurrentStatusCodeAndArrivalDateLessThan(statusCode.toUpperCase(),
+                    arglimitArrivalDate, pagination);
+        } else {
+            foundOrders = orderRepository.findAllByCurrentStatusCode(statusCode.toUpperCase(), pagination);
         }
 
-        rows = rows > orderProcessMaxRows ? orderProcessMaxRows : rows;
-        page = page - 1;
-
-        Pageable pagination = PageRequest.of(page, rows);
-        var foundOrders = orderRepository.findAllByCurrentStatusCode(statusCode.toUpperCase(), pagination);
         return orderMapper.pageRepositoryToPaginationResponse(foundOrders);
     }
 
@@ -176,4 +182,12 @@ public class OrderServiceImpl implements OrderService {
         UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
         liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
     }
+    private Pageable pageRequestOf(Integer page, Integer rows) throws OrderFlightException {
+        if (page <= 0) {
+            throw new OrderFlightException(OrderFlightErrorType.VALIDATION_INVALID_PAGINATION,
+                    OrderFlightErrorType.VALIDATION_INVALID_PAGINATION.getDescription(), null);
+        }
+        return PageRequest.of(page - 1, rows > orderProcessMaxRows ? orderProcessMaxRows : rows);
+    }
+
 }

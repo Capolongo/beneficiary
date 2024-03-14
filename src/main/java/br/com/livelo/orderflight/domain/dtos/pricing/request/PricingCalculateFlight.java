@@ -9,6 +9,6 @@ import lombok.Data;
 @Builder
 public class PricingCalculateFlight{
 	private BigDecimal amount;
-	public String passengerType;
-	public Integer passengerCount;
+	private String passengerType;
+	private Integer passengerCount;
 }

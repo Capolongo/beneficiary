@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 @Data
 @Builder
 @ToString
-public class PricingCalculateTaxes {
+public class PricingCalculateTaxes{
+    private String type;
     private BigDecimal amount;
     private BigDecimal pointsAmount;
-    private String type;
 }

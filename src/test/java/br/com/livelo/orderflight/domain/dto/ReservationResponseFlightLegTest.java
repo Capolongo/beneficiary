@@ -19,6 +19,8 @@ class ReservationResponseFlightLegTest {
                 1,
                 "",
                 "",
+                "",
+                "",
                 1,
                 "",
                 "",
