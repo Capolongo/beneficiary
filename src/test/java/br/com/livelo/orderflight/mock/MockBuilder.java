@@ -1,16 +1,10 @@
 package br.com.livelo.orderflight.mock;
 
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.*;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderItemRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderPriceRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderItemResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderPriceResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderStatusResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderPaxResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderSegmentsResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderTravelInfoResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
@@ -130,13 +124,25 @@ public class MockBuilder {
                 .birthDate("birthDate")
                 .documents(Set.of())
                 .email("email")
-                .areaCode("areaCode")
+                .areaCode("81")
                 .phone("phone")
                 .build();
     }
 
     public static ConfirmationOrderSegmentsResponse confirmationOrderSegmentsResponse() {
         return ConfirmationOrderSegmentsResponse.builder()
+                .partnerId("partnerId")
+                .step("step")
+                .stops(10)
+                .flightDuration(120)
+                .originIata("REC")
+                .originDescription("Aeroporto do recife")
+                .destinationIata("GRU")
+                .destinationDescription("Aeroporto de guarulhos")
+                .cancelationRules(Set.of(ConfirmationOrderCancaletionRulesResponse.builder().build()))
+                .changeRules(Set.of(ConfirmationOrderChangeRulesResponse.builder().build()))
+                .luggages(Set.of(ConfirmationOrderLuggagesResponse.builder().build()))
+                .flightsLegs(Set.of(ConfirmationOrderFlightsLegsResponse.builder().build()))
                 .build();
     }
 
@@ -185,7 +191,7 @@ public class MockBuilder {
                 .birthDate("birthDate")
                 .documents(Set.of())
                 .email("email")
-                .areaCode("areaCode")
+                .areaCode("81")
                 .phone("phone")
                 .build();
     }
@@ -328,7 +334,7 @@ public class MockBuilder {
                 .firstName("firstName")
                 .lastName("lastName")
                 .email("email")
-                .areaCode("areaCode")
+                .areaCode("81")
                 .phoneNumber("phone")
                 .gender("gender")
                 .birthDate("birthDate")
@@ -337,7 +343,20 @@ public class MockBuilder {
     }
 
     public static SegmentEntity segmentEntity() {
-        return SegmentEntity.builder().build();
+        return SegmentEntity.builder()
+                .partnerId("partnerId")
+                .step("step")
+                .stops(10)
+                .flightDuration(120)
+                .originIata("REC")
+                .originDescription("Aeroporto do recife")
+                .destinationIata("GRU")
+                .destinationDescription("Aeroporto de guarulhos")
+                .cancelationRules(Set.of(CancelationRuleEntity.builder().build()))
+                .changeRules(Set.of(ChangeRuleEntity.builder().build()))
+                .luggages(Set.of(LuggageEntity.builder().build()))
+                .flightsLegs(Set.of(FlightLegEntity.builder().build()))
+                .build();
     }
 
     public static OrderPriceEntity orderPriceEntity() {
