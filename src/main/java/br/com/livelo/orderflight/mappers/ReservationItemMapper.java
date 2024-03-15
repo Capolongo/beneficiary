@@ -12,9 +12,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -54,7 +52,8 @@ public interface ReservationItemMapper {
                 return partnerReservationItem.getSegments()
                         .stream()
                         .map(mapper::toSegmentEntity)
-                        .collect(Collectors.toSet());
+                        .sorted(Comparator.comparing(s -> Integer.valueOf(s.getStep())))
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
             }
         }
 

@@ -169,7 +169,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
 
-    public boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional) {
+    private boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional) {
         return orderOptional.map(order -> {
             if (order.getItems().size() == request.getItems().size()) {
                 var orderCommerceItemsIds = this.getOrderCommerceItemsIds(order);
