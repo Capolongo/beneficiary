@@ -1,6 +1,5 @@
 package br.com.livelo.orderflight.service.voucher;
 
-import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
@@ -8,6 +7,7 @@ import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
+import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
@@ -54,7 +54,7 @@ class VoucherServiceImplTest {
 
     @Test
     void shouldChangeStatusSuccessfully() {
-        OrderEntity order = buildOrderEntity(StatusConstants.WAIT_VOUCHER.getCode());
+        OrderEntity order = buildOrderEntity(StatusLivelo.WAIT_VOUCHER.getCode());
 
         OrderProcess orderProcess = buildOrderProcess();
 
@@ -71,7 +71,7 @@ class VoucherServiceImplTest {
                         .voucher("https://fake-url.com")
                         .build());
         when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class)))
-                .thenReturn(OrderStatusEntity.builder().code(StatusConstants.WAIT_VOUCHER.getCode()).build());
+                .thenReturn(OrderStatusEntity.builder().code(StatusLivelo.WAIT_VOUCHER.getCode()).build());
         when(orderService.getFlightFromOrderItems(any())).thenReturn(OrderItemEntity.builder().build());
         doNothing().when(orderService).incrementProcessCounter(any(ProcessCounterEntity.class));
         doNothing().when(orderService).addNewOrderStatus(any(OrderEntity.class), any(OrderStatusEntity.class));
@@ -87,7 +87,7 @@ class VoucherServiceImplTest {
 
     @Test
     void shouldSetOrderFailedBecauseMaxProcessExtrapolate() {
-        OrderEntity order = buildOrderEntity(StatusConstants.WAIT_VOUCHER.getCode());
+        OrderEntity order = buildOrderEntity(StatusLivelo.WAIT_VOUCHER.getCode());
         OrderProcess orderProcess = buildOrderProcess();
 
         ProcessCounterEntity processCounter = ProcessCounterEntity.builder()
@@ -104,14 +104,14 @@ class VoucherServiceImplTest {
         voucherService.orderProcess(orderProcess);
 
         verify(orderService, times(1)).getOrderById(anyString());
-        verify(orderService, times(1)).isSameStatus(StatusConstants.WAIT_VOUCHER.getCode(), order.getCurrentStatus().getCode());
+        verify(orderService, times(1)).isSameStatus(StatusLivelo.WAIT_VOUCHER.getCode(), order.getCurrentStatus().getCode());
         verify(orderService, times(1)).buildOrderStatusFailed("O contador excedeu o limite de tentativas");
     }
 
     @Test
     void shouldFinishOrderProcessBecauseIsNotTheSameStatus() {
         String process = Webhooks.VOUCHER.value;
-        OrderEntity order = buildOrderEntity(StatusConstants.PROCESSING.getCode());
+        OrderEntity order = buildOrderEntity(StatusLivelo.PROCESSING.getCode());
 
         OrderProcess orderProcess = buildOrderProcess();
 
@@ -121,7 +121,7 @@ class VoucherServiceImplTest {
         voucherService.orderProcess(orderProcess);
 
         verify(orderService, times(1)).getOrderById(anyString());
-        verify(orderService, times(1)).isSameStatus(StatusConstants.WAIT_VOUCHER.getCode(), order.getCurrentStatus().getCode());
+        verify(orderService, times(1)).isSameStatus(StatusLivelo.WAIT_VOUCHER.getCode(), order.getCurrentStatus().getCode());
         verify(orderService, never()).getProcessCounter(order, process);
 
         verifyNoMoreInteractions(orderService);
@@ -129,7 +129,7 @@ class VoucherServiceImplTest {
 
     @Test
     void shouldSetOrderFailedBecauseThrowException() {
-        OrderEntity order = buildOrderEntity(StatusConstants.WAIT_VOUCHER.getCode());
+        OrderEntity order = buildOrderEntity(StatusLivelo.WAIT_VOUCHER.getCode());
         order.setPartnerOrderId(null);
 
         ProcessCounterEntity counter = ProcessCounterEntity.builder().build();
@@ -138,7 +138,6 @@ class VoucherServiceImplTest {
         when(orderService.getOrderById(anyString())).thenReturn(order);
         when(orderService.isSameStatus(anyString(), anyString())).thenReturn(true);
         when(orderService.getProcessCounter(any(OrderEntity.class), anyString())).thenReturn(counter);
-
         voucherService.orderProcess(orderProcess);
 
         verify(confirmOrderMapper, times(0)).connectorConfirmOrderStatusResponseToStatusEntity(any());
