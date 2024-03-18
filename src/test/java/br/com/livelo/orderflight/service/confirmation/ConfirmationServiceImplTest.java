@@ -1,6 +1,5 @@
 package br.com.livelo.orderflight.service.confirmation;
 
-import br.com.livelo.orderflight.configs.order.consts.StatusConstants;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
@@ -10,11 +9,14 @@ import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
+import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
+import br.com.livelo.orderflight.mappers.LiveloPartnersMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
+import br.com.livelo.orderflight.proxies.LiveloPartnersProxy;
 import br.com.livelo.orderflight.repository.OrderRepository;
 import br.com.livelo.orderflight.service.confirmation.impl.ConfirmationServiceImpl;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
@@ -51,7 +53,10 @@ class ConfirmationServiceImplTest {
     private ConfirmOrderMapper confirmOrderMapper;
     @Mock
     private ConnectorPartnersProxy connectorPartnersProxy;
-
+    @Mock
+    private LiveloPartnersProxy liveloPartnersProxy;
+    @Mock
+    private LiveloPartnersMapper liveloPartnersMapper;
     @InjectMocks
     private ConfirmationServiceImpl confirmationService;
 
@@ -155,7 +160,7 @@ class ConfirmationServiceImplTest {
 
         confirmationService.orderProcess(orderProcess);
 
-        verify(orderService, times(2)).isSameStatus(StatusConstants.PROCESSING.getCode(), order.getCurrentStatus().getCode());
+        verify(orderService, times(2)).isSameStatus(StatusLivelo.PROCESSING.getCode(), order.getCurrentStatus().getCode());
     }
 
     @Test
@@ -171,7 +176,7 @@ class ConfirmationServiceImplTest {
         confirmationService.orderProcess(orderProcess);
 
         verify(orderService, times(1)).getOrderById(anyString());
-        verify(orderService, times(1)).isSameStatus(StatusConstants.PROCESSING.getCode(), order.getCurrentStatus().getCode());
+        verify(orderService, times(1)).isSameStatus(StatusLivelo.PROCESSING.getCode(), order.getCurrentStatus().getCode());
         verify(orderService, never()).getProcessCounter(order, process);
 
         verifyNoMoreInteractions(orderService);
@@ -194,7 +199,7 @@ class ConfirmationServiceImplTest {
         confirmationService.orderProcess(orderProcess);
 
         verify(orderService, times(1)).getOrderById(anyString());
-        verify(orderService, times(1)).isSameStatus(StatusConstants.PROCESSING.getCode(), order.getCurrentStatus().getCode());
+        verify(orderService, times(1)).isSameStatus(StatusLivelo.PROCESSING.getCode(), order.getCurrentStatus().getCode());
         verify(orderService, times(1)).buildOrderStatusFailed("O contador excedeu o limite de tentativas");
     }
 
@@ -224,6 +229,7 @@ class ConfirmationServiceImplTest {
         verify(orderService, times(1)).incrementProcessCounter(processCounter);
         verify(orderService, times(1)).addNewOrderStatus(order, statusProcessing);
         verify(orderService, times(1)).save(order);
+        verify(orderService, times(1)).updateOrderOnLiveloPartners(order, statusProcessing.getCode());
         verify(orderService, times(1)).orderDetailLog("orderProcess", statusProcessing.getCode(), order);
         verifyNoMoreInteractions(orderService);
     }
