@@ -29,6 +29,7 @@ public class ReservationController {
             @RequestHeader(value = "listPrice") String listPrice,
             @RequestBody @Valid ReservationRequest reservationRequest
     ) {
+        MDC.put(COMMERCE_ORDER_ID, reservationRequest.getCommerceOrderId());
         MDC.put(TRANSACTION_ID, transactionId);
         MDC.put(FLOW, RESERVATION.name());
         MDC.put(PARTNER, reservationRequest.getPartnerCode());

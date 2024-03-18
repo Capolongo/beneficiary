@@ -36,6 +36,7 @@
                         "class": "%logger{40}",
                         "status": "%X{status}",
                         "transactionId": "%X{transactionId}",
+                        "commerceOrderId": "%X{commerceOrderId}",
                         "flow": "%X{flow}",
                         "partner": "%X{partner}",
                         "errorType": "%X{errorType}",
