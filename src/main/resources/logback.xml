@@ -39,6 +39,7 @@
                         "commerceOrderId": "%X{commerceOrderId}",
                         "flow": "%X{flow}",
                         "partner": "%X{partner}",
+                        "errorCategory": "%X{errorCategory}",
                         "errorType": "%X{errorType}",
                         "errorMessage": "%X{errorMessage}",
                         "message": "%message",
