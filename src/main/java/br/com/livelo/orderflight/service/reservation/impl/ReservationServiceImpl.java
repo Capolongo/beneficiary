@@ -74,7 +74,6 @@ public class ReservationServiceImpl implements ReservationService {
 
             MDC.put(STATUS, "SUCCESS");
             log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {}", order, transactionId, listPriceId);
-            // deve vir do connector
             return reservationMapper.toReservationResponse(order, 15);
         } catch (OrderFlightException e) {
             throw e;
