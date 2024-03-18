@@ -56,7 +56,6 @@ public interface ReservationItemMapper {
                         .collect(Collectors.toCollection(LinkedHashSet::new));
             }
         }
-
         return Collections.emptySet();
     }
 
