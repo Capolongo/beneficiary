@@ -1,13 +1,14 @@
 package br.com.livelo.orderflight.mappers;
 
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
-import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationItem;
+import br.com.livelo.orderflight.domain.dto.reservation.response.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -19,6 +20,22 @@ class ReservationItemMapperTest {
     void shouldReturnEmptySegments() {
         var response = this.mapper.mapSegments(null);
         assertTrue(response.isEmpty());
+    }
+
+    @Test
+    void shouldReturnSegments() {
+        var partnerReservationItem = PartnerReservationItem.builder()
+                .segments(
+                        List.of(PartnerReservationSegment.builder()
+                                .luggages(List.of(PartnerReservationLuggage.builder().build()))
+                                .cancelationRules(List.of(PartnerReservationCancelationRule.builder().build()))
+                                .changeRules(List.of(PartnerReservationChangeRule.builder().build()))
+                                .flightLegs(List.of(PartnerReservationFlightsLeg.builder().build()))
+                                .build())
+                )
+                .build();
+        var response = this.mapper.mapSegments(partnerReservationItem);
+        assertFalse(response.isEmpty());
     }
 
     @Test
