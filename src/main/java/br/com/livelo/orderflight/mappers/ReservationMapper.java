@@ -23,7 +23,7 @@ public interface ReservationMapper {
     @Mapping(target = "expirationDate", source = "partnerReservationResponse.expirationDate")
     @Mapping(target = "commerceOrderId", source = "reservationRequest.commerceOrderId")
     @Mapping(target = "partnerOrderId", source = "partnerReservationResponse.partnerOrderId")
-    @Mapping(target = "partnerCode", source = "partnerReservationResponse.partnerCode")
+    @Mapping(target = "partnerCode", source = "reservationRequest.partnerCode")
     @Mapping(target = "channel", source = "channel")
     @Mapping(target = "tierCode", ignore = true)
     @Mapping(target = "originOrder", ignore = true)
@@ -72,5 +72,4 @@ public interface ReservationMapper {
     @Mapping(target = "expirationTimer", source = "expirationTimer")
     @Mapping(target = "orderId", source = "orderEntity.id")
     ReservationResponse toReservationResponse(OrderEntity orderEntity, int expirationTimer);
-
 }

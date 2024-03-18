@@ -7,6 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,10 +54,11 @@ public interface ReservationSegmentsMapper {
     default Set<FlightLegEntity> mapFlightLeg(PartnerReservationSegment partnerReservationSegment) {
         var flightLegMapper = Mappers.getMapper(ReservationFlightLegMapper.class);
 
-        return partnerReservationSegment.getFlightLegs()
+       return partnerReservationSegment.getFlightLegs()
                 .stream()
                 .map(flightLegMapper::toFlightLegEntity)
-                .collect(Collectors.toSet());
+                .sorted(Comparator.comparing(FlightLegEntity::getDepartureDate))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
 

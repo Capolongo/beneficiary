@@ -11,7 +11,6 @@ import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateTa
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
-import br.com.livelo.orderflight.enuns.Partner;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.PricingCalculateRequestMapper;
@@ -41,6 +40,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ConnectorPartnersProxy partnerConnectorProxy;
     private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
+    private static final String TAX = "tax";
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId) {
         log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {}", request, transactionId, listPriceId);
@@ -122,24 +122,22 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void setPrices(OrderEntity order, PricingCalculatePrice price) {
-        var partner = Partner.findByName(order.getPartnerCode());
-
         order.getPrice().setPointsAmount(BigDecimal.valueOf(price.getPointsAmount()));
         order.getPrice().setAccrualPoints(price.getAccrualPoints().doubleValue());
         order.getPrice().setAmount(price.getAmount());
 
         this.setOrderPriceDescription(order, price);
-        this.setOrderPriceItems(order, price, partner);
+        this.setOrderPriceItems(order, price);
     }
 
-    private void setOrderPriceItems(OrderEntity order, PricingCalculatePrice price, Partner partner) {
+    private void setOrderPriceItems(OrderEntity order, PricingCalculatePrice price) {
         order.getItems()
                 .forEach(item -> {
-                    if (partner.getSkuFlight().equals(item.getSkuId())) {
+                    if (!item.getSkuId().contains(TAX)) {
                         item.getPrice().setPointsAmount(price.getFlight().getPointsAmount());
                         item.getPrice().setAmount(price.getFlight().getAmount());
                     }
-                    if (partner.getSkuTax().equals(item.getSkuId())) {
+                    if (item.getSkuId().contains(TAX)) {
                         item.getPrice().setPointsAmount(price.getTaxes().getPointsAmount());
                         item.getPrice().setAmount(price.getTaxes().getAmount());
                     }
@@ -169,7 +167,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
 
-    public boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional) {
+    private boolean isSameOrderItems(ReservationRequest request, Optional<OrderEntity> orderOptional) {
         return orderOptional.map(order -> {
             if (order.getItems().size() == request.getItems().size()) {
                 var orderCommerceItemsIds = this.getOrderCommerceItemsIds(order);

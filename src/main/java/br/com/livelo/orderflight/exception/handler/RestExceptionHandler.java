@@ -38,6 +38,7 @@ public class RestExceptionHandler {
 
     private void setDynatraceEntries(OrderFlightException e) {
         MDC.put(STATUS, "ERROR");
+        MDC.put(ERROR_CATEGORY, e.getOrderFlightErrorType().getCategory());
         MDC.put(ERROR_TYPE, e.getOrderFlightErrorType().name());
         MDC.put(ERROR_MESSAGE, e.getArgs());
     }
@@ -58,6 +59,7 @@ public class RestExceptionHandler {
 
     private void logMessage(Level levelLog, String message, OrderFlightErrorType orderFlightErrorType, Exception e) {
         log.atLevel(levelLog).log("errorType: {} message: {}", orderFlightErrorType.getCode(), message, e);
+        MDC.clear();
     }
 
 
