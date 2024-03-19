@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class VoucherListener {
+public class GetVoucherListener {
     private final ObjectMapper objectMapper;
     private final VoucherService voucherService;
 
