@@ -29,8 +29,18 @@ spring:
         autoCreate: false
      order-flight-commands-getvoucher:
         concurrency: "4"
+        exchange: order-flight.commands
         queue: order-flight.flight.commands.order.getvoucher
+        exchangeType: topic
+        queueRoutingKey: order.getvoucher
         autoCreate: false
+     order-flight-commands-getcompleted:
+       concurrency: "4"
+       exchangeType: topic
+       queueRoutingKey: order.getcompleted
+       exchange: order-flight.commands
+       queue: order-flight.flight.commands.order.getcompleted
+       autoCreate: false
 management:
   endpoints:
     web:
@@ -52,6 +62,8 @@ client:
      endpoint: http://partners-config-flight.livtravel.svc.cluster.local
   pricingcalculatorflight:
     endpoint: http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks/pricing-calculator-flight/v1/calculate
+  livelopartnersclient:
+    endpoint:  http://api.k8s.uat.livelo.intranet/mocks/livelo-viagens-mocks
 
 order:
   orderProcessMaxRows: 500

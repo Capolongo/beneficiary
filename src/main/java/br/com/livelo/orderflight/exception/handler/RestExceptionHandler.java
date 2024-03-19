@@ -31,6 +31,7 @@ public class RestExceptionHandler {
 
         var message = ofNullable(e.getArgs()).orElse(e.getMessage());
         ofNullable(e.getOrderFlightErrorType().getLevel()).ifPresent(level -> this.logMessage(level, message, e.getOrderFlightErrorType(), e));
+        MDC.clear();
 
         return ResponseEntity.status(e.getOrderFlightErrorType().getStatus())
                 .body(this.buildError(e.getOrderFlightErrorType()));
@@ -38,6 +39,7 @@ public class RestExceptionHandler {
 
     private void setDynatraceEntries(OrderFlightException e) {
         MDC.put(STATUS, "ERROR");
+        MDC.put(ERROR_CATEGORY, e.getOrderFlightErrorType().getCategory());
         MDC.put(ERROR_TYPE, e.getOrderFlightErrorType().name());
         MDC.put(ERROR_MESSAGE, e.getArgs());
     }

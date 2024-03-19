@@ -1,16 +1,7 @@
 package br.com.livelo.orderflight.listener;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
-import br.com.livelo.orderflight.service.confirmation.ConfirmationService;
+import br.com.livelo.orderflight.service.voucher.VoucherService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,17 +13,26 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
-class OrderProcessListenerTest {
+class GetVoucherListenerTest {
 
   @Mock
   private ObjectMapper objectMapper;
 
   @Mock
-  private ConfirmationService confirmationService;
+  private VoucherService voucherService;
 
   @InjectMocks
-  private GetConfirmationListener listener;
+  private GetVoucherListener listener;
 
   @Test
   void shouldProcessSuccessOrder() throws JsonProcessingException {
@@ -43,8 +43,8 @@ class OrderProcessListenerTest {
       listener.consumer(new Message(messageString.getBytes()))
     );
 
-    verify(confirmationService, times(1)).orderProcess(any());
-    verifyNoMoreInteractions(confirmationService);
+    verify(voucherService, times(1)).orderProcess(any());
+    verifyNoMoreInteractions(voucherService);
   }
 
   @Test
@@ -62,6 +62,6 @@ class OrderProcessListenerTest {
       () -> listener.consumer(brokenMessage)
     );
 
-    verifyNoInteractions(confirmationService);
+    verifyNoInteractions(voucherService);
   }
 }
