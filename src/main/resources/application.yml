@@ -29,11 +29,10 @@ spring:
         autoCreate: false
      order-flight-commands-getvoucher:
         concurrency: "4"
-        exchangeType: topic
-        queueRoutingKey: order.getcompleted
         exchange: order-flight.commands
-
         queue: order-flight.flight.commands.order.getvoucher
+        exchangeType: topic
+        queueRoutingKey: order.getvoucher
         autoCreate: false
      order-flight-commands-getcompleted:
        concurrency: "4"

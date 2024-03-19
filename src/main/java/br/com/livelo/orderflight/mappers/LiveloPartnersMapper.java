@@ -23,6 +23,8 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "id", source = "skuId")
     @Mapping(target = "price", source = "price.amount")
     @Mapping(target = "currency", constant = "PTS")
+    @Mapping(target = "deliveryDate", constant = "deliveryDate")
+    @Mapping(target = "forceUpdate", constant = "forceUpdate")
     ItemDTO orderItemEntityToItemDTO(OrderItemEntity orderItemEntity);
 
     @Mapping(source = "description", target = "message")
@@ -40,9 +42,14 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "duration", source = "flightDuration")
     @Mapping(target = "departureName", source = "originDescription")
     @Mapping(target = "arrivalName", source = "destinationDescription")
+    @Mapping(target = "departure.airportName", constant = "departure.airportName")
+    @Mapping(target = "departure.cityName", constant = "departure.cityName")
+    @Mapping(target = "arrival.airportName", constant = "arrival.airportName")
+    @Mapping(target = "arrival.cityName", constant = "arrival.cityName")
     LegSummaryDTO flightLegEntityToLegSummaryDTO(FlightLegEntity flightLegEntity);
 
     @Mapping(target = "phones", expression = "java(setPhone(paxEntity))")
+    @Mapping(target = "notes", constant = "notes")
     CustomerDTO paxEntityToCustomerDTO(PaxEntity paxEntity);
 
     @Mapping(target = "doc", source = "documentNumber")
@@ -63,7 +70,17 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "arrival.airportName", source = "destinationIata")
     @Mapping(target = "arrival.iata", source = "destinationIata")
     @Mapping(target = "arrival.numberOfStops", source = "stops")
-    FlightSummaryDTO segmentEntityToFlightSummaryDTO(SegmentEntity segmentEntity); // PRecisamos saber se é TravelSummaryDTO ou FlightSummaryDTO
+    @Mapping(target = "airline.name", constant = "airline.name")
+    @Mapping(target = "departure.location", constant = "departure.location")
+    @Mapping(target = "departure.flightNumber", constant = "000000")
+    @Mapping(target = "departure.seatClassDescription", constant = "departure.seatClassDescription")
+    @Mapping(target = "arrival.location", constant = "arrival.location")
+    @Mapping(target = "arrival.flightNumber", constant = "0000001")
+    @Mapping(target = "arrival.seatClassDescription", constant = "arrival.seatClassDescription")
+    @Mapping(target = "baggage.uom", constant = "baggage.uom")
+    @Mapping(target = "baggage.quantity", constant = "111111")
+    @Mapping(target = "baggage.weight", constant = "22222222")
+    FlightSummaryDTO segmentEntityToFlightSummaryDTO(SegmentEntity segmentEntity);
 
     @Mapping(target = "isIncluded", constant = "true")
     ServiceDTO cancellationRuleEntityToServiceDTO(CancelationRuleEntity cancelationRuleEntity);
@@ -132,7 +149,13 @@ public interface LiveloPartnersMapper {
     }
 
     default List<FlightSummaryDTO> buildFlights(Set<SegmentEntity> segments, TravelInfoEntity travelInfo) {
-        var gds = GlobalDistribuitionSystemDTO.builder().reservationCode(travelInfo.getReservationCode()).build();
+        var gds = GlobalDistribuitionSystemDTO.builder()
+                .reservationCode(travelInfo.getReservationCode())
+//                TODO: remover apos testes
+                .description("description")
+                .provider("provider")
+                .cancellationPolicies(List.of(CancellationPolicyDTO.builder().build()))
+                .build();
 
         List<CustomerDTO> mappedPaxs = travelInfo.getPaxs().stream().map(this::paxEntityToCustomerDTO).toList();
         return segments.stream().map(segment -> {
