@@ -95,14 +95,14 @@ public interface LiveloPartnersMapper {
     BaggageDTO luggageToBaggageDTO(LuggageEntity luggageEntity);
 
     default BaggageDTO setBaggage(Set<LuggageEntity> luggages) {
-        var bagLuggage = luggages.stream().filter(luggage -> "BAG".equals(luggage.getType())).toList().stream().findFirst();
+        var bagLuggage = luggages.stream().filter(luggage -> "TO_CHECK_IN".equals(luggage.getType())).toList().stream().findFirst();
 
         if (bagLuggage.isPresent()) {
-            return luggageToBaggageDTO(bagLuggage.get());
+            var mappedLuggage = luggageToBaggageDTO(bagLuggage.get());
+            mappedLuggage.setIsIncluded(Boolean.TRUE);
+            return mappedLuggage;
         }
-
-        var firstLuggage = luggages.stream().findFirst();
-        return firstLuggage.map(this::luggageToBaggageDTO).orElse(null);
+        return BaggageDTO.builder().quantity(0).isIncluded(Boolean.FALSE).type("PIECE").build();
     }
 
     default ArrayList<ServiceDTO> mapServices(Set<CancelationRuleEntity> cancellationRules, Set<LuggageEntity> luggages, Set<ChangeRuleEntity> changeRules) {
