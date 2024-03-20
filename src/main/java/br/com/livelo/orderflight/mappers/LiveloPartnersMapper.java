@@ -78,9 +78,6 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "arrival.location", constant = "arrival.location")
     @Mapping(target = "arrival.flightNumber", constant = "0000001")
     @Mapping(target = "arrival.seatClassDescription", constant = "arrival.seatClassDescription")
-    @Mapping(target = "baggage.uom", constant = "baggage.uom")
-    @Mapping(target = "baggage.quantity", constant = "111111")
-    @Mapping(target = "baggage.weight", constant = "22222222")
     FlightSummaryDTO segmentEntityToFlightSummaryDTO(SegmentEntity segmentEntity);
 
     @Mapping(target = "isIncluded", constant = "true")
@@ -92,6 +89,9 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "isIncluded", constant = "true")
     ServiceDTO changeRuleEntityToServiceDTO(ChangeRuleEntity changeRuleEntity);
 
+    @Mapping(target = "uom", constant = "uom")
+    @Mapping(target = "quantity", constant = "111111")
+    @Mapping(target = "weight", constant = "22222222")
     BaggageDTO luggageToBaggageDTO(LuggageEntity luggageEntity);
 
     default BaggageDTO setBaggage(Set<LuggageEntity> luggages) {
