@@ -123,6 +123,9 @@ public interface LiveloPartnersMapper {
         var travelSummary = TravelSummaryDTO.builder()
                 .tour(null)
                 .flights(buildFlights(flight.get(0).getSegments(), flight.get(0).getTravelInfo()))
+                .accommodations(List.of())
+                .vehicles(List.of())
+                .services(List.of())
                 .build();
         var partnerInfo = PartnerInfoSummaryDTO.builder().travel(travelSummary).build();
 
