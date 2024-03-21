@@ -46,8 +46,8 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "departure.cityName", source = "originCity")
     @Mapping(target = "arrival.airportName", source = "destinationAirport")
     @Mapping(target = "arrival.cityName", source = "destinationCity")
-    @Mapping(target = "seatClassDescription", source = "fareBasis")
     @Mapping(target = "seatClassCode", source = "fareClass")
+    @Mapping(target = "seatClassDescription", expression = "java(setSeatClass(flightLegEntity))")
     LegSummaryDTO flightLegEntityToLegSummaryDTO(FlightLegEntity flightLegEntity);
 
     @Mapping(target = "phones", expression = "java(setPhone(paxEntity))")
@@ -80,6 +80,7 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "arrival.seatClassDescription", source = "cabinClass")
     @Mapping(target = "departure.flightNumber", constant = "000000")
     @Mapping(target = "arrival.flightNumber", constant = "0000001")
+    @Mapping(target = "isFlexible", constant = "false")
     FlightSummaryDTO segmentEntityToFlightSummaryDTO(SegmentEntity segmentEntity);
 
     @Mapping(target = "isIncluded", constant = "true")
@@ -157,12 +158,12 @@ public interface LiveloPartnersMapper {
                 .reservationCode(travelInfo.getReservationCode())
 //                TODO: remover apos testes
                 .description("description")
-                .provider("provider")
                 .cancellationPolicies(List.of(CancellationPolicyDTO.builder().build()))
                 .build();
 
         List<CustomerDTO> mappedPaxs = travelInfo.getPaxs().stream().map(this::paxEntityToCustomerDTO).toList();
         var flights = segments.stream().map((segment) -> {
+            gds.setProvider(segment.getAirlineDescription());
             var flight = segmentEntityToFlightSummaryDTO(segment);
             flight.setPassengers(mappedPaxs);
             flight.setGlobalDistribuitionSystem(gds);
@@ -176,5 +177,9 @@ public interface LiveloPartnersMapper {
         }
 
         return flights;
+    }
+
+    default String setSeatClass(FlightLegEntity leg) {
+        return "ECONOMY".equalsIgnoreCase(leg.getFareBasis()) ? "Econômica" : "Executiva";
     }
 }
