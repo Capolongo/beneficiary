@@ -15,7 +15,7 @@ public class ItemDTO {
     private Long quantity;
     private String currency;
     private String deliveryDate;
-    private List<DocumentDTO> documents;
+    private List<ItemDocumentDTO> documents;
     private PartnerInfoSummaryDTO partnerInfo;
     private Boolean forceUpdate;
 }
