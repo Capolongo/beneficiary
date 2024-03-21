@@ -40,14 +40,14 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "arrival.iata", source = "destinationIata")
     @Mapping(target = "arrival.date", source = "arrivalDate")
     @Mapping(target = "duration", source = "flightDuration")
-    @Mapping(target = "departureName", source = "originDescription")
-    @Mapping(target = "arrivalName", source = "destinationDescription")
-    @Mapping(target = "departure.airportName", constant = "departure.airportName")
-    @Mapping(target = "departure.cityName", constant = "departure.cityName")
-    @Mapping(target = "arrival.airportName", constant = "arrival.airportName")
-    @Mapping(target = "arrival.cityName", constant = "arrival.cityName")
-    @Mapping(target = "seatClassDescription", constant = "seatClassDescription")
-    @Mapping(target = "seatClassCode", constant = "seatClassCode")
+    @Mapping(target = "departureName", source = "originCity")
+    @Mapping(target = "arrivalName", source = "destinationCity")
+    @Mapping(target = "departure.airportName", source = "originAirport")
+    @Mapping(target = "departure.cityName", source = "originCity")
+    @Mapping(target = "arrival.airportName", source = "destinationAirport")
+    @Mapping(target = "arrival.cityName", source = "destinationCity")
+    @Mapping(target = "seatClassDescription", source = "fareBasis")
+    @Mapping(target = "seatClassCode", source = "fareClass")
     LegSummaryDTO flightLegEntityToLegSummaryDTO(FlightLegEntity flightLegEntity);
 
     @Mapping(target = "phones", expression = "java(setPhone(paxEntity))")
@@ -65,21 +65,21 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "legs", source = "flightsLegs")
     @Mapping(target = "baggage", expression = "java(setBaggage(segmentEntity.getLuggages()))")
     @Mapping(target = "departure.date", source = "departureDate")
-    @Mapping(target = "departure.airportName", source = "originIata")
     @Mapping(target = "departure.iata", source = "originIata")
     @Mapping(target = "departure.numberOfStops", source = "stops")
     @Mapping(target = "arrival.date", source = "arrivalDate")
-    @Mapping(target = "arrival.airportName", source = "destinationIata")
     @Mapping(target = "arrival.iata", source = "destinationIata")
     @Mapping(target = "arrival.numberOfStops", source = "stops")
-    @Mapping(target = "airline.name", constant = "airlineName")
-    @Mapping(target = "airline.iata", constant = "airlineIata")
-    @Mapping(target = "departure.location", constant = "departure.location")
+    @Mapping(target = "airline.name", source = "airlineDescription")
+    @Mapping(target = "airline.iata", source = "airlineIata")
+    @Mapping(target = "departure.location", source = "originCity")
+    @Mapping(target = "departure.airportName", source = "originAirport")
+    @Mapping(target = "departure.seatClassDescription", source = "cabinClass")
+    @Mapping(target = "arrival.location", source = "destinationCity")
+    @Mapping(target = "arrival.airportName", source = "destinationAirport")
+    @Mapping(target = "arrival.seatClassDescription", source = "cabinClass")
     @Mapping(target = "departure.flightNumber", constant = "000000")
-    @Mapping(target = "departure.seatClassDescription", constant = "departure.seatClassDescription")
-    @Mapping(target = "arrival.location", constant = "arrival.location")
     @Mapping(target = "arrival.flightNumber", constant = "0000001")
-    @Mapping(target = "arrival.seatClassDescription", constant = "arrival.seatClassDescription")
     FlightSummaryDTO segmentEntityToFlightSummaryDTO(SegmentEntity segmentEntity);
 
     @Mapping(target = "isIncluded", constant = "true")
@@ -91,9 +91,7 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "isIncluded", constant = "true")
     ServiceDTO changeRuleEntityToServiceDTO(ChangeRuleEntity changeRuleEntity);
 
-    @Mapping(target = "uom", constant = "uom")
-    @Mapping(target = "quantity", constant = "111111")
-    @Mapping(target = "weight", constant = "22222222")
+    @Mapping(target = "uom", source = "measurement")
     BaggageDTO luggageToBaggageDTO(LuggageEntity luggageEntity);
 
     default BaggageDTO setBaggage(Set<LuggageEntity> luggages) {
