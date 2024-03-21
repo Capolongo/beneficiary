@@ -162,11 +162,19 @@ public interface LiveloPartnersMapper {
                 .build();
 
         List<CustomerDTO> mappedPaxs = travelInfo.getPaxs().stream().map(this::paxEntityToCustomerDTO).toList();
-        return segments.stream().map(segment -> {
+        var flights = segments.stream().map((segment) -> {
             var flight = segmentEntityToFlightSummaryDTO(segment);
             flight.setPassengers(mappedPaxs);
             flight.setGlobalDistribuitionSystem(gds);
             return flight;
         }).toList();
+
+        flights.get(0).setRoute("GO");
+
+        if (flights.size() > 1) {
+            flights.get(1).setRoute("BACK");
+        }
+
+        return flights;
     }
 }
