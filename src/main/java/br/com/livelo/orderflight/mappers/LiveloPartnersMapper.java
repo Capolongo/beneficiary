@@ -46,6 +46,8 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "departure.cityName", constant = "departure.cityName")
     @Mapping(target = "arrival.airportName", constant = "arrival.airportName")
     @Mapping(target = "arrival.cityName", constant = "arrival.cityName")
+    @Mapping(target = "seatClassDescription", constant = "seatClassDescription")
+    @Mapping(target = "seatClassCode", constant = "seatClassCode")
     LegSummaryDTO flightLegEntityToLegSummaryDTO(FlightLegEntity flightLegEntity);
 
     @Mapping(target = "phones", expression = "java(setPhone(paxEntity))")
@@ -107,9 +109,9 @@ public interface LiveloPartnersMapper {
 
     default ArrayList<ServiceDTO> mapServices(Set<CancelationRuleEntity> cancellationRules, Set<LuggageEntity> luggages, Set<ChangeRuleEntity> changeRules) {
         ArrayList<ServiceDTO> services = new ArrayList<ServiceDTO>();
-        cancellationRules.forEach(rule -> services.add(cancellationRuleEntityToServiceDTO(rule)));
+//        cancellationRules.forEach(rule -> services.add(cancellationRuleEntityToServiceDTO(rule)));
         luggages.forEach(luggage -> services.add(luggageEntityEntityToServiceDTO(luggage)));
-        changeRules.forEach(rule -> services.add(changeRuleEntityToServiceDTO(rule)));
+//        changeRules.forEach(rule -> services.add(changeRuleEntityToServiceDTO(rule)));
         return services;
     }
 
