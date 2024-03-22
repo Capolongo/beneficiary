@@ -179,6 +179,7 @@ public interface LiveloPartnersMapper {
         return flights;
     }
 
+
     default String setSeatClass(FlightLegEntity leg) {
         return "ECONOMY".equalsIgnoreCase(leg.getFareBasis()) ? "Econômica" : "Executiva";
     }
