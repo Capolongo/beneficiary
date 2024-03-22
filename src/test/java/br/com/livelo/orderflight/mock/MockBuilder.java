@@ -262,6 +262,41 @@ public class MockBuilder {
                 .build();
     }
 
+    public static OrderEntity orderEntityWithMoreFlight() {
+        Set<OrderItemEntity> items = new HashSet<>();
+        items.add(orderItemEntity());
+        items.add(orderItemEntity());
+
+        Set<OrderStatusEntity> statusHistory = new HashSet<>();
+        statusHistory.add(statusInitial());
+
+        Set<ProcessCounterEntity> processCounter = new HashSet<>();
+        processCounter.add(ProcessCounterEntity.builder().process("getConfirmation")
+                .count(10)
+                .build());
+
+        return OrderEntity.builder()
+                .id("id")
+                .commerceOrderId("commerceOrderId")
+                .partnerOrderId("partnerOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate(LocalDateTime.now())
+                .channel("channel")
+                .tierCode("tierCode")
+                .originOrder("originOrder")
+                .customerIdentifier("customerIdentifier")
+                .transactionId("transactionId")
+                .expirationDate(LocalDateTime.now())
+                .price(orderPriceEntity())
+                .items(items)
+                .statusHistory(statusHistory)
+                .currentStatus(statusInitial())
+                .lastModifiedDate(ZonedDateTime.now())
+                .processCounters(processCounter)
+                .build();
+    }
+
+
     public static OrderEntity orderEntityAlreadyConfirmed() {
         Set<OrderItemEntity> items = new HashSet<>();
         items.add(orderItemEntity());
