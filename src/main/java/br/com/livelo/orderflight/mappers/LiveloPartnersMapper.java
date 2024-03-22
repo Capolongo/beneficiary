@@ -52,7 +52,12 @@ public interface LiveloPartnersMapper {
 
     @Mapping(target = "phones", expression = "java(setPhone(paxEntity))")
     @Mapping(target = "notes", constant = "notes")
+    @Mapping(target = "documents", expression = "java(createDocumentsList(paxEntity.getDocuments()))")
     CustomerDTO paxEntityToCustomerDTO(PaxEntity paxEntity);
+
+    default List<DocumentDTO> createDocumentsList(Set<DocumentEntity> docs) {
+        return docs.stream().map(this::documentEntityToDocumentDTO).toList();
+    }
 
     @Mapping(target = "doc", source = "documentNumber")
     @Mapping(target = "issuingDate", source = "issueDate")
@@ -109,8 +114,8 @@ public interface LiveloPartnersMapper {
     default ArrayList<ServiceDTO> mapServices(Set<CancelationRuleEntity> cancellationRules, Set<LuggageEntity> luggages, Set<ChangeRuleEntity> changeRules) {
         ArrayList<ServiceDTO> services = new ArrayList<ServiceDTO>();
 //        cancellationRules.forEach(rule -> services.add(cancellationRuleEntityToServiceDTO(rule)));
-        luggages.forEach(luggage -> services.add(luggageEntityEntityToServiceDTO(luggage)));
 //        changeRules.forEach(rule -> services.add(changeRuleEntityToServiceDTO(rule)));
+        luggages.forEach(luggage -> services.add(luggageEntityEntityToServiceDTO(luggage)));
         return services;
     }
 
@@ -137,6 +142,22 @@ public interface LiveloPartnersMapper {
 
             if (!isTaxItem(item.getSkuId())) {
                 mappedItem.setPartnerInfo(partnerInfo);
+
+            }
+            if (!isTaxItem(item.getSkuId()) && flight.get(0).getTravelInfo().getVoucher() != null) {
+                if (mappedItem.getDocuments() == null) {
+                    mappedItem.setDocuments(new ArrayList<>());
+                }
+                var voucher = ItemDocumentDTO
+                        .builder()
+                        .url(flight.get(0).getTravelInfo().getVoucher())
+                        .code("code")
+                        .descriptor("descriptor")
+                        .name("Voucher de Viagem")
+                        .type("voucher")
+                        .build();
+                mappedItem.getDocuments().add(voucher);
+
             }
 
             return mappedItem;
@@ -156,7 +177,6 @@ public interface LiveloPartnersMapper {
     default List<FlightSummaryDTO> buildFlights(Set<SegmentEntity> segments, TravelInfoEntity travelInfo) {
         var gds = GlobalDistribuitionSystemDTO.builder()
                 .reservationCode(travelInfo.getReservationCode())
-//                TODO: remover apos testes
                 .description("description")
                 .cancellationPolicies(List.of(CancellationPolicyDTO.builder().build()))
                 .build();
