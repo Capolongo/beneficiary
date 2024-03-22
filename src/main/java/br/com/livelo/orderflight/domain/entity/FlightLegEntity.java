@@ -26,10 +26,15 @@ public class FlightLegEntity extends BaseEntity {
     private String airlineOperatedByDescription;
     private Integer timeToWait;
     private String originIata;
-    private String originDescription;
     private String destinationIata;
-    private String destinationDescription;
     private LocalDateTime departureDate;
     private LocalDateTime arrivalDate;
     private String type;
+    private String originCity;
+    private String originAirport;
+    private String destinationAirport;
+    private String destinationCity;
+    private String fareBasis;
+    private String fareClass;
+    private String aircraftCode;
 }

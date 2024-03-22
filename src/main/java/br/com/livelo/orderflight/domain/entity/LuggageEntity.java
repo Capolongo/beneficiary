@@ -26,4 +26,8 @@ public class LuggageEntity extends BaseEntity {
     private String description;
 
     private String type;
+
+    private Long quantity;
+    private String measurement;
+    private Double weight;
 }

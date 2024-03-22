@@ -136,9 +136,9 @@ public class MockBuilder {
                 .stops(10)
                 .flightDuration(120)
                 .originIata("REC")
-                .originDescription("Aeroporto do recife")
+//                .originDescription("Aeroporto do recife")
                 .destinationIata("GRU")
-                .destinationDescription("Aeroporto de guarulhos")
+//                .destinationDescription("Aeroporto de guarulhos")
                 .cancelationRules(Set.of(ConfirmationOrderCancaletionRulesResponse.builder().build()))
                 .changeRules(Set.of(ConfirmationOrderChangeRulesResponse.builder().build()))
                 .luggages(Set.of(ConfirmationOrderLuggagesResponse.builder().build()))
@@ -262,6 +262,41 @@ public class MockBuilder {
                 .build();
     }
 
+    public static OrderEntity orderEntityWithMoreFlight() {
+        Set<OrderItemEntity> items = new HashSet<>();
+        items.add(orderItemEntity());
+        items.add(orderItemEntity());
+
+        Set<OrderStatusEntity> statusHistory = new HashSet<>();
+        statusHistory.add(statusInitial());
+
+        Set<ProcessCounterEntity> processCounter = new HashSet<>();
+        processCounter.add(ProcessCounterEntity.builder().process("getConfirmation")
+                .count(10)
+                .build());
+
+        return OrderEntity.builder()
+                .id("id")
+                .commerceOrderId("commerceOrderId")
+                .partnerOrderId("partnerOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate(LocalDateTime.now())
+                .channel("channel")
+                .tierCode("tierCode")
+                .originOrder("originOrder")
+                .customerIdentifier("customerIdentifier")
+                .transactionId("transactionId")
+                .expirationDate(LocalDateTime.now())
+                .price(orderPriceEntity())
+                .items(items)
+                .statusHistory(statusHistory)
+                .currentStatus(statusInitial())
+                .lastModifiedDate(ZonedDateTime.now())
+                .processCounters(processCounter)
+                .build();
+    }
+
+
     public static OrderEntity orderEntityAlreadyConfirmed() {
         Set<OrderItemEntity> items = new HashSet<>();
         items.add(orderItemEntity());
@@ -349,9 +384,9 @@ public class MockBuilder {
                 .stops(10)
                 .flightDuration(120)
                 .originIata("REC")
-                .originDescription("Aeroporto do recife")
+//                .originDescription("Aeroporto do recife")
                 .destinationIata("GRU")
-                .destinationDescription("Aeroporto de guarulhos")
+//                .destinationDescription("Aeroporto de guarulhos")
                 .cancelationRules(Set.of(CancelationRuleEntity.builder().build()))
                 .changeRules(Set.of(ChangeRuleEntity.builder().build()))
                 .luggages(Set.of(LuggageEntity.builder().build()))

@@ -18,8 +18,5 @@ public class TravelSummaryDTO {
 	private List<Object> accommodations;
 	private List<Object> vehicles;
 	private List<Object> services;
-//	private List<AccommodationSummaryDTO> accommodations;
-//	private List<VehicleSummaryDTO> vehicles;
-//	private List<ServiceSummaryDTO> services;
 	private Boolean isInternational;
 }
