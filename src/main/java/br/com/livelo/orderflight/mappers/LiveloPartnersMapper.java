@@ -65,7 +65,7 @@ public interface LiveloPartnersMapper {
 
     List<ServiceDTO> segmentEntityToServiceDTO(Set<SegmentEntity> segmentEntity);
 
-    @Mapping(target = "services", expression = "java(mapServices(segmentEntity.getCancelationRules(), segmentEntity.getLuggages(), segmentEntity.getChangeRules()))")
+    @Mapping(target = "services", expression = "java(mapServices(segmentEntity.getLuggages()))")
     @Mapping(target = "duration", source = "flightDuration")
     @Mapping(target = "legs", source = "flightsLegs")
     @Mapping(target = "baggage", expression = "java(setBaggage(segmentEntity.getLuggages()))")
@@ -111,11 +111,12 @@ public interface LiveloPartnersMapper {
         return BaggageDTO.builder().quantity(0).isIncluded(Boolean.FALSE).type("PIECE").build();
     }
 
-    default ArrayList<ServiceDTO> mapServices(Set<CancelationRuleEntity> cancellationRules, Set<LuggageEntity> luggages, Set<ChangeRuleEntity> changeRules) {
+    default ArrayList<ServiceDTO> mapServices(Set<LuggageEntity> luggages) {
         ArrayList<ServiceDTO> services = new ArrayList<ServiceDTO>();
-//        cancellationRules.forEach(rule -> services.add(cancellationRuleEntityToServiceDTO(rule)));
-//        changeRules.forEach(rule -> services.add(changeRuleEntityToServiceDTO(rule)));
-        luggages.forEach(luggage -> services.add(luggageEntityEntityToServiceDTO(luggage)));
+        var handLuggage = luggages.stream().filter(luggage -> "HAND_LUGGAGE".equals(luggage.getType())).toList();
+        if (!handLuggage.isEmpty()) {
+            services.add(luggageEntityEntityToServiceDTO(handLuggage.get(0)));
+        }
         return services;
     }
 
