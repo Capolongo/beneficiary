@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -25,10 +26,16 @@ public class OrderPriceEntity extends BaseEntity {
     private BigDecimal amount; //RECUPERAR DA PRECIFICAÇÃO
     private BigDecimal pointsAmount; //RECUPERAR DA PRECIFICAÇÃO
     private BigDecimal partnerAmount;
+    private Float pointsMultiplier;
+    private Float markup;
+    private Double accrualMultiplier;
     private String priceListId;
     private String priceListDescription;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_PRICE_ID")
     private Set<OrderPriceDescriptionEntity> ordersPriceDescription;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "ORDER_PRICE_ID")
+    private List<PriceModalityEntity> pricesModalities;
 
 }

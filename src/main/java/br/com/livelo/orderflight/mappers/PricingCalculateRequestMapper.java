@@ -29,10 +29,10 @@ public class PricingCalculateRequestMapper {
     private static PricingCalculateTravelInfo buildTravelInfo(PartnerReservationItem partnerReservationItemTypeFlight) {
         return PricingCalculateTravelInfo.builder()
                 .type(partnerReservationItemTypeFlight.getTravelInfo().getType())
-                .adultQuantity(partnerReservationItemTypeFlight.getTravelInfo().getAdultQuantity())
-                .childQuantity(partnerReservationItemTypeFlight.getTravelInfo().getChildQuantity())
-                .babyQuantity(partnerReservationItemTypeFlight.getTravelInfo().getBabyQuantity())
-                .typeClass(partnerReservationItemTypeFlight.getTravelInfo().getTypeClass())
+                .adt(partnerReservationItemTypeFlight.getTravelInfo().getAdultQuantity())
+                .chd(partnerReservationItemTypeFlight.getTravelInfo().getChildQuantity())
+                .inf(partnerReservationItemTypeFlight.getTravelInfo().getBabyQuantity())
+                .cabinClass(partnerReservationItemTypeFlight.getTravelInfo().getTypeClass())
                 .stageJourney(RESERVATION)
                 .build();
     }
@@ -41,6 +41,7 @@ public class PricingCalculateRequestMapper {
         var pricingCalculateItem = PricingCalculateItem.builder()
                 .id(commerceOrderId)
                 .flightType(partnerReservationItemTypeFlight.getTravelInfo().getType())
+                .partnerCode(partnerReservationResponse.getPartnerCode())
                 .price(buildPricingCalculatePrice(partnerReservationResponse))
                 .segments(buildSegments(partnerReservationItemTypeFlight))
                 .build();
@@ -55,11 +56,11 @@ public class PricingCalculateRequestMapper {
                     .step(Integer.valueOf(segment.getStep()))
                     .originIata(segment.getOriginIata())
                     .originDescription(segment.getOriginDescription())
-                    .originDate(segment.getDepartureDate())
+                    .departureDate(segment.getDepartureDate())
                     .destinationIata(segment.getDestinationIata())
                     .destinationDescription(segment.getDestinationDescription())
-                    .destinationDate(segment.getArrivalDate())
-                    .numberOfStops(segment.getStops())
+                    .arrivalDate(segment.getArrivalDate())
+                    .stops(segment.getStops())
                     .flightDuration(segment.getFlightDuration())
                     .airline(flightsLegs.getFirst().getAirline())
                     .flightClass(segment.getCabinClass())

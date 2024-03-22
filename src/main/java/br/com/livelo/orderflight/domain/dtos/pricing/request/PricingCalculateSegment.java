@@ -12,11 +12,11 @@ public class PricingCalculateSegment {
     private Integer step;
     private String originIata;
     private String originDescription;
-    private String originDate;
+    private String departureDate;
     private String destinationIata;
     private String destinationDescription;
-    private String destinationDate;
-    private int numberOfStops;
+    private String arrivalDate;
+    private int stops;
     private int flightDuration;
     private PricingCalculateAirline airline;
     @JsonProperty("class")

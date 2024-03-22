@@ -10,6 +10,7 @@ import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateRe
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateTaxes;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
+import br.com.livelo.orderflight.domain.entity.PriceModalityEntity;
 import br.com.livelo.orderflight.domain.entity.SegmentEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
@@ -67,8 +68,8 @@ public class ReservationServiceImpl implements ReservationService {
                 order = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPriceId);
             }
 
-            var pricingCalculatePrice = this.priceOrder(request, listPriceId, partnerReservationResponse);
-            this.setPrices(order, pricingCalculatePrice);
+            var pricingCalculatePrice = this.priceOrder(request, partnerReservationResponse);
+            this.setPrices(order, pricingCalculatePrice, listPriceId);
 
             this.orderService.save(order);
 
@@ -91,11 +92,11 @@ public class ReservationServiceImpl implements ReservationService {
         return Objects.isNull(partnerReservationResponse);
     }
 
-    private PricingCalculatePrice priceOrder(ReservationRequest request, String listPriceId, PartnerReservationResponse partnerReservationResponse) {
+    private List<PricingCalculatePrice> priceOrder(ReservationRequest request, PartnerReservationResponse partnerReservationResponse) {
         var pricingCalculateRequest = PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse, request.getCommerceOrderId());
         var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest);
 
-        return getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse, listPriceId);
+        return getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse);
     }
 
     private PartnerReservationResponse getPartnerOrder(String partnerOrderId, String transactionId, String partnerCode, List<String> segmentsPartnerIds) {
@@ -107,7 +108,7 @@ public class ReservationServiceImpl implements ReservationService {
         return partnerReservationResponse;
     }
 
-    private PricingCalculatePrice getPricingCalculateByCommerceOrderId(String commerceOrderId, List<PricingCalculateResponse> pricingCalculateResponses, String listPrice) {
+    private List<PricingCalculatePrice> getPricingCalculateByCommerceOrderId(String commerceOrderId, List<PricingCalculateResponse> pricingCalculateResponses) {
 
         var pricingCalculate = pricingCalculateResponses.stream()
                 .filter(pricing -> commerceOrderId.equals(pricing.getId()))
@@ -116,21 +117,46 @@ public class ReservationServiceImpl implements ReservationService {
                         new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "ReservationServiceImpl.getPricingCalculateByCommerceOrderId - Order not found in pricing response. commerceOrderId: " + commerceOrderId)
                 );
 
-        return pricingCalculate.getPrices().stream()
-                .filter(price -> listPrice.equals(price.getPriceListId())).findFirst()
-                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "ReservationServiceImpl.getPricingCalculateByCommerceOrderId - PriceListId not found in pricing calculate response. listPrice: " + listPrice));
+        return pricingCalculate.getPrices();
     }
 
-    private void setPrices(OrderEntity order, PricingCalculatePrice price) {
-        order.getPrice().setPointsAmount(BigDecimal.valueOf(price.getPointsAmount()));
-        order.getPrice().setAccrualPoints(price.getAccrualPoints().doubleValue());
-        order.getPrice().setAmount(price.getAmount());
+    private void setPrices(OrderEntity order, List<PricingCalculatePrice> prices, String listPrice) {
+        var clientPrice = prices.stream()
+                .filter(price -> listPrice.equals(price.getPriceListId()))
+                .findFirst()
+                .orElseThrow(() ->
+                        new OrderFlightException(
+                                ORDER_FLIGHT_INTERNAL_ERROR,
+                                null,
+                                "ReservationServiceImpl.getPricingCalculateByCommerceOrderId - PriceListId not found in pricing calculate response. listPrice: " + listPrice
+                        )
+                );
+        order.getPrice().setPointsAmount(BigDecimal.valueOf(clientPrice.getPointsAmount()));
+        order.getPrice().setAccrualPoints(clientPrice.getAccrualPoints().doubleValue());
+        order.getPrice().setAmount(clientPrice.getAmount());
+        order.getPrice().setPointsMultiplier(clientPrice.getMultiplier());
+        order.getPrice().setMarkup(clientPrice.getMarkup());
+        order.getPrice().setAccrualMultiplier(clientPrice.getMultiplierAccrual());
 
-        this.setOrderPriceDescription(order, price);
-        this.setOrderPriceItems(order, price);
+        this.setOrderPriceDescription(order, clientPrice);
+        this.setPriceModalities(order, prices);
+        this.setOrderItemsPrice(order, clientPrice);
     }
 
-    private void setOrderPriceItems(OrderEntity order, PricingCalculatePrice price) {
+    private void setPriceModalities(OrderEntity order, List<PricingCalculatePrice> prices) {
+        var pricesModalities = prices.stream()
+                .map(price -> PriceModalityEntity.builder()
+                        .amount(price.getAmount())
+                        .pointsAmount(BigDecimal.valueOf(price.getPointsAmount()))
+                        .accrualPoints(price.getAccrualPoints().doubleValue())
+                        .priceListId(price.getPriceListId())
+                        .build())
+                .toList();
+
+        order.getPrice().setPricesModalities(pricesModalities);
+    }
+
+    private void setOrderItemsPrice(OrderEntity order, PricingCalculatePrice price) {
         order.getItems()
                 .forEach(item -> {
                     if (!item.getSkuId().contains(TAX)) {

@@ -12,5 +12,6 @@ import java.util.List;
 public class PricingCalculateResponse {
     private String id;
     private List<PricingCalculatePrice> prices;
-    private String priceRule;
+    private String priceRuleName;
+    private String priceRulePayload;
 }

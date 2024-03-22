@@ -20,6 +20,7 @@ public class SegmentEntity extends BaseEntity {
     @Id
     private Long id;
 
+    @Lob
     private String partnerId;
 
     private String step;
