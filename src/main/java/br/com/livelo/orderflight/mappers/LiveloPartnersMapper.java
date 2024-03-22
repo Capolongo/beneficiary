@@ -160,6 +160,7 @@ public interface LiveloPartnersMapper {
 
             }
 
+
             return mappedItem;
         }).toList();
     }
