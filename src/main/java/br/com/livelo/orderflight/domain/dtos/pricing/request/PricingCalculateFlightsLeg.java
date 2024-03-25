@@ -1,6 +1,5 @@
 package br.com.livelo.orderflight.domain.dtos.pricing.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,12 +10,15 @@ public class PricingCalculateFlightsLeg {
     private String flightNumber;
     private Integer flightDuration;
     private String originIata;
+    private String originCity;
+    private String originAirport;
     private String timeToWait;
-    private String originDescription;
     private String departureDate;
     private String destinationIata;
-    private String destinationDescription;
+    private String destinationCity;
+    private String destinationAirport;
     private String arrivalDate;
-    @JsonProperty("class")
-    private String flightClass;
+    private String cabinClass;
+    private String fareBasis;
+    private String fareClass;
 }

@@ -26,6 +26,8 @@ class ReservationResponseFlightLegTest {
                 "",
                 "",
                 "",
+                "",
+                "",
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 ""
