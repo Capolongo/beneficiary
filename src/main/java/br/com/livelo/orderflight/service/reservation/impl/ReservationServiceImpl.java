@@ -134,38 +134,54 @@ public class ReservationServiceImpl implements ReservationService {
         order.getPrice().setPointsAmount(BigDecimal.valueOf(clientPrice.getPointsAmount()));
         order.getPrice().setAccrualPoints(clientPrice.getAccrualPoints().doubleValue());
         order.getPrice().setAmount(clientPrice.getAmount());
-        order.getPrice().setPointsMultiplier(clientPrice.getMultiplier());
-        order.getPrice().setMarkup(clientPrice.getMarkup());
-        order.getPrice().setAccrualMultiplier(clientPrice.getMultiplierAccrual());
-
         this.setOrderPriceDescription(order, clientPrice);
-        this.setPriceModalities(order, prices);
-        this.setOrderItemsPrice(order, clientPrice);
+
+        this.setOrderItemsPrice(order, prices, listPrice);
     }
 
-    private void setPriceModalities(OrderEntity order, List<PricingCalculatePrice> prices) {
-        var pricesModalities = prices.stream()
-                .map(price -> PriceModalityEntity.builder()
-                        .amount(price.getAmount())
-                        .pointsAmount(BigDecimal.valueOf(price.getPointsAmount()))
-                        .accrualPoints(price.getAccrualPoints().doubleValue())
-                        .priceListId(price.getPriceListId())
-                        .build())
-                .toList();
+    private void setOrderItemsPrice(OrderEntity order, List<PricingCalculatePrice> prices, String listPrice) {
+        var clientPrice = prices.stream()
+                .filter(price -> listPrice.equals(price.getPriceListId()))
+                .findFirst()
+                .orElseThrow(() ->
+                        new OrderFlightException(
+                                ORDER_FLIGHT_INTERNAL_ERROR,
+                                null,
+                                "ReservationServiceImpl.getPricingCalculateByCommerceOrderId - PriceListId not found in pricing calculate response. listPrice: " + listPrice
+                        )
+                );
 
-        order.getPrice().setPricesModalities(pricesModalities);
-    }
-
-    private void setOrderItemsPrice(OrderEntity order, PricingCalculatePrice price) {
         order.getItems()
                 .forEach(item -> {
                     if (!item.getSkuId().contains(TAX)) {
-                        item.getPrice().setPointsAmount(price.getFlight().getPointsAmount());
-                        item.getPrice().setAmount(price.getFlight().getAmount());
+                        item.getPrice().setPointsAmount(clientPrice.getFlight().getPointsAmount());
+                        item.getPrice().setAmount(clientPrice.getFlight().getAmount());
+
+                        var pricesModalities = prices.stream()
+                                .map(price -> PriceModalityEntity.builder()
+                                        .amount(price.getFlight().getAmount())
+                                        .pointsAmount(price.getFlight().getPointsAmount())
+                                        .accrualPoints(price.getAccrualPoints().doubleValue())
+                                        .priceListId(price.getPriceListId())
+                                        .build())
+                                .toList();
+
+                        item.getPrice().setPricesModalities(pricesModalities);
                     }
                     if (item.getSkuId().contains(TAX)) {
-                        item.getPrice().setPointsAmount(price.getTaxes().getPointsAmount());
-                        item.getPrice().setAmount(price.getTaxes().getAmount());
+                        item.getPrice().setPointsAmount(clientPrice.getTaxes().getPointsAmount());
+                        item.getPrice().setAmount(clientPrice.getTaxes().getAmount());
+
+                        var pricesModalities = prices.stream()
+                                .map(price -> PriceModalityEntity.builder()
+                                        .amount(price.getTaxes().getAmount())
+                                        .pointsAmount(price.getTaxes().getPointsAmount())
+                                        .accrualPoints(price.getAccrualPoints().doubleValue())
+                                        .priceListId(price.getPriceListId())
+                                        .build())
+                                .toList();
+
+                        item.getPrice().setPricesModalities(pricesModalities);
                     }
                 });
     }
