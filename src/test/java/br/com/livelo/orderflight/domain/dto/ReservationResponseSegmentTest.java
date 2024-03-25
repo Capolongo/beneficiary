@@ -24,6 +24,8 @@ class ReservationResponseSegmentTest {
                 "",
                 "",
                 "",
+                "",
+                "",
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 Set.of(),

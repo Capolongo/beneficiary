@@ -10,6 +10,7 @@ import java.util.List;
 public class PricingCalculateItem {
     private String id;
     private String flightType;
+    private String partnerCode;
     private PricingCalculatePrice price;
     private List<PricingCalculateSegment> segments;
 }

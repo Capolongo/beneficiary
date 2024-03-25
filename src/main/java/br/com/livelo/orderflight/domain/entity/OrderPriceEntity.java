@@ -30,5 +30,4 @@ public class OrderPriceEntity extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_PRICE_ID")
     private Set<OrderPriceDescriptionEntity> ordersPriceDescription;
-
 }
