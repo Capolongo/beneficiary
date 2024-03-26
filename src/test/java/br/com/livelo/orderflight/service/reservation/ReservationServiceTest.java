@@ -61,7 +61,7 @@ class ReservationServiceTest {
 
         var response = reservationService.createOrder(requestMock, transactionId, "123", "WEB", "price");
         assertAll(
-                () -> assertNull(response),
+                () -> assertNotNull(response),
                 () -> assertEquals(transactionId, response.transactionId())
         );
     }
