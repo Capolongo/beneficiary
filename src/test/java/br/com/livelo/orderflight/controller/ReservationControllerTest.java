@@ -32,7 +32,7 @@ class ReservationControllerTest {
 
         var response = this.reservationController.createReservation("123", "123", "WEB", "price", request);
         assertAll(
-                () -> assertFalse(response.getStatusCode().is2xxSuccessful()),
+                () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
                 () -> assertNotNull(response),
                 () -> assertEquals(expected, response.getBody())
         );
