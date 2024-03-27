@@ -80,7 +80,7 @@ public class ReservationServiceImpl implements ReservationService {
         } catch (OrderFlightException e) {
             throw e;
         } catch (Exception e) {
-            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), null, e);
+            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), "Unknown error on create reservation!", e);
         }
     }
 
