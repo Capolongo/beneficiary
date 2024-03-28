@@ -1,5 +1,3 @@
-ALTER TABLE SEGMENT DROP COLUMN PARTNER_ID;
-
 CREATE TABLE PRICE_MODALITY (
                                 ID INT NOT NULL,
                                 AMOUNT NUMBER(10,2),
