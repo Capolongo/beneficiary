@@ -1,13 +1,13 @@
 package br.com.livelo.orderflight.domain.entity;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.Set;
 
 @Data
 @Entity
@@ -30,5 +30,5 @@ public class OrderItemPriceEntity extends BaseEntity {
     private String priceRule;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_ITEM_PRICE_ID")
-    private List<PriceModalityEntity> pricesModalities;
+    private Set<PriceModalityEntity> pricesModalities;
 }

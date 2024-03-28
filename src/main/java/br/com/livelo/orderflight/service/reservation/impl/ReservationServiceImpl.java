@@ -164,7 +164,7 @@ public class ReservationServiceImpl implements ReservationService {
                                         .accrualPoints(price.getAccrualPoints().doubleValue())
                                         .priceListId(price.getPriceListId())
                                         .build())
-                                .toList();
+                                .collect(Collectors.toSet());
 
                         item.getPrice().setPricesModalities(pricesModalities);
                     }
@@ -179,7 +179,7 @@ public class ReservationServiceImpl implements ReservationService {
                                         .accrualPoints(price.getAccrualPoints().doubleValue())
                                         .priceListId(price.getPriceListId())
                                         .build())
-                                .toList();
+                                .collect(Collectors.toSet());
 
                         item.getPrice().setPricesModalities(pricesModalities);
                     }
