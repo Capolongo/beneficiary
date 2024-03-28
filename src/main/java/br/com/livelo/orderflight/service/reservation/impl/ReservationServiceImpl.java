@@ -56,6 +56,7 @@ public class ReservationServiceImpl implements ReservationService {
                     log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
                 } else {
                     this.orderService.delete(order);
+                    order = null;
                 }
             }
 
@@ -71,7 +72,7 @@ public class ReservationServiceImpl implements ReservationService {
             var pricingCalculatePrice = this.priceOrder(request, partnerReservationResponse);
             this.setPrices(order, pricingCalculatePrice, listPriceId);
 
-            this.orderService.save(order);
+            order = this.orderService.save(order);
 
             MDC.put(STATUS, "SUCCESS");
             log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {}", order, transactionId, listPriceId);
@@ -157,33 +158,64 @@ public class ReservationServiceImpl implements ReservationService {
                         item.getPrice().setPointsAmount(clientPrice.getFlight().getPointsAmount());
                         item.getPrice().setAmount(clientPrice.getFlight().getAmount());
 
-                        var pricesModalities = prices.stream()
-                                .map(price -> PriceModalityEntity.builder()
-                                        .amount(price.getFlight().getAmount())
-                                        .pointsAmount(price.getFlight().getPointsAmount())
-                                        .accrualPoints(price.getAccrualPoints().doubleValue())
-                                        .priceListId(price.getPriceListId())
-                                        .build())
-                                .collect(Collectors.toSet());
+                        if(item.getPrice().getPricesModalities() == null){
+                            var pricesModalities = prices.stream()
+                                    .map(price -> PriceModalityEntity.builder()
+                                            //.id(findModalityId(item.getPrice().getPricesModalities(), price.getPriceListId()))
+                                            .amount(price.getFlight().getAmount())
+                                            .pointsAmount(price.getFlight().getPointsAmount())
+                                            .accrualPoints(price.getAccrualPoints().doubleValue())
+                                            .priceListId(price.getPriceListId())
+                                            .build())
+                                    .collect(Collectors.toSet());
 
-                        item.getPrice().setPricesModalities(pricesModalities);
+                            item.getPrice().setPricesModalities(pricesModalities);
+                        }else{
+                            prices.forEach( priceItem ->{
+                                PriceModalityEntity priceModalityEntity = findModality(item.getPrice().getPricesModalities(), priceItem.getPriceListId());
+                                priceModalityEntity.setAmount(priceItem.getFlight().getAmount());
+                                priceModalityEntity.setAccrualPoints(priceItem.getAccrualPoints().doubleValue());
+                                priceModalityEntity.setPointsAmount(priceItem.getTaxes().getPointsAmount());
+                            });
+
+
+                        }
+
                     }
                     if (item.getSkuId().contains(TAX)) {
                         item.getPrice().setPointsAmount(clientPrice.getTaxes().getPointsAmount());
                         item.getPrice().setAmount(clientPrice.getTaxes().getAmount());
 
-                        var pricesModalities = prices.stream()
-                                .map(price -> PriceModalityEntity.builder()
-                                        .amount(price.getTaxes().getAmount())
-                                        .pointsAmount(price.getTaxes().getPointsAmount())
-                                        .accrualPoints(price.getAccrualPoints().doubleValue())
-                                        .priceListId(price.getPriceListId())
-                                        .build())
-                                .collect(Collectors.toSet());
+                        if(item.getPrice().getPricesModalities() == null){
+                            var pricesModalities = prices.stream()
+                                    .map(price -> PriceModalityEntity.builder()
+                                            //.id(findModalityId(item.getPrice().getPricesModalities(), price.getPriceListId()))
+                                            .amount(price.getTaxes().getAmount())
+                                            .pointsAmount(price.getTaxes().getPointsAmount())
+                                            .accrualPoints(price.getAccrualPoints().doubleValue())
+                                            .priceListId(price.getPriceListId())
+                                            .build())
+                                    .collect(Collectors.toSet());
 
-                        item.getPrice().setPricesModalities(pricesModalities);
+                            item.getPrice().setPricesModalities(pricesModalities);
+                        }else{
+                            prices.forEach( priceItem ->{
+                                PriceModalityEntity priceModalityEntity = findModality(item.getPrice().getPricesModalities(), priceItem.getPriceListId());
+                                priceModalityEntity.setAmount(priceItem.getTaxes().getAmount());
+                                priceModalityEntity.setAccrualPoints(priceItem.getAccrualPoints().doubleValue());
+                                priceModalityEntity.setPointsAmount(priceItem.getTaxes().getPointsAmount());
+                            });
+
+
+                        }
+
                     }
                 });
+    }
+
+    private PriceModalityEntity findModality(Set<PriceModalityEntity> modalityEntities, String priceListId){
+        return modalityEntities.stream().filter(item -> priceListId.equals(item.getPriceListId()))
+                .findFirst().orElse(null);
     }
 
     private void setOrderPriceDescription(OrderEntity order, PricingCalculatePrice price) {
