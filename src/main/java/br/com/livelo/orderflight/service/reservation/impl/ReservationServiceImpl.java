@@ -53,7 +53,7 @@ public class ReservationServiceImpl implements ReservationService {
                 order = orderOptional.get();
                 if (this.isSameOrderItems(request, orderOptional)) {
                     partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), request.getSegmentsPartnerIds());
-                    log.info("Order reserved on partner! Proceed with price. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
+                    log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
                 } else {
                     this.orderService.delete(order);
                 }
