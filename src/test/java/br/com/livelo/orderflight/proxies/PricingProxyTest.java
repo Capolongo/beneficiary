@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_PRICING_INTERNAL_ERROR;
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,14 +33,14 @@ class PricingProxyTest {
 
     @Test
     void shouldReturnPricingCalculate() {
-        ResponseEntity<PricingCalculateResponse[]> pricingCalculateResponse = MockBuilder.pricingCalculateResponse();
+        ResponseEntity<List<PricingCalculateResponse>> pricingCalculateResponse = MockBuilder.pricingCalculateResponse();
         when(pricingClient.calculate(any(PricingCalculateRequest.class)))
                 .thenReturn(pricingCalculateResponse);
 
         var response = proxy.calculate(mock(PricingCalculateRequest.class));
 
         assertNotNull(pricingCalculateResponse.getBody());
-        assertEquals(Arrays.stream(pricingCalculateResponse.getBody()).toList(), response);
+        assertEquals(pricingCalculateResponse.getBody(), response);
         assertEquals(200, pricingCalculateResponse.getStatusCode().value());
         verify(pricingClient).calculate(any(PricingCalculateRequest.class));
         verifyNoMoreInteractions(pricingClient);

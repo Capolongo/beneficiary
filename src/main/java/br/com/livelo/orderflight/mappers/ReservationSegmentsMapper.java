@@ -20,6 +20,8 @@ public interface ReservationSegmentsMapper {
     @Mapping(target = "cancelationRules", expression = "java(mapCancelationRules(partnerReservationSegment))")
     @Mapping(target = "changeRules", expression = "java(mapChangeRules(partnerReservationSegment))")
     @Mapping(target = "flightsLegs", expression = "java(mapFlightLeg(partnerReservationSegment))")
+    @Mapping(target = "airlineIata", source = "airline.iata")
+    @Mapping(target = "airlineDescription", source = "airline.description")
     @Mapping(target = "departureDate", source = "departureDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     @Mapping(target = "arrivalDate", source = "arrivalDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     SegmentEntity toSegmentEntity(PartnerReservationSegment partnerReservationSegment);

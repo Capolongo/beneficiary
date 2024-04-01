@@ -41,7 +41,6 @@ public class ReservationServiceImpl implements ReservationService {
     private final ConnectorPartnersProxy partnerConnectorProxy;
     private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
-    private static final String TAX = "tax";
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId) {
         log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {}", request, transactionId, listPriceId);
@@ -132,8 +131,8 @@ public class ReservationServiceImpl implements ReservationService {
                                 "ReservationServiceImpl.getPricingCalculateByCommerceOrderId - PriceListId not found in pricing calculate response. listPrice: " + listPrice
                         )
                 );
-        order.getPrice().setPointsAmount(BigDecimal.valueOf(clientPrice.getPointsAmount()));
-        order.getPrice().setAccrualPoints(clientPrice.getAccrualPoints().doubleValue());
+        order.getPrice().setPointsAmount(clientPrice.getPointsAmount());
+        order.getPrice().setAccrualPoints(clientPrice.getAccrualPoints());
         order.getPrice().setAmount(clientPrice.getAmount());
         this.setOrderPriceDescription(order, clientPrice);
 
@@ -154,9 +153,10 @@ public class ReservationServiceImpl implements ReservationService {
 
         order.getItems()
                 .forEach(item -> {
-                    if (!item.getSkuId().contains(TAX)) {
+                    if (orderService.isFlightItem(item)) {
                         item.getPrice().setPointsAmount(clientPrice.getFlight().getPointsAmount());
                         item.getPrice().setAmount(clientPrice.getFlight().getAmount());
+                        item.getPrice().setAccrualPoints(clientPrice.getAccrualPoints());
 
                         if(item.getPrice().getPricesModalities() == null){
                             var pricesModalities = prices.stream()
@@ -177,12 +177,10 @@ public class ReservationServiceImpl implements ReservationService {
                                 priceModalityEntity.setAccrualPoints(priceItem.getAccrualPoints().doubleValue());
                                 priceModalityEntity.setPointsAmount(priceItem.getTaxes().getPointsAmount());
                             });
-
-
                         }
 
                     }
-                    if (item.getSkuId().contains(TAX)) {
+                    if (!orderService.isFlightItem(item)) {
                         item.getPrice().setPointsAmount(clientPrice.getTaxes().getPointsAmount());
                         item.getPrice().setAmount(clientPrice.getTaxes().getAmount());
 
@@ -205,8 +203,6 @@ public class ReservationServiceImpl implements ReservationService {
                                 priceModalityEntity.setAccrualPoints(priceItem.getAccrualPoints().doubleValue());
                                 priceModalityEntity.setPointsAmount(priceItem.getTaxes().getPointsAmount());
                             });
-
-
                         }
 
                     }

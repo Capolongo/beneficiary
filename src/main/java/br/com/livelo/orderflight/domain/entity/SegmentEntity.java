@@ -58,6 +58,7 @@ public class SegmentEntity extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "SEGMENT_ID")
+    @OrderBy("departureDate ASC")
     private Set<FlightLegEntity> flightsLegs;
 
 }

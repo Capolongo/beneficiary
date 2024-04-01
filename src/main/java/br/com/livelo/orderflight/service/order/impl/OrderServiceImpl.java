@@ -36,6 +36,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
+    public static final String TAX = "tax";
     private final OrderRepository orderRepository;
     private final OrderProcessMapper orderMapper;
     private final ItemRepository itemRepository;
@@ -66,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public OrderItemEntity getFlightFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
-        Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(item -> !item.getSkuId().toLowerCase().contains("tax")).findFirst();
+        Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(this::isFlightItem).findFirst();
 
         if (itemFlight.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;
@@ -75,9 +76,13 @@ public class OrderServiceImpl implements OrderService {
 
         return itemFlight.get();
     }
+    
+    public boolean isFlightItem(OrderItemEntity item){
+        return !item.getSkuId().toLowerCase().contains(TAX);
+    }
 
     public OrderItemEntity getTaxFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
-        Optional<OrderItemEntity> itemTax = orderItemsEntity.stream().filter(item -> item.getSkuId().toLowerCase().contains("tax")).findFirst();
+        Optional<OrderItemEntity> itemTax = orderItemsEntity.stream().filter(item -> !isFlightItem(item)).findFirst();
 
         if (itemTax.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;

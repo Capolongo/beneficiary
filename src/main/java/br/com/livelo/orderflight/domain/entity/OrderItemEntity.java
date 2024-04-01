@@ -1,7 +1,5 @@
 package br.com.livelo.orderflight.domain.entity;
 
-import java.util.Set;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,7 +11,19 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.SequenceGenerator;
-import lombok.*;
+import jakarta.persistence.OrderBy;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+import java.util.Set;
+
+
 
 @Getter
 @Setter
@@ -44,5 +54,6 @@ public class OrderItemEntity extends BaseEntity {
     private TravelInfoEntity travelInfo;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_ITEM_ID")
+    @OrderBy("departureDate ASC")
     private Set<SegmentEntity> segments;
 }

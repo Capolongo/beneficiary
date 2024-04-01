@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,8 +20,9 @@ class PricingClientTest {
     void shouldCallPricingCalculate() {
         PricingCalculateRequest pricingCalculateRequest = mock(PricingCalculateRequest.class);
 
-        PricingCalculateResponse[] pricingCalculateResponse = new PricingCalculateResponse[]{mock(PricingCalculateResponse.class)};
-        ResponseEntity<PricingCalculateResponse[]> responseEntity = ResponseEntity.ok(pricingCalculateResponse);
+        List<PricingCalculateResponse> pricingCalculateResponse = new ArrayList<>();
+        pricingCalculateResponse.add(mock(PricingCalculateResponse.class));
+        ResponseEntity<List<PricingCalculateResponse>> responseEntity = ResponseEntity.ok(pricingCalculateResponse);
 
         URI baseUrl = URI.create("http://example.com");
 
@@ -28,7 +30,7 @@ class PricingClientTest {
 
         when(pricingClient.calculate(any())).thenReturn(responseEntity);
 
-        ResponseEntity<PricingCalculateResponse[]> result = pricingClient.calculate(pricingCalculateRequest);
+        ResponseEntity<List<PricingCalculateResponse>> result = pricingClient.calculate(pricingCalculateRequest);
 
         verify(pricingClient, times(1)).calculate(any());
         assertEquals(pricingCalculateResponse, result.getBody());

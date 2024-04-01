@@ -7,9 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 @FeignClient(value = "pricing-client", url = "${client.pricingcalculatorflight.endpoint}")
 public interface PricingClient {
     @PostMapping
-    ResponseEntity<PricingCalculateResponse[]> calculate(@RequestBody PricingCalculateRequest orderEntity);
+    ResponseEntity<List<PricingCalculateResponse>> calculate(@RequestBody PricingCalculateRequest orderEntity);
 
 }

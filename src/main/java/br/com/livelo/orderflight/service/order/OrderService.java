@@ -17,6 +17,8 @@ public interface OrderService {
 
   void addNewOrderStatus(OrderEntity order, OrderStatusEntity status);
 
+  boolean isFlightItem(OrderItemEntity item);
+
   Optional<OrderEntity> findByCommerceOrderId(String commerceOrderId);
 
   void delete(OrderEntity order);

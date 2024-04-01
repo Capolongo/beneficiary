@@ -194,11 +194,14 @@ public class MockBuilder {
                 .build();
     }
 
-    public static ResponseEntity<PricingCalculateResponse[]> pricingCalculateResponse(){
-        return  ResponseEntity.ok().body(new PricingCalculateResponse[]{PricingCalculateResponse.builder()
+    public static ResponseEntity<List<PricingCalculateResponse>> pricingCalculateResponse(){
+        List<PricingCalculateResponse> prices = new ArrayList<>();
+        prices.add(PricingCalculateResponse.builder()
                 .prices(
                         new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price").build()))
-                ).build()});
+                ).build()
+        );
+        return  ResponseEntity.ok().body(prices);
     }
 
     public static ResponseEntity<ConnectorConfirmOrderResponse> connectorConfirmOrderResponse() {
@@ -395,7 +398,7 @@ public class MockBuilder {
         orderPriceDescriptions.add(orderPriceDescriptionEntity());
         return OrderPriceEntity.builder()
                 .id(1L)
-                .accrualPoints(1000.0)
+                .accrualPoints(BigDecimal.valueOf(1000.0))
                 .amount(BigDecimal.valueOf(1000))
                 .pointsAmount(BigDecimal.valueOf(1000))
                 .partnerAmount(BigDecimal.valueOf(1000))
