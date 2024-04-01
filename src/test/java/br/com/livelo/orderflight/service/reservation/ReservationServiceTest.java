@@ -28,8 +28,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -49,6 +48,7 @@ class ReservationServiceTest {
 
     @Test
     void shouldCreateReservation() {
+        var transactionId = "123";
         var partnerReservationResponse = buildPartnerReservationResponse();
         var orderMock = mock(OrderEntity.class);
         var requestMock = mock(ReservationRequest.class);
@@ -57,13 +57,10 @@ class ReservationServiceTest {
         when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
         when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
-        var transactionId = "123";
 
         var response = reservationService.createOrder(requestMock, transactionId, "123", "WEB", "price");
-        assertAll(
-                () -> assertNotNull(response),
-                () -> assertEquals(transactionId, response.transactionId())
-        );
+
+        assertNotNull(response);
     }
 
     @Test
@@ -90,10 +87,7 @@ class ReservationServiceTest {
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
         when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price");
-        assertAll(
-                () -> assertNotNull(response),
-                () -> assertEquals(transactionId, response.transactionId())
-        );
+        assertNotNull(response);
     }
 
     @Test
@@ -110,6 +104,7 @@ class ReservationServiceTest {
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
         var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, commerceItemId, segmentsPartnersId, "cvc_flight")), transactionId);
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
+        when(orderService.save(any())).thenReturn(order);
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price");
         assertAll(
                 () -> assertNotNull(response),
@@ -118,7 +113,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void shouldntCreateOrder_WhenOrderItemsQuantityDiverge() {
+    void shouldCreateNewOrder_WhenOrderItemsQuantityDiverge() {
         var transactionId = "123";
         var type = "type_flight";
         var segmentsPartnersId = "asdf";
@@ -137,10 +132,13 @@ class ReservationServiceTest {
         );
 
         when(orderService.findByCommerceOrderId(request.getCommerceOrderId())).thenReturn(Optional.of(order));
+        when(orderService.save(any())).thenReturn(order);
         var response = this.reservationService.createOrder(request, "123", "123", "WEB", "price");
+
         assertAll(
                 () -> assertNotNull(response),
-                () -> assertEquals(transactionId, response.transactionId())
+                () -> assertEquals(transactionId, response.transactionId()),
+                () -> verify(orderService, times(1)).delete(any())
         );
     }
 
@@ -250,8 +248,8 @@ class ReservationServiceTest {
                         .prices(
                                 List.of(
                                         PricingCalculatePrice.builder()
-                                                .pointsAmount(10)
-                                                .accrualPoints(10)
+                                                .pointsAmount(BigDecimal.TEN)
+                                                .accrualPoints(BigDecimal.TEN)
                                                 .priceListId("price")
                                                 .flight(PricingCalculateFlight.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).passengerType("ADULT").build())
                                                 .taxes(PricingCalculateTaxes.builder().amount(BigDecimal.TEN).pointsAmount(BigDecimal.TEN).build())

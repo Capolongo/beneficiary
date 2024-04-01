@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -159,24 +158,9 @@ public class ReservationServiceImpl implements ReservationService {
                         item.getPrice().setAccrualPoints(clientPrice.getAccrualPoints());
 
                         if(item.getPrice().getPricesModalities() == null){
-                            var pricesModalities = prices.stream()
-                                    .map(price -> PriceModalityEntity.builder()
-                                            //.id(findModalityId(item.getPrice().getPricesModalities(), price.getPriceListId()))
-                                            .amount(price.getFlight().getAmount())
-                                            .pointsAmount(price.getFlight().getPointsAmount())
-                                            .accrualPoints(price.getAccrualPoints().doubleValue())
-                                            .priceListId(price.getPriceListId())
-                                            .build())
-                                    .collect(Collectors.toSet());
-
-                            item.getPrice().setPricesModalities(pricesModalities);
+                            this.buildPricesModalities(prices, item);
                         }else{
-                            prices.forEach( priceItem ->{
-                                PriceModalityEntity priceModalityEntity = findModality(item.getPrice().getPricesModalities(), priceItem.getPriceListId());
-                                priceModalityEntity.setAmount(priceItem.getFlight().getAmount());
-                                priceModalityEntity.setAccrualPoints(priceItem.getAccrualPoints().doubleValue());
-                                priceModalityEntity.setPointsAmount(priceItem.getTaxes().getPointsAmount());
-                            });
+                            this.setPricesModalitiesValues(prices, item);
                         }
 
                     }
@@ -185,31 +169,38 @@ public class ReservationServiceImpl implements ReservationService {
                         item.getPrice().setAmount(clientPrice.getTaxes().getAmount());
 
                         if(item.getPrice().getPricesModalities() == null){
-                            var pricesModalities = prices.stream()
-                                    .map(price -> PriceModalityEntity.builder()
-                                            //.id(findModalityId(item.getPrice().getPricesModalities(), price.getPriceListId()))
-                                            .amount(price.getTaxes().getAmount())
-                                            .pointsAmount(price.getTaxes().getPointsAmount())
-                                            .accrualPoints(price.getAccrualPoints().doubleValue())
-                                            .priceListId(price.getPriceListId())
-                                            .build())
-                                    .collect(Collectors.toSet());
-
-                            item.getPrice().setPricesModalities(pricesModalities);
+                           this.buildPricesModalities(prices, item);
                         }else{
-                            prices.forEach( priceItem ->{
-                                PriceModalityEntity priceModalityEntity = findModality(item.getPrice().getPricesModalities(), priceItem.getPriceListId());
-                                priceModalityEntity.setAmount(priceItem.getTaxes().getAmount());
-                                priceModalityEntity.setAccrualPoints(priceItem.getAccrualPoints().doubleValue());
-                                priceModalityEntity.setPointsAmount(priceItem.getTaxes().getPointsAmount());
-                            });
+                            this.setPricesModalitiesValues(prices, item);
                         }
 
                     }
                 });
     }
 
-    private PriceModalityEntity findModality(Set<PriceModalityEntity> modalityEntities, String priceListId){
+    private void setPricesModalitiesValues(List<PricingCalculatePrice> prices, OrderItemEntity item) {
+        prices.forEach(priceItem ->{
+            PriceModalityEntity priceModalityEntity = findModalityByPriceList(item.getPrice().getPricesModalities(), priceItem.getPriceListId());
+            priceModalityEntity.setAmount(priceItem.getTaxes().getAmount());
+            priceModalityEntity.setAccrualPoints(priceItem.getAccrualPoints().doubleValue());
+            priceModalityEntity.setPointsAmount(priceItem.getTaxes().getPointsAmount());
+        });
+    }
+
+    private void buildPricesModalities(List<PricingCalculatePrice> prices, OrderItemEntity item) {
+        var pricesModalities = prices.stream()
+                .map(price -> PriceModalityEntity.builder()
+                        .amount(price.getFlight().getAmount())
+                        .pointsAmount(price.getFlight().getPointsAmount())
+                        .accrualPoints(price.getAccrualPoints().doubleValue())
+                        .priceListId(price.getPriceListId())
+                        .build())
+                .collect(Collectors.toSet());
+
+        item.getPrice().setPricesModalities(pricesModalities);
+    }
+
+    private PriceModalityEntity findModalityByPriceList(Set<PriceModalityEntity> modalityEntities, String priceListId){
         return modalityEntities.stream().filter(item -> priceListId.equals(item.getPriceListId()))
                 .findFirst().orElse(null);
     }
