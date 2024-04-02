@@ -30,5 +30,6 @@ public class OrderItemPriceEntity extends BaseEntity {
     private String priceRule;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_ITEM_PRICE_ID")
+    @OrderBy("priceListId asc")
     private Set<PriceModalityEntity> pricesModalities;
 }

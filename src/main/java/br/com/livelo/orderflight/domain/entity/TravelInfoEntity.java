@@ -28,5 +28,6 @@ public class TravelInfoEntity extends BaseEntity {
     private String typeClass;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "TRAVEL_INFO_ID")
+    @OrderBy("type asc")
     private Set<PaxEntity> paxs;
 }
