@@ -107,6 +107,17 @@ class OrderServiceTest {
     }
 
     @Test
+    void shouldFindOrderByCommerceOrderIdOrCommerceItemIds() {
+        var orderMock = mock(OrderEntity.class);
+        when(this.orderRepository.findByCommerceOrderIdOrItemsCommerceItemsId(anyString(), any())).thenReturn(Optional.of(orderMock));
+        var response = this.orderService.findByCommerceOrderIdOrItemsCommerceItemsId("123", new HashSet<>());
+
+        assertAll(
+                () -> assertTrue(response.isPresent()),
+                () -> assertInstanceOf(OrderEntity.class, response.get()));
+    }
+
+    @Test
     void shouldntFindOrderByCommerceOrderId() {
         when(this.orderRepository.findByCommerceOrderId(anyString())).thenReturn(Optional.empty());
         var response = this.orderService.findByCommerceOrderId("123");
@@ -264,10 +275,9 @@ class OrderServiceTest {
     void shouldReturnErrorOrderFlightExceptionByCommerceItemIdAndSkuId() {
 
         when(itemRepository.findByCommerceItemIdAndSkuId(anyString(), anyString())).thenReturn(Optional.empty());
+        var skuItemResponse = SkuItemResponse.builder().skuId("cvc_flight_tax").build();
 
-        assertThrows(OrderFlightException.class, () -> {
-            orderService.findByCommerceItemIdAndSkuId("1", SkuItemResponse.builder().skuId("cvc_flight_tax").build());
-        });
+        assertThrows(OrderFlightException.class, () -> orderService.findByCommerceItemIdAndSkuId("1", skuItemResponse));
     }
 
     @Test

@@ -98,10 +98,10 @@ public class ReservationServiceImpl implements ReservationService {
     private void updateStatus(OrderEntity order, PartnerReservationResponse partnerReservationResponse) {
         order.getStatusHistory().add(OrderStatusEntity.builder()
                 .code(partnerReservationResponse.getStatus().getCode())
-                        .description(partnerReservationResponse.getStatus().getDescription())
-                        .partnerCode(partnerReservationResponse.getStatus().getPartnerCode())
-                        .partnerDescription(partnerReservationResponse.getStatus().getPartnerDescription())
-                        .statusDate(LocalDateTime.now())
+                .description(partnerReservationResponse.getStatus().getDescription())
+                .partnerCode(partnerReservationResponse.getStatus().getPartnerCode())
+                .partnerDescription(partnerReservationResponse.getStatus().getPartnerDescription())
+                .statusDate(LocalDateTime.now())
                 .build());
         this.orderService.save(order);
     }

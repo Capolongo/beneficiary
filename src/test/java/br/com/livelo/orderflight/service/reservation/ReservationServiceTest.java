@@ -21,11 +21,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_ORDER_STATUS_INVALID_BUSINESS_ERROR;
+import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -138,8 +141,44 @@ class ReservationServiceTest {
                         .map(ReservationItem::getCommerceItemId)
                         .collect(Collectors.toSet())))
                 .thenReturn(Optional.of(order));
-        var response = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, transactionId, "123", "WEB", "price"));
-        assertNotNull(response);
+        when(orderService.save(any())).thenReturn(order);
+        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, transactionId, "123", "WEB", "price"));
+        assertAll(
+                () -> assertEquals(ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, exception.getOrderFlightErrorType()),
+                () -> verify(orderService, times(1)).save(any())
+        );
+    }
+
+    @Test
+    void shouldntCreateOrder_WhenOrderExistsInDB_AndStatusIsNotInitial() {
+        var transactionId = "123";
+        var id = 1L;
+        var type = "type_flight";
+        var segmentsPartnersId = "asdf";
+        var request = this.buildResevationRequest(
+                List.of(this.buildReservationItem(transactionId, type, "cvc_flight"),
+                        this.buildReservationItem(transactionId, "type_flight_tax", "cvc_flight_tax")
+                ),
+                List.of(segmentsPartnersId, segmentsPartnersId)
+        );
+
+
+        var order = this.buildOrderEntity(
+                Set.of(this.buildOrderItem(id, transactionId, segmentsPartnersId, "cvc_flight"), this.buildOrderItem(2L, transactionId, segmentsPartnersId, "cvc_flight_tax")),
+                transactionId,
+                "LIVPNR-9001"
+        );
+
+        when(orderService.findByCommerceOrderIdOrItemsCommerceItemsId(
+                request.getCommerceOrderId(),
+                request.getItems()
+                        .stream()
+                        .map(ReservationItem::getCommerceItemId)
+                        .collect(Collectors.toSet())))
+                .thenReturn(Optional.of(order));
+
+        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, transactionId, "123", "WEB", "price"));
+        assertEquals(ORDER_FLIGHT_ORDER_STATUS_INVALID_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
@@ -287,6 +326,7 @@ class ReservationServiceTest {
                 .currentStatus(OrderStatusEntity.builder().code(statusCode).build())
                 .price(OrderPriceEntity.builder().partnerAmount(BigDecimal.TEN).ordersPriceDescription(Set.of(OrderPriceDescriptionEntity.builder().build())).build())
                 .items(orderItems)
+                .statusHistory(new HashSet<>())
                 .build();
     }
 
