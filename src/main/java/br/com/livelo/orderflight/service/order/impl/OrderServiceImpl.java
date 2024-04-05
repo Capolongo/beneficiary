@@ -144,6 +144,11 @@ public class OrderServiceImpl implements OrderService {
         return this.orderRepository.findByCommerceOrderId(commerceOrderId);
     }
 
+    @Override
+    public Optional<OrderEntity> findByCommerceOrderIdOrItemsCommerceItemsId(String commerceOrderId, Set<String> commerceItemsIds) {
+        return this.orderRepository.findByCommerceOrderIdOrItemsCommerceItemsId(commerceOrderId, commerceItemsIds);
+    }
+
     public void delete(OrderEntity order) {
         this.orderRepository.delete(order);
     }

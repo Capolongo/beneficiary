@@ -56,9 +56,9 @@ public interface ReservationMapper {
                         currentRequestItem,
                         partnerReservationResponse.getItems().stream()
                                 .filter(currentPartnerReservationResponseItem -> currentPartnerReservationResponseItem
-                                        .getType()
+                                        .getCommerceItemId()
                                         .equals(currentRequestItem
-                                                .getProductType()))
+                                                .getCommerceItemId()))
                                 .toList().getFirst(),
                         listPrice
                 ))

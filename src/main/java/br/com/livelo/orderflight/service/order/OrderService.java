@@ -1,6 +1,7 @@
 package br.com.livelo.orderflight.service.order;
 
 import java.util.Optional;
+import java.util.Set;
 
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
@@ -20,6 +21,7 @@ public interface OrderService {
   boolean isFlightItem(OrderItemEntity item);
 
   Optional<OrderEntity> findByCommerceOrderId(String commerceOrderId);
+  Optional<OrderEntity> findByCommerceOrderIdOrItemsCommerceItemsId(String commerceOrderId, Set<String> commerceItemsIds);
 
   void delete(OrderEntity order);
 

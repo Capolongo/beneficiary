@@ -8,10 +8,7 @@ import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateFl
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateTaxes;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.domain.entity.PriceModalityEntity;
-import br.com.livelo.orderflight.domain.entity.SegmentEntity;
+import br.com.livelo.orderflight.domain.entity.*;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.PricingCalculateRequestMapper;
@@ -20,17 +17,21 @@ import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.proxies.PricingProxy;
 import br.com.livelo.orderflight.service.order.OrderService;
 import br.com.livelo.orderflight.service.reservation.ReservationService;
+import br.com.livelo.orderflight.utils.OrderItemUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static br.com.livelo.orderflight.constants.DynatraceConstants.STATUS;
+import static br.com.livelo.orderflight.enuns.StatusLivelo.INITIAL;
 import static br.com.livelo.orderflight.enuns.StatusLivelo.PROCESSING;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
+import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_ORDER_STATUS_INVALID_BUSINESS_ERROR;
 
 @Service
 @RequiredArgsConstructor
@@ -46,11 +47,22 @@ public class ReservationServiceImpl implements ReservationService {
         OrderEntity order = null;
         try {
             PartnerReservationResponse partnerReservationResponse = null;
-            var orderOptional = this.orderService.findByCommerceOrderId(request.getCommerceOrderId());
+
+            OrderItemUtils.hasMoreThanOneTravel(request.getItems());
+
+            var commerceItemsIds = request.getItems().stream().map(ReservationItem::getCommerceItemId).collect(Collectors.toSet());
+            var orderOptional = this.orderService.findByCommerceOrderIdOrItemsCommerceItemsId(request.getCommerceOrderId(), commerceItemsIds);
             if (orderOptional.isPresent()) {
                 order = orderOptional.get();
+                this.isOrderStatusInitial(order);
+
                 if (this.isSameOrderItems(request, orderOptional)) {
                     partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), request.getSegmentsPartnerIds());
+
+                    if (!PROCESSING.getCode().equals(partnerReservationResponse.getStatus().getCode())) {
+                        this.updateStatus(order, partnerReservationResponse);
+                        throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, null, null);
+                    }
                     log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
                 } else {
                     this.orderService.delete(order);
@@ -58,7 +70,7 @@ public class ReservationServiceImpl implements ReservationService {
                 }
             }
 
-            if (this.hasPartnerReserveExpired(partnerReservationResponse)) {
+            if (!this.existsReservationInPartner(partnerReservationResponse)) {
                 var partnerReservationRequest = reservationMapper.toPartnerReservationRequest(request);
                 partnerReservationResponse = partnerConnectorProxy.createReserve(partnerReservationRequest, transactionId);
             }
@@ -83,12 +95,29 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
+    private void updateStatus(OrderEntity order, PartnerReservationResponse partnerReservationResponse) {
+        order.getStatusHistory().add(OrderStatusEntity.builder()
+                .code(partnerReservationResponse.getStatus().getCode())
+                        .description(partnerReservationResponse.getStatus().getDescription())
+                        .partnerCode(partnerReservationResponse.getStatus().getPartnerCode())
+                        .partnerDescription(partnerReservationResponse.getStatus().getPartnerDescription())
+                        .statusDate(LocalDateTime.now())
+                .build());
+        this.orderService.save(order);
+    }
+
+    private void isOrderStatusInitial(OrderEntity order) {
+        if (!INITIAL.getCode().equals(order.getCurrentStatus().getCode())) {
+            throw new OrderFlightException(ORDER_FLIGHT_ORDER_STATUS_INVALID_BUSINESS_ERROR, null, "Order has not initial status. Aborting create order");
+        }
+    }
+
     private boolean isNewOrder(OrderEntity order) {
         return Objects.isNull(order);
     }
 
-    private boolean hasPartnerReserveExpired(PartnerReservationResponse partnerReservationResponse) {
-        return Objects.isNull(partnerReservationResponse);
+    private boolean existsReservationInPartner(PartnerReservationResponse partnerReservationResponse) {
+        return Objects.nonNull(partnerReservationResponse);
     }
 
     private List<PricingCalculatePrice> priceOrder(ReservationRequest request, PartnerReservationResponse partnerReservationResponse) {
@@ -99,12 +128,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private PartnerReservationResponse getPartnerOrder(String partnerOrderId, String transactionId, String partnerCode, List<String> segmentsPartnerIds) {
-        var partnerReservationResponse = partnerConnectorProxy.getReservation(partnerOrderId, transactionId, partnerCode, segmentsPartnerIds);
-
-        if (!PROCESSING.getCode().equals(partnerReservationResponse.getStatus().getCode())) {
-            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, null, null);
-        }
-        return partnerReservationResponse;
+        return partnerConnectorProxy.getReservation(partnerOrderId, transactionId, partnerCode, segmentsPartnerIds);
     }
 
     private List<PricingCalculatePrice> getPricingCalculateByCommerceOrderId(String commerceOrderId, List<PricingCalculateResponse> pricingCalculateResponses) {
@@ -157,9 +181,9 @@ public class ReservationServiceImpl implements ReservationService {
                         item.getPrice().setAmount(clientPrice.getFlight().getAmount());
                         item.getPrice().setAccrualPoints(clientPrice.getAccrualPoints());
 
-                        if(item.getPrice().getPricesModalities() == null){
+                        if (item.getPrice().getPricesModalities() == null) {
                             this.buildPricesModalities(prices, item);
-                        }else{
+                        } else {
                             this.setPricesModalitiesValues(prices, item);
                         }
 
@@ -168,9 +192,9 @@ public class ReservationServiceImpl implements ReservationService {
                         item.getPrice().setPointsAmount(clientPrice.getTaxes().getPointsAmount());
                         item.getPrice().setAmount(clientPrice.getTaxes().getAmount());
 
-                        if(item.getPrice().getPricesModalities() == null){
-                           this.buildPricesModalities(prices, item);
-                        }else{
+                        if (item.getPrice().getPricesModalities() == null) {
+                            this.buildPricesModalities(prices, item);
+                        } else {
                             this.setPricesModalitiesValues(prices, item);
                         }
 
@@ -179,7 +203,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void setPricesModalitiesValues(List<PricingCalculatePrice> prices, OrderItemEntity item) {
-        prices.forEach(priceItem ->{
+        prices.forEach(priceItem -> {
             PriceModalityEntity priceModalityEntity = findModalityByPriceList(item.getPrice().getPricesModalities(), priceItem.getPriceListId());
             priceModalityEntity.setAmount(priceItem.getTaxes().getAmount());
             priceModalityEntity.setAccrualPoints(priceItem.getAccrualPoints().doubleValue());
@@ -200,7 +224,7 @@ public class ReservationServiceImpl implements ReservationService {
         item.getPrice().setPricesModalities(pricesModalities);
     }
 
-    private PriceModalityEntity findModalityByPriceList(Set<PriceModalityEntity> modalityEntities, String priceListId){
+    private PriceModalityEntity findModalityByPriceList(Set<PriceModalityEntity> modalityEntities, String priceListId) {
         return modalityEntities.stream().filter(item -> priceListId.equals(item.getPriceListId()))
                 .findFirst().orElse(null);
     }
