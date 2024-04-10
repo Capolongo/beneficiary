@@ -65,11 +65,11 @@ class ReservationServiceTest {
                         .collect(Collectors.toSet())))
                 .thenReturn(Optional.empty());
 
-        when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
+        when(connectorPartnersProxy.createReserve(any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
         when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
 
-        var response = reservationService.createOrder(requestMock, transactionId, "123", "WEB", "price");
+        var response = reservationService.createOrder(requestMock, transactionId, "123", "WEB", "price", "");
 
         assertNotNull(response);
     }
@@ -89,7 +89,7 @@ class ReservationServiceTest {
         );
         var connectorReservationResponse = buildPartnerReservationResponse("LIVPNR-1007", segmentsPartnersId);
 
-        when(connectorPartnersProxy.getReservation(any(), any(), any(), any())).thenReturn(connectorReservationResponse);
+        when(connectorPartnersProxy.getReservation(any(), any(), any(), any(), anyString())).thenReturn(connectorReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
 
 
@@ -107,7 +107,7 @@ class ReservationServiceTest {
                         .collect(Collectors.toSet())))
                 .thenReturn(Optional.of(order));
         when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
-        var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price");
+        var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", "");
         assertNotNull(response);
     }
 
@@ -125,7 +125,7 @@ class ReservationServiceTest {
         );
         var connectorReservationResponse = buildPartnerReservationResponse("LIVPNR-9001", segmentsPartnersId);
 
-        when(connectorPartnersProxy.getReservation(any(), any(), any(), any())).thenReturn(connectorReservationResponse);
+        when(connectorPartnersProxy.getReservation(any(), any(), any(), any(), anyString())).thenReturn(connectorReservationResponse);
 
 
         var order = this.buildOrderEntity(
@@ -142,7 +142,7 @@ class ReservationServiceTest {
                         .collect(Collectors.toSet())))
                 .thenReturn(Optional.of(order));
         when(orderService.save(any())).thenReturn(order);
-        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, transactionId, "123", "WEB", "price"));
+        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", ""));
         assertAll(
                 () -> assertEquals(ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, exception.getOrderFlightErrorType()),
                 () -> verify(orderService, times(1)).save(any())
@@ -177,7 +177,7 @@ class ReservationServiceTest {
                         .collect(Collectors.toSet())))
                 .thenReturn(Optional.of(order));
 
-        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, transactionId, "123", "WEB", "price"));
+        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", ""));
         assertEquals(ORDER_FLIGHT_ORDER_STATUS_INVALID_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
 
@@ -191,7 +191,7 @@ class ReservationServiceTest {
 
         var partnerReservationResponse = buildPartnerReservationResponse("LIVPNR-1007", segmentsPartnersId);
         when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
-        when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
+        when(connectorPartnersProxy.createReserve(any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(segmentsPartnersId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
         var order = this.buildOrderEntity(Set.of(this.buildOrderItem(id, commerceItemId, segmentsPartnersId, "cvc_flight")), transactionId, "LIVPNR-1006");
         when(orderService.findByCommerceOrderIdOrItemsCommerceItemsId(
@@ -202,7 +202,7 @@ class ReservationServiceTest {
                         .collect(Collectors.toSet())))
                 .thenReturn(Optional.of(order));
         when(orderService.save(any())).thenReturn(order);
-        var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price");
+        var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", "");
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertEquals(transactionId, response.transactionId())
@@ -216,7 +216,7 @@ class ReservationServiceTest {
         var segmentsPartnersId = "asdf";
 
         var partnerReservationResponse = buildPartnerReservationResponse("LIVPNR-1007", segmentsPartnersId);
-        when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
+        when(connectorPartnersProxy.createReserve(any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
         when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(segmentsPartnersId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
 
@@ -237,7 +237,7 @@ class ReservationServiceTest {
                         .collect(Collectors.toSet())))
                 .thenReturn(Optional.of(order));
         when(orderService.save(any())).thenReturn(order);
-        var response = this.reservationService.createOrder(request, "123", "123", "WEB", "price");
+        var response = this.reservationService.createOrder(request, "123", "123", "WEB", "price", "");
 
         assertAll(
                 () -> assertNotNull(response),
@@ -265,7 +265,7 @@ class ReservationServiceTest {
                         .map(ReservationItem::getCommerceItemId)
                         .collect(Collectors.toSet())))
                 .thenReturn(Optional.of(order));
-        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price"));
+        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price", ""));
         assertEquals(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
 
@@ -288,7 +288,7 @@ class ReservationServiceTest {
                         .map(ReservationItem::getCommerceItemId)
                         .collect(Collectors.toSet())))
                 .thenReturn(Optional.of(order));
-        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price"));
+        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price", ""));
         assertEquals(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
 
@@ -307,7 +307,7 @@ class ReservationServiceTest {
                         .map(ReservationItem::getCommerceItemId)
                         .collect(Collectors.toSet())))
                 .thenThrow(PersistenceException.class);
-        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price"));
+        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price", ""));
         assertEquals(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
 

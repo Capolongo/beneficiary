@@ -38,7 +38,7 @@ class ConfirmationControllerTest {
     String id = "id";
 
     RequiredHeaders requiredHeaders = new RequiredHeaders("", "");
-    when(confirmationService.confirmOrder(anyString(), any(ConfirmOrderRequest.class), requiredHeaders)).thenReturn(responseBody);
+    when(confirmationService.confirmOrder(anyString(), any(ConfirmOrderRequest.class), any(RequiredHeaders.class))).thenReturn(responseBody);
 
     ResponseEntity<ConfirmOrderResponse> response = controller.confirmOrder(id, requestBody, "", "");
 
