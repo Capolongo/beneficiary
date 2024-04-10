@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import static br.com.livelo.orderflight.constants.DynatraceConstants.STATUS;
 import static br.com.livelo.orderflight.enuns.StatusLivelo.INITIAL;
-import static br.com.livelo.orderflight.enuns.StatusLivelo.PROCESSING;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_ORDER_STATUS_INVALID_BUSINESS_ERROR;
 
@@ -62,7 +61,7 @@ public class ReservationServiceImpl implements ReservationService {
                 if (this.isSameOrderItems(request, orderOptional)) {
                     partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), request.getSegmentsPartnerIds());
 
-                    if (!PROCESSING.getCode().equals(partnerReservationResponse.getStatus().getCode())) {
+                    if (!INITIAL.getCode().equals(partnerReservationResponse.getStatus().getCode())) {
                         this.updateStatus(order, partnerReservationResponse);
                         throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, null, null);
                     }
