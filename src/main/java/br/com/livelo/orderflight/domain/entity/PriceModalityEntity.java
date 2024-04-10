@@ -21,6 +21,9 @@ public class PriceModalityEntity {
     private Long id;
     private BigDecimal amount;
     private BigDecimal pointsAmount;
+    private Float multiplier;
+    private Float multiplierAccrual;
+    private Float markup;
     private Double accrualPoints;
     private String priceListId;
 }

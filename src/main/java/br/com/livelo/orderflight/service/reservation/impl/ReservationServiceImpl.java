@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,8 +51,10 @@ public class ReservationServiceImpl implements ReservationService {
 
             OrderItemUtils.hasMoreThanOneTravel(request.getItems());
 
-            var commerceItemsIds = request.getItems().stream().map(ReservationItem::getCommerceItemId).collect(Collectors.toSet());
-            var orderOptional = this.orderService.findByCommerceOrderIdOrItemsCommerceItemsId(request.getCommerceOrderId(), commerceItemsIds);
+            var commerceItemsIds = request.getItems().stream().map(ReservationItem::getCommerceItemId).collect(Collectors.toList());
+            commerceItemsIds.add(request.getCommerceOrderId());
+
+            var orderOptional = this.orderService.findByCommerceOrderIdIn(commerceItemsIds);
             if (orderOptional.isPresent()) {
                 order = orderOptional.get();
                 this.isOrderStatusInitial(order);
@@ -62,6 +65,10 @@ public class ReservationServiceImpl implements ReservationService {
                     if (!PROCESSING.getCode().equals(partnerReservationResponse.getStatus().getCode())) {
                         this.updateStatus(order, partnerReservationResponse);
                         throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, null, null);
+                    }
+
+                    if (!order.getCommerceOrderId().equals(request.getCommerceOrderId())) {
+                        order.setCommerceOrderId(request.getCommerceOrderId());
                     }
                     log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
                 } else {
@@ -179,43 +186,88 @@ public class ReservationServiceImpl implements ReservationService {
                     if (orderService.isFlightItem(item)) {
                         item.getPrice().setPointsAmount(clientPrice.getFlight().getPointsAmount());
                         item.getPrice().setAmount(clientPrice.getFlight().getAmount());
+                        item.getPrice().setMultiplier(clientPrice.getFlight().getMultiplier());
+                        item.getPrice().setMultiplierAccrual(clientPrice.getFlight().getMultiplierAccrual());
+                        item.getPrice().setMarkup(clientPrice.getFlight().getMarkup());
                         item.getPrice().setAccrualPoints(clientPrice.getAccrualPoints());
 
                         if (item.getPrice().getPricesModalities() == null) {
-                            this.buildPricesModalities(prices, item);
+                            this.buildPricesModalities(
+                                    prices,
+                                    item,
+                                    clientPrice.getFlight().getAmount(),
+                                    clientPrice.getFlight().getPointsAmount(),
+                                    clientPrice.getFlight().getMultiplier(),
+                                    clientPrice.getFlight().getMultiplierAccrual(),
+                                    clientPrice.getFlight().getMarkup()
+                            );
                         } else {
-                            this.setPricesModalitiesValues(prices, item);
+                            this.setPricesModalitiesValues(
+                                    prices,
+                                    item,
+                                    clientPrice.getFlight().getAmount(),
+                                    clientPrice.getFlight().getPointsAmount(),
+                                    clientPrice.getFlight().getMultiplier(),
+                                    clientPrice.getFlight().getMultiplierAccrual(),
+                                    clientPrice.getFlight().getMarkup()
+                            );
                         }
 
                     }
+
                     if (!orderService.isFlightItem(item)) {
                         item.getPrice().setPointsAmount(clientPrice.getTaxes().getPointsAmount());
+                        item.getPrice().setMultiplier(clientPrice.getTaxes().getMultiplier());
+                        item.getPrice().setMultiplierAccrual(clientPrice.getTaxes().getMultiplierAccrual());
+                        item.getPrice().setMarkup(clientPrice.getTaxes().getMarkup());
                         item.getPrice().setAmount(clientPrice.getTaxes().getAmount());
 
                         if (item.getPrice().getPricesModalities() == null) {
-                            this.buildPricesModalities(prices, item);
+                            this.buildPricesModalities(
+                                    prices,
+                                    item,
+                                    clientPrice.getTaxes().getAmount(),
+                                    clientPrice.getTaxes().getPointsAmount(),
+                                    clientPrice.getTaxes().getMultiplier(),
+                                    clientPrice.getTaxes().getMultiplierAccrual(),
+                                    clientPrice.getTaxes().getMarkup()
+                            );
                         } else {
-                            this.setPricesModalitiesValues(prices, item);
+                            this.setPricesModalitiesValues(
+                                    prices,
+                                    item,
+                                    clientPrice.getTaxes().getAmount(),
+                                    clientPrice.getTaxes().getPointsAmount(),
+                                    clientPrice.getTaxes().getMultiplier(),
+                                    clientPrice.getTaxes().getMultiplierAccrual(),
+                                    clientPrice.getTaxes().getMarkup()
+                            );
                         }
 
                     }
                 });
     }
 
-    private void setPricesModalitiesValues(List<PricingCalculatePrice> prices, OrderItemEntity item) {
+    private void setPricesModalitiesValues(List<PricingCalculatePrice> prices, OrderItemEntity item, BigDecimal amount, BigDecimal pointsAmount, Float multiplier, Float multiplierAccrual, Float markup) {
         prices.forEach(priceItem -> {
             PriceModalityEntity priceModalityEntity = findModalityByPriceList(item.getPrice().getPricesModalities(), priceItem.getPriceListId());
-            priceModalityEntity.setAmount(priceItem.getTaxes().getAmount());
+            priceModalityEntity.setAmount(amount);
+            priceModalityEntity.setMultiplier(multiplier);
+            priceModalityEntity.setMultiplierAccrual(multiplierAccrual);
+            priceModalityEntity.setMarkup(markup);
             priceModalityEntity.setAccrualPoints(priceItem.getAccrualPoints().doubleValue());
-            priceModalityEntity.setPointsAmount(priceItem.getTaxes().getPointsAmount());
+            priceModalityEntity.setPointsAmount(pointsAmount);
         });
     }
 
-    private void buildPricesModalities(List<PricingCalculatePrice> prices, OrderItemEntity item) {
+    private void buildPricesModalities(List<PricingCalculatePrice> prices, OrderItemEntity item, BigDecimal amount, BigDecimal pointsAmount, Float multiplier, Float multiplierAccrual, Float markup) {
         var pricesModalities = prices.stream()
                 .map(price -> PriceModalityEntity.builder()
-                        .amount(price.getFlight().getAmount())
-                        .pointsAmount(price.getFlight().getPointsAmount())
+                        .amount(amount)
+                        .pointsAmount(pointsAmount)
+                        .multiplier(multiplier)
+                        .multiplierAccrual(multiplierAccrual)
+                        .markup(markup)
                         .accrualPoints(price.getAccrualPoints().doubleValue())
                         .priceListId(price.getPriceListId())
                         .build())

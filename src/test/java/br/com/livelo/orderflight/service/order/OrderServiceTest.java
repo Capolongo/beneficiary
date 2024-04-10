@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -96,10 +97,10 @@ class OrderServiceTest {
     }
 
     @Test
-    void shouldFindOrderByCommerceOrderId() {
+    void shouldFindOrderByCommerceOrderIdIn() {
         var orderMock = mock(OrderEntity.class);
-        when(this.orderRepository.findByCommerceOrderId(anyString())).thenReturn(Optional.of(orderMock));
-        var response = this.orderService.findByCommerceOrderId("123");
+        when(this.orderRepository.findByCommerceOrderIdIn(any())).thenReturn(Optional.of(orderMock));
+        var response = this.orderService.findByCommerceOrderIdIn(List.of("123"));
 
         assertAll(
                 () -> assertTrue(response.isPresent()),
@@ -107,20 +108,9 @@ class OrderServiceTest {
     }
 
     @Test
-    void shouldFindOrderByCommerceOrderIdOrCommerceItemIds() {
-        var orderMock = mock(OrderEntity.class);
-        when(this.orderRepository.findByCommerceOrderIdOrItemsCommerceItemsId(anyString(), any())).thenReturn(Optional.of(orderMock));
-        var response = this.orderService.findByCommerceOrderIdOrItemsCommerceItemsId("123", new HashSet<>());
-
-        assertAll(
-                () -> assertTrue(response.isPresent()),
-                () -> assertInstanceOf(OrderEntity.class, response.get()));
-    }
-
-    @Test
-    void shouldntFindOrderByCommerceOrderId() {
-        when(this.orderRepository.findByCommerceOrderId(anyString())).thenReturn(Optional.empty());
-        var response = this.orderService.findByCommerceOrderId("123");
+    void shouldntFindOrderByCommerceOrderIdIn() {
+        when(this.orderRepository.findByCommerceOrderIdIn(any())).thenReturn(Optional.empty());
+        var response = this.orderService.findByCommerceOrderIdIn(List.of("123"));
 
         assertTrue(!response.isPresent());
     }

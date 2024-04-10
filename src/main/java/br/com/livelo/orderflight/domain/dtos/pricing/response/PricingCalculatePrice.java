@@ -17,7 +17,4 @@ public class PricingCalculatePrice {
     private PricingCalculateTaxes taxes;
     private BigDecimal accrualPoints;
     private PricingCalculatePricesDescription pricesDescription;
-    private Float multiplier;
-    private Double multiplierAccrual;
-    private Float markup;
 }
