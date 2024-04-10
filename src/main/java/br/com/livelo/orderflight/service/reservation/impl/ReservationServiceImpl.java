@@ -42,7 +42,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
 
-    public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId) {
+    public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId, String userId) {
         log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {}", request, transactionId, listPriceId);
         OrderEntity order = null;
         try {
@@ -57,7 +57,7 @@ public class ReservationServiceImpl implements ReservationService {
                 this.isOrderStatusInitial(order);
 
                 if (this.isSameOrderItems(request, orderOptional)) {
-                    partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), request.getSegmentsPartnerIds());
+                    partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), request.getSegmentsPartnerIds(), userId);
 
                     if (!PROCESSING.getCode().equals(partnerReservationResponse.getStatus().getCode())) {
                         this.updateStatus(order, partnerReservationResponse);
@@ -72,7 +72,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             if (!this.existsReservationInPartner(partnerReservationResponse)) {
                 var partnerReservationRequest = reservationMapper.toPartnerReservationRequest(request);
-                partnerReservationResponse = partnerConnectorProxy.createReserve(partnerReservationRequest, transactionId);
+                partnerReservationResponse = partnerConnectorProxy.createReserve(partnerReservationRequest, transactionId, userId);
             }
 
             if (this.isNewOrder(order)) {
@@ -127,8 +127,8 @@ public class ReservationServiceImpl implements ReservationService {
         return getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse);
     }
 
-    private PartnerReservationResponse getPartnerOrder(String partnerOrderId, String transactionId, String partnerCode, List<String> segmentsPartnerIds) {
-        return partnerConnectorProxy.getReservation(partnerOrderId, transactionId, partnerCode, segmentsPartnerIds);
+    private PartnerReservationResponse getPartnerOrder(String partnerOrderId, String transactionId, String partnerCode, List<String> segmentsPartnerIds, String userId) {
+        return partnerConnectorProxy.getReservation(partnerOrderId, transactionId, partnerCode, segmentsPartnerIds, userId);
     }
 
     private List<PricingCalculatePrice> getPricingCalculateByCommerceOrderId(String commerceOrderId, List<PricingCalculateResponse> pricingCalculateResponses) {
