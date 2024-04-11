@@ -69,7 +69,7 @@ public class ReservationServiceImpl implements ReservationService {
                     if (!order.getCommerceOrderId().equals(request.getCommerceOrderId())) {
                         order.setCommerceOrderId(request.getCommerceOrderId());
                     }
-                    log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
+                    log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {} IsInternational: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId, partnerReservationResponse.getItems().getFirst().getTravelInfo().getIsInternational());
                 } else {
                     this.orderService.delete(order);
                     order = null;
@@ -91,7 +91,7 @@ public class ReservationServiceImpl implements ReservationService {
             order = this.orderService.save(order);
 
             MDC.put(STATUS, "SUCCESS");
-            log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {}", order, transactionId, listPriceId);
+            log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {} IsInternational: {}", order, transactionId, listPriceId, partnerReservationResponse.getItems().getFirst().getTravelInfo().getIsInternational());
             MDC.clear();
             return reservationMapper.toReservationResponse(order, 15);
         } catch (OrderFlightException e) {

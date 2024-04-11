@@ -20,13 +20,16 @@ public class PricingCalculateRequestMapper {
 
     public static PricingCalculateRequest toPricingCalculateRequest(PartnerReservationResponse partnerReservationResponse, String commerceOrderId) {
         var partnerReservationItemTypeFlight = getItemTypeFlight(partnerReservationResponse);
+
+        Boolean isInternational = partnerReservationResponse.getItems().getFirst().getTravelInfo().getIsInternational();
+
         return PricingCalculateRequest.builder()
-                .travelInfo(buildTravelInfo(partnerReservationItemTypeFlight))
+                .travelInfo(buildTravelInfo(partnerReservationItemTypeFlight, isInternational))
                 .items(buildListPricingCalculateItems(partnerReservationResponse, partnerReservationItemTypeFlight, commerceOrderId))
                 .build();
     }
 
-    private static PricingCalculateTravelInfo buildTravelInfo(PartnerReservationItem partnerReservationItemTypeFlight) {
+    private static PricingCalculateTravelInfo buildTravelInfo(PartnerReservationItem partnerReservationItemTypeFlight, Boolean isInternational) {
         return PricingCalculateTravelInfo.builder()
                 .type(partnerReservationItemTypeFlight.getTravelInfo().getType())
                 .adt(partnerReservationItemTypeFlight.getTravelInfo().getAdultQuantity())
@@ -34,6 +37,7 @@ public class PricingCalculateRequestMapper {
                 .inf(partnerReservationItemTypeFlight.getTravelInfo().getBabyQuantity())
                 .cabinClass(partnerReservationItemTypeFlight.getTravelInfo().getTypeClass())
                 .stageJourney(RESERVATION)
+                .isInternational(isInternational)
                 .build();
     }
 
