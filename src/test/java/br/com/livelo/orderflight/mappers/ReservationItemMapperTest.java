@@ -10,6 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationItemMapperTest {
@@ -49,6 +50,7 @@ class ReservationItemMapperTest {
     void shouldMapTravelInfo() {
         var requestMock = mock(ReservationRequest.class);
         var partnerReservationItemMock = mock(PartnerReservationItem.class);
+        when(partnerReservationItemMock.getType()).thenReturn("FLIGHT");
         var response = this.mapper.mapTravelInfo(requestMock, partnerReservationItemMock);
         assertNotNull(response);
     }

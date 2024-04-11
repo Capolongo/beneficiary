@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,6 +37,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
+    public static final String TAX = "tax";
     private final OrderRepository orderRepository;
     private final OrderProcessMapper orderMapper;
     private final ItemRepository itemRepository;
@@ -66,7 +68,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public OrderItemEntity getFlightFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
-        Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(item -> !item.getSkuId().toLowerCase().contains("tax")).findFirst();
+        Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(this::isFlightItem).findFirst();
 
         if (itemFlight.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;
@@ -76,8 +78,12 @@ public class OrderServiceImpl implements OrderService {
         return itemFlight.get();
     }
 
+    public boolean isFlightItem(OrderItemEntity item) {
+        return !item.getSkuId().toLowerCase().contains(TAX);
+    }
+
     public OrderItemEntity getTaxFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
-        Optional<OrderItemEntity> itemTax = orderItemsEntity.stream().filter(item -> item.getSkuId().toLowerCase().contains("tax")).findFirst();
+        Optional<OrderItemEntity> itemTax = orderItemsEntity.stream().filter(item -> !isFlightItem(item)).findFirst();
 
         if (itemTax.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;
@@ -88,9 +94,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public void orderDetailLog(String invokedBy, String newStatusCode, OrderEntity order) {
-        OrderItemEntity flightItem =  getFlightFromOrderItems(order.getItems());
-        OrderItemEntity taxItem =  getTaxFromOrderItems(order.getItems());
-        log.info("OrderService.orderDetailLog - " + invokedBy + " - orderId: [{}], partnerCode: [{}], statusCode: [{}], amount: [{}], pointsAmount: [{}], partnerAmount: [{}], flightAmount: [{}], flightPointsAmount: [{}], flightPartnerAmount: [{}], taxAmount: [{}], taxPointsAmount: [{}], taxPartnerAmount: [{}],", order.getId(), order.getPartnerCode(), newStatusCode, order.getPrice().getAmount(), order.getPrice().getPointsAmount(), order.getPrice().getPartnerAmount(), flightItem.getPrice().getAmount(),  flightItem.getPrice().getPointsAmount(),  flightItem.getPrice().getPartnerAmount(), taxItem.getPrice().getAmount(),  taxItem.getPrice().getPointsAmount(),  taxItem.getPrice().getPartnerAmount());
+        OrderItemEntity flightItem = getFlightFromOrderItems(order.getItems());
+        OrderItemEntity taxItem = getTaxFromOrderItems(order.getItems());
+        log.info("OrderService.orderDetailLog - " + invokedBy + " - orderId: [{}], partnerCode: [{}], statusCode: [{}], amount: [{}], pointsAmount: [{}], partnerAmount: [{}], flightAmount: [{}], flightPointsAmount: [{}], flightPartnerAmount: [{}], taxAmount: [{}], taxPointsAmount: [{}], taxPartnerAmount: [{}],", order.getId(), order.getPartnerCode(), newStatusCode, order.getPrice().getAmount(), order.getPrice().getPointsAmount(), order.getPrice().getPartnerAmount(), flightItem.getPrice().getAmount(), flightItem.getPrice().getPointsAmount(), flightItem.getPrice().getPartnerAmount(), taxItem.getPrice().getAmount(), taxItem.getPrice().getPointsAmount(), taxItem.getPrice().getPartnerAmount());
     }
 
     public boolean isSameStatus(String currentStatus, String newStatus) {
@@ -135,8 +141,8 @@ public class OrderServiceImpl implements OrderService {
         order.setSubmittedDate(LocalDateTime.parse(date));
     }
 
-    public Optional<OrderEntity> findByCommerceOrderId(String commerceOrderId) {
-        return this.orderRepository.findByCommerceOrderId(commerceOrderId);
+    public Optional<OrderEntity> findByCommerceOrderIdIn(List<String> commerceOrderId) {
+        return this.orderRepository.findByCommerceOrderIdIn(commerceOrderId);
     }
 
     public void delete(OrderEntity order) {
@@ -182,6 +188,7 @@ public class OrderServiceImpl implements OrderService {
         UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
         liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
     }
+
     private Pageable pageRequestOf(Integer page, Integer rows) throws OrderFlightException {
         if (page <= 0) {
             throw new OrderFlightException(OrderFlightErrorType.VALIDATION_INVALID_PAGINATION,

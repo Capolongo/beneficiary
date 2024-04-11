@@ -12,9 +12,9 @@ import java.math.BigDecimal;
 public class PricingCalculatePrice {
     private String priceListId;
     private BigDecimal amount;
-    private Integer pointsAmount;
+    private BigDecimal pointsAmount;
     private PricingCalculateFlight flight;
     private PricingCalculateTaxes taxes;
-    private Integer accrualPoints;
+    private BigDecimal accrualPoints;
     private PricingCalculatePricesDescription pricesDescription;
 }

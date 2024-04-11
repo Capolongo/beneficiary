@@ -1,18 +1,13 @@
 package br.com.livelo.orderflight.domain.entity;
 
-import java.math.BigDecimal;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.Set;
 
 @Data
 @Entity
@@ -26,11 +21,18 @@ public class OrderItemPriceEntity extends BaseEntity {
     @Id
     private Long id;
     private String listPrice;
-    private BigDecimal amount; // RECUPERAR NA PRECIFICAÇÃO
-    private BigDecimal pointsAmount; // RECUPERAR NA PRECIFICAÇÃO
-    private BigDecimal accrualPoints; // RECUPERAR NA PRECIFICAÇÃO
+    private BigDecimal amount;
+    private BigDecimal pointsAmount;
+    private BigDecimal accrualPoints;
+    private Float multiplier;
+    private Float multiplierAccrual;
+    private Float markup;
     private BigDecimal partnerAmount;
     private String priceListId;
     @Lob
     private String priceRule;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "ORDER_ITEM_PRICE_ID")
+    @OrderBy("priceListId asc")
+    private Set<PriceModalityEntity> pricesModalities;
 }

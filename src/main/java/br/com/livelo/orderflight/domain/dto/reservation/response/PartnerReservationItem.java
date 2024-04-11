@@ -13,6 +13,7 @@ import lombok.*;
 @ToString
 public class PartnerReservationItem {
     private String type;
+    private String commerceItemId;
     private Integer quantity;
     private BigDecimal listPrice;
     private BigDecimal amount;

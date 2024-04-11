@@ -21,7 +21,7 @@ public class OrderPriceEntity extends BaseEntity {
     @SequenceGenerator(name = "ORDERS_PRICE_SEQ", sequenceName = "ORDERS_PRICE_SEQ", allocationSize = 1)
     @Id
     private Long id;
-    private Double accrualPoints; //RECUPERAR DA PRECIFICAÇÃO
+    private BigDecimal accrualPoints; //RECUPERAR DA PRECIFICAÇÃO
     private BigDecimal amount; //RECUPERAR DA PRECIFICAÇÃO
     private BigDecimal pointsAmount; //RECUPERAR DA PRECIFICAÇÃO
     private BigDecimal partnerAmount;
@@ -29,6 +29,6 @@ public class OrderPriceEntity extends BaseEntity {
     private String priceListDescription;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "ORDER_PRICE_ID")
+    @OrderBy("type asc")
     private Set<OrderPriceDescriptionEntity> ordersPriceDescription;
-
 }

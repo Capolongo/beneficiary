@@ -7,9 +7,9 @@ import lombok.Data;
 @Builder
 public class PricingCalculateTravelInfo{
 	private String type;
-	private Integer adultQuantity;
-	private Integer childQuantity;
-	private Integer babyQuantity;
-	private String typeClass;
+	private Integer adt;
+	private Integer chd;
+	private Integer inf;
+	private String cabinClass;
 	private String stageJourney;
 }

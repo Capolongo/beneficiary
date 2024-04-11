@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 public class PricingCalculateFlight {
     private BigDecimal pointsAmount;
     private BigDecimal amount;
+    private Float multiplier;
+    private Float multiplierAccrual;
+    private Float markup;
     private String passengerType;
     private Integer passengerCount;
 }

@@ -17,6 +17,5 @@ public record ReservationResponse(String orderId,
         int expirationTimer,
         ReservationResponsePrice price,
         Set<ReservationResponseItem> items,
-        Set<ReservationResponseOrderStatus> statusHistory,
-        ReservationResponseOrderStatus status) {
+        ReservationResponseOrderStatus currentStatus) {
 }

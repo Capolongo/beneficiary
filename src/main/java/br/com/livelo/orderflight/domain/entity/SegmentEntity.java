@@ -20,6 +20,7 @@ public class SegmentEntity extends BaseEntity {
     @Id
     private Long id;
 
+    @Lob
     private String partnerId;
 
     private String step;
@@ -30,15 +31,18 @@ public class SegmentEntity extends BaseEntity {
 
     private String originIata;
 
-    private String originDescription;
-
     private String destinationIata;
-
-    private String destinationDescription;
 
     private LocalDateTime departureDate;
 
     private LocalDateTime arrivalDate;
+    private String airlineIata;
+    private String airlineDescription;
+    private String originCity;
+    private String originAirport;
+    private String destinationAirport;
+    private String destinationCity;
+    private String cabinClass;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "SEGMENT_ID")
@@ -54,6 +58,7 @@ public class SegmentEntity extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "SEGMENT_ID")
+    @OrderBy("departureDate ASC")
     private Set<FlightLegEntity> flightsLegs;
 
 }

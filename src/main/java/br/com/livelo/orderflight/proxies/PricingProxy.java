@@ -27,12 +27,11 @@ public class PricingProxy {
     public List<PricingCalculateResponse> calculate(PricingCalculateRequest request) {
         try {
             log.info("PricingProxy.calculate - call pricing calculate. request: {}", request);
-            ResponseEntity<PricingCalculateResponse[]> response = pricingClient.calculate(request);
+            ResponseEntity<List<PricingCalculateResponse>> response = pricingClient.calculate(request);
             log.info("PricingProxy.calculate -  pricing calculate response: {}", response);
 
-            var body = ofNullable(response.getBody())
+            return ofNullable(response.getBody())
                     .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, null, "PricingProxy.calculate - body pricing is null!"));
-            return Arrays.stream(body).toList();
         } catch (FeignException e) {
             var status = HttpStatus.valueOf(e.status());
             var message = String.format("PricingProxy.calculate - Error on pricing call, HttpStatus: %s", status);

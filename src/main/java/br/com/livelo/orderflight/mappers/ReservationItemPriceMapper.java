@@ -7,8 +7,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ReservationItemPriceMapper {
-    String FLIGHT_TYPE = "type_flight";
-    String TAX_TYPE = "type_flight_tax";
 
     @Mapping(target = "partnerAmount", source = "partnerReservationItem.amount")
     @Mapping(target = "accrualPoints", expression = "java(java.math.BigDecimal.ZERO)")

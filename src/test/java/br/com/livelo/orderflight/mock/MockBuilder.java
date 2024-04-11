@@ -136,9 +136,7 @@ public class MockBuilder {
                 .stops(10)
                 .flightDuration(120)
                 .originIata("REC")
-                .originDescription("Aeroporto do recife")
                 .destinationIata("GRU")
-                .destinationDescription("Aeroporto de guarulhos")
                 .cancelationRules(Set.of(ConfirmationOrderCancaletionRulesResponse.builder().build()))
                 .changeRules(Set.of(ConfirmationOrderChangeRulesResponse.builder().build()))
                 .luggages(Set.of(ConfirmationOrderLuggagesResponse.builder().build()))
@@ -196,11 +194,14 @@ public class MockBuilder {
                 .build();
     }
 
-    public static ResponseEntity<PricingCalculateResponse[]> pricingCalculateResponse(){
-        return  ResponseEntity.ok().body(new PricingCalculateResponse[]{PricingCalculateResponse.builder()
+    public static ResponseEntity<List<PricingCalculateResponse>> pricingCalculateResponse(){
+        List<PricingCalculateResponse> prices = new ArrayList<>();
+        prices.add(PricingCalculateResponse.builder()
                 .prices(
                         new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price").build()))
-                ).build()});
+                ).build()
+        );
+        return  ResponseEntity.ok().body(prices);
     }
 
     public static ResponseEntity<ConnectorConfirmOrderResponse> connectorConfirmOrderResponse() {
@@ -261,6 +262,41 @@ public class MockBuilder {
                 .processCounters(processCounter)
                 .build();
     }
+
+    public static OrderEntity orderEntityWithMoreFlight() {
+        Set<OrderItemEntity> items = new HashSet<>();
+        items.add(orderItemEntity());
+        items.add(orderItemEntity());
+
+        Set<OrderStatusEntity> statusHistory = new HashSet<>();
+        statusHistory.add(statusInitial());
+
+        Set<ProcessCounterEntity> processCounter = new HashSet<>();
+        processCounter.add(ProcessCounterEntity.builder().process("getConfirmation")
+                .count(10)
+                .build());
+
+        return OrderEntity.builder()
+                .id("id")
+                .commerceOrderId("commerceOrderId")
+                .partnerOrderId("partnerOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate(LocalDateTime.now())
+                .channel("channel")
+                .tierCode("tierCode")
+                .originOrder("originOrder")
+                .customerIdentifier("customerIdentifier")
+                .transactionId("transactionId")
+                .expirationDate(LocalDateTime.now())
+                .price(orderPriceEntity())
+                .items(items)
+                .statusHistory(statusHistory)
+                .currentStatus(statusInitial())
+                .lastModifiedDate(ZonedDateTime.now())
+                .processCounters(processCounter)
+                .build();
+    }
+
 
     public static OrderEntity orderEntityAlreadyConfirmed() {
         Set<OrderItemEntity> items = new HashSet<>();
@@ -349,9 +385,7 @@ public class MockBuilder {
                 .stops(10)
                 .flightDuration(120)
                 .originIata("REC")
-                .originDescription("Aeroporto do recife")
                 .destinationIata("GRU")
-                .destinationDescription("Aeroporto de guarulhos")
                 .cancelationRules(Set.of(CancelationRuleEntity.builder().build()))
                 .changeRules(Set.of(ChangeRuleEntity.builder().build()))
                 .luggages(Set.of(LuggageEntity.builder().build()))
@@ -364,7 +398,7 @@ public class MockBuilder {
         orderPriceDescriptions.add(orderPriceDescriptionEntity());
         return OrderPriceEntity.builder()
                 .id(1L)
-                .accrualPoints(1000.0)
+                .accrualPoints(BigDecimal.valueOf(1000.0))
                 .amount(BigDecimal.valueOf(1000))
                 .pointsAmount(BigDecimal.valueOf(1000))
                 .partnerAmount(BigDecimal.valueOf(1000))

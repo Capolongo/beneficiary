@@ -15,10 +15,11 @@ import org.mapstruct.factory.Mappers;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static br.com.livelo.orderflight.constants.AppConstants.TYPE_FLIGHT_TAX;
+
 
 @Mapper(componentModel = "spring", uses = {ReservationItemPriceMapper.class, ReservationTravelInfoEntityMapper.class, ReservationSegmentsMapper.class})
 public interface ReservationItemMapper {
-    String TAX_TYPE = "type_flight_tax";
 
     @Mapping(target = "commerceItemId", source = "reservationItem.commerceItemId")
     @Mapping(target = "productId", source = "reservationItem.productId")
@@ -36,7 +37,7 @@ public interface ReservationItemMapper {
     default TravelInfoEntity mapTravelInfo(ReservationRequest reservationRequest, PartnerReservationItem partnerReservationItem) {
         var mapper = Mappers.getMapper(ReservationTravelInfoEntityMapper.class);
 
-        if (TAX_TYPE.equals(partnerReservationItem.getType())) {
+        if (partnerReservationItem.getType().toLowerCase().contains(TYPE_FLIGHT_TAX)) {
             return null;
         }
         return mapper.toReservationTravelInfoEntity(reservationRequest, partnerReservationItem.getTravelInfo());

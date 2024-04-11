@@ -27,11 +27,8 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(OrderFlightException.class)
     public ResponseEntity<ErrorResponse> handleException(OrderFlightException e) {
-        setDynatraceEntries(e);
-
         var message = ofNullable(e.getArgs()).orElse(e.getMessage());
         ofNullable(e.getOrderFlightErrorType().getLevel()).ifPresent(level -> this.logMessage(level, message, e.getOrderFlightErrorType(), e));
-        MDC.clear();
 
         return ResponseEntity.status(e.getOrderFlightErrorType().getStatus())
                 .body(this.buildError(e.getOrderFlightErrorType()));
@@ -46,11 +43,8 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ErrorResponse> handleException(MissingRequestHeaderException e) {
-        var message = String.format("Required header %s is missing!", e.getHeaderName());
-        this.logMessage(Level.ERROR, message, OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e);
 
-        return ResponseEntity.status(400)
-                .body(this.buildError(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR));
+        return ResponseEntity.status(400).body(this.buildError(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR));
     }
 
     private ErrorResponse buildError(OrderFlightErrorType orderFlightErrorType) {
@@ -58,8 +52,10 @@ public class RestExceptionHandler {
                 orderFlightErrorType.getDescription());
     }
 
-    private void logMessage(Level levelLog, String message, OrderFlightErrorType orderFlightErrorType, Exception e) {
+    private void logMessage(Level levelLog, String message, OrderFlightErrorType orderFlightErrorType, OrderFlightException e) {
+        setDynatraceEntries(e);
         log.atLevel(levelLog).log("errorType: {} message: {}", orderFlightErrorType.getCode(), message, e);
+        MDC.clear();
     }
 
 

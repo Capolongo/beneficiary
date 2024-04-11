@@ -14,9 +14,7 @@ public class ConfirmationOrderSegmentsResponse {
     private int stops;
     private int flightDuration;
     private String originIata;
-    private String originDescription;
     private String destinationIata;
-    private String destinationDescription;
     private LocalDateTime departureDate;
     private LocalDateTime arrivalDate;
     private Set<ConfirmationOrderFlightsLegsResponse> flightsLegs;

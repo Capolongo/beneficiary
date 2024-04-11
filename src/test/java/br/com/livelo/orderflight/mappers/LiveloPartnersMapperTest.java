@@ -4,13 +4,12 @@ import br.com.livelo.orderflight.domain.dtos.update.ItemDTO;
 import br.com.livelo.orderflight.domain.dtos.update.LegSummaryDTO;
 import br.com.livelo.orderflight.domain.dtos.update.StatusDTO;
 import br.com.livelo.orderflight.domain.dtos.update.UpdateOrderDTO;
-import br.com.livelo.orderflight.domain.entity.FlightLegEntity;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.*;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
@@ -31,6 +30,8 @@ class LiveloPartnersMapperTest {
         assertInstanceOf(ItemDTO.class, itemDTO);
     }
 
+
+
     @Test
     void shouldMapOrderStatusToStatusDTO() {
         OrderStatusEntity statusEntity = MockBuilder.statusInitial();
@@ -45,4 +46,29 @@ class LiveloPartnersMapperTest {
         assertInstanceOf(LegSummaryDTO.class, legSummary);
     }
 
+    @Test
+    void shouldReturnSeatClass() {
+        FlightLegEntity flightLeg = MockBuilder.flightLegEntity();
+        flightLeg.setFareBasis("ECONOMY");
+        var legSummary = liveloPartnersMapper.flightLegEntityToLegSummaryDTO(flightLeg);
+        assertInstanceOf(LegSummaryDTO.class, legSummary);
+    }
+
+    @Test
+    void shouldMapOrderToUpdateOrderDTOWithMoreItems() {
+        OrderEntity order = MockBuilder.orderEntity();
+        var item = MockBuilder.orderItemEntity();
+        item.setSkuId("flight");
+        item.getTravelInfo().setVoucher("helloworld");
+        item.getSegments().add(
+                SegmentEntity
+                        .builder()
+                        .luggages(Set.of(LuggageEntity.builder().type("TO_CHECK_IN").build()))
+                        .build()
+        );
+        order.getItems().add(item);
+
+        var updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
+        assertInstanceOf(UpdateOrderDTO.class, updateOrderDTO);
+    }
 }
