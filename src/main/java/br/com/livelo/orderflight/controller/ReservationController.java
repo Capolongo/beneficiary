@@ -3,6 +3,7 @@ package br.com.livelo.orderflight.controller;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
 import br.com.livelo.orderflight.service.reservation.impl.ReservationServiceImpl;
+import br.com.livelo.orderflight.utils.LogUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +35,9 @@ public class ReservationController {
         MDC.put(FLOW, RESERVATION.name());
         MDC.put(PARTNER, reservationRequest.getPartnerCode());
 
-        log.info("ReservationController.createReservation - Create reservation request: [{}]", reservationRequest);
+        log.info("ReservationController.createReservation - Create reservation request: [{}]", LogUtils.writeAsJson(reservationRequest));
         var response = reservationService.createOrder(reservationRequest, transactionId, customerId, channel, listPrice);
-        log.info("ReservationController.createReservation - Create reservation response: [{}]", response);
+        log.info("ReservationController.createReservation - Create reservation response: [{}]", LogUtils.writeAsJson(response));
         MDC.clear();
         return ResponseEntity.ok(response);
     }
