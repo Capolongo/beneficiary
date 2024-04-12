@@ -21,10 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_ORDER_STATUS_INVALID_BUSINESS_ERROR;
@@ -276,7 +273,7 @@ class ReservationServiceTest {
         var partnerReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
         when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
         when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
-        var request = this.buildResevationRequest(List.of(this.buildReservationItem(segmentsPartnersId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
+        var request = this.buildResevationRequest(Collections.singletonList(this.buildReservationItem(segmentsPartnersId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
         var order = this.buildOrderEntity(request.getCommerceOrderId(), Set.of(this.buildOrderItem(id, commerceItemId, segmentsPartnersId, "CVCFLIGHT")), transactionId, "LIVPNR-1006");
 
         var ids = request.getItems()
@@ -302,7 +299,7 @@ class ReservationServiceTest {
         var partnerReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
         when(connectorPartnersProxy.createReserve(any(), anyString())).thenReturn(partnerReservationResponse);
         when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
-        var request = this.buildResevationRequest(List.of(this.buildReservationItem(segmentsPartnersId, type, "CVCFLIGHT")), List.of(segmentsPartnersId, segmentsPartnersId));
+        var request = this.buildResevationRequest(Collections.singletonList(this.buildReservationItem(segmentsPartnersId, type, "CVCFLIGHT")), List.of(segmentsPartnersId, segmentsPartnersId));
 
         var order = this.buildOrderEntity(
                 request.getCommerceOrderId(),

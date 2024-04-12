@@ -15,6 +15,7 @@ linhas não pode ser maior que a quantidade configurada na variável `order.orde
 ## Regras:
 
 - Deve ser passado o `statusCode` como parâmetro na requisição, por exemplo, `statusCode=LIVPNR-1007`.
+- Opcionalmente pode ser passado o campo `limitArrivalDate`, para filtrar ordens com **items.segments.max(arrivalDate)** menor que o limite informado. Ex:  `limitArrivalDate=2024-01-01`
 - A página pode ser escolhida através do parâmetro `page` e deve ser maior que `0`. Por default o valor será a primeira página (`page=1`).
 - A quantidade de linhas pode ser escolhida através do parâmetro `rows`, e deve ser menor do que o valor da
   variável `order.orderProcessMaxRows` do `application.yml`, que é também o valor default.
@@ -24,6 +25,10 @@ linhas não pode ser maior que a quantidade configurada na variável `order.orde
 1. Retorno da página 1 de ordens no status `LIVPNR-1007`, contendo 12 linhas por página.
 
 `GET` /v1/orders/process?statusCode=LIVPNR-1007&page=1&rows=12
+
+2. Retorno da página 1 de ordens no status `LIVPNR-1030` e max(arrivalDate) menor que 2023-12-01, contendo 12 linhas por página.
+
+`GET` /v1/orders/process?statusCode=LIVPNR-1007&page=1&rows=12&limitArrivalDate=2023-12-01
 
 <details>
     <summary>Clique para ver o retorno</summary>
