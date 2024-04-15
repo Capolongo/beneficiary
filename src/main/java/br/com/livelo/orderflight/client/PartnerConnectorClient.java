@@ -26,7 +26,7 @@ public interface PartnerConnectorClient {
     @GetMapping
     ResponseEntity<PartnerReservationResponse> getReservation(
             URI baseUri,
-            @RequestParam(value = "id") String id,
+            @RequestHeader(value = "id") String id,
             @RequestHeader(value = "transactionId") String transactionId,
             @RequestHeader(value = "segmentsPartnerIds") List<String> segmentsPartnerIds
     );

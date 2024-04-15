@@ -82,7 +82,7 @@ public class ConnectorPartnersProxy {
         try {
             var webhook = this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.GETRESERVATION);
             var url = URI.create(webhook.getConnectorUrl());
-            ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId, segmentsPartnerIds, id);
+            ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId, segmentsPartnerIds);
             return response.getBody();
         } catch (FeignException e) {
             throw handleFeignException(e, "ConnectorPartnersProxy.getReservation: Error on partner get reservation connector calls. httpStatus: [%s] ResponseBody: [%s]");
