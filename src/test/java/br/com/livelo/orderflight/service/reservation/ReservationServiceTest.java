@@ -396,6 +396,7 @@ class ReservationServiceTest {
     private ReservationRequest buildResevationRequest(List<ReservationItem> reservationItems, List<String> segmentsPartnersId) {
         return ReservationRequest.builder()
                 .commerceOrderId("QWERT")
+                .partnerCode("CVC")
                 .items(reservationItems)
                 .segmentsPartnerIds(segmentsPartnersId)
                 .build();

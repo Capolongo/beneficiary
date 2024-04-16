@@ -22,10 +22,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
-
+import org.apache.commons.lang3.StringUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static br.com.livelo.orderflight.constants.DynatraceConstants.STATUS;
@@ -41,6 +42,9 @@ public class ReservationServiceImpl implements ReservationService {
     private final ConnectorPartnersProxy partnerConnectorProxy;
     private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
+
+    private static final int ORDER_ID_END_INDEX = 2;
+	private static final int ORDER_ITEM_START_INDEX = 1;
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId) {
         log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {}", request, transactionId, listPriceId);
@@ -88,6 +92,8 @@ public class ReservationServiceImpl implements ReservationService {
 
             var pricingCalculatePrice = this.priceOrder(request, partnerReservationResponse);
             this.setPrices(order, pricingCalculatePrice, listPriceId);
+
+            order.setItems(addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getId(), order.getItems()));
 
             order = this.orderService.save(order);
 
@@ -347,6 +353,27 @@ public class ReservationServiceImpl implements ReservationService {
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR,
                     "ReservationServiceImpl.hasSameTokens - Partner tokens are different!", null);
         }
+    }
+
+    private Set<OrderItemEntity> addPartnerOrderLinkIdToItems(String partnerCode, String orderId, Set<OrderItemEntity> items) {
+    AtomicInteger itemIndex = new AtomicInteger(ORDER_ITEM_START_INDEX);
+    return items.stream()
+            .map(item -> buildPartnerOrderLinkId(partnerCode, item, orderId, itemIndex))
+            .collect(Collectors.toSet());
+	}
+
+    private boolean isTaxItem(String skuId) {
+        return skuId.toUpperCase().contains("TAX");
+    }
+
+    private OrderItemEntity buildPartnerOrderLinkId(String partnerCode, OrderItemEntity item, String orderId, AtomicInteger index) {
+		String linkIndex = "00";
+		if(!isTaxItem(item.getSkuId())){
+			linkIndex = StringUtils.leftPad(String.valueOf(index.getAndIncrement()), ORDER_ID_END_INDEX, '0');
+		}
+        String partnerOrderLink = partnerCode.toUpperCase() + "-" + orderId + linkIndex;
+        item.setPartnerOrderLinkId(partnerOrderLink);
+        return item;
     }
 }
 
