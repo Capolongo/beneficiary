@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
-import org.apache.commons.lang3.StringUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -50,6 +49,7 @@ public class ReservationServiceImpl implements ReservationService {
         log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {}", request, transactionId, listPriceId);
         OrderEntity order = null;
         try {
+            order = orderService.getOrderById("lf23");
             PartnerReservationResponse partnerReservationResponse = null;
 
             OrderItemUtils.hasMoreThanOneTravel(request.getItems());
@@ -369,7 +369,7 @@ public class ReservationServiceImpl implements ReservationService {
     private OrderItemEntity buildPartnerOrderLinkId(String partnerCode, OrderItemEntity item, String orderId, AtomicInteger index) {
 		String linkIndex = "00";
 		if(!isTaxItem(item.getSkuId())){
-			linkIndex = StringUtils.leftPad(String.valueOf(index.getAndIncrement()), ORDER_ID_END_INDEX, '0');
+			linkIndex = String.format("%" + ORDER_ID_END_INDEX + "s", "0").replace(" ", String.valueOf(index.getAndIncrement()));
 		}
         String partnerOrderLink = partnerCode.toUpperCase() + "-" + orderId + linkIndex;
         item.setPartnerOrderLinkId(partnerOrderLink);
