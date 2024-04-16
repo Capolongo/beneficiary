@@ -20,6 +20,8 @@ import br.com.livelo.orderflight.service.reservation.ReservationService;
 import br.com.livelo.orderflight.utils.OrderItemUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -49,7 +51,6 @@ public class ReservationServiceImpl implements ReservationService {
         log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {}", request, transactionId, listPriceId);
         OrderEntity order = null;
         try {
-            order = orderService.getOrderById("lf23");
             PartnerReservationResponse partnerReservationResponse = null;
 
             OrderItemUtils.hasMoreThanOneTravel(request.getItems());
@@ -92,8 +93,12 @@ public class ReservationServiceImpl implements ReservationService {
 
             var pricingCalculatePrice = this.priceOrder(request, partnerReservationResponse);
             this.setPrices(order, pricingCalculatePrice, listPriceId);
+            
+            if(order.getId() == null) {
+                order = this.orderService.save(order);
+            }
 
-            order.setItems(addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getId(), order.getItems()));
+            addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getId(), order.getItems());
 
             order = this.orderService.save(order);
 
@@ -102,8 +107,10 @@ public class ReservationServiceImpl implements ReservationService {
             MDC.clear();
             return reservationMapper.toReservationResponse(order, 15);
         } catch (OrderFlightException e) {
+            log.error("ReservationServiceImpl.createOrder - Order: {}, OrderFlightException: {}", order, e);
             throw e;
         } catch (Exception e) {
+            log.error("ReservationServiceImpl.createOrder -  Order: {}, OrderFlightException: {}", order, e);
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), "Unknown error on create reservation!", e);
         }
     }
@@ -369,7 +376,7 @@ public class ReservationServiceImpl implements ReservationService {
     private OrderItemEntity buildPartnerOrderLinkId(String partnerCode, OrderItemEntity item, String orderId, AtomicInteger index) {
 		String linkIndex = "00";
 		if(!isTaxItem(item.getSkuId())){
-			linkIndex = String.format("%" + ORDER_ID_END_INDEX + "s", "0").replace(" ", String.valueOf(index.getAndIncrement()));
+			linkIndex = StringUtils.leftPad(String.valueOf(index.getAndIncrement()), ORDER_ID_END_INDEX, '0');
 		}
         String partnerOrderLink = partnerCode.toUpperCase() + "-" + orderId + linkIndex;
         item.setPartnerOrderLinkId(partnerOrderLink);
