@@ -47,7 +47,7 @@ class ReservationSegmentsMapperTest {
     @Test
     void shouldMapFlightLegs() {
         var segment = PartnerReservationSegment.builder()
-                .flightLegs(List.of(PartnerReservationFlightsLeg.builder().departureDate("2024-11-15T14:25:00.000-03:00").build()))
+                .flightLegs(List.of(PartnerReservationFlightsLeg.builder().departureDate("2024-11-15T14:25:00.000").build()))
                 .build();
 
         var response = this.mapper.mapFlightLeg(segment);
