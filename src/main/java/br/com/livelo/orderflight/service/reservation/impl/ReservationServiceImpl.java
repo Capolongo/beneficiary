@@ -21,13 +21,11 @@ import br.com.livelo.orderflight.utils.OrderItemUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static br.com.livelo.orderflight.constants.DynatraceConstants.STATUS;
@@ -44,8 +42,6 @@ public class ReservationServiceImpl implements ReservationService {
     private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
 
-    private static final int ORDER_ID_END_INDEX = 2;
-	private static final int ORDER_ITEM_START_INDEX = 1;
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId) {
         log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {}", request, transactionId, listPriceId);
@@ -61,6 +57,7 @@ public class ReservationServiceImpl implements ReservationService {
             var orderOptional = this.orderService.findByCommerceOrderIdIn(commerceItemsIds);
             if (orderOptional.isPresent()) {
                 order = orderOptional.get();
+                log.info("ReservationServiceImpl.createOrder - Creating Order - orderOptional order: {}", order);
                 this.isOrderStatusInitial(order);
 
                 if (this.isSameOrderItems(request, orderOptional)) {
@@ -77,6 +74,7 @@ public class ReservationServiceImpl implements ReservationService {
                     log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
                 } else {
                     this.orderService.delete(order);
+                    log.info("ReservationServiceImpl.createOrder - Creating Order - deleteOrder order: {}", order);
                     order = null;
                 }
             }
@@ -93,14 +91,10 @@ public class ReservationServiceImpl implements ReservationService {
 
             var pricingCalculatePrice = this.priceOrder(request, partnerReservationResponse);
             this.setPrices(order, pricingCalculatePrice, listPriceId);
-            
-            if(order.getId() == null) {
-                order = this.orderService.save(order);
-            }
 
-            addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getId(), order.getItems());
+            addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getCommerceOrderId(), order.getItems());
 
-            order = this.orderService.save(order);
+            this.orderService.save(order);
 
             MDC.put(STATUS, "SUCCESS");
             log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {}", order, transactionId, listPriceId);
@@ -362,25 +356,18 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    private Set<OrderItemEntity> addPartnerOrderLinkIdToItems(String partnerCode, String orderId, Set<OrderItemEntity> items) {
-    AtomicInteger itemIndex = new AtomicInteger(ORDER_ITEM_START_INDEX);
-    return items.stream()
-            .map(item -> buildPartnerOrderLinkId(partnerCode, item, orderId, itemIndex))
-            .collect(Collectors.toSet());
+    private void addPartnerOrderLinkIdToItems(String partnerCode, String orderId, Set<OrderItemEntity> items) {
+        Integer index = 0;
+        for (OrderItemEntity item : items) {
+            buildPartnerOrderLinkId(partnerCode, item, orderId, index);
+            index++;
+        }
 	}
 
-    private boolean isTaxItem(String skuId) {
-        return skuId.toUpperCase().contains("TAX");
-    }
-
-    private OrderItemEntity buildPartnerOrderLinkId(String partnerCode, OrderItemEntity item, String orderId, AtomicInteger index) {
-		String linkIndex = "00";
-		if(!isTaxItem(item.getSkuId())){
-			linkIndex = StringUtils.leftPad(String.valueOf(index.getAndIncrement()), ORDER_ID_END_INDEX, '0');
-		}
+    private void buildPartnerOrderLinkId(String partnerCode, OrderItemEntity item, String orderId, Integer index) {
+		String linkIndex = "00" + index;
         String partnerOrderLink = partnerCode.toUpperCase() + "-" + orderId + linkIndex;
         item.setPartnerOrderLinkId(partnerOrderLink);
-        return item;
     }
 }
 
