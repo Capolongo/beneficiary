@@ -10,6 +10,7 @@ import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException
 import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.utils.LogUtils;
 import br.com.livelo.partnersconfigflightlibrary.dto.WebhookDTO;
 import br.com.livelo.partnersconfigflightlibrary.services.PartnersConfigService;
 import br.com.livelo.partnersconfigflightlibrary.utils.ErrorsType;
@@ -59,13 +60,13 @@ public class ConnectorPartnersProxy {
             var webhook = this.partnersConfigService.getPartnerWebhook(request.getPartnerCode(), Webhooks.RESERVATION);
             var url = URI.create(webhook.getConnectorUrl());
             log.info("ConnectorPartnersProxy.createReserve: call connector partner create reserve. partner: [{}] url: [{}] request: [{}]", request.getPartnerCode(),
-                    url, request);
+                    url, LogUtils.writeAsJson(request));
 
             ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.createReserve(
                     url,
                     request,
                     transactionId);
-            log.info("ConnectorPartnersProxy.createReserve: create reserve partner connector response: [{}]", response);
+            log.info("ConnectorPartnersProxy.createReserve: create reserve partner connector response: [{}]", LogUtils.writeAsJson(response));
 
             return response.getBody();
         } catch (FeignException e) {

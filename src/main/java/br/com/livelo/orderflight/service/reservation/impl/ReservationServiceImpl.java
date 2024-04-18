@@ -136,6 +136,8 @@ public class ReservationServiceImpl implements ReservationService {
 
     private List<PricingCalculatePrice> priceOrder(ReservationRequest request, PartnerReservationResponse partnerReservationResponse) {
         var pricingCalculateRequest = PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse, request.getCommerceOrderId());
+
+        log.info("ReservationServiceImpl.priceOrder - {} isInternational", pricingCalculateRequest.getTravelInfo().getIsInternational());
         var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest);
 
         return getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse);

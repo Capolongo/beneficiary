@@ -12,4 +12,5 @@ public class PricingCalculateTravelInfo{
 	private Integer inf;
 	private String cabinClass;
 	private String stageJourney;
+	private Boolean isInternational;
 }

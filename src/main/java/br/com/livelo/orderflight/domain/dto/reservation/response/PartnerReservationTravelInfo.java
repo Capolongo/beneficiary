@@ -16,4 +16,5 @@ public class PartnerReservationTravelInfo {
     private Integer babyQuantity;
     private String typeClass;
     private String voucher;
+    private Boolean isInternational;
 }
