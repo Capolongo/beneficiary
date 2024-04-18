@@ -9,9 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
-
 
 @UtilityClass
 @Slf4j
@@ -22,22 +20,12 @@ public class PricingCalculateRequestMapper {
 
     public static PricingCalculateRequest toPricingCalculateRequest(PartnerReservationResponse partnerReservationResponse, String commerceOrderId) {
         var partnerReservationItemTypeFlight = getItemTypeFlight(partnerReservationResponse);
-        PartnerReservationItem item = findItemWithTravelInfo(partnerReservationResponse);
-        Boolean isInternational = false;
-        if (item.getTravelInfo() != null) {
-            isInternational = item.getTravelInfo().getIsInternational();
-        } else {
-            log.warn("PricingCalculateRequestMapper.toPricingCalculateRequest - travelInfo is null");
-        }
+        Boolean isInternational = partnerReservationItemTypeFlight.getTravelInfo().getIsInternational() != null ? partnerReservationItemTypeFlight.getTravelInfo().getIsInternational() : false;
 
         return PricingCalculateRequest.builder()
                 .travelInfo(buildTravelInfo(partnerReservationItemTypeFlight, isInternational))
                 .items(buildListPricingCalculateItems(partnerReservationResponse, partnerReservationItemTypeFlight, commerceOrderId))
                 .build();
-    }
-
-    private static PartnerReservationItem findItemWithTravelInfo(PartnerReservationResponse partnerReservationResponse) {
-        return partnerReservationResponse.getItems().stream().filter(item -> item.getTravelInfo() != null).findFirst().get();
     }
 
     private static PricingCalculateTravelInfo buildTravelInfo(PartnerReservationItem partnerReservationItemTypeFlight, Boolean isInternational) {
