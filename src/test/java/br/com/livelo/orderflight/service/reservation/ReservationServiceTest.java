@@ -63,7 +63,7 @@ class ReservationServiceTest {
 
         when(connectorPartnersProxy.createReserve(any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
-        when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
+        when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
 
         var response = reservationService.createOrder(requestMock, transactionId, "123", "WEB", "price", "");
 
@@ -104,7 +104,7 @@ class ReservationServiceTest {
         ids.add(request.getCommerceOrderId());
 
         when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
-        when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
+        when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", "");
         assertNotNull(response);
     }
@@ -144,7 +144,7 @@ class ReservationServiceTest {
         ids.add(request.getCommerceOrderId());
 
         when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
-        when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
+        when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", "");
         assertNotNull(response);
     }
@@ -186,7 +186,7 @@ class ReservationServiceTest {
         ids.add(request.getCommerceOrderId());
 
         when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
-        when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
+        when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", "");
         assertNotNull(response);
     }
@@ -271,7 +271,7 @@ class ReservationServiceTest {
         var segmentsPartnersId = "asdf";
 
         var partnerReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
-        when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
+        when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
         when(connectorPartnersProxy.createReserve(any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
         var request = this.buildResevationRequest(Collections.singletonList(this.buildReservationItem(segmentsPartnersId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
         var order = this.buildOrderEntity(request.getCommerceOrderId(), Set.of(this.buildOrderItem(id, commerceItemId, segmentsPartnersId, "CVCFLIGHT")), transactionId, "LIVPNR-1006");
@@ -298,7 +298,7 @@ class ReservationServiceTest {
 
         var partnerReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
         when(connectorPartnersProxy.createReserve(any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
-        when(pricingProxy.calculate(any())).thenReturn(buildPricingCalculateResponse());
+        when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
         var request = this.buildResevationRequest(Collections.singletonList(this.buildReservationItem(segmentsPartnersId, type, "CVCFLIGHT")), List.of(segmentsPartnersId, segmentsPartnersId));
 
         var order = this.buildOrderEntity(
