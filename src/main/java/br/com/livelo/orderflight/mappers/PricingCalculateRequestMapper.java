@@ -4,15 +4,15 @@ import br.com.livelo.orderflight.domain.dto.reservation.response.*;
 import br.com.livelo.orderflight.domain.dtos.pricing.request.*;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
 
-
 @UtilityClass
+@Slf4j
 public class PricingCalculateRequestMapper {
     private static final String TYPE_FLIGHT = "type_flight";
     private static final String RESERVATION = "RESERVATION";
@@ -20,6 +20,7 @@ public class PricingCalculateRequestMapper {
 
     public static PricingCalculateRequest toPricingCalculateRequest(PartnerReservationResponse partnerReservationResponse, String commerceOrderId) {
         var partnerReservationItemTypeFlight = getItemTypeFlight(partnerReservationResponse);
+
         return PricingCalculateRequest.builder()
                 .travelInfo(buildTravelInfo(partnerReservationItemTypeFlight))
                 .items(buildListPricingCalculateItems(partnerReservationResponse, partnerReservationItemTypeFlight, commerceOrderId))
@@ -27,6 +28,7 @@ public class PricingCalculateRequestMapper {
     }
 
     private static PricingCalculateTravelInfo buildTravelInfo(PartnerReservationItem partnerReservationItemTypeFlight) {
+        Boolean isInternational = partnerReservationItemTypeFlight.getTravelInfo().getIsInternational() != null ? partnerReservationItemTypeFlight.getTravelInfo().getIsInternational() : false;
         return PricingCalculateTravelInfo.builder()
                 .type(partnerReservationItemTypeFlight.getTravelInfo().getType())
                 .adt(partnerReservationItemTypeFlight.getTravelInfo().getAdultQuantity())
@@ -34,6 +36,7 @@ public class PricingCalculateRequestMapper {
                 .inf(partnerReservationItemTypeFlight.getTravelInfo().getBabyQuantity())
                 .cabinClass(partnerReservationItemTypeFlight.getTravelInfo().getTypeClass())
                 .stageJourney(RESERVATION)
+                .isInternational(isInternational)
                 .build();
     }
 

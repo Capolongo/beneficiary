@@ -4,6 +4,7 @@ import br.com.livelo.orderflight.client.PricingClient;
 import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateRequest;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
 import br.com.livelo.orderflight.exception.OrderFlightException;
+import br.com.livelo.orderflight.utils.LogUtils;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +26,9 @@ public class PricingProxy {
 
     public List<PricingCalculateResponse> calculate(PricingCalculateRequest request) {
         try {
-            log.info("PricingProxy.calculate - call pricing calculate. request: {}", request);
+            log.info("PricingProxy.calculate - call pricing calculate. request: {}", LogUtils.writeAsJson(request));
             ResponseEntity<List<PricingCalculateResponse>> response = pricingClient.calculate(request);
-            log.info("PricingProxy.calculate -  pricing calculate response: {}", response);
+            log.info("PricingProxy.calculate -  pricing calculate response: {}", LogUtils.writeAsJson(response));
 
             return ofNullable(response.getBody())
                     .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, null, "PricingProxy.calculate - body pricing is null!"));

@@ -88,12 +88,11 @@ public class ReservationServiceImpl implements ReservationService {
 
             if (this.isNewOrder(order)) {
                 order = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPriceId);
+                addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getCommerceOrderId(), order.getItems());
             }
 
             var pricingCalculatePrice = this.priceOrder(request, partnerReservationResponse);
             this.setPrices(order, pricingCalculatePrice, listPriceId);
-
-            addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getCommerceOrderId(), order.getItems());
 
             this.orderService.save(order);
 
@@ -137,6 +136,8 @@ public class ReservationServiceImpl implements ReservationService {
 
     private List<PricingCalculatePrice> priceOrder(ReservationRequest request, PartnerReservationResponse partnerReservationResponse) {
         var pricingCalculateRequest = PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse, request.getCommerceOrderId());
+
+        log.info("ReservationServiceImpl.priceOrder - {} isInternational", pricingCalculateRequest.getTravelInfo().getIsInternational());
         var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest);
 
         return getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse);
