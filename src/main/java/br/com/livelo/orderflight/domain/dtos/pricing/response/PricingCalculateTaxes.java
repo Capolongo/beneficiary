@@ -13,4 +13,7 @@ public class PricingCalculateTaxes{
     private String type;
     private BigDecimal amount;
     private BigDecimal pointsAmount;
+    private Float multiplier;
+    private Float multiplierAccrual;
+    private Float markup;
 }

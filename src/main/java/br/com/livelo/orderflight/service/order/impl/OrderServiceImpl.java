@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -76,8 +77,8 @@ public class OrderServiceImpl implements OrderService {
 
         return itemFlight.get();
     }
-    
-    public boolean isFlightItem(OrderItemEntity item){
+
+    public boolean isFlightItem(OrderItemEntity item) {
         return !item.getSkuId().toLowerCase().contains(TAX);
     }
 
@@ -93,9 +94,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public void orderDetailLog(String invokedBy, String newStatusCode, OrderEntity order) {
-        OrderItemEntity flightItem =  getFlightFromOrderItems(order.getItems());
-        OrderItemEntity taxItem =  getTaxFromOrderItems(order.getItems());
-        log.info("OrderService.orderDetailLog - " + invokedBy + " - orderId: [{}], partnerCode: [{}], statusCode: [{}], amount: [{}], pointsAmount: [{}], partnerAmount: [{}], flightAmount: [{}], flightPointsAmount: [{}], flightPartnerAmount: [{}], taxAmount: [{}], taxPointsAmount: [{}], taxPartnerAmount: [{}],", order.getId(), order.getPartnerCode(), newStatusCode, order.getPrice().getAmount(), order.getPrice().getPointsAmount(), order.getPrice().getPartnerAmount(), flightItem.getPrice().getAmount(),  flightItem.getPrice().getPointsAmount(),  flightItem.getPrice().getPartnerAmount(), taxItem.getPrice().getAmount(),  taxItem.getPrice().getPointsAmount(),  taxItem.getPrice().getPartnerAmount());
+        OrderItemEntity flightItem = getFlightFromOrderItems(order.getItems());
+        OrderItemEntity taxItem = getTaxFromOrderItems(order.getItems());
+        log.info("OrderService.orderDetailLog - " + invokedBy + " - orderId: [{}], partnerCode: [{}], statusCode: [{}], amount: [{}], pointsAmount: [{}], partnerAmount: [{}], flightAmount: [{}], flightPointsAmount: [{}], flightPartnerAmount: [{}], taxAmount: [{}], taxPointsAmount: [{}], taxPartnerAmount: [{}],", order.getId(), order.getPartnerCode(), newStatusCode, order.getPrice().getAmount(), order.getPrice().getPointsAmount(), order.getPrice().getPartnerAmount(), flightItem.getPrice().getAmount(), flightItem.getPrice().getPointsAmount(), flightItem.getPrice().getPartnerAmount(), taxItem.getPrice().getAmount(), taxItem.getPrice().getPointsAmount(), taxItem.getPrice().getPartnerAmount());
     }
 
     public boolean isSameStatus(String currentStatus, String newStatus) {
@@ -140,13 +141,8 @@ public class OrderServiceImpl implements OrderService {
         order.setSubmittedDate(LocalDateTime.parse(date));
     }
 
-    public Optional<OrderEntity> findByCommerceOrderId(String commerceOrderId) {
-        return this.orderRepository.findByCommerceOrderId(commerceOrderId);
-    }
-
-    @Override
-    public Optional<OrderEntity> findByCommerceOrderIdOrItemsCommerceItemsId(String commerceOrderId, Set<String> commerceItemsIds) {
-        return this.orderRepository.findByCommerceOrderIdOrItemsCommerceItemsId(commerceOrderId, commerceItemsIds);
+    public Optional<OrderEntity> findByCommerceOrderIdIn(List<String> commerceOrderId) {
+        return this.orderRepository.findByCommerceOrderIdIn(commerceOrderId);
     }
 
     public void delete(OrderEntity order) {
@@ -192,6 +188,7 @@ public class OrderServiceImpl implements OrderService {
         UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
         liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
     }
+
     private Pageable pageRequestOf(Integer page, Integer rows) throws OrderFlightException {
         if (page <= 0) {
             throw new OrderFlightException(OrderFlightErrorType.VALIDATION_INVALID_PAGINATION,
