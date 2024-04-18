@@ -125,7 +125,7 @@ class ReservationServiceTest {
                 List.of(segmentsPartnersId, segmentsPartnersId)
         );
         var connectorReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
-
+        connectorReservationResponse.getItems().getFirst().getTravelInfo().setIsInternational(true);
         when(connectorPartnersProxy.getReservation(any(), any(), any(), any())).thenReturn(connectorReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
 
