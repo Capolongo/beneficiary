@@ -94,7 +94,6 @@ public class ReservationServiceImpl implements ReservationService {
             this.setPrices(order, pricingCalculatePrice, listPriceId);
 
             addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getCommerceOrderId(), order.getItems());
-
             this.orderService.save(order);
 
             MDC.put(STATUS, "SUCCESS");
