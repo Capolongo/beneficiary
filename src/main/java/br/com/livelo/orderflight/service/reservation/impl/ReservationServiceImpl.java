@@ -70,7 +70,7 @@ public class ReservationServiceImpl implements ReservationService {
                     if (!order.getCommerceOrderId().equals(request.getCommerceOrderId())) {
                         order.setCommerceOrderId(request.getCommerceOrderId());
                     }
-                    log.info("Order reserved on partner! Proceed with pricing. orderId: {} ", request.getCommerceOrderId());
+                    log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
                 } else {
                     this.orderService.delete(order);
                     order = null;
@@ -93,7 +93,7 @@ public class ReservationServiceImpl implements ReservationService {
             order = this.orderService.save(order);
 
             MDC.put(STATUS, "SUCCESS");
-            log.info("ReservationServiceImpl.createOrder - Order created Order: {} listPriceId: {}", LogUtils.writeAsJson(order), listPriceId);
+            log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {}", order, transactionId, listPriceId);
             MDC.clear();
             return reservationMapper.toReservationResponse(order, 15);
         } catch (OrderFlightException e) {
@@ -130,6 +130,8 @@ public class ReservationServiceImpl implements ReservationService {
 
     private List<PricingCalculatePrice> priceOrder(ReservationRequest request, PartnerReservationResponse partnerReservationResponse, String transactionId, String userId) {
         var pricingCalculateRequest = PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse, request.getCommerceOrderId());
+        
+        log.info("ReservationServiceImpl.priceOrder - {} isInternational", pricingCalculateRequest.getTravelInfo().getIsInternational());
         var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest, transactionId, userId);
 
         return getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse);
