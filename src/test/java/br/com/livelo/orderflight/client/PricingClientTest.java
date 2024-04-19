@@ -28,11 +28,11 @@ class PricingClientTest {
 
         PricingClient pricingClient = mock(PricingClient.class);
 
-        when(pricingClient.calculate(any())).thenReturn(responseEntity);
+        when(pricingClient.calculate(any(), anyString(), anyString())).thenReturn(responseEntity);
 
-        ResponseEntity<List<PricingCalculateResponse>> result = pricingClient.calculate(pricingCalculateRequest);
+        ResponseEntity<List<PricingCalculateResponse>> result = pricingClient.calculate(pricingCalculateRequest, "123", "321");
 
-        verify(pricingClient, times(1)).calculate(any());
+        verify(pricingClient, times(1)).calculate(any(), anyString(), anyString());
         assertEquals(pricingCalculateResponse, result.getBody());
     }
 }

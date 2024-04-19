@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.controller;
 
+import br.com.livelo.orderflight.constants.HeadersConstants;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
 import br.com.livelo.orderflight.service.reservation.impl.ReservationServiceImpl;
@@ -24,7 +25,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            @RequestHeader(value = "transactionId") String transactionId,
+            @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER) String transactionId,
+            @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER) String userId,
             @RequestHeader(value = "customerId", required = false) String customerId,
             @RequestHeader(value = "channel", required = false) String channel,
             @RequestHeader(value = "listPrice") String listPrice,
@@ -36,7 +38,7 @@ public class ReservationController {
         MDC.put(PARTNER, reservationRequest.getPartnerCode());
 
         log.info("ReservationController.createReservation - Create reservation request: [{}]", LogUtils.writeAsJson(reservationRequest));
-        var response = reservationService.createOrder(reservationRequest, transactionId, customerId, channel, listPrice);
+        var response = reservationService.createOrder(reservationRequest, transactionId, customerId, channel, listPrice, userId);
         log.info("ReservationController.createReservation - Create reservation response: [{}]", LogUtils.writeAsJson(response));
         MDC.clear();
         return ResponseEntity.ok(response);

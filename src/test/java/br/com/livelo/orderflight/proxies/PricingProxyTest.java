@@ -20,6 +20,7 @@ import java.util.List;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_PRICING_INTERNAL_ERROR;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,15 +35,15 @@ class PricingProxyTest {
     @Test
     void shouldReturnPricingCalculate() {
         ResponseEntity<List<PricingCalculateResponse>> pricingCalculateResponse = MockBuilder.pricingCalculateResponse();
-        when(pricingClient.calculate(any(PricingCalculateRequest.class)))
+        when(pricingClient.calculate(any(PricingCalculateRequest.class), anyString(), anyString()))
                 .thenReturn(pricingCalculateResponse);
 
-        var response = proxy.calculate(mock(PricingCalculateRequest.class));
+        var response = proxy.calculate(mock(PricingCalculateRequest.class), anyString(), anyString());
 
         assertNotNull(pricingCalculateResponse.getBody());
         assertEquals(pricingCalculateResponse.getBody(), response);
         assertEquals(200, pricingCalculateResponse.getStatusCode().value());
-        verify(pricingClient).calculate(any(PricingCalculateRequest.class));
+        verify(pricingClient).calculate(any(PricingCalculateRequest.class), anyString(), anyString());
         verifyNoMoreInteractions(pricingClient);
     }
 
@@ -51,10 +52,10 @@ class PricingProxyTest {
         FeignException mockException = Mockito.mock(FeignException.class);
         when(mockException.status()).thenReturn(500);
         when(pricingClient.calculate(
-                any(PricingCalculateRequest.class)))
+                any(PricingCalculateRequest.class), anyString(), anyString()))
                 .thenThrow(mockException);
 
-        OrderFlightException exception = assertThrows(OrderFlightException.class, () -> proxy.calculate(mock(PricingCalculateRequest.class)));
+        OrderFlightException exception = assertThrows(OrderFlightException.class, () -> proxy.calculate(mock(PricingCalculateRequest.class), anyString(), anyString()));
 
         assertEquals(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
@@ -62,7 +63,7 @@ class PricingProxyTest {
 
     @Test
     void shouldThrowException() {
-        OrderFlightException exception = assertThrows(OrderFlightException.class, () -> proxy.calculate(mock(PricingCalculateRequest.class)));
+        OrderFlightException exception = assertThrows(OrderFlightException.class, () -> proxy.calculate(mock(PricingCalculateRequest.class), anyString(), anyString()));
 
         assertEquals(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }

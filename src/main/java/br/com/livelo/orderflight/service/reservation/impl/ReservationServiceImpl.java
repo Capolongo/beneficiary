@@ -17,6 +17,7 @@ import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.proxies.PricingProxy;
 import br.com.livelo.orderflight.service.order.OrderService;
 import br.com.livelo.orderflight.service.reservation.ReservationService;
+import br.com.livelo.orderflight.utils.LogUtils;
 import br.com.livelo.orderflight.utils.OrderItemUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +44,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationMapper reservationMapper;
 
 
-    public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId) {
-        log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {}", request, transactionId, listPriceId);
+    public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId, String userId) {
+        log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {} transactionId: {}", request, transactionId, listPriceId, userId);
         OrderEntity order = null;
         try {
             PartnerReservationResponse partnerReservationResponse = null;
@@ -62,7 +63,7 @@ public class ReservationServiceImpl implements ReservationService {
 
                 if (this.isSameOrderItems(request, orderOptional)) {
                     log.info("ReservationServiceImpl.getPartnerOrder partnerOrderId: {}, transactionId: {}, segmentsPartnerIds: {}, commerceOrderId: {}, partnerCode: {}", orderOptional.get().getPartnerOrderId(), transactionId, request.getSegmentsPartnerIds(), orderOptional.get().getCommerceOrderId(), request.getPartnerCode());
-                    partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), request.getSegmentsPartnerIds());
+                    partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), request.getSegmentsPartnerIds(), userId);
 
                     if (!INITIAL.getCode().equals(partnerReservationResponse.getStatus().getCode())) {
                         this.updateStatus(order, partnerReservationResponse);
@@ -83,14 +84,14 @@ public class ReservationServiceImpl implements ReservationService {
             if (!this.existsReservationInPartner(partnerReservationResponse)) {
                 request.getItems().sort(Comparator.comparing(ReservationItem::getSkuId));
                 var partnerReservationRequest = reservationMapper.toPartnerReservationRequest(request);
-                partnerReservationResponse = partnerConnectorProxy.createReserve(partnerReservationRequest, transactionId);
+                partnerReservationResponse = partnerConnectorProxy.createReserve(partnerReservationRequest, transactionId, userId);
             }
 
             if (this.isNewOrder(order)) {
                 order = reservationMapper.toOrderEntity(request, partnerReservationResponse, transactionId, customerId, channel, listPriceId);
             }
 
-            var pricingCalculatePrice = this.priceOrder(request, partnerReservationResponse);
+            var pricingCalculatePrice = this.priceOrder(request, partnerReservationResponse, transactionId, userId);
             this.setPrices(order, pricingCalculatePrice, listPriceId);
 
             addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getCommerceOrderId(), order.getItems());
@@ -134,17 +135,17 @@ public class ReservationServiceImpl implements ReservationService {
         return Objects.nonNull(partnerReservationResponse);
     }
 
-    private List<PricingCalculatePrice> priceOrder(ReservationRequest request, PartnerReservationResponse partnerReservationResponse) {
+    private List<PricingCalculatePrice> priceOrder(ReservationRequest request, PartnerReservationResponse partnerReservationResponse, String transactionId, String userId) {
         var pricingCalculateRequest = PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse, request.getCommerceOrderId());
-
+        
         log.info("ReservationServiceImpl.priceOrder - {} isInternational", pricingCalculateRequest.getTravelInfo().getIsInternational());
-        var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest);
+        var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest, transactionId, userId);
 
         return getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse);
     }
 
-    private PartnerReservationResponse getPartnerOrder(String partnerOrderId, String transactionId, String partnerCode, List<String> segmentsPartnerIds) {
-        return partnerConnectorProxy.getReservation(partnerOrderId, transactionId, partnerCode, segmentsPartnerIds);
+    private PartnerReservationResponse getPartnerOrder(String partnerOrderId, String transactionId, String partnerCode, List<String> segmentsPartnerIds, String userId) {
+        return partnerConnectorProxy.getReservation(partnerOrderId, transactionId, partnerCode, segmentsPartnerIds, userId);
     }
 
     private List<PricingCalculatePrice> getPricingCalculateByCommerceOrderId(String commerceOrderId, List<PricingCalculateResponse> pricingCalculateResponses) {
