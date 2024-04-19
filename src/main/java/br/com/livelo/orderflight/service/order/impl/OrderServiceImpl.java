@@ -195,7 +195,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-        liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
+        liveloPartnersProxy.updateOrder(order.getCommerceOrderId(), updateOrderDTO);
     }
 
     private Pageable pageRequestOf(Integer page, Integer rows) throws OrderFlightException {
