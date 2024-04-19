@@ -18,23 +18,23 @@ public interface PartnerConnectorClient {
     @PostMapping
     ResponseEntity<ConnectorConfirmOrderResponse> confirmOrder(URI baseUrl,
                                                                @RequestBody ConnectorConfirmOrderRequest connectorConfirmOrderRequest,
-                                                               @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER) String transactionId,
-                                                               @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER) String userId
+                                                               @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER, required = false) String transactionId,
+                                                               @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId
                                                                );
 
     @PostMapping
     ResponseEntity<PartnerReservationResponse> createReserve(
             URI baseUrl,
             @RequestBody PartnerReservationRequest partnerReservationRequest,
-            @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER) String transactionId,
-            @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER) String userId);
+            @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER, required = false) String transactionId,
+            @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId);
 
     @GetMapping
     ResponseEntity<PartnerReservationResponse> getReservation(
             URI baseUri,
             @RequestHeader(value = "id") String id,
-            @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER) String transactionId,
-            @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER) String userId,
+            @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER, required = false) String transactionId,
+            @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId,
             @RequestHeader(value = "segmentsPartnerIds") List<String> segmentsPartnerIds
     );
 
