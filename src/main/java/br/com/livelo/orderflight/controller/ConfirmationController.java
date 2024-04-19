@@ -30,8 +30,8 @@ public class ConfirmationController {
     @PostMapping("{id}/confirmation")
     public ResponseEntity<ConfirmOrderResponse> confirmOrder(
         @PathVariable("id") String id, @RequestBody ConfirmOrderRequest order,
-        @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER) String transactionId,
-        @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER) String userId) {
+        @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER, required = false) String transactionId,
+        @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId) {
 
         RequiredHeaders requiredHeaders = new RequiredHeaders(transactionId, userId);
 
