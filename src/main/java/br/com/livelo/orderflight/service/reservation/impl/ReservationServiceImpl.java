@@ -21,9 +21,9 @@ import br.com.livelo.orderflight.utils.LogUtils;
 import br.com.livelo.orderflight.utils.OrderItemUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -43,8 +43,9 @@ public class ReservationServiceImpl implements ReservationService {
     private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
 
+
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId, String userId) {
-        log.info("ReservationServiceImpl.createOrder - Creating Order: {} listPriceId: {}", LogUtils.writeAsJson(request), listPriceId);
+        log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {} transactionId: {}", request, transactionId, listPriceId, userId);
         OrderEntity order = null;
         try {
             PartnerReservationResponse partnerReservationResponse = null;
@@ -57,9 +58,11 @@ public class ReservationServiceImpl implements ReservationService {
             var orderOptional = this.orderService.findByCommerceOrderIdIn(commerceItemsIds);
             if (orderOptional.isPresent()) {
                 order = orderOptional.get();
+                log.info("ReservationServiceImpl.createOrder - Creating Order - orderOptional order: {}", order);
                 this.isOrderStatusInitial(order);
 
                 if (this.isSameOrderItems(request, orderOptional)) {
+                    log.info("ReservationServiceImpl.getPartnerOrder partnerOrderId: {}, transactionId: {}, segmentsPartnerIds: {}, commerceOrderId: {}, partnerCode: {}", orderOptional.get().getPartnerOrderId(), transactionId, request.getSegmentsPartnerIds(), orderOptional.get().getCommerceOrderId(), request.getPartnerCode());
                     partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), request.getSegmentsPartnerIds(), userId);
 
                     if (!INITIAL.getCode().equals(partnerReservationResponse.getStatus().getCode())) {
@@ -73,6 +76,7 @@ public class ReservationServiceImpl implements ReservationService {
                     log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
                 } else {
                     this.orderService.delete(order);
+                    log.info("ReservationServiceImpl.createOrder - Creating Order - deleteOrder order: {}", order);
                     order = null;
                 }
             }
@@ -90,15 +94,19 @@ public class ReservationServiceImpl implements ReservationService {
             var pricingCalculatePrice = this.priceOrder(request, partnerReservationResponse, transactionId, userId);
             this.setPrices(order, pricingCalculatePrice, listPriceId);
 
-            order = this.orderService.save(order);
+            addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getCommerceOrderId(), order.getItems());
+
+            this.orderService.save(order);
 
             MDC.put(STATUS, "SUCCESS");
             log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {}", order, transactionId, listPriceId);
             MDC.clear();
             return reservationMapper.toReservationResponse(order, 15);
         } catch (OrderFlightException e) {
+            log.error("ReservationServiceImpl.createOrder - Order: {}, OrderFlightException: {}", order, e);
             throw e;
         } catch (Exception e) {
+            log.error("ReservationServiceImpl.createOrder -  Order: {}, OrderFlightException: {}", order, e);
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), "Unknown error on create reservation!", e);
         }
     }
@@ -350,6 +358,20 @@ public class ReservationServiceImpl implements ReservationService {
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR,
                     "ReservationServiceImpl.hasSameTokens - Partner tokens are different!", null);
         }
+    }
+
+    private void addPartnerOrderLinkIdToItems(String partnerCode, String orderId, Set<OrderItemEntity> items) {
+        Integer index = 0;
+        for (OrderItemEntity item : items) {
+            buildPartnerOrderLinkId(partnerCode, item, orderId, index);
+            index++;
+        }
+	}
+
+    private void buildPartnerOrderLinkId(String partnerCode, OrderItemEntity item, String orderId, Integer index) {
+		String linkIndex = "00" + index;
+        String partnerOrderLink = partnerCode.toUpperCase() + "-" + orderId + linkIndex;
+        item.setPartnerOrderLinkId(partnerOrderLink);
     }
 }
 

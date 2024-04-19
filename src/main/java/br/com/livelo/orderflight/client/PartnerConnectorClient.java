@@ -32,7 +32,7 @@ public interface PartnerConnectorClient {
     @GetMapping
     ResponseEntity<PartnerReservationResponse> getReservation(
             URI baseUri,
-            @RequestParam(value = "id") String id,
+            @RequestHeader(value = "id") String id,
             @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER) String transactionId,
             @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER) String userId,
             @RequestHeader(value = "segmentsPartnerIds") List<String> segmentsPartnerIds
