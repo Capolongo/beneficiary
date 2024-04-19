@@ -1,14 +1,9 @@
 package br.com.livelo.orderflight.domain.entity;
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,14 +20,21 @@ public class FlightLegEntity extends BaseEntity {
     private Long id;
     private String flightNumber;
     private Integer flightDuration;
-    private String airline;
-    private String managedBy;
+    private String airlineManagedByIata;
+    private String airlineManagedByDescription;
+    private String airlineOperatedByIata;
+    private String airlineOperatedByDescription;
     private Integer timeToWait;
     private String originIata;
-    private String originDescription;
     private String destinationIata;
-    private String destinationDescription;
     private LocalDateTime departureDate;
     private LocalDateTime arrivalDate;
     private String type;
+    private String originCity;
+    private String originAirport;
+    private String destinationAirport;
+    private String destinationCity;
+    private String fareBasis;
+    private String fareClass;
+    private String aircraftCode;
 }

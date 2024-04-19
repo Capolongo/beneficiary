@@ -1,14 +1,13 @@
 package br.com.livelo.orderflight.domain.dto.reservation.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class PartnerReservationTravelInfo {
 	private String type;
     private String reservationCode;
@@ -17,4 +16,5 @@ public class PartnerReservationTravelInfo {
     private Integer babyQuantity;
     private String typeClass;
     private String voucher;
+    private Boolean isInternational;
 }

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.ZonedDateTime;
 
 @Getter
+@Setter
 @MappedSuperclass
 @EqualsAndHashCode
 @EntityListeners(AuditingEntityListener.class)

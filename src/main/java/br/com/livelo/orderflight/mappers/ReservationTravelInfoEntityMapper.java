@@ -22,5 +22,4 @@ public interface ReservationTravelInfoEntityMapper {
     default void setType(PartnerReservationTravelInfo partnerReservationTravelInfo, @MappingTarget TravelInfoEntity travelInfoEntity) {
         travelInfoEntity.setType(Objects.nonNull(partnerReservationTravelInfo.getType()) ? partnerReservationTravelInfo.getType() : "");
     }
-
 }

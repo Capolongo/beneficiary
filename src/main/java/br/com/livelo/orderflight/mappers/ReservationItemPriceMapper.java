@@ -9,9 +9,7 @@ import org.mapstruct.Mapping;
 public interface ReservationItemPriceMapper {
 
     @Mapping(target = "partnerAmount", source = "partnerReservationItem.amount")
-    @Mapping(target = "amount", expression = "java(java.math.BigDecimal.TEN)")
-    @Mapping(target = "pointsAmount", expression = "java(java.math.BigDecimal.TEN)")
-    @Mapping(target = "accrualPoints", expression = "java(java.math.BigDecimal.TEN)")
+    @Mapping(target = "accrualPoints", expression = "java(java.math.BigDecimal.ZERO)")
     @Mapping(target = "priceListId", source = "priceList")
     @Mapping(target = "listPrice", ignore = true)
     @Mapping(target = "priceRule", ignore = true)

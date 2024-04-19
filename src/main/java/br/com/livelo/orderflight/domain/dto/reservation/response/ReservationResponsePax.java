@@ -10,6 +10,6 @@ public record ReservationResponsePax(String type,
 									 String phoneNumber,
 									 String gender,
 									 String birthDate,
-									 Set<ReservationResponseDocument> document) {
+									 Set<ReservationResponseDocument> documents) {
 
 }

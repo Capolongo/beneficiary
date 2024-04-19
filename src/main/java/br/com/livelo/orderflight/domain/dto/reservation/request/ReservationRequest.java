@@ -1,7 +1,13 @@
 package br.com.livelo.orderflight.domain.dto.reservation.request;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -13,6 +19,7 @@ import java.util.List;
 @Validated
 public class ReservationRequest {
     @NotNull
+    @NotBlank
     private String commerceOrderId;
     @NotNull
     private String partnerCode;
@@ -20,6 +27,8 @@ public class ReservationRequest {
     private List<String> segmentsPartnerIds;
     @NotNull
     private List<ReservationItem> items;
-    @NotNull
+
+    @Valid
+    @NotEmpty
     private List<ReservationPax> paxs;
 }

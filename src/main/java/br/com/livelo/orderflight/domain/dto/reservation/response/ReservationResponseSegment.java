@@ -8,14 +8,15 @@ public record ReservationResponseSegment(String partnerId,
                                          Integer stops,
                                          Integer flightDuration,
                                          String originIata,
-                                         String originDescription,
+                                         String originCity,
+                                         String originAirport,
                                          String destinationIata,
-                                         String destinationDescription,
+                                         String destinationCity,
+                                         String destinationAirport,
                                          LocalDateTime departureDate,
                                          LocalDateTime arrivalDate,
                                          Set<ReservationResponseLuggage> luggages,
                                          Set<ReservationResponseCancelationRule> cancelationRules,
                                          Set<ReservationResponseChangeRule> changeRules,
                                          Set<ReservationResponseFlightLeg> flightsLegs) {
-
 }

@@ -41,11 +41,16 @@ public class OrderEntity extends BaseEntity {
         private OrderPriceEntity price;
         @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
         @JoinColumn(name = "ORDER_ID")
+        @OrderBy("skuId ASC")
         private Set<OrderItemEntity> items;
         @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
         @JoinColumn(name = "ORDER_ID")
+        @OrderBy("statusDate ASC")
         private Set<OrderStatusEntity> statusHistory;
         @OneToOne(cascade = CascadeType.ALL)
         @JoinColumn(name = "STATUS")
         private OrderStatusEntity currentStatus;
+        @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+        @JoinColumn(name = "ORDER_ID")
+        private Set<ProcessCounterEntity> processCounters;
 }

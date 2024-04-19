@@ -1,28 +1,32 @@
 package br.com.livelo.orderflight.domain.dto.reservation.response;
 
-import java.util.List;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.List;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class PartnerReservationSegment {
-	private String partnerId;
+    private String partnerId;
+    private String type;
     private String step;
     private Integer stops;
     private Integer flightDuration;
     private String originIata;
-    private String originDescription;
+    private String originAirport;
+    private String originCity;
     private String destinationIata;
-    private String destinationDescription;
+    private String destinationAirport;
+    private String destinationCity;
     private String departureDate;
     private String arrivalDate;
-    private List<PartnerReservationFlightsLeg> flightsLegs;
+    private String cabinClass;
+    private PartnerReservationAirline airline;
+    private List<PartnerReservationFlightsLeg> flightLegs;
     private List<PartnerReservationLuggage> luggages;
     private List<PartnerReservationCancelationRule> cancelationRules;
     private List<PartnerReservationChangeRule> changeRules;

@@ -7,6 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,10 @@ public interface ReservationSegmentsMapper {
     @Mapping(target = "cancelationRules", expression = "java(mapCancelationRules(partnerReservationSegment))")
     @Mapping(target = "changeRules", expression = "java(mapChangeRules(partnerReservationSegment))")
     @Mapping(target = "flightsLegs", expression = "java(mapFlightLeg(partnerReservationSegment))")
+    @Mapping(target = "airlineIata", source = "airline.iata")
+    @Mapping(target = "airlineDescription", source = "airline.description")
+    @Mapping(target = "departureDate", source = "departureDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    @Mapping(target = "arrivalDate", source = "arrivalDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     SegmentEntity toSegmentEntity(PartnerReservationSegment partnerReservationSegment);
 
     default Set<LuggageEntity> mapLuggages(PartnerReservationSegment partnerReservationSegment) {
@@ -50,12 +56,11 @@ public interface ReservationSegmentsMapper {
     default Set<FlightLegEntity> mapFlightLeg(PartnerReservationSegment partnerReservationSegment) {
         var flightLegMapper = Mappers.getMapper(ReservationFlightLegMapper.class);
 
-        return partnerReservationSegment.getFlightsLegs()
+       return partnerReservationSegment.getFlightLegs()
                 .stream()
                 .map(flightLegMapper::toFlightLegEntity)
-                .collect(Collectors.toSet());
+                .sorted(Comparator.comparing(FlightLegEntity::getDepartureDate))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
-
-
 }
 

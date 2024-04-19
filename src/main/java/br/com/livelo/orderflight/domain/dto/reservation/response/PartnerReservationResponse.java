@@ -4,23 +4,26 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PartnerReservationResponse {
 	private String commerceOrderId;
 	private String partnerOrderId;
     private String partnerCode;
+    @DateTimeFormat(pattern = "yyyy-MM-ddTHH:mm:ss")
     private LocalDateTime expirationDate;
     private String createDate;
     private PartnerResponseStatus status;
     private BigDecimal amount;
-    private List<PartnerReservationOrdersPriceDescription> ordersPriceDescription;
+    private PartnerReservationOrdersPriceDescription ordersPriceDescription;
     private List<PartnerReservationItem> items;
 }

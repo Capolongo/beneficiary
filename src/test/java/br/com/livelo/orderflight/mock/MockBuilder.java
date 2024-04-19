@@ -1,26 +1,23 @@
 package br.com.livelo.orderflight.mock;
 
+import br.com.livelo.orderflight.domain.dtos.confirmation.response.*;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderItemRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderPriceRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderItemResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderPriceResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderStatusResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderPaxResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderSegmentsResponse;
-import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationOrderTravelInfoResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
+import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.entity.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -125,15 +122,25 @@ public class MockBuilder {
                 .firstName("firstName")
                 .lastName("lastName")
                 .birthDate("birthDate")
-                .document(Set.of())
+                .documents(Set.of())
                 .email("email")
-                .areaCode("areaCode")
+                .areaCode("81")
                 .phone("phone")
                 .build();
     }
 
     public static ConfirmationOrderSegmentsResponse confirmationOrderSegmentsResponse() {
         return ConfirmationOrderSegmentsResponse.builder()
+                .partnerId("partnerId")
+                .step("step")
+                .stops(10)
+                .flightDuration(120)
+                .originIata("REC")
+                .destinationIata("GRU")
+                .cancelationRules(Set.of(ConfirmationOrderCancaletionRulesResponse.builder().build()))
+                .changeRules(Set.of(ConfirmationOrderChangeRulesResponse.builder().build()))
+                .luggages(Set.of(ConfirmationOrderLuggagesResponse.builder().build()))
+                .flightsLegs(Set.of(ConfirmationOrderFlightsLegsResponse.builder().build()))
                 .build();
     }
 
@@ -180,11 +187,21 @@ public class MockBuilder {
                 .lastName("lastName")
                 .gender("gender")
                 .birthDate("birthDate")
-                .document(Set.of())
+                .documents(Set.of())
                 .email("email")
-                .areaCode("areaCode")
+                .areaCode("81")
                 .phone("phone")
                 .build();
+    }
+
+    public static ResponseEntity<List<PricingCalculateResponse>> pricingCalculateResponse(){
+        List<PricingCalculateResponse> prices = new ArrayList<>();
+        prices.add(PricingCalculateResponse.builder()
+                .prices(
+                        new ArrayList<>(List.of(PricingCalculatePrice.builder().priceListId("price").build()))
+                ).build()
+        );
+        return  ResponseEntity.ok().body(prices);
     }
 
     public static ResponseEntity<ConnectorConfirmOrderResponse> connectorConfirmOrderResponse() {
@@ -200,12 +217,30 @@ public class MockBuilder {
                 .build());
     }
 
+    public static ResponseEntity<ConnectorConfirmOrderResponse> connectorVoucherResponse() {
+        return ResponseEntity.ok().body(ConnectorConfirmOrderResponse
+                .builder()
+                .partnerOrderId("partnerOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate("date")
+                .expirationDate("date")
+                .transactionId("transactionId")
+                .currentStatus(ConnectorConfirmOrderStatusResponse.builder().build())
+                .voucher("voucher")
+                .build());
+    }
+
     public static OrderEntity orderEntity() {
         Set<OrderItemEntity> items = new HashSet<>();
         items.add(orderItemEntity());
 
         Set<OrderStatusEntity> statusHistory = new HashSet<>();
         statusHistory.add(statusInitial());
+
+        Set<ProcessCounterEntity> processCounter = new HashSet<>();
+        processCounter.add(ProcessCounterEntity.builder().process("getConfirmation")
+                        .count(10)
+                .build());
 
         return OrderEntity.builder()
                 .id("id")
@@ -223,8 +258,45 @@ public class MockBuilder {
                 .items(items)
                 .statusHistory(statusHistory)
                 .currentStatus(statusInitial())
+                .lastModifiedDate(ZonedDateTime.now())
+                .processCounters(processCounter)
                 .build();
     }
+
+    public static OrderEntity orderEntityWithMoreFlight() {
+        Set<OrderItemEntity> items = new HashSet<>();
+        items.add(orderItemEntity());
+        items.add(orderItemEntity());
+
+        Set<OrderStatusEntity> statusHistory = new HashSet<>();
+        statusHistory.add(statusInitial());
+
+        Set<ProcessCounterEntity> processCounter = new HashSet<>();
+        processCounter.add(ProcessCounterEntity.builder().process("getConfirmation")
+                .count(10)
+                .build());
+
+        return OrderEntity.builder()
+                .id("id")
+                .commerceOrderId("commerceOrderId")
+                .partnerOrderId("partnerOrderId")
+                .partnerCode("partnerCode")
+                .submittedDate(LocalDateTime.now())
+                .channel("channel")
+                .tierCode("tierCode")
+                .originOrder("originOrder")
+                .customerIdentifier("customerIdentifier")
+                .transactionId("transactionId")
+                .expirationDate(LocalDateTime.now())
+                .price(orderPriceEntity())
+                .items(items)
+                .statusHistory(statusHistory)
+                .currentStatus(statusInitial())
+                .lastModifiedDate(ZonedDateTime.now())
+                .processCounters(processCounter)
+                .build();
+    }
+
 
     public static OrderEntity orderEntityAlreadyConfirmed() {
         Set<OrderItemEntity> items = new HashSet<>();
@@ -298,16 +370,27 @@ public class MockBuilder {
                 .firstName("firstName")
                 .lastName("lastName")
                 .email("email")
-                .areaCode("areaCode")
+                .areaCode("81")
                 .phoneNumber("phone")
                 .gender("gender")
                 .birthDate("birthDate")
-                .document(Set.of())
+                .documents(Set.of())
                 .build();
     }
 
     public static SegmentEntity segmentEntity() {
-        return SegmentEntity.builder().build();
+        return SegmentEntity.builder()
+                .partnerId("partnerId")
+                .step("step")
+                .stops(10)
+                .flightDuration(120)
+                .originIata("REC")
+                .destinationIata("GRU")
+                .cancelationRules(Set.of(CancelationRuleEntity.builder().build()))
+                .changeRules(Set.of(ChangeRuleEntity.builder().build()))
+                .luggages(Set.of(LuggageEntity.builder().build()))
+                .flightsLegs(Set.of(FlightLegEntity.builder().build()))
+                .build();
     }
 
     public static OrderPriceEntity orderPriceEntity() {
@@ -315,7 +398,7 @@ public class MockBuilder {
         orderPriceDescriptions.add(orderPriceDescriptionEntity());
         return OrderPriceEntity.builder()
                 .id(1L)
-                .accrualPoints(1000.0)
+                .accrualPoints(BigDecimal.valueOf(1000.0))
                 .amount(BigDecimal.valueOf(1000))
                 .pointsAmount(BigDecimal.valueOf(1000))
                 .partnerAmount(BigDecimal.valueOf(1000))
@@ -345,6 +428,20 @@ public class MockBuilder {
                 .statusDate(LocalDateTime.now())
                 .build();
     }
+
+    public static OrderStatusEntity statusFaill() {
+        return OrderStatusEntity.builder()
+                .id(1L)
+                .code(StatusLivelo.FAILED.getCode())
+                .description(StatusLivelo.FAILED.getDescription())
+                .partnerCode("partnerCode")
+                .partnerDescription("partnerDescription")
+                .partnerResponse("partnerResponse")
+                .statusDate(LocalDateTime.now())
+                .build();
+    }
+
+
 
     public static OrderStatusEntity statusProcessing() {
         return OrderStatusEntity.builder()
@@ -413,5 +510,12 @@ public class MockBuilder {
         .total(total)
         .totalPages(total / orders.size())
         .build();
+    }
+    public static ProcessCounterEntity processCounterEntity(int count, String process) {
+        return ProcessCounterEntity.builder()
+                .id(0)
+                .count(count)
+                .process(process)
+                .build();
     }
 }

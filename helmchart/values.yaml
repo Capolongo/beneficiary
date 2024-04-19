@@ -31,6 +31,9 @@ livelo:
     oracledb:
       enable: true
       instance: default
+    rabbitmq:
+      enable: true
+      instance: transactional
 
 envResources:
   enabled: true
