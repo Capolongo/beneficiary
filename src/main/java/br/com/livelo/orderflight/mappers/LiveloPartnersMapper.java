@@ -1,5 +1,6 @@
 package br.com.livelo.orderflight.mappers;
 
+import br.com.livelo.orderflight.constants.AppConstants;
 import br.com.livelo.orderflight.domain.dtos.update.*;
 import br.com.livelo.orderflight.domain.entity.*;
 
@@ -113,7 +114,7 @@ public interface LiveloPartnersMapper {
 
     default ArrayList<ServiceDTO> mapServices(Set<LuggageEntity> luggages) {
         ArrayList<ServiceDTO> services = new ArrayList<ServiceDTO>();
-        var handLuggage = luggages.stream().filter(luggage -> "HAND_LUGGAGE".equals(luggage.getType())).toList();
+        var handLuggage = luggages.stream().filter(luggage -> AppConstants.HAND_BAGGAGE.equals(luggage.getType())).toList();
         if (!handLuggage.isEmpty()) {
             services.add(luggageEntityEntityToServiceDTO(handLuggage.get(0)));
         }
