@@ -24,10 +24,10 @@ import static java.util.Optional.ofNullable;
 public class PricingProxy {
     private final PricingClient pricingClient;
 
-    public List<PricingCalculateResponse> calculate(PricingCalculateRequest request) {
+    public List<PricingCalculateResponse> calculate(PricingCalculateRequest request, String transactionId, String userId) {
         try {
             log.info("PricingProxy.calculate - call pricing calculate. request: {}", LogUtils.writeAsJson(request));
-            ResponseEntity<List<PricingCalculateResponse>> response = pricingClient.calculate(request);
+            ResponseEntity<List<PricingCalculateResponse>> response = pricingClient.calculate(request, transactionId, userId);
             log.info("PricingProxy.calculate -  pricing calculate response: {}", LogUtils.writeAsJson(response));
 
             return ofNullable(response.getBody())
