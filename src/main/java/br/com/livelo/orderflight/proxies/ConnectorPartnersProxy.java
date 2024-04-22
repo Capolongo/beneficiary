@@ -82,8 +82,10 @@ public class ConnectorPartnersProxy {
 
     public PartnerReservationResponse getReservation(String id, String transactionId, String partnerCode, List<String> segmentsPartnerIds, String userId) {
         try {
+            log.info("ConnectorPartnersProxy.getReservation: id: [{}], transactionId: [{}], partnerCode: [{}], segmentsPartnerIds: [{}], userId: [{}]", id, transactionId, partnerCode, segmentsPartnerIds, userId);
             var webhook = this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.GETRESERVATION);
             var url = URI.create(webhook.getConnectorUrl());
+            log.info("ConnectorPartnersProxy.getReservation: webhook: [{}], url: [{}]", webhook, url);
             ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId, userId, segmentsPartnerIds);
             return response.getBody();
         } catch (FeignException e) {
