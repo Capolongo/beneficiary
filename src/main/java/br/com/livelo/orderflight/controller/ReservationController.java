@@ -5,7 +5,6 @@ import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationReque
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
 import br.com.livelo.orderflight.service.reservation.impl.ReservationServiceImpl;
 import br.com.livelo.orderflight.utils.LogUtils;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -30,7 +29,7 @@ public class ReservationController {
             @RequestHeader(value = "customerId", required = false) String customerId,
             @RequestHeader(value = "channel", required = false) String channel,
             @RequestHeader(value = "listPrice") String listPrice,
-            @RequestBody @Valid ReservationRequest reservationRequest
+            @RequestBody ReservationRequest reservationRequest
     ) {
         MDC.put(COMMERCE_ORDER_ID, reservationRequest.getCommerceOrderId());
         MDC.put(TRANSACTION_ID, transactionId);
