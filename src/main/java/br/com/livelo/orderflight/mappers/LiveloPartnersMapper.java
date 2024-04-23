@@ -116,7 +116,7 @@ public interface LiveloPartnersMapper {
         ArrayList<ServiceDTO> services = new ArrayList<ServiceDTO>();
         var handLuggage = luggages.stream().filter(luggage -> AppConstants.HAND_BAGGAGE.equals(luggage.getType())).toList();
         if (!handLuggage.isEmpty()) {
-            services.add(luggageEntityEntityToServiceDTO(handLuggage.get(0)));
+            services.add(ServiceDTO.builder().type("HAND_LUGGAGE").isIncluded(Boolean.TRUE).description(handLuggage.get(0).getDescription()).build());
         }
         return services;
     }
@@ -124,6 +124,7 @@ public interface LiveloPartnersMapper {
     default boolean isTaxItem(String skuId) {
         return skuId.toUpperCase().contains("TAX");
     }
+
     default List<ItemDTO> buildItemsDTO(OrderEntity order) {
         StatusDTO statusDTO = orderStatusEntityToStatusDTO(order.getCurrentStatus());
 
