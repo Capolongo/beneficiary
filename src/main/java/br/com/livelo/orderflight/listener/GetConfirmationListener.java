@@ -19,15 +19,15 @@ public class GetConfirmationListener {
     private final ObjectMapper objectMapper;
     private final ConfirmationService confirmationService;
 
-//    @RabbitListener(queues = "${spring.rabbitmq.order-flight-commands-getconfirmation.queue}", concurrency = "${spring.rabbitmq.order-flight-commands-getconfirmation.concurrency}")
-//    public void consumer(Message payload) {
-//        try {
-//            final OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);
-//            confirmationService.orderProcess(orderProcess);
-//        } catch (Exception exception) {
-//            log.error("OrderProcessListener.consumer - error in processing payload [{}]", new String(payload.getBody(), StandardCharsets.UTF_8));
-//            log.error("OrderProcessListener.consumer - error ", exception);
-//            throw new AmqpRejectAndDontRequeueException(exception);
-//        }
-//    }
+    @RabbitListener(queues = "${spring.rabbitmq.order-flight-commands-getconfirmation.queue}", concurrency = "${spring.rabbitmq.order-flight-commands-getconfirmation.concurrency}")
+    public void consumer(Message payload) {
+        try {
+            final OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);
+            confirmationService.orderProcess(orderProcess);
+        } catch (Exception exception) {
+            log.error("OrderProcessListener.consumer - error in processing payload [{}]", new String(payload.getBody(), StandardCharsets.UTF_8));
+            log.error("OrderProcessListener.consumer - error ", exception);
+            throw new AmqpRejectAndDontRequeueException(exception);
+        }
+    }
 }
