@@ -22,8 +22,8 @@ public interface ReservationSegmentsMapper {
     @Mapping(target = "flightsLegs", expression = "java(mapFlightLeg(partnerReservationSegment))")
     @Mapping(target = "airlineIata", source = "airline.iata")
     @Mapping(target = "airlineDescription", source = "airline.description")
-    @Mapping(target = "departureDate", source = "departureDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    @Mapping(target = "arrivalDate", source = "arrivalDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    @Mapping(target = "departureDate", source = "departureDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
+    @Mapping(target = "arrivalDate", source = "arrivalDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
     SegmentEntity toSegmentEntity(PartnerReservationSegment partnerReservationSegment);
 
     default Set<LuggageEntity> mapLuggages(PartnerReservationSegment partnerReservationSegment) {

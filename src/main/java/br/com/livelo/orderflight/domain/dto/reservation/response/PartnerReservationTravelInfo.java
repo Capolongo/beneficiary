@@ -16,4 +16,5 @@ public class PartnerReservationTravelInfo {
     private Integer inf;
     private String cabinClass;
     private String voucher;
+    private Boolean isInternational;
 }
