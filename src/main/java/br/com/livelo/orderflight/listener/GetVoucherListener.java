@@ -17,14 +17,14 @@ public class GetVoucherListener {
     private final VoucherService voucherService;
 
 
-    @RabbitListener(queues = "${spring.rabbitmq.order-flight-commands-getvoucher.queue}",
-            concurrency = "${spring.rabbitmq.order-flight-commands-getvoucher.concurrency}")
-    public void consumer(Message payload) {
-        try {
-            final OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);
-            voucherService.orderProcess(orderProcess);
-        } catch (Exception exception) {
-            throw new AmqpRejectAndDontRequeueException(exception);
-        }
-    }
+//    @RabbitListener(queues = "${spring.rabbitmq.order-flight-commands-getvoucher.queue}",
+//            concurrency = "${spring.rabbitmq.order-flight-commands-getvoucher.concurrency}")
+//    public void consumer(Message payload) {
+//        try {
+//            final OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);
+//            voucherService.orderProcess(orderProcess);
+//        } catch (Exception exception) {
+//            throw new AmqpRejectAndDontRequeueException(exception);
+//        }
+//    }
 }
