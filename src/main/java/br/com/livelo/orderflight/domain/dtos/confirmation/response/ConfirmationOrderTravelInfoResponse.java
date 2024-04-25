@@ -10,10 +10,10 @@ import java.util.Set;
 public class ConfirmationOrderTravelInfoResponse {
     private String type;
     private String reservationCode;
-    private int adultQuantity;
-    private int childQuantity;
-    private int babyQuantity;
-    private String typeClass;
+    private int adt;
+    private int chd;
+    private int inf;
+    private String cabinClass;
     private String voucher;
     private Set<ConfirmationOrderPaxResponse> paxs;
 }

@@ -21,11 +21,11 @@ public class TravelInfoEntity extends BaseEntity {
     private Long id;
     private String type;
     private String reservationCode;
-    private Integer adultQuantity;
-    private Integer childQuantity;
-    private Integer babyQuantity;
+    private Integer adt;
+    private Integer chd;
+    private Integer inf;
     private String voucher;
-    private String typeClass;
+    private String cabinClass;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "TRAVEL_INFO_ID")
     @OrderBy("type asc")
