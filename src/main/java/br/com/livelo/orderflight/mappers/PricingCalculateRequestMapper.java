@@ -31,10 +31,10 @@ public class PricingCalculateRequestMapper {
         Boolean isInternational = partnerReservationItemTypeFlight.getTravelInfo().getIsInternational() != null ? partnerReservationItemTypeFlight.getTravelInfo().getIsInternational() : false;
         return PricingCalculateTravelInfo.builder()
                 .type(partnerReservationItemTypeFlight.getTravelInfo().getType())
-                .adt(partnerReservationItemTypeFlight.getTravelInfo().getAdultQuantity())
-                .chd(partnerReservationItemTypeFlight.getTravelInfo().getChildQuantity())
-                .inf(partnerReservationItemTypeFlight.getTravelInfo().getBabyQuantity())
-                .cabinClass(partnerReservationItemTypeFlight.getTravelInfo().getTypeClass())
+                .adt(partnerReservationItemTypeFlight.getTravelInfo().getAdt())
+                .chd(partnerReservationItemTypeFlight.getTravelInfo().getChd())
+                .inf(partnerReservationItemTypeFlight.getTravelInfo().getInf())
+                .cabinClass(partnerReservationItemTypeFlight.getTravelInfo().getCabinClass())
                 .stageJourney(RESERVATION)
                 .isInternational(isInternational)
                 .build();
@@ -105,7 +105,7 @@ public class PricingCalculateRequestMapper {
                     .destinationCity(partnerReservationFlightsLeg.getDestinationCity())
                     .destinationAirport(partnerReservationFlightsLeg.getDestinationAirport())
                     .arrivalDate(partnerReservationFlightsLeg.getArrivalDate())
-                    .cabinClass(partnerReservationItemTypeFlight.getTravelInfo().getTypeClass())
+                    .cabinClass(partnerReservationItemTypeFlight.getTravelInfo().getCabinClass())
                     .build());
         }
         return flightsLegs;
