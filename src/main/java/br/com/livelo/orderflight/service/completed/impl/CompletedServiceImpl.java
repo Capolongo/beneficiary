@@ -39,6 +39,7 @@ public class CompletedServiceImpl implements CompletedService {
 
         orderService.addNewOrderStatus(order, newStatus);
         orderService.save(order);
+        orderService.updateOrderOnLiveloPartners(order, currentStatus.getCode());
 
         log.info("CompletedServiceImpl.orderProcess - order completed - id: [{}]", order.getId());
     }
