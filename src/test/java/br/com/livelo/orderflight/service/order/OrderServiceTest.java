@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -324,6 +325,26 @@ class OrderServiceTest {
 
         assertAll(() -> {
             orderService.orderDetailLog("test", StatusLivelo.PROCESSING.getCode(), order);
+        });
+    }
+
+    @Test
+    void shouldUpdateSubmittedDate() {
+        OrderEntity order = MockBuilder.orderEntity();
+        String date = "2013-09-29T18:46:19Z";
+        
+        assertDoesNotThrow(() -> {
+            orderService.updateSubmittedDate(order, date);
+        });
+    }
+
+    @Test
+    void shouldUpdateSubmittedDateFailed() {
+        OrderEntity order = MockBuilder.orderEntity();
+        String date = "2013-09-29T18:46:19";
+        
+        assertDoesNotThrow(() -> {
+            orderService.updateSubmittedDate(order, date);
         });
     }
 }
