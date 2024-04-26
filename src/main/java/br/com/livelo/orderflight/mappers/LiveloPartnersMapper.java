@@ -131,7 +131,7 @@ public interface LiveloPartnersMapper {
         var flight = order.getItems().stream().filter(item -> !isTaxItem(item.getSkuId())).toList();
 
         var travelSummary = TravelSummaryDTO.builder()
-                .tour(null)
+                .tour(TourDTO.builder().build())
                 .flights(buildFlights(flight.get(0).getSegments(), flight.get(0).getTravelInfo()))
                 .accommodations(List.of())
                 .vehicles(List.of())
