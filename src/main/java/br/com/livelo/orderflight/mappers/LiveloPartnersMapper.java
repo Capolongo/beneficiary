@@ -4,6 +4,7 @@ import br.com.livelo.orderflight.constants.AppConstants;
 import br.com.livelo.orderflight.domain.dtos.update.*;
 import br.com.livelo.orderflight.domain.entity.*;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -130,8 +131,25 @@ public interface LiveloPartnersMapper {
 
         var flight = order.getItems().stream().filter(item -> !isTaxItem(item.getSkuId())).toList();
 
+
+        var zoneDTO = ZoneDTO.builder()
+                .departureDate(ZonedDateTime.now())
+                .arrivalDate(ZonedDateTime.now())
+                .description("desc")
+                .longitude("123123")
+                .latitude("1231231")
+                .name("name")
+                .build();
+        var originDTO = OriginDTO.builder().departureDate("2024-12-12").arrivalDate("2024-12-12").zone(zoneDTO).build();
+        var destinationDTO = DestinationDTO.builder().departureDate("2024-12-12").arrivalDate("2024-12-12").zone(zoneDTO).build();
+        var tourDTO = TourDTO.builder()
+                .description("tourDTO")
+                .destinations(List.of(destinationDTO))
+                .origins(List.of(originDTO))
+                .build();
+
         var travelSummary = TravelSummaryDTO.builder()
-                .tour(TourDTO.builder().build())
+                .tour(tourDTO)
                 .flights(buildFlights(flight.get(0).getSegments(), flight.get(0).getTravelInfo()))
                 .accommodations(List.of())
                 .vehicles(List.of())
