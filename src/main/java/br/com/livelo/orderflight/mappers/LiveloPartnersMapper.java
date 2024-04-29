@@ -131,7 +131,9 @@ public interface LiveloPartnersMapper {
 
         var flight = order.getItems().stream().filter(item -> !isTaxItem(item.getSkuId())).toList();
 
-
+        var country = CountryDTO.builder().code("country_code").name("country_name").build();
+        var city = CityDTO.builder().name("city_name").build();
+        var state = StateDTO.builder().code("state_code").name("state_name").build();
         var zoneDTO = ZoneDTO.builder()
                 .departureDate(ZonedDateTime.now())
                 .arrivalDate(ZonedDateTime.now())
@@ -139,6 +141,9 @@ public interface LiveloPartnersMapper {
                 .longitude("123123")
                 .latitude("1231231")
                 .name("name")
+                .country(country)
+                .city(city)
+                .state(state)
                 .build();
         var originDTO = OriginDTO.builder().departureDate("2024-12-12").arrivalDate("2024-12-12").zone(zoneDTO).build();
         var destinationDTO = DestinationDTO.builder().departureDate("2024-12-12").arrivalDate("2024-12-12").zone(zoneDTO).build();
