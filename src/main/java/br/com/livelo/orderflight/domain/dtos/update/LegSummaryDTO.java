@@ -3,6 +3,8 @@ package br.com.livelo.orderflight.domain.dtos.update;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder(toBuilder=true)
 public class LegSummaryDTO {
@@ -18,5 +20,5 @@ public class LegSummaryDTO {
 	private String seatClassDescription;
 	private String arrivalName;
 	private String departureName;
-
+	private List<Object> stops;
 }

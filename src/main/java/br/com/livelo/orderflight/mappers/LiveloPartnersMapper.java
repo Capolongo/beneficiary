@@ -50,6 +50,7 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "arrival.cityName", source = "destinationCity")
     @Mapping(target = "seatClassCode", source = "fareClass")
     @Mapping(target = "seatClassDescription", expression = "java(setSeatClass(flightLegEntity))")
+    @Mapping(target = "stops", expression = "java(stopsList)")
     LegSummaryDTO flightLegEntityToLegSummaryDTO(FlightLegEntity flightLegEntity);
 
     @Mapping(target = "phones", expression = "java(setPhone(paxEntity))")
@@ -230,4 +231,6 @@ public interface LiveloPartnersMapper {
     default String setSeatClass(FlightLegEntity leg) {
         return "ECONOMY".equalsIgnoreCase(leg.getFareBasis()) ? "Econômica" : "Executiva";
     }
+
+    List<Object> stopsList = new ArrayList<>();
 }
