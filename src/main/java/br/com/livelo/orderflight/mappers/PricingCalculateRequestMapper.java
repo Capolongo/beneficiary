@@ -14,7 +14,7 @@ import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORD
 @UtilityClass
 @Slf4j
 public class PricingCalculateRequestMapper {
-    private static final String TYPE_FLIGHT = "type_flight";
+    private static final String TYPE_FLIGHT = "FLIGHT";
     private static final String RESERVATION = "RESERVATION";
     private static final String BRL = "BRL";
 
