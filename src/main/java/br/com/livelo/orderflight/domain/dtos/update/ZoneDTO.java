@@ -16,9 +16,9 @@ public class ZoneDTO {
 	private String id;
 	private String name;
 	private String description;
-//	private CountryDTO country;
-//	private StateDTO state;
-//	private CityDTO city;
+	private CountryDTO country;
+	private StateDTO state;
+	private CityDTO city;
 	private String latitude;
 	private String longitude;
 	private ZonedDateTime arrivalDate;

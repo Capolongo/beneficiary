@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -138,7 +139,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public void updateSubmittedDate(OrderEntity order, String date) {
-        order.setSubmittedDate(LocalDateTime.parse(date));
+        LocalDateTime submitDate;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
+            submitDate = LocalDateTime.parse(date, formatter);
+        } catch (Exception e) {
+            submitDate = LocalDateTime.now();
+        }
+
+        order.setSubmittedDate(submitDate);
     }
 
     public Optional<OrderEntity> findByCommerceOrderIdIn(List<String> commerceOrderId) {
@@ -186,7 +195,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         UpdateOrderDTO updateOrderDTO = liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
-        liveloPartnersProxy.updateOrder(order.getId(), updateOrderDTO);
+        liveloPartnersProxy.updateOrder(order.getCommerceOrderId(), updateOrderDTO);
     }
 
     private Pageable pageRequestOf(Integer page, Integer rows) throws OrderFlightException {

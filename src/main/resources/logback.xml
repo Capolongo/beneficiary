@@ -35,6 +35,7 @@
                         "service": "${springAppName:-}",
                         "class": "%logger{40}",
                         "status": "%X{status}",
+                        "userId": "%X{userId}",
                         "transactionId": "%X{transactionId}",
                         "commerceOrderId": "%X{commerceOrderId}",
                         "flow": "%X{flow}",

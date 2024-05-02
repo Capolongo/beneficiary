@@ -2,12 +2,13 @@ package br.com.livelo.orderflight.service.confirmation;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.headers.RequiredHeaders;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface ConfirmationService {
-    ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest) throws OrderFlightException;
+    ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest, RequiredHeaders headers) throws OrderFlightException;
 
     void orderProcess(OrderProcess payload) throws JsonProcessingException;
 }

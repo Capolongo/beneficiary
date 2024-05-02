@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.headers.RequiredHeaders;
 import br.com.livelo.orderflight.service.confirmation.impl.ConfirmationServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,14 +37,15 @@ class ConfirmationControllerTest {
     ConfirmOrderResponse responseBody = MockBuilder.confirmOrderResponse();
     String id = "id";
 
-    when(confirmationService.confirmOrder(anyString(), any(ConfirmOrderRequest.class))).thenReturn(responseBody);
+    RequiredHeaders requiredHeaders = new RequiredHeaders("", "");
+    when(confirmationService.confirmOrder(anyString(), any(ConfirmOrderRequest.class), any(RequiredHeaders.class))).thenReturn(responseBody);
 
-    ResponseEntity<ConfirmOrderResponse> response = controller.confirmOrder(id, requestBody);
+    ResponseEntity<ConfirmOrderResponse> response = controller.confirmOrder(id, requestBody, "", "");
 
     assertEquals(responseBody, response.getBody());
     assertEquals(200, response.getStatusCode().value());
     verify(confirmationService).confirmOrder(id,
-            requestBody);
+            requestBody, requiredHeaders);
     verifyNoMoreInteractions(confirmationService);
   }
 }
