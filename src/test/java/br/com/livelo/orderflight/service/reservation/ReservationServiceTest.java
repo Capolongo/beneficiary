@@ -160,7 +160,7 @@ class ReservationServiceTest {
         when(orderService.isFlightItem(any())).thenReturn(true);
         var request = this.buildResevationRequest(
                 List.of(this.buildReservationItem(transactionId, type, "cvc_flight"),
-                        this.buildReservationItem(transactionId, "type_flight_tax", "cvc_flight_tax")
+                        this.buildReservationItem(transactionId, "FLIGHT_TAX", "cvc_flight_tax")
                 ),
                 List.of(segmentsPartnersId, segmentsPartnersId)
         );
@@ -513,6 +513,7 @@ class ReservationServiceTest {
                                 PartnerReservationItem
                                         .builder()
                                         .type("FLIGHT")
+                                        .amount(new BigDecimal(10))
                                         .commerceItemId(commerceItemId)
                                         .travelInfo(PartnerReservationTravelInfo.builder().build())
                                         .segments(List.of(PartnerReservationSegment.builder()
