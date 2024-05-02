@@ -74,7 +74,7 @@ class ReservationServiceTest {
     void shouldCreateOrder_WhenReservationExistsInPartner() {
         var transactionId = "123";
         var id = 1L;
-        var type = "type_flight";
+        var type = "FLIGHT";
         var segmentsPartnersId = "asdf";
         var orderMock = mock(OrderEntity.class);
 
@@ -113,7 +113,7 @@ class ReservationServiceTest {
     void shouldCreateOrder_WhenReservationExistsInPartnerAndItemIsFlight() {
         var transactionId = "123";
         var id = 1L;
-        var type = "type_flight";
+        var type = "FLIGHT";
         var segmentsPartnersId = "asdf";
         var orderMock = mock(OrderEntity.class);
 
@@ -153,14 +153,14 @@ class ReservationServiceTest {
     void shouldCreateOrder_WhenReservationExistsInPartnerAndPriceModalitiesIsNull() {
         var transactionId = "123";
         var id = 1L;
-        var type = "type_flight";
+        var type = "FLIGHT";
         var segmentsPartnersId = "asdf";
         var orderMock = mock(OrderEntity.class);
 
         when(orderService.isFlightItem(any())).thenReturn(true);
         var request = this.buildResevationRequest(
                 List.of(this.buildReservationItem(transactionId, type, "cvc_flight"),
-                        this.buildReservationItem(transactionId, "type_flight_tax", "cvc_flight_tax")
+                        this.buildReservationItem(transactionId, "FLIGHT_TAX", "cvc_flight_tax")
                 ),
                 List.of(segmentsPartnersId, segmentsPartnersId)
         );
@@ -511,7 +511,8 @@ class ReservationServiceTest {
                         List.of(
                                 PartnerReservationItem
                                         .builder()
-                                        .type("type_flight")
+                                        .type("FLIGHT")
+                                        .amount(new BigDecimal(10))
                                         .commerceItemId(commerceItemId)
                                         .travelInfo(PartnerReservationTravelInfo.builder().build())
                                         .segments(List.of(PartnerReservationSegment.builder()
