@@ -58,6 +58,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             orderService.updateVoucher(itemFlight, connectorPartnerConfirmation.getVoucher());
             orderService.updateSubmittedDate(order, orderRequest.getSubmittedDate());
             order.setPartnerOrderId(connectorPartnerConfirmation.getPartnerOrderId());
+            order.setChannel(orderRequest.getChannel());
+            order.setOriginOrder(orderRequest.getOriginOfOrder());
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorPartnerConfirmation.getCurrentStatus());
         } catch (OrderFlightException exception) {
             if (!exception.getOrderFlightErrorType().equals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR)) {
