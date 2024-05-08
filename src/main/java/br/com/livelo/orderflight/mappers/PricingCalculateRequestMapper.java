@@ -9,12 +9,15 @@ import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
 
 @UtilityClass
 @Slf4j
 public class PricingCalculateRequestMapper {
-    private static final String TYPE_FLIGHT = "type_flight";
+    private static final String FLIGHT = "FLIGHT";
+    private static final String FLIGHT_TAX = "FLIGHT_TAX";
     private static final String RESERVATION = "RESERVATION";
     private static final String BRL = "BRL";
 
@@ -31,10 +34,10 @@ public class PricingCalculateRequestMapper {
         Boolean isInternational = partnerReservationItemTypeFlight.getTravelInfo().getIsInternational() != null ? partnerReservationItemTypeFlight.getTravelInfo().getIsInternational() : false;
         return PricingCalculateTravelInfo.builder()
                 .type(partnerReservationItemTypeFlight.getTravelInfo().getType())
-                .adt(partnerReservationItemTypeFlight.getTravelInfo().getAdultQuantity())
-                .chd(partnerReservationItemTypeFlight.getTravelInfo().getChildQuantity())
-                .inf(partnerReservationItemTypeFlight.getTravelInfo().getBabyQuantity())
-                .cabinClass(partnerReservationItemTypeFlight.getTravelInfo().getTypeClass())
+                .adt(partnerReservationItemTypeFlight.getTravelInfo().getAdt())
+                .chd(partnerReservationItemTypeFlight.getTravelInfo().getChd())
+                .inf(partnerReservationItemTypeFlight.getTravelInfo().getInf())
+                .cabinClass(partnerReservationItemTypeFlight.getTravelInfo().getCabinClass())
                 .stageJourney(RESERVATION)
                 .isInternational(isInternational)
                 .build();
@@ -105,7 +108,7 @@ public class PricingCalculateRequestMapper {
                     .destinationCity(partnerReservationFlightsLeg.getDestinationCity())
                     .destinationAirport(partnerReservationFlightsLeg.getDestinationAirport())
                     .arrivalDate(partnerReservationFlightsLeg.getArrivalDate())
-                    .cabinClass(partnerReservationItemTypeFlight.getTravelInfo().getTypeClass())
+                    .cabinClass(partnerReservationItemTypeFlight.getTravelInfo().getCabinClass())
                     .build());
         }
         return flightsLegs;
@@ -151,46 +154,48 @@ public class PricingCalculateRequestMapper {
     }
 
     private static PricingCalculatePrice buildPricingCalculatePrice(PartnerReservationResponse partnerReservationResponse) {
-        var totalTaxes = BigDecimal.ZERO;
-        var totalFlight = BigDecimal.ZERO;
+        List<PricingCalculateTaxes> pricingCalculateTaxes = partnerReservationResponse.getOrdersPriceDescription().getTaxes().stream()
+                .map(tax -> PricingCalculateTaxes.builder()
+                        .type(tax.getType())
+                        .amount(tax.getAmount())
+                        .build())
+                .collect(Collectors.toList());
 
-        List<PricingCalculateTaxes> pricingCalculateTaxes = new ArrayList<>();
-        List<PricingCalculateFlight> pricingCalculateFlights = new ArrayList<>();
-        for (PartnerReservationOrdersPriceDescriptionTaxes partnerReservationOrdersPriceDescriptionTaxes : partnerReservationResponse.getOrdersPriceDescription().getTaxes()) {
-            totalTaxes = totalTaxes.add(partnerReservationOrdersPriceDescriptionTaxes.getAmount());
-            pricingCalculateTaxes.add(PricingCalculateTaxes.builder()
-                    .type(partnerReservationOrdersPriceDescriptionTaxes.getType())
-                    .amount(partnerReservationOrdersPriceDescriptionTaxes.getAmount())
-                    .build());
-        }
+        List<PricingCalculateFlight> pricingCalculateFlights = partnerReservationResponse.getOrdersPriceDescription().getFlights().stream()
+                .map(flight -> PricingCalculateFlight.builder()
+                        .passengerType(flight.getPassengerType())
+                        .amount(flight.getAmount())
+                        .passengerCount(flight.getPassengerCount())
+                        .build())
+                .collect(Collectors.toList());
 
-        for (PartnerReservationOrdersPriceDescriptionFlight partnerReservationOrdersPriceDescriptionFlight : partnerReservationResponse.getOrdersPriceDescription().getFlights()) {
-            totalFlight = totalFlight.add(partnerReservationOrdersPriceDescriptionFlight.getAmount());
-            pricingCalculateFlights.add(PricingCalculateFlight.builder()
-                    .passengerType(partnerReservationOrdersPriceDescriptionFlight.getPassengerType())
-                    .amount(partnerReservationOrdersPriceDescriptionFlight.getAmount())
-                    .passengerCount(partnerReservationOrdersPriceDescriptionFlight.getPassengerCount())
-                    .build());
-        }
+        BigDecimal totalFlight = partnerReservationResponse.getItems().stream()
+                .filter(item -> FLIGHT.equals(item.getType()))
+                .map(PartnerReservationItem::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        var priceDescription = PricingCalculatePricesDescription.builder()
-                .flights(pricingCalculateFlights)
-                .taxes(pricingCalculateTaxes)
-                .build();
+        BigDecimal totalTaxes = partnerReservationResponse.getItems().stream()
+                .filter(item -> FLIGHT_TAX.equals(item.getType()))
+                .map(PartnerReservationItem::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return PricingCalculatePrice.builder()
                 .currency(BRL)
                 .amount(partnerReservationResponse.getAmount())
-                .pricesDescription(priceDescription)
+                .pricesDescription(PricingCalculatePricesDescription.builder()
+                        .flights(pricingCalculateFlights)
+                        .taxes(pricingCalculateTaxes)
+                        .build())
                 .flight(PricingCalculateFlight.builder().amount(totalFlight).build())
                 .taxes(PricingCalculateTaxes.builder().amount(totalTaxes).build())
                 .build();
     }
 
+
     private static PartnerReservationItem getItemTypeFlight(PartnerReservationResponse partnerReservationResponse) {
         return partnerReservationResponse.getItems()
                 .stream()
-                .filter(item -> TYPE_FLIGHT.equals(item.getType()))
+                .filter(item -> FLIGHT.equals(item.getType()))
                 .findFirst()
                 .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Type Flight not found"));
     }

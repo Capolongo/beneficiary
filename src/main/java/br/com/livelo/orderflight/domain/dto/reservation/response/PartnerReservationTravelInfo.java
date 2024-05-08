@@ -11,10 +11,10 @@ import lombok.*;
 public class PartnerReservationTravelInfo {
 	private String type;
     private String reservationCode;
-    private Integer adultQuantity;
-    private Integer childQuantity;
-    private Integer babyQuantity;
-    private String typeClass;
+    private Integer adt;
+    private Integer chd;
+    private Integer inf;
+    private String cabinClass;
     private String voucher;
     private Boolean isInternational;
 }
