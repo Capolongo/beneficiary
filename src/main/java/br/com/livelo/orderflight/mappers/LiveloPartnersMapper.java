@@ -149,7 +149,7 @@ public interface LiveloPartnersMapper {
                 .build();
 
         var travelSummary = TravelSummaryDTO.builder()
-                .tour(tourDTO)
+                .tour(TourDTO.builder().build())
                 .flights(buildFlights(flight.get(0).getSegments(), flight.get(0).getTravelInfo()))
                 .accommodations(List.of())
                 .vehicles(List.of())
