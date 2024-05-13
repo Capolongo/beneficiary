@@ -195,7 +195,7 @@ class ReservationServiceTest {
     void shouldntCreateOrder_WhenReservationExpiredInPartner() {
         var transactionId = "123";
         var id = 1L;
-        var type = "type_flight";
+        var type = "FLIGHT";
         var segmentsPartnersId = "asdf";
         var request = this.buildResevationRequest(
                 List.of(this.buildReservationItem(transactionId, type, "cvc_flight"),
@@ -234,7 +234,7 @@ class ReservationServiceTest {
     void shouldntCreateOrder_WhenOrderExistsInDB_AndStatusIsNotInitial() {
         var transactionId = "123";
         var id = 1L;
-        var type = "type_flight";
+        var type = "FLIGHT";
         var segmentsPartnersId = "asdf";
         var request = this.buildResevationRequest(
                 List.of(this.buildReservationItem(transactionId, type, "cvc_flight"),
@@ -267,7 +267,7 @@ class ReservationServiceTest {
         var transactionId = "1234";
         var id = 1L;
         var commerceItemId = "123";
-        var type = "type_flight";
+        var type = "FLIGHT";
         var segmentsPartnersId = "asdf";
 
         var partnerReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
@@ -293,7 +293,7 @@ class ReservationServiceTest {
     @Test
     void shouldCreateNewOrder_WhenOrderItemsQuantityDiverge() {
         var transactionId = "123";
-        var type = "type_flight";
+        var type = "FLIGHT";
         var segmentsPartnersId = "asdf";
 
         var partnerReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
@@ -331,7 +331,7 @@ class ReservationServiceTest {
     @Test
     void shouldntCreateOrder_WhenTokensDifferent() {
         var transactionId = "123";
-        var type = "type_flight";
+        var type = "FLIGHT";
         var segmentsPartnersId = "asdfg";
         var token = "asdf";
         var id = 1L;
@@ -354,7 +354,7 @@ class ReservationServiceTest {
     @Test
     void shouldntCreateOrder_WhenQuantityTokensDifferent() {
         var transactionId = "123";
-        var type = "type_flight";
+        var type = "FLIGHT";
         var segmentsPartnersId = "asdfg";
         var token = "asdf";
         var id = 1L;
@@ -377,7 +377,7 @@ class ReservationServiceTest {
     @Test
     void shouldntCreateOrder_WhenUnknownException() {
         var transactionId = "123";
-        var type = "type_flight";
+        var type = "FLIGHT";
         var segmentsPartnersId = "asdfg";
 
         var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));

@@ -50,6 +50,7 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "arrival.cityName", source = "destinationCity")
     @Mapping(target = "seatClassCode", source = "fareClass")
     @Mapping(target = "seatClassDescription", expression = "java(setSeatClass(flightLegEntity))")
+    @Mapping(target = "stops", expression = "java(stopsList)")
     LegSummaryDTO flightLegEntityToLegSummaryDTO(FlightLegEntity flightLegEntity);
 
     @Mapping(target = "phones", expression = "java(setPhone(paxEntity))")
@@ -131,7 +132,9 @@ public interface LiveloPartnersMapper {
 
         var flight = order.getItems().stream().filter(item -> !isTaxItem(item.getSkuId())).toList();
 
-
+        var country = CountryDTO.builder().code("country_code").name("country_name").build();
+        var city = CityDTO.builder().name("city_name").build();
+        var state = StateDTO.builder().code("state_code").name("state_name").build();
         var zoneDTO = ZoneDTO.builder()
                 .departureDate(ZonedDateTime.now())
                 .arrivalDate(ZonedDateTime.now())
@@ -139,6 +142,9 @@ public interface LiveloPartnersMapper {
                 .longitude("123123")
                 .latitude("1231231")
                 .name("name")
+                .country(country)
+                .city(city)
+                .state(state)
                 .build();
         var originDTO = OriginDTO.builder().departureDate("2024-12-12").arrivalDate("2024-12-12").zone(zoneDTO).build();
         var destinationDTO = DestinationDTO.builder().departureDate("2024-12-12").arrivalDate("2024-12-12").zone(zoneDTO).build();
@@ -149,7 +155,7 @@ public interface LiveloPartnersMapper {
                 .build();
 
         var travelSummary = TravelSummaryDTO.builder()
-                .tour(TourDTO.builder().build())
+                .tour(tourDTO)
                 .flights(buildFlights(flight.get(0).getSegments(), flight.get(0).getTravelInfo()))
                 .accommodations(List.of())
                 .vehicles(List.of())
@@ -225,4 +231,6 @@ public interface LiveloPartnersMapper {
     default String setSeatClass(FlightLegEntity leg) {
         return "ECONOMY".equalsIgnoreCase(leg.getFareBasis()) ? "Econômica" : "Executiva";
     }
+
+    List<Object> stopsList = new ArrayList<>();
 }
