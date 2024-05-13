@@ -4,6 +4,7 @@ import br.com.livelo.orderflight.client.PricingClient;
 import br.com.livelo.orderflight.domain.dtos.pricing.request.PricingCalculateRequest;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
 import br.com.livelo.orderflight.exception.OrderFlightException;
+import br.com.livelo.orderflight.utils.LogUtils;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_PRICING_BUSINESS_ERROR;
@@ -24,11 +24,11 @@ import static java.util.Optional.ofNullable;
 public class PricingProxy {
     private final PricingClient pricingClient;
 
-    public List<PricingCalculateResponse> calculate(PricingCalculateRequest request) {
+    public List<PricingCalculateResponse> calculate(PricingCalculateRequest request, String transactionId, String userId) {
         try {
-            log.info("PricingProxy.calculate - call pricing calculate. request: {}", request);
-            ResponseEntity<List<PricingCalculateResponse>> response = pricingClient.calculate(request);
-            log.info("PricingProxy.calculate -  pricing calculate response: {}", response);
+            log.info("PricingProxy.calculate - call pricing calculate. request: {}", LogUtils.writeAsJson(request));
+            ResponseEntity<List<PricingCalculateResponse>> response = pricingClient.calculate(request, transactionId, userId);
+            log.info("PricingProxy.calculate -  pricing calculate response: {}", LogUtils.writeAsJson(response));
 
             return ofNullable(response.getBody())
                     .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, null, "PricingProxy.calculate - body pricing is null!"));

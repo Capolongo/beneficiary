@@ -41,11 +41,13 @@ class CompletedServiceImplTest {
 
         doNothing().when(orderService).addNewOrderStatus(any(OrderEntity.class), any(OrderStatusEntity.class));
         when(orderService.save(any(OrderEntity.class))).thenReturn(order);
+        doNothing().when(orderService).updateOrderOnLiveloPartners(any(OrderEntity.class), anyString());
 
         completedServiceImpl.orderProcess(orderProcess);
 
         verify(orderService, times(1)).addNewOrderStatus(any(OrderEntity.class), any(OrderStatusEntity.class));
         verify(orderService, times(1)).save(any(OrderEntity.class));
+        verify(orderService, times(1)).updateOrderOnLiveloPartners(any(OrderEntity.class), anyString());
         verifyNoMoreInteractions(orderService);
 
     }

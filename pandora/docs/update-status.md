@@ -97,10 +97,10 @@ Sucesso:
             "travelInfo": {
                 "type": "ROUND_TRIP",
                 "reservationCode": "YD5WK",
-                "adultQuantity": 2,
-                "childQuantity": 0,
-                "babyQuantity": 0,
-                "typeClass": "ECONOMIC",
+                "adt": 2,
+                "chd": 0,
+                "inf": 0,
+                "cabinClass": "ECONOMIC",
                 "voucher": "link.voucher.com.br",
                 "paxs": [
                     {

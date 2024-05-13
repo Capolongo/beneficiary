@@ -4,11 +4,11 @@ import java.util.Set;
 
 public record ReservationResponseTravelInfo (String type,
 											 String reservationCode,
-											 Integer adultQuantity,
-											 Integer childQuantity,
-											 Integer babyQuantity,
+											 Integer adt,
+											 Integer chd,
+											 Integer inf,
 											 String voucher,
-											 String typeClass,
+											 String cabinClass,
 											 Set<ReservationResponsePax> paxs){
 
 }
