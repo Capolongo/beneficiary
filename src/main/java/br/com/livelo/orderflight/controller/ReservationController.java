@@ -35,11 +35,11 @@ public class ReservationController {
         MDC.put(TRANSACTION_ID, transactionId);
         MDC.put(FLOW, RESERVATION.name());
         MDC.put(PARTNER, reservationRequest.getPartnerCode());
-        MDC.put(ERROR_TYPE, "SUCCESS");
 
         log.info("ReservationController.createReservation - Create reservation request: [{}]", LogUtils.writeAsJson(reservationRequest));
         var response = reservationService.createOrder(reservationRequest, transactionId, customerId, channel, listPrice, userId);
         log.info("ReservationController.createReservation - Create reservation response: [{}]", LogUtils.writeAsJson(response));
+        MDC.put(ERROR_TYPE, "SUCCESS");
         MDC.clear();
         return ResponseEntity.ok(response);
     }
