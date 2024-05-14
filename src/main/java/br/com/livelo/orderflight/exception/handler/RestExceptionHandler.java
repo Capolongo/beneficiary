@@ -37,7 +37,7 @@ public class RestExceptionHandler {
     private void setDynatraceEntries(OrderFlightException e) {
         MDC.put(STATUS, "ERROR");
         MDC.put(ERROR_CATEGORY, e.getOrderFlightErrorType().getCategory());
-        MDC.put(ERROR_TYPE, e.getOrderFlightErrorType().name());
+        MDC.put(ERROR_TYPE, ofNullable(e.getOrderFlightErrorType().getDetailedMessage()).orElse(e.getOrderFlightErrorType().name()));
         MDC.put(ERROR_MESSAGE, e.getArgs());
     }
 
