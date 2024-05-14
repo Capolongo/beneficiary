@@ -43,9 +43,9 @@ public class OrderItemEntity extends BaseEntity {
     private String commerceItemId;
     private String skuId;
     private String productId;
-    private Integer quantity;
     private String externalCoupon;
-    private String  partnerOrderLinkId;
+    private String partnerOrderLinkId;
+    private String productType;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ORDER_ITEM_PRICE_ID")
     private OrderItemPriceEntity price;

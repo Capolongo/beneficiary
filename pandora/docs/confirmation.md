@@ -194,7 +194,7 @@ Quando `firstName` é "LIVELO" e `lastName` é "MOCK", você deve testar todos o
                                 "description": "Bagagem despachada"
                             }
                         ],
-                        "cancelationRules": [
+                        "cancellationRules": [
                             {
                                 "type": "1",
                                 "description": "Cancelamento reembolsábel até  2 dias antes"
@@ -249,7 +249,7 @@ Quando `firstName` é "LIVELO" e `lastName` é "MOCK", você deve testar todos o
                                 "description": "Bagagem despachada"
                             }
                         ],
-                        "cancelationRules": [
+                        "cancellationRules": [
                             {
                                 "type": "1",
                                 "description": "Cancelamento reembolsábel até  2 dias antes"
@@ -458,7 +458,7 @@ Payload: qualquer payload com a estrutura abaixo:
                             "description": "Bagagem despachada"
                         }
                     ],
-                    "cancelationRules": [
+                    "cancellationRules": [
                         {
                             "type": "1",
                             "description": "Cancelamento reembolsábel até  2 dias antes"
@@ -513,7 +513,7 @@ Payload: qualquer payload com a estrutura abaixo:
                             "description": "Bagagem despachada"
                         }
                     ],
-                    "cancelationRules": [
+                    "cancellationRules": [
                         {
                             "type": "1",
                             "description": "Cancelamento reembolsábel até  2 dias antes"
@@ -715,7 +715,7 @@ Payload: qualquer payload com a estrutura abaixo:
                             "description": "Bagagem despachada"
                         }
                     ],
-                    "cancelationRules": [
+                    "cancellationRules": [
                         {
                             "type": "1",
                             "description": "Cancelamento reembolsábel até  2 dias antes"
@@ -770,7 +770,7 @@ Payload: qualquer payload com a estrutura abaixo:
                             "description": "Bagagem despachada"
                         }
                     ],
-                    "cancelationRules": [
+                    "cancellationRules": [
                         {
                             "type": "1",
                             "description": "Cancelamento reembolsábel até  2 dias antes"
@@ -972,7 +972,7 @@ Payload: qualquer payload com a estrutura abaixo:
                             "description": "Bagagem despachada"
                         }
                     ],
-                    "cancelationRules": [
+                    "cancellationRules": [
                         {
                             "type": "1",
                             "description": "Cancelamento reembolsábel até  2 dias antes"
@@ -1027,7 +1027,7 @@ Payload: qualquer payload com a estrutura abaixo:
                             "description": "Bagagem despachada"
                         }
                     ],
-                    "cancelationRules": [
+                    "cancellationRules": [
                         {
                             "type": "1",
                             "description": "Cancelamento reembolsábel até  2 dias antes"
@@ -1229,7 +1229,7 @@ Payload: qualquer payload com a estrutura abaixo:
                             "description": "Bagagem despachada"
                         }
                     ],
-                    "cancelationRules": [
+                    "cancellationRules": [
                         {
                             "type": "1",
                             "description": "Cancelamento reembolsábel até  2 dias antes"
@@ -1284,7 +1284,7 @@ Payload: qualquer payload com a estrutura abaixo:
                             "description": "Bagagem despachada"
                         }
                     ],
-                    "cancelationRules": [
+                    "cancellationRules": [
                         {
                             "type": "1",
                             "description": "Cancelamento reembolsábel até  2 dias antes"

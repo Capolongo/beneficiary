@@ -128,10 +128,10 @@ public class PricingCalculateRequestMapper {
 
     private static List<PricingCalculateCancellationRule> buildCancellationRules(PartnerReservationSegment segment) {
         List<PricingCalculateCancellationRule> cancellationRules = new ArrayList<>();
-        for (PartnerReservationCancelationRule partnerReservationCancelationRule : segment.getCancelationRules()) {
+        for (PartnerReservationCancellationRule partnerReservationCancellationRule : segment.getCancellationRules()) {
             cancellationRules.add(
                     PricingCalculateCancellationRule.builder()
-                            .description(partnerReservationCancelationRule.getDescription())
+                            .description(partnerReservationCancellationRule.getDescription())
                             .build()
             );
         }

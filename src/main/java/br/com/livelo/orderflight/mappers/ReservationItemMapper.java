@@ -23,7 +23,6 @@ public interface ReservationItemMapper {
 
     @Mapping(target = "commerceItemId", source = "reservationItem.commerceItemId")
     @Mapping(target = "productId", source = "reservationItem.productId")
-    @Mapping(target = "quantity", source = "partnerReservationItem.quantity")
     @Mapping(target = "price", expression = "java(mapPrice(partnerReservationItem, listPrice))")
     @Mapping(target = "travelInfo", expression = "java(mapTravelInfo(reservationRequest, partnerReservationItem))")
     @Mapping(target = "segments", expression = "java(mapSegments(partnerReservationItem))")

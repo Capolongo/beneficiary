@@ -19,6 +19,6 @@ public class ConfirmationOrderSegmentsResponse {
     private LocalDateTime arrivalDate;
     private Set<ConfirmationOrderFlightsLegsResponse> flightsLegs;
     private Set<ConfirmationOrderLuggagesResponse> luggages;
-    private Set<ConfirmationOrderCancaletionRulesResponse> cancelationRules;
+    private Set<ConfirmationOrderCancaletionRulesResponse> cancellationRules;
     private Set<ConfirmationOrderChangeRulesResponse> changeRules;
 }

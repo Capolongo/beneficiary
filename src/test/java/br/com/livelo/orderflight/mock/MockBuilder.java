@@ -137,7 +137,7 @@ public class MockBuilder {
                 .flightDuration(120)
                 .originIata("REC")
                 .destinationIata("GRU")
-                .cancelationRules(Set.of(ConfirmationOrderCancaletionRulesResponse.builder().build()))
+                .cancellationRules(Set.of(ConfirmationOrderCancaletionRulesResponse.builder().build()))
                 .changeRules(Set.of(ConfirmationOrderChangeRulesResponse.builder().build()))
                 .luggages(Set.of(ConfirmationOrderLuggagesResponse.builder().build()))
                 .flightsLegs(Set.of(ConfirmationOrderFlightsLegsResponse.builder().build()))
@@ -161,7 +161,6 @@ public class MockBuilder {
                 .externalCoupon("externalCoupon")
                 .segments(Set.of(confirmationOrderSegmentsResponse()))
                 .travelInfo(confirmationOrderTravelInfoResponse())
-                .quantity(1)
                 .price(confirmOrderPriceResponse())
                 .build();
     }
@@ -334,7 +333,6 @@ public class MockBuilder {
                 .commerceItemId("commerceItemId")
                 .skuId("skuId")
                 .productId("productId")
-                .quantity(1)
                 .externalCoupon("externalCoupon")
                 .price(orderItemPriceEntity())
                 .travelInfo(travelInfo())
@@ -386,7 +384,7 @@ public class MockBuilder {
                 .flightDuration(120)
                 .originIata("REC")
                 .destinationIata("GRU")
-                .cancelationRules(Set.of(CancelationRuleEntity.builder().build()))
+                .cancellationRules(Set.of(CancellationRuleEntity.builder().build()))
                 .changeRules(Set.of(ChangeRuleEntity.builder().build()))
                 .luggages(Set.of(LuggageEntity.builder().build()))
                 .flightsLegs(Set.of(FlightLegEntity.builder().build()))

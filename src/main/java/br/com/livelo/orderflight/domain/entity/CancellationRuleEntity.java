@@ -14,9 +14,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "CANCELATION_RULE")
+@Table(name = "CANCELLATION_RULE")
 @EqualsAndHashCode(callSuper = false)
-public class CancelationRuleEntity extends BaseEntity {
+public class CancellationRuleEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CANCELATION_RULE_SEQ")
     @SequenceGenerator(name = "CANCELATION_RULE_SEQ", sequenceName = "CANCELATION_RULE_SEQ", allocationSize = 1)
     @Id

@@ -12,4 +12,8 @@ import lombok.Setter;
 public class PartnerReservationDocument {
 	private String number;
     private String type;
+    private String issueDate;
+    private String issuingCountry;
+    private String expirationDate;
+    private String residenceCountry;
 }

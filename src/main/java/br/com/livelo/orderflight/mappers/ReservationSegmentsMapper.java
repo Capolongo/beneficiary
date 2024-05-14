@@ -12,12 +12,12 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring", uses = {ReservationLuggagesMapper.class, ReservationCancelationRulesMapper.class, ReservationChangeRulesMapper.class, ReservationFlightLegMapper.class})
+@Mapper(componentModel = "spring", uses = {ReservationLuggagesMapper.class, ReservationCancellationRulesMapper.class, ReservationChangeRulesMapper.class, ReservationFlightLegMapper.class})
 
 
 public interface ReservationSegmentsMapper {
     @Mapping(target = "luggages", expression = "java(mapLuggages(partnerReservationSegment))")
-    @Mapping(target = "cancelationRules", expression = "java(mapCancelationRules(partnerReservationSegment))")
+    @Mapping(target = "cancellationRules", expression = "java(mapCancellationRules(partnerReservationSegment))")
     @Mapping(target = "changeRules", expression = "java(mapChangeRules(partnerReservationSegment))")
     @Mapping(target = "flightsLegs", expression = "java(mapFlightLeg(partnerReservationSegment))")
     @Mapping(target = "airlineIata", source = "airline.iata")
@@ -35,12 +35,12 @@ public interface ReservationSegmentsMapper {
                 .collect(Collectors.toSet());
     }
 
-    default Set<CancelationRuleEntity> mapCancelationRules(PartnerReservationSegment partnerReservationSegment) {
-        var cancelationRulesMapper = Mappers.getMapper(ReservationCancelationRulesMapper.class);
+    default Set<CancellationRuleEntity> mapCancellationRules(PartnerReservationSegment partnerReservationSegment) {
+        var cancellationRulesMapper = Mappers.getMapper(ReservationCancellationRulesMapper.class);
 
-        return partnerReservationSegment.getCancelationRules()
+        return partnerReservationSegment.getCancellationRules()
                 .stream()
-                .map(cancelationRulesMapper::toCancelationRuleEntity)
+                .map(cancellationRulesMapper::toCancellationRuleEntity)
                 .collect(Collectors.toSet());
     }
 
