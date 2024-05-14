@@ -1,8 +1,10 @@
 package br.com.livelo.orderflight.mappers;
 
+import br.com.livelo.orderflight.constants.AppConstants;
 import br.com.livelo.orderflight.domain.dtos.update.*;
 import br.com.livelo.orderflight.domain.entity.*;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +50,7 @@ public interface LiveloPartnersMapper {
     @Mapping(target = "arrival.cityName", source = "destinationCity")
     @Mapping(target = "seatClassCode", source = "fareClass")
     @Mapping(target = "seatClassDescription", expression = "java(setSeatClass(flightLegEntity))")
+    @Mapping(target = "stops", expression = "java(stopsList)")
     LegSummaryDTO flightLegEntityToLegSummaryDTO(FlightLegEntity flightLegEntity);
 
     @Mapping(target = "phones", expression = "java(setPhone(paxEntity))")
@@ -113,9 +116,9 @@ public interface LiveloPartnersMapper {
 
     default ArrayList<ServiceDTO> mapServices(Set<LuggageEntity> luggages) {
         ArrayList<ServiceDTO> services = new ArrayList<ServiceDTO>();
-        var handLuggage = luggages.stream().filter(luggage -> "HAND_LUGGAGE".equals(luggage.getType())).toList();
+        var handLuggage = luggages.stream().filter(luggage -> AppConstants.HAND_BAGGAGE.equals(luggage.getType())).toList();
         if (!handLuggage.isEmpty()) {
-            services.add(luggageEntityEntityToServiceDTO(handLuggage.get(0)));
+            services.add(ServiceDTO.builder().type("HAND_LUGGAGE").isIncluded(Boolean.TRUE).description(handLuggage.get(0).getDescription()).build());
         }
         return services;
     }
@@ -123,13 +126,36 @@ public interface LiveloPartnersMapper {
     default boolean isTaxItem(String skuId) {
         return skuId.toUpperCase().contains("TAX");
     }
+
     default List<ItemDTO> buildItemsDTO(OrderEntity order) {
         StatusDTO statusDTO = orderStatusEntityToStatusDTO(order.getCurrentStatus());
 
         var flight = order.getItems().stream().filter(item -> !isTaxItem(item.getSkuId())).toList();
 
+        var country = CountryDTO.builder().code("country_code").name("country_name").build();
+        var city = CityDTO.builder().name("city_name").build();
+        var state = StateDTO.builder().code("state_code").name("state_name").build();
+        var zoneDTO = ZoneDTO.builder()
+                .departureDate(ZonedDateTime.now())
+                .arrivalDate(ZonedDateTime.now())
+                .description("desc")
+                .longitude("123123")
+                .latitude("1231231")
+                .name("name")
+                .country(country)
+                .city(city)
+                .state(state)
+                .build();
+        var originDTO = OriginDTO.builder().departureDate("2024-12-12").arrivalDate("2024-12-12").zone(zoneDTO).build();
+        var destinationDTO = DestinationDTO.builder().departureDate("2024-12-12").arrivalDate("2024-12-12").zone(zoneDTO).build();
+        var tourDTO = TourDTO.builder()
+                .description("tourDTO")
+                .destinations(List.of(destinationDTO))
+                .origins(List.of(originDTO))
+                .build();
+
         var travelSummary = TravelSummaryDTO.builder()
-                .tour(TourDTO.builder().build())
+                .tour(tourDTO)
                 .flights(buildFlights(flight.get(0).getSegments(), flight.get(0).getTravelInfo()))
                 .accommodations(List.of())
                 .vehicles(List.of())
@@ -205,4 +231,6 @@ public interface LiveloPartnersMapper {
     default String setSeatClass(FlightLegEntity leg) {
         return "ECONOMY".equalsIgnoreCase(leg.getFareBasis()) ? "Econômica" : "Executiva";
     }
+
+    List<Object> stopsList = new ArrayList<>();
 }

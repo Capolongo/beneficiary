@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -71,12 +72,12 @@ public class StatusServiceImpl implements StatusService {
     }
 
     private static void setStatusCount(OrderEntity order, String status) {
-
-        CountStatusLivelo countProcess = CountStatusLivelo.getStatus(status);
-
-        var processCounter = order.getProcessCounters().stream().filter(counter -> countProcess.getDescription().equals(counter.getProcess())).findFirst();
-
-        processCounter.ifPresent(processCounterEntity -> processCounterEntity.setCount(0));
+        Optional.ofNullable(CountStatusLivelo.getStatus(status)).ifPresent(
+                countProcess -> {
+                    var processCounter = order.getProcessCounters().stream().filter(counter -> countProcess.getDescription().equals(counter.getProcess())).findFirst();
+                    processCounter.ifPresent(processCounterEntity -> processCounterEntity.setCount(0));
+                }
+        );
     }
 
     private Duration changeStatusTimeDifference(LocalDateTime baseTime) {

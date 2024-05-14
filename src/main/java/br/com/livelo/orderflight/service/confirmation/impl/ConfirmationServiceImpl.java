@@ -1,20 +1,18 @@
 package br.com.livelo.orderflight.service.confirmation.impl;
 
-import br.com.livelo.orderflight.domain.dtos.update.UpdateOrderDTO;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.headers.RequiredHeaders;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
-import br.com.livelo.orderflight.mappers.LiveloPartnersMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
-import br.com.livelo.orderflight.proxies.LiveloPartnersProxy;
 import br.com.livelo.orderflight.service.confirmation.ConfirmationService;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
 import br.com.livelo.orderflight.utils.ConfirmOrderValidation;
@@ -40,7 +38,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
     @Value("${order.getConfirmationMaxProcessCountFailed}")
     private int getConfirmationMaxProcessCountFailed;
 
-    public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest) throws OrderFlightException {
+    public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest, RequiredHeaders headers) throws OrderFlightException {
         OrderEntity order = null;
         OrderStatusEntity status = null;
 
@@ -53,13 +51,16 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             ConfirmOrderValidation.validateOrderPayload(orderRequest, order);
 
             var connectorConfirmOrderRequest = confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(order);
-            ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(orderRequest.getPartnerCode(), connectorConfirmOrderRequest);
+            ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(orderRequest.getPartnerCode(), connectorConfirmOrderRequest, headers);
 
             var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
 
             orderService.updateVoucher(itemFlight, connectorPartnerConfirmation.getVoucher());
             orderService.updateSubmittedDate(order, orderRequest.getSubmittedDate());
             order.setPartnerOrderId(connectorPartnerConfirmation.getPartnerOrderId());
+            order.setChannel(orderRequest.getChannel());
+            order.setOriginOrder(orderRequest.getOriginOfOrder());
+            order.setCustomerIdentifier(orderRequest.getCustomerId());
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorPartnerConfirmation.getCurrentStatus());
         } catch (OrderFlightException exception) {
             if (!exception.getOrderFlightErrorType().equals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR)) {
