@@ -368,4 +368,3 @@ public class ReservationServiceImpl implements ReservationService {
         item.setPartnerOrderLinkId(partnerOrderLink);
     }
 }
-
