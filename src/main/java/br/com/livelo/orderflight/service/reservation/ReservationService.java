@@ -6,5 +6,5 @@ import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResp
 public interface ReservationService {
     ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId,
                                     String channel,
-                                    String listPrice);
+                                    String listPrice, String userId);
 }

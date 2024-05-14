@@ -14,7 +14,7 @@ public class LogUtils {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (Exception e) {
-            log.warn("error on creating object log");
+            log.warn("error on creating object {} log", object.getClass().getSimpleName(), e);
             return object.toString();
         }
     }

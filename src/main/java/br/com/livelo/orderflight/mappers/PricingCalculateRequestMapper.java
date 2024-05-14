@@ -191,7 +191,6 @@ public class PricingCalculateRequestMapper {
                 .build();
     }
 
-
     private static PartnerReservationItem getItemTypeFlight(PartnerReservationResponse partnerReservationResponse) {
         return partnerReservationResponse.getItems()
                 .stream()

@@ -28,9 +28,9 @@ class ReservationControllerTest {
     void shouldCreateReservation() {
         var expected = mock(ReservationResponse.class);
         var request = mock(ReservationRequest.class);
-        Mockito.when(reservationService.createOrder(any(ReservationRequest.class), anyString(), anyString(), anyString(), anyString())).thenReturn(expected);
+        Mockito.when(reservationService.createOrder(any(ReservationRequest.class), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(expected);
 
-        var response = this.reservationController.createReservation("123", "123", "WEB", "price", request);
+        var response = this.reservationController.createReservation("123", "123", "123", "WEB", "price", request);
         assertAll(
                 () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
                 () -> assertNotNull(response),
