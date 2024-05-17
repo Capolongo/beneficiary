@@ -11,7 +11,6 @@ public class ConfirmOrderItemResponse {
     private String commerceItemId;
     private String skuId;
     private String productId;
-    private int quantity;
     private String externalCoupon;
     private String productType;
     private ConfirmOrderPriceResponse price;

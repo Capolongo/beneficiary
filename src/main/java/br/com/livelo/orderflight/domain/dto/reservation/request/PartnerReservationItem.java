@@ -9,5 +9,4 @@ import lombok.*;
 @ToString
 public class PartnerReservationItem {
     private String productType;
-    private String commerceItemId;
 }

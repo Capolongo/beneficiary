@@ -164,7 +164,7 @@ Sucesso:
                             "description": "Bagagem de mão"
                         }
                     ],
-                    "cancelationRules": [
+                    "cancellationRules": [
                         {
                             "type": "2",
                             "description": "Cancelamento parcial com menos de 48h"
@@ -219,7 +219,7 @@ Sucesso:
                             "description": "Bagagem despachada"
                         }
                     ],
-                    "cancelationRules": [
+                    "cancellationRules": [
                         {
                             "type": "2",
                             "description": "Cancelamento parcial com menos de 48h"

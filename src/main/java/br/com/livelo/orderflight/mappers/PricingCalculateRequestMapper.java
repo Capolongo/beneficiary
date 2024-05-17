@@ -99,12 +99,12 @@ public interface PricingCalculateRequestMapper {
     }
 
     @Mapping(source = "description", target = "description")
-    PricingCalculateCancellationRule toPricingCalculateCancellationRule(PartnerReservationCancelationRule partnerReservationCancelationRule);
+    PricingCalculateCancellationRule toPricingCalculateCancellationRule(PartnerReservationCancellationRule partnerReservationCancellationRule);
 
-    List<PricingCalculateCancellationRule> toPricingCalculateCancellationRuleList(List<PartnerReservationCancelationRule> partnerReservationCancelationRules);
+    List<PricingCalculateCancellationRule> toPricingCalculateCancellationRuleList(List<PartnerReservationCancellationRule> partnerReservationCancelationRules);
 
     default List<PricingCalculateCancellationRule> buildCancellationRules(PartnerReservationSegment segment) {
-        return toPricingCalculateCancellationRuleList(segment.getCancelationRules());
+        return toPricingCalculateCancellationRuleList(segment.getCancellationRules());
     }
 
     @Mapping(source = "description", target = "description")

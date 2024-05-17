@@ -92,7 +92,7 @@ public interface LiveloPartnersMapper {
     FlightSummaryDTO segmentEntityToFlightSummaryDTO(SegmentEntity segmentEntity);
 
     @Mapping(target = "isIncluded", constant = "true")
-    ServiceDTO cancellationRuleEntityToServiceDTO(CancelationRuleEntity cancelationRuleEntity);
+    ServiceDTO cancellationRuleEntityToServiceDTO(CancellationRuleEntity cancellationRuleEntity);
 
     @Mapping(target = "isIncluded", constant = "true")
     ServiceDTO luggageEntityEntityToServiceDTO(LuggageEntity luggageEntity);

@@ -439,7 +439,7 @@ class ReservationServiceTest {
                                 .airlineOperatedByDescription("")
                                 .build()))
                         .luggages(Set.of(LuggageEntity.builder().build()))
-                        .cancelationRules(Set.of(CancelationRuleEntity.builder().build()))
+                        .cancellationRules(Set.of(CancellationRuleEntity.builder().build()))
                         .changeRules(Set.of(ChangeRuleEntity.builder().build()))
                         .partnerId(token)
                         .build()))
@@ -516,14 +516,13 @@ class ReservationServiceTest {
                                         .builder()
                                         .type("FLIGHT")
                                         .amount(new BigDecimal(10))
-                                        .commerceItemId(commerceItemId)
                                         .travelInfo(PartnerReservationTravelInfo.builder().build())
                                         .segments(List.of(PartnerReservationSegment.builder()
                                                 .step("1")
                                                 .stops(1)
                                                 .flightDuration(55)
                                                 .luggages(List.of(PartnerReservationLuggage.builder().build()))
-                                                .cancelationRules(List.of(PartnerReservationCancelationRule
+                                                .cancellationRules(List.of(PartnerReservationCancellationRule
                                                         .builder()
                                                         .build()))
                                                 .changeRules(List.of(PartnerReservationChangeRule
@@ -541,7 +540,6 @@ class ReservationServiceTest {
                                 PartnerReservationItem
                                         .builder()
                                         .type("type_flight_tax")
-                                        .commerceItemId(commerceItemId)
                                         .build()
                         )
                 )
