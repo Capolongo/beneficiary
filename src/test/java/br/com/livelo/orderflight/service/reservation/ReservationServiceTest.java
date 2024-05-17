@@ -7,6 +7,7 @@ import br.com.livelo.orderflight.domain.dtos.pricing.response.*;
 import br.com.livelo.orderflight.domain.entity.*;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.mappers.PricingCalculateRequestMapper;
 import br.com.livelo.orderflight.mappers.ReservationMapper;
 import br.com.livelo.orderflight.proxies.ConnectorPartnersProxy;
 import br.com.livelo.orderflight.proxies.PricingProxy;
@@ -44,7 +45,8 @@ class ReservationServiceTest {
     @BeforeEach
     void setup() {
         var reservationMapper = Mappers.getMapper(ReservationMapper.class);
-        this.reservationService = new ReservationServiceImpl(orderService, connectorPartnersProxy, pricingProxy, reservationMapper);
+        var pricingCalculateRequestMapper = Mappers.getMapper(PricingCalculateRequestMapper.class);
+        this.reservationService = new ReservationServiceImpl(orderService, connectorPartnersProxy, pricingProxy, reservationMapper, pricingCalculateRequestMapper);
     }
 
     @Test

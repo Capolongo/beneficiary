@@ -21,7 +21,6 @@ import br.com.livelo.orderflight.utils.LogUtils;
 import br.com.livelo.orderflight.utils.OrderItemUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -29,7 +28,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static br.com.livelo.orderflight.constants.DynatraceConstants.STATUS;
 import static br.com.livelo.orderflight.enuns.StatusLivelo.INITIAL;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_ORDER_STATUS_INVALID_BUSINESS_ERROR;
@@ -42,6 +40,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ConnectorPartnersProxy partnerConnectorProxy;
     private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
+    private final PricingCalculateRequestMapper pricingCalculateRequestMapper;
 
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId, String userId) {
@@ -95,9 +94,7 @@ public class ReservationServiceImpl implements ReservationService {
             addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getCommerceOrderId(), order.getItems());
             this.orderService.save(order);
 
-            MDC.put(STATUS, "SUCCESS");
             log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {}", LogUtils.writeAsJson(order), transactionId, listPriceId);
-            MDC.clear();
             return reservationMapper.toReservationResponse(order, 15);
         } catch (OrderFlightException e) {
             throw e;
@@ -132,8 +129,8 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private List<PricingCalculatePrice> priceOrder(ReservationRequest request, PartnerReservationResponse partnerReservationResponse, String transactionId, String userId) {
-        var pricingCalculateRequest = PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse, request.getCommerceOrderId());
-
+        var pricingCalculateRequest = pricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse, request.getCommerceOrderId());
+        
         log.info("ReservationServiceImpl.priceOrder - {} isInternational", pricingCalculateRequest.getTravelInfo().getIsInternational());
         var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest, transactionId, userId);
 
@@ -368,4 +365,3 @@ public class ReservationServiceImpl implements ReservationService {
         item.setPartnerOrderLinkId(partnerOrderLink);
     }
 }
-
