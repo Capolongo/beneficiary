@@ -27,10 +27,10 @@ class ReservationSegmentsMapperTest {
     @Test
     void shouldMapCancellationRules() {
         var segment = PartnerReservationSegment.builder()
-                .cancelationRules(List.of(PartnerReservationCancelationRule.builder().build()))
+                .cancellationRules(List.of(PartnerReservationCancellationRule.builder().build()))
                 .build();
 
-        var response = this.mapper.mapCancelationRules(segment);
+        var response = this.mapper.mapCancellationRules(segment);
         assertNotNull(response);
     }
 

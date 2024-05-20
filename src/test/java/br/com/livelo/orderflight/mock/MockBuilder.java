@@ -137,7 +137,7 @@ public class MockBuilder {
                 .flightDuration(120)
                 .originIata("REC")
                 .destinationIata("GRU")
-                .cancelationRules(Set.of(ConfirmationOrderCancaletionRulesResponse.builder().build()))
+                .cancellationRules(Set.of(ConfirmationOrderCancaletionRulesResponse.builder().build()))
                 .changeRules(Set.of(ConfirmationOrderChangeRulesResponse.builder().build()))
                 .luggages(Set.of(ConfirmationOrderLuggagesResponse.builder().build()))
                 .flightsLegs(Set.of(ConfirmationOrderFlightsLegsResponse.builder().build()))
@@ -161,7 +161,6 @@ public class MockBuilder {
                 .externalCoupon("externalCoupon")
                 .segments(Set.of(confirmationOrderSegmentsResponse()))
                 .travelInfo(confirmationOrderTravelInfoResponse())
-                .quantity(1)
                 .price(confirmOrderPriceResponse())
                 .build();
     }
@@ -240,7 +239,7 @@ public class MockBuilder {
 
         Set<ProcessCounterEntity> processCounter = new HashSet<>();
         processCounter.add(ProcessCounterEntity.builder().process("getConfirmation")
-                        .count(10)
+                .count(10)
                 .build());
 
         return OrderEntity.builder()
@@ -334,9 +333,8 @@ public class MockBuilder {
                 .id(1L)
                 .commerceItemId("commerceItemId")
                 .skuId("skuId")
-                .productId("productId")
                 .partnerOrderLinkId("partnerOrderLinkId")
-                .quantity(1)
+                .productId("productId")
                 .externalCoupon("externalCoupon")
                 .price(orderItemPriceEntity())
                 .travelInfo(travelInfo())
@@ -388,7 +386,7 @@ public class MockBuilder {
                 .flightDuration(120)
                 .originIata("REC")
                 .destinationIata("GRU")
-                .cancelationRules(Set.of(CancelationRuleEntity.builder().build()))
+                .cancellationRules(Set.of(CancellationRuleEntity.builder().build()))
                 .changeRules(Set.of(ChangeRuleEntity.builder().build()))
                 .luggages(Set.of(LuggageEntity.builder().build()))
                 .flightsLegs(Set.of(FlightLegEntity.builder().build()))
@@ -495,9 +493,9 @@ public class MockBuilder {
         List<OrderProcess> orders = new ArrayList<OrderProcess>();
         for (int i = 0; i < amountOrders; i++) {
             orders.add(OrderProcess.builder()
-            .id(String.valueOf(i))
-            .commerceOrderId(String.valueOf(i + i * 1000))
-            .build());
+                    .id(String.valueOf(i))
+                    .commerceOrderId(String.valueOf(i + i * 1000))
+                    .build());
         }
         return orders;
     }
@@ -506,12 +504,12 @@ public class MockBuilder {
         int total = 500;
         List<OrderProcess> orders = listOfOrderProcess(rows);
         return PaginationOrderProcessResponse.builder()
-        .orders(orders)
-        .page(pages)
-        .rows(rows)
-        .total(total)
-        .totalPages(total / orders.size())
-        .build();
+                .orders(orders)
+                .page(pages)
+                .rows(rows)
+                .total(total)
+                .totalPages(total / orders.size())
+                .build();
     }
     public static ProcessCounterEntity processCounterEntity(int count, String process) {
         return ProcessCounterEntity.builder()

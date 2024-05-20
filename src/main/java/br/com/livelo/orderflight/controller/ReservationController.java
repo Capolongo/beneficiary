@@ -38,6 +38,9 @@ public class ReservationController {
 
         log.info("ReservationController.createReservation - Create reservation request: [{}]", LogUtils.writeAsJson(reservationRequest));
         var response = reservationService.createOrder(reservationRequest, transactionId, customerId, channel, listPrice, userId);
+
+        MDC.put(STATUS, "SUCCESS");
+        MDC.put(ERROR_TYPE, "SUCCESS");
         log.info("ReservationController.createReservation - Create reservation response: [{}]", LogUtils.writeAsJson(response));
         MDC.clear();
         return ResponseEntity.ok(response);

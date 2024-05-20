@@ -21,15 +21,13 @@ import br.com.livelo.orderflight.utils.LogUtils;
 import br.com.livelo.orderflight.utils.OrderItemUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static br.com.livelo.orderflight.constants.DynatraceConstants.STATUS;
 import static br.com.livelo.orderflight.enuns.StatusLivelo.INITIAL;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_ORDER_STATUS_INVALID_BUSINESS_ERROR;
@@ -42,10 +40,11 @@ public class ReservationServiceImpl implements ReservationService {
     private final ConnectorPartnersProxy partnerConnectorProxy;
     private final PricingProxy pricingProxy;
     private final ReservationMapper reservationMapper;
+    private final PricingCalculateRequestMapper pricingCalculateRequestMapper;
 
 
     public ReservationResponse createOrder(ReservationRequest request, String transactionId, String customerId, String channel, String listPriceId, String userId) {
-        log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {} transactionId: {}", request, transactionId, listPriceId, userId);
+        log.info("ReservationServiceImpl.createOrder - Creating Order: {} transactionId: {} listPriceId: {} transactionId: {}", LogUtils.writeAsJson(request), transactionId, listPriceId, userId);
         OrderEntity order = null;
         try {
             PartnerReservationResponse partnerReservationResponse = null;
@@ -58,7 +57,7 @@ public class ReservationServiceImpl implements ReservationService {
             var orderOptional = this.orderService.findByCommerceOrderIdIn(commerceItemsIds);
             if (orderOptional.isPresent()) {
                 order = orderOptional.get();
-                log.info("ReservationServiceImpl.createOrder - Creating Order - orderOptional order: {}", order);
+                log.info("ReservationServiceImpl.createOrder - Creating Order - orderOptional order: {}", LogUtils.writeAsJson(order));
                 this.isOrderStatusInitial(order);
 
                 if (this.isSameOrderItems(request, orderOptional)) {
@@ -70,13 +69,11 @@ public class ReservationServiceImpl implements ReservationService {
                         throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, null, null);
                     }
 
-                    if (!order.getCommerceOrderId().equals(request.getCommerceOrderId())) {
-                        order.setCommerceOrderId(request.getCommerceOrderId());
-                    }
+                    order.setCommerceOrderId(request.getCommerceOrderId());
                     log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
                 } else {
                     this.orderService.delete(order);
-                    log.info("ReservationServiceImpl.createOrder - Creating Order - deleteOrder order: {}", order);
+                    log.info("ReservationServiceImpl.createOrder - Creating Order - deleteOrder order: {}", LogUtils.writeAsJson(order));
                     order = null;
                 }
             }
@@ -97,15 +94,11 @@ public class ReservationServiceImpl implements ReservationService {
             addPartnerOrderLinkIdToItems(order.getPartnerCode(), order.getCommerceOrderId(), order.getItems());
             this.orderService.save(order);
 
-            MDC.put(STATUS, "SUCCESS");
-            log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {}", order, transactionId, listPriceId);
-            MDC.clear();
+            log.info("ReservationServiceImpl.createOrder - Order created Order: {} transactionId: {} listPriceId: {}", LogUtils.writeAsJson(order), transactionId, listPriceId);
             return reservationMapper.toReservationResponse(order, 15);
         } catch (OrderFlightException e) {
-            log.error("ReservationServiceImpl.createOrder - Order: {}, OrderFlightException: {}", order, e);
             throw e;
         } catch (Exception e) {
-            log.error("ReservationServiceImpl.createOrder -  Order: {}, OrderFlightException: {}", order, e);
             throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), "Unknown error on create reservation!", e);
         }
     }
@@ -136,7 +129,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private List<PricingCalculatePrice> priceOrder(ReservationRequest request, PartnerReservationResponse partnerReservationResponse, String transactionId, String userId) {
-        var pricingCalculateRequest = PricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse, request.getCommerceOrderId());
+        var pricingCalculateRequest = pricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse, request.getCommerceOrderId());
         
         log.info("ReservationServiceImpl.priceOrder - {} isInternational", pricingCalculateRequest.getTravelInfo().getIsInternational());
         var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest, transactionId, userId);
@@ -222,7 +215,6 @@ public class ReservationServiceImpl implements ReservationService {
                                     clientPrice.getFlight().getMarkup()
                             );
                         }
-
                     }
 
                     if (!orderService.isFlightItem(item)) {
@@ -365,12 +357,11 @@ public class ReservationServiceImpl implements ReservationService {
             buildPartnerOrderLinkId(partnerCode, item, orderId, index);
             index++;
         }
-	}
+    }
 
     private void buildPartnerOrderLinkId(String partnerCode, OrderItemEntity item, String orderId, Integer index) {
-		String linkIndex = "00" + index;
+        String linkIndex = "00" + index;
         String partnerOrderLink = partnerCode.toUpperCase() + "-" + orderId + linkIndex;
         item.setPartnerOrderLinkId(partnerOrderLink);
     }
 }
-
