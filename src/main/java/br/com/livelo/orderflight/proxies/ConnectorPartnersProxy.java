@@ -40,7 +40,7 @@ public class ConnectorPartnersProxy {
 
     public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode, ConnectorConfirmOrderRequest connectorConfirmOrderRequest, RequiredHeaders headers) throws OrderFlightException {
         try {
-            log.info("ConnectorPartnersProxy.confirmOnPartner - start - id: [{}], commerceOrderId: [{}], partnerOrderLinkId: [{}], partnerCode: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), connectorConfirmOrderRequest.getPartnerOrderLinkId(), partnerCode);
+            log.info("ConnectorPartnersProxy.confirmOnPartner - start - id: [{}], commerceOrderId: [{}], connectorConfirmOrderRequest [{}], partnerCode: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), connectorConfirmOrderRequest, partnerCode);
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
             final var connectorUri = URI.create(webhook.getConnectorUrl());
 
