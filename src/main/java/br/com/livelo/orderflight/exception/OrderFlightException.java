@@ -20,3 +20,4 @@ public class OrderFlightException extends RuntimeException {
         this.orderFlightErrorType = orderFlightErrorType;
     }
 }
+
