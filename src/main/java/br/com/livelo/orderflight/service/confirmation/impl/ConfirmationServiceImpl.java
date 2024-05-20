@@ -51,6 +51,9 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             ConfirmOrderValidation.validateOrderPayload(orderRequest, order);
 
             var connectorConfirmOrderRequest = confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(order);
+
+            log.info("ConfirmationService.confirmOrder - partnerOrderLinkId: [{}]", connectorConfirmOrderRequest.getPartnerOrderLinkId());
+
             ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(orderRequest.getPartnerCode(), connectorConfirmOrderRequest, headers);
 
             var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
