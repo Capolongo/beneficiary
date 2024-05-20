@@ -29,6 +29,7 @@ public interface ConfirmOrderMapper {
     ConfirmOrderResponse orderEntityToConfirmOrderResponse(OrderEntity orderEntity);
 
     @Mapping(target = "commerceItemId", expression = "java(getFlightItemCommerceItemId(orderEntity))")
+    @Mapping(target = "partnerOrderLinkId", expression = "java(getFlightItemPartnerOrderLinkId(orderEntity))")
     @Mapping(target = "paxs", expression = "java(reducePaxs(orderEntity))")
     ConnectorConfirmOrderRequest orderEntityToConnectorConfirmOrderRequest(OrderEntity orderEntity);
 
@@ -36,6 +37,14 @@ public interface ConfirmOrderMapper {
     ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
     OrderStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
+
+    default String getFlightItemPartnerOrderLinkId(OrderEntity orderEntity) {
+        return orderEntity.getItems().stream()
+                .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
+                .findFirst()
+                .map(OrderItemEntity::getPartnerOrderLinkId)
+                .orElse("");
+    }
 
     default String getFlightItemCommerceItemId(OrderEntity orderEntity) {
         return orderEntity.getItems().stream()

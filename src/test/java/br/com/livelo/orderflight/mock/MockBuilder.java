@@ -172,6 +172,7 @@ public class MockBuilder {
                 .commerceOrderId("commerceOrderId")
                 .commerceItemId("commerceItemId")
                 .partnerOrderId("partnerOrderId")
+                .partnerOrderLinkId("partnerOrderLinkId")
                 .partnerCode("partnerCode")
                 .submittedDate("date")
                 .paxs(List.of(connectorConfirmOrderPaxRequest()))
@@ -238,7 +239,7 @@ public class MockBuilder {
 
         Set<ProcessCounterEntity> processCounter = new HashSet<>();
         processCounter.add(ProcessCounterEntity.builder().process("getConfirmation")
-                        .count(10)
+                .count(10)
                 .build());
 
         return OrderEntity.builder()
@@ -332,6 +333,7 @@ public class MockBuilder {
                 .id(1L)
                 .commerceItemId("commerceItemId")
                 .skuId("skuId")
+                .partnerOrderLinkId("partnerOrderLinkId")
                 .productId("productId")
                 .externalCoupon("externalCoupon")
                 .price(orderItemPriceEntity())
@@ -491,9 +493,9 @@ public class MockBuilder {
         List<OrderProcess> orders = new ArrayList<OrderProcess>();
         for (int i = 0; i < amountOrders; i++) {
             orders.add(OrderProcess.builder()
-            .id(String.valueOf(i))
-            .commerceOrderId(String.valueOf(i + i * 1000))
-            .build());
+                    .id(String.valueOf(i))
+                    .commerceOrderId(String.valueOf(i + i * 1000))
+                    .build());
         }
         return orders;
     }
@@ -502,12 +504,12 @@ public class MockBuilder {
         int total = 500;
         List<OrderProcess> orders = listOfOrderProcess(rows);
         return PaginationOrderProcessResponse.builder()
-        .orders(orders)
-        .page(pages)
-        .rows(rows)
-        .total(total)
-        .totalPages(total / orders.size())
-        .build();
+                .orders(orders)
+                .page(pages)
+                .rows(rows)
+                .total(total)
+                .totalPages(total / orders.size())
+                .build();
     }
     public static ProcessCounterEntity processCounterEntity(int count, String process) {
         return ProcessCounterEntity.builder()
