@@ -2,7 +2,6 @@ package br.com.livelo.orderflight.domain.dtos.connector.request;
 
 import java.util.Set;
 
-import br.com.livelo.orderflight.domain.entity.DocumentEntity;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,5 +16,5 @@ public class ConnectorConfirmOrderPaxRequest {
 	private String email;
 	private String areaCode;
 	private String phone;
-	private Set<DocumentEntity> documents;
+	private Set<ConnectorConfirmDocumentRequest> documents;
 }

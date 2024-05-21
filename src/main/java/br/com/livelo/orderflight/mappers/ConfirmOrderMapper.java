@@ -1,6 +1,7 @@
 package br.com.livelo.orderflight.mappers;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.*;
+import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmDocumentRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
@@ -35,6 +36,9 @@ public interface ConfirmOrderMapper {
 
     @Mapping(target = "phone", source = "phoneNumber")
     ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
+
+    @Mapping(target = "number", source = "documentNumber")
+    ConnectorConfirmDocumentRequest documentEntityToConnectorConfirmDocumentRequest(DocumentEntity document);
 
     OrderStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
 
