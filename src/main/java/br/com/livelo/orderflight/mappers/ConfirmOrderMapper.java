@@ -32,9 +32,9 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "commerceItemId", expression = "java(getFlightItemCommerceItemId(orderEntity))")
     @Mapping(target = "partnerOrderLinkId", expression = "java(getFlightItemPartnerOrderLinkId(orderEntity))")
     @Mapping(target = "paxs", expression = "java(reducePaxs(orderEntity))")
+    @Mapping(target = "segmentsPartnerIds", expression = "java(setSegmentsPartnersIds(orderEntity))")
     ConnectorConfirmOrderRequest orderEntityToConnectorConfirmOrderRequest(OrderEntity orderEntity);
 
-    @Mapping(target = "phone", source = "phoneNumber")
     ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
     @Mapping(target = "number", source = "documentNumber")
@@ -65,6 +65,15 @@ public interface ConfirmOrderMapper {
                 .map(item -> item.getTravelInfo().getPaxs().stream()
                         .map(this::paxEntityToConnectorConfirmOrderPaxRequest)
                         .toList())
+                .orElse(Collections.emptyList());
+    }
+
+    default List<String> setSegmentsPartnersIds(OrderEntity orderEntity) {
+        return orderEntity.getItems().stream()
+                .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
+                .findFirst()
+                .map(item -> item.getSegments().stream()
+                        .map(SegmentEntity::getPartnerId).toList())
                 .orElse(Collections.emptyList());
     }
 }

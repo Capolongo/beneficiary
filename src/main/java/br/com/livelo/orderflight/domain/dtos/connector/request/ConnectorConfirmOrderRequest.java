@@ -17,4 +17,5 @@ public class ConnectorConfirmOrderRequest {
   private String submittedDate;
   private String expirationDate;
   private List<ConnectorConfirmOrderPaxRequest> paxs;
+  private List<String> segmentsPartnerIds;
 }
