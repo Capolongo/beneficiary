@@ -28,7 +28,8 @@ import org.springframework.stereotype.Component;
 import java.net.URI;
 import java.util.List;
 
-import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.*;
+import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_CONFIG_FLIGHT_BUSINESS_ERROR;
+import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.ORDER_FLIGHT_CONFIG_FLIGHT_INTERNAL_ERROR;
 
 @Slf4j
 @Component
@@ -56,12 +57,11 @@ public class ConnectorPartnersProxy {
     }
 
     @Retryable(retryFor = ConnectorReservationInternalException.class, maxAttempts = 1)
-    public PartnerReservationResponse createReserve(PartnerReservationRequest request, String transactionId, String userId) {
+    public PartnerReservationResponse createReserve(String partnerCode, PartnerReservationRequest request, String transactionId, String userId) {
         try {
-            var webhook = this.partnersConfigService.getPartnerWebhook(request.getPartnerCode(), Webhooks.RESERVATION);
+            var webhook = this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.RESERVATION);
             var url = URI.create(webhook.getConnectorUrl());
-            log.info("ConnectorPartnersProxy.createReserve: call connector partner create reserve. partner: [{}] url: [{}] request: [{}]", request.getPartnerCode(),
-                    url, LogUtils.writeAsJson(request));
+            log.info("ConnectorPartnersProxy.createReserve: call connector partner create reserve. partner: [{}] url: [{}] request: [{}]", partnerCode, url, LogUtils.writeAsJson(request));
 
             ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.createReserve(
                     url,
@@ -75,7 +75,11 @@ public class ConnectorPartnersProxy {
         } catch (WebhookException e) {
             throw handleWebhookException(e);
         } catch (Exception e) {
-            throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, e.getMessage(), "ConnectorPartnersProxy.createReserve: Unknown error on connector create reserve call! partner: " + request.getPartnerCode(), e
+            throw new OrderFlightException(
+                    OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR,
+                    e.getMessage(),
+                    "ConnectorPartnersProxy.createReserve: Unknown error on connector create reserve call! partner: " + partnerCode,
+                    e
             );
         }
     }

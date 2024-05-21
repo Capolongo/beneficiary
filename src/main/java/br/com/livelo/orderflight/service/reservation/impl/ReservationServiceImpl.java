@@ -81,7 +81,7 @@ public class ReservationServiceImpl implements ReservationService {
             if (!this.existsReservationInPartner(partnerReservationResponse)) {
                 request.getItems().sort(Comparator.comparing(ReservationItem::getSkuId));
                 var partnerReservationRequest = reservationMapper.toPartnerReservationRequest(request);
-                partnerReservationResponse = partnerConnectorProxy.createReserve(partnerReservationRequest, transactionId, userId);
+                partnerReservationResponse = partnerConnectorProxy.createReserve(request.getPartnerCode(), partnerReservationRequest, transactionId, userId);
             }
 
             if (this.isNewOrder(order)) {

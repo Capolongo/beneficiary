@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class PartnerReservationRequest {
-	private String partnerCode;
+    private String commerceOrderId;
     private List<String> segmentsPartnerIds;
     private List<PartnerReservationItem> items;
     private List<PartnerReservationPax> paxs;
