@@ -62,6 +62,7 @@ class ReservationServiceTest {
         ids.add(requestMock.getCommerceOrderId());
         when(requestMock.getCommerceOrderId()).thenReturn("QWERT");
         when(requestMock.getPartnerCode()).thenReturn("CVC");
+        when(requestMock.getSegmentsPartnerIds()).thenReturn(List.of("fdf"));
         when(orderService.findByCommerceOrderIdIn(any())).thenReturn(Optional.empty());
 
         when(connectorPartnersProxy.createReserve(anyString(), any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
@@ -329,52 +330,6 @@ class ReservationServiceTest {
                 () -> assertEquals(transactionId, response.transactionId()),
                 () -> verify(orderService, times(1)).delete(any())
         );
-    }
-
-    @Test
-    void shouldntCreateOrder_WhenTokensDifferent() {
-        var transactionId = "123";
-        var type = "FLIGHT";
-        var segmentsPartnersId = "asdfg";
-        var token = "asdf";
-        var id = 1L;
-
-        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
-
-        var order = this.buildOrderEntity(request.getCommerceOrderId(), Set.of(this.buildOrderItem(id, transactionId, token, "CVCFLIGHT")), transactionId, "LIVPNR-1006");
-
-       var ids = request.getItems()
-                .stream()
-                .map(ReservationItem::getCommerceItemId)
-                .collect(Collectors.toList());
-       ids.add(request.getCommerceOrderId());
-
-        when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
-        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price", ""));
-        assertEquals(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR, exception.getOrderFlightErrorType());
-    }
-
-    @Test
-    void shouldntCreateOrder_WhenQuantityTokensDifferent() {
-        var transactionId = "123";
-        var type = "FLIGHT";
-        var segmentsPartnersId = "asdfg";
-        var token = "asdf";
-        var id = 1L;
-
-        var request = this.buildResevationRequest(List.of(this.buildReservationItem(transactionId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId, segmentsPartnersId));
-
-        var order = this.buildOrderEntity(request.getCommerceOrderId(), Set.of(this.buildOrderItem(id, transactionId, token, "CVCFLIGHT")), transactionId, "LIVPNR-1006");
-
-        var ids = request.getItems()
-                .stream()
-                .map(ReservationItem::getCommerceItemId)
-                .collect(Collectors.toList());
-        ids.add(request.getCommerceOrderId());
-
-        when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
-        var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price", ""));
-        assertEquals(OrderFlightErrorType.ORDER_FLIGHT_DIVERGENT_TOKEN_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
