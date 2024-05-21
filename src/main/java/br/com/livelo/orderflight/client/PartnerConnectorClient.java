@@ -26,7 +26,7 @@ public interface PartnerConnectorClient {
     ResponseEntity<PartnerReservationResponse> createReserve(
             URI baseUrl,
             @RequestBody PartnerReservationRequest partnerReservationRequest,
-            @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER, required = false) String transactionId,
+            @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER) String transactionId,
             @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId);
 
     @GetMapping
