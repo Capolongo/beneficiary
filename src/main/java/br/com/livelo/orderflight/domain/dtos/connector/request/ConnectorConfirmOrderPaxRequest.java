@@ -15,6 +15,6 @@ public class ConnectorConfirmOrderPaxRequest {
 	private String birthDate;
 	private String email;
 	private String areaCode;
-	private String phone;
+	private String phoneNumber;
 	private Set<ConnectorConfirmDocumentRequest> documents;
 }

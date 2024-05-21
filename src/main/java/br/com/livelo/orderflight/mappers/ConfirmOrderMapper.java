@@ -34,7 +34,6 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "paxs", expression = "java(reducePaxs(orderEntity))")
     ConnectorConfirmOrderRequest orderEntityToConnectorConfirmOrderRequest(OrderEntity orderEntity);
 
-    @Mapping(target = "phone", source = "phoneNumber")
     ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
     @Mapping(target = "number", source = "documentNumber")

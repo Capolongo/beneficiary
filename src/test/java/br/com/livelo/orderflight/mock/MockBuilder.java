@@ -190,7 +190,7 @@ public class MockBuilder {
                 .documents(Set.of())
                 .email("email")
                 .areaCode("81")
-                .phone("phone")
+                .phoneNumber("phone")
                 .build();
     }
 
