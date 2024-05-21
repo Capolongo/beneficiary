@@ -493,7 +493,7 @@ class ReservationServiceTest {
         return PartnerReservationResponse.builder()
                 .commerceOrderId("QWERT")
                 .partnerCode("CVC")
-                .status(PartnerResponseStatus.builder().code(status).build())
+                .currentStatus(PartnerResponseStatus.builder().code(status).build())
                 .ordersPriceDescription(
                         PartnerReservationOrdersPriceDescription.builder()
                                 .flights(List.of(

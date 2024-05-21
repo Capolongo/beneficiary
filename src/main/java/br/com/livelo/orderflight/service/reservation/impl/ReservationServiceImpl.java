@@ -64,7 +64,7 @@ public class ReservationServiceImpl implements ReservationService {
                     log.info("ReservationServiceImpl.getPartnerOrder partnerOrderId: {}, transactionId: {}, segmentsPartnerIds: {}, commerceOrderId: {}, partnerCode: {}", orderOptional.get().getPartnerOrderId(), transactionId, request.getSegmentsPartnerIds(), orderOptional.get().getCommerceOrderId(), request.getPartnerCode());
                     partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), request.getSegmentsPartnerIds(), userId);
 
-                    if (!INITIAL.getCode().equals(partnerReservationResponse.getStatus().getCode())) {
+                    if (!INITIAL.getCode().equals(partnerReservationResponse.getCurrentStatus().getCode())) {
                         this.updateStatus(order, partnerReservationResponse);
                         throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, null, null);
                     }
@@ -105,10 +105,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     private void updateStatus(OrderEntity order, PartnerReservationResponse partnerReservationResponse) {
         order.getStatusHistory().add(OrderStatusEntity.builder()
-                .code(partnerReservationResponse.getStatus().getCode())
-                .description(partnerReservationResponse.getStatus().getDescription())
-                .partnerCode(partnerReservationResponse.getStatus().getPartnerCode())
-                .partnerDescription(partnerReservationResponse.getStatus().getPartnerDescription())
+                .code(partnerReservationResponse.getCurrentStatus().getCode())
+                .description(partnerReservationResponse.getCurrentStatus().getDescription())
+                .partnerCode(partnerReservationResponse.getCurrentStatus().getPartnerCode())
+                .partnerDescription(partnerReservationResponse.getCurrentStatus().getPartnerDescription())
                 .statusDate(LocalDateTime.now())
                 .build());
         this.orderService.save(order);
