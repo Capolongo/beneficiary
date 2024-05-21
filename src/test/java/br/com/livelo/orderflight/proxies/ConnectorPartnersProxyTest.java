@@ -138,11 +138,10 @@ class ConnectorPartnersProxyTest {
         var response = mock(PartnerReservationResponse.class);
         setup();
 
-        when(request.getPartnerCode()).thenReturn("cvc");
         when(partnerConnectorClient.createReserve(any(), any(), any(), anyString()))
                 .thenReturn(ResponseEntity.ok(response));
 
-        PartnerReservationResponse result = proxy.createReserve(request, "transactionID", "userId");
+        PartnerReservationResponse result = proxy.createReserve("cvc", request, "transactionID", "userId");
         assertNotNull(result);
     }
 
@@ -158,7 +157,7 @@ class ConnectorPartnersProxyTest {
         doReturn("http://test").when(requestMock).url();
 
         var exception = assertThrows(ConnectorReservationInternalException.class,
-                () -> proxy.createReserve(request, "transactionId", "userId"));
+                () -> proxy.createReserve("cvc", request, "transactionId", "userId"));
 
         assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
@@ -176,7 +175,7 @@ class ConnectorPartnersProxyTest {
         makeException(request, feignException);
 
         var exception = assertThrows(ConnectorReservationBusinessException.class,
-                () -> proxy.createReserve(request, "transactionId", "userId"));
+                () -> proxy.createReserve("cvc", request, "transactionId", "userId"));
 
         assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
@@ -185,10 +184,9 @@ class ConnectorPartnersProxyTest {
     void shouldThrowsOrderFlightException_WhenFeignExceptionResponseIsDifferentOf5xxxStatus() {
         var request = mock(PartnerReservationRequest.class);
         setup();
-        when(request.getPartnerCode()).thenReturn("cvc");
         doThrow(OrderFlightException.class).when(partnerConnectorClient).createReserve(any(), any(), anyString(), anyString());
 
-        assertThrows(OrderFlightException.class, () -> proxy.createReserve(request, "transactionId", "userId"));
+        assertThrows(OrderFlightException.class, () -> proxy.createReserve("cvc", request, "transactionId", "userId"));
     }
 
     @Test
@@ -198,10 +196,10 @@ class ConnectorPartnersProxyTest {
         when(partnerConnectorClient.createReserve(any(), any(), any(), any())).thenThrow(new RuntimeException("Simulated internal error"));
 
         assertThrows(OrderFlightException.class,
-                () -> proxy.createReserve(mock(PartnerReservationRequest.class), "transactionId", "userId"));
+                () -> proxy.createReserve("cvc", mock(PartnerReservationRequest.class), "transactionId", "userId"));
 
         var exception = assertThrows(OrderFlightException.class,
-                () -> proxy.createReserve(request, "transactionId", "userId"));
+                () -> proxy.createReserve("cvc", request, "transactionId", "userId"));
 
         assertEquals(ORDER_FLIGHT_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
@@ -219,7 +217,7 @@ class ConnectorPartnersProxyTest {
         doReturn("http://test").when(requestMock).url();
 
         var exception = assertThrows(ConnectorReservationBusinessException.class,
-                () -> proxy.createReserve(request, "transactionId", "userId"));
+                () -> proxy.createReserve("cvc", request, "transactionId", "userId"));
 
         assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
@@ -235,7 +233,7 @@ class ConnectorPartnersProxyTest {
         makeException(request, feignException);
         setup();
         var exception = assertThrows(OrderFlightException.class,
-                () -> proxy.createReserve(request, "transactionId", "userId"));
+                () -> proxy.createReserve("cvc", request, "transactionId", "userId"));
 
         assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_BUSINESS_ERROR, exception.getOrderFlightErrorType());
 
@@ -250,7 +248,7 @@ class ConnectorPartnersProxyTest {
         when(exceptionExpected.getError()).thenReturn(UNKNOWN);
 
         var exception = assertThrows(OrderFlightException.class,
-                () -> proxy.createReserve(request, "transactionId", "userId"));
+                () -> proxy.createReserve("cvc", request, "transactionId", "userId"));
 
         assertEquals(ORDER_FLIGHT_CONFIG_FLIGHT_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
@@ -265,7 +263,7 @@ class ConnectorPartnersProxyTest {
         when(exceptionExpected.getError()).thenReturn(PARTNER_INACTIVE);
 
         var exception = assertThrows(OrderFlightException.class,
-                () -> proxy.createReserve(request, "transactionId", "userId"));
+                () -> proxy.createReserve("cvc", request, "transactionId", "userId"));
 
         assertEquals(ORDER_FLIGHT_CONFIG_FLIGHT_BUSINESS_ERROR, exception.getOrderFlightErrorType());
     }
@@ -346,7 +344,6 @@ class ConnectorPartnersProxyTest {
     }
 
     private void makeException(PartnerReservationRequest partnerReservationRequest, FeignException feignException) {
-        when(partnerReservationRequest.getPartnerCode()).thenReturn("cvc");
         when(partnerConnectorClient.createReserve(any(), any(), any(), anyString())).thenThrow(feignException);
     }
 

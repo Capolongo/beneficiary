@@ -61,9 +61,10 @@ class ReservationServiceTest {
                 .collect(Collectors.toList());
         ids.add(requestMock.getCommerceOrderId());
         when(requestMock.getCommerceOrderId()).thenReturn("QWERT");
+        when(requestMock.getPartnerCode()).thenReturn("CVC");
         when(orderService.findByCommerceOrderIdIn(any())).thenReturn(Optional.empty());
 
-        when(connectorPartnersProxy.createReserve(any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
+        when(connectorPartnersProxy.createReserve(anyString(), any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
         when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
 
@@ -274,7 +275,7 @@ class ReservationServiceTest {
 
         var partnerReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
         when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
-        when(connectorPartnersProxy.createReserve(any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
+        when(connectorPartnersProxy.createReserve(anyString(), any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
         var request = this.buildResevationRequest(Collections.singletonList(this.buildReservationItem(segmentsPartnersId, type, "cvc_flight")), List.of(segmentsPartnersId, segmentsPartnersId));
         var order = this.buildOrderEntity(request.getCommerceOrderId(), Set.of(this.buildOrderItem(id, commerceItemId, segmentsPartnersId, "CVCFLIGHT")), transactionId, "LIVPNR-1006");
 
@@ -299,7 +300,7 @@ class ReservationServiceTest {
         var segmentsPartnersId = "asdf";
 
         var partnerReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
-        when(connectorPartnersProxy.createReserve(any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
+        when(connectorPartnersProxy.createReserve(anyString(), any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
         when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
         var request = this.buildResevationRequest(Collections.singletonList(this.buildReservationItem(segmentsPartnersId, type, "CVCFLIGHT")), List.of(segmentsPartnersId, segmentsPartnersId));
 
