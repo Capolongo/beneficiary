@@ -64,6 +64,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             order.setCustomerIdentifier(orderRequest.getCustomerId());
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorPartnerConfirmation.getCurrentStatus());
         } catch (OrderFlightException exception) {
+            log.error("ConfirmationService.confirmOrder - id: [{}], exception: [{}]", id, exception);
             if (!exception.getOrderFlightErrorType().equals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR)) {
                 throw exception;
             }
