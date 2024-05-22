@@ -1,9 +1,6 @@
 package br.com.livelo.orderflight.mappers;
 
-import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationDocument;
-import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
-import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationDocument;
-import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
+import br.com.livelo.orderflight.domain.dto.reservation.request.*;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
@@ -81,6 +78,7 @@ public interface ReservationMapper {
         return List.of(segmentId);
     }
 
+    @Mapping(target = "number", source = "documentNumber")
     PartnerReservationDocument toPartnerReservationDocument(ReservationDocument reservationDocument);
 
     @Mapping(target = "expirationTimer", source = "expirationTimer")
