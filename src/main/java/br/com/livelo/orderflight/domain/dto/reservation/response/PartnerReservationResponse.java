@@ -22,7 +22,7 @@ public class PartnerReservationResponse {
     @DateTimeFormat(pattern = "yyyy-MM-ddTHH:mm:ss")
     private LocalDateTime expirationDate;
     private String createDate;
-    private PartnerResponseStatus status;
+    private PartnerResponseStatus currentStatus;
     private BigDecimal amount;
     private PartnerReservationOrdersPriceDescription ordersPriceDescription;
     private List<PartnerReservationItem> items;

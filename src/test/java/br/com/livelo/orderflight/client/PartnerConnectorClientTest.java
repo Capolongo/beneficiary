@@ -4,7 +4,6 @@ import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservati
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
 
 import java.net.URI;
 
@@ -24,11 +23,11 @@ class PartnerConnectorClientTest {
 
         PartnerConnectorClient partnerConnectorClient = mock(PartnerConnectorClient.class);
 
-        when(partnerConnectorClient.createReserve(any(), any(), any())).thenReturn(responseEntity);
+        when(partnerConnectorClient.createReserve(any(), any(), any(), anyString())).thenReturn(responseEntity);
 
-        ResponseEntity<PartnerReservationResponse> result = partnerConnectorClient.createReserve(baseUrl, partnerReservationRequest, "123");
+        ResponseEntity<PartnerReservationResponse> result = partnerConnectorClient.createReserve(baseUrl, partnerReservationRequest, "123", "");
 
-        verify(partnerConnectorClient, times(1)).createReserve(any(), any(), any());
+        verify(partnerConnectorClient, times(1)).createReserve(any(), any(), any(), anyString());
         assertEquals(partnerReservationResponse, result.getBody());
     }
 }

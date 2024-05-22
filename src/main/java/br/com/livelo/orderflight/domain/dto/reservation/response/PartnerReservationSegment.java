@@ -28,6 +28,6 @@ public class PartnerReservationSegment {
     private PartnerReservationAirline airline;
     private List<PartnerReservationFlightsLeg> flightLegs;
     private List<PartnerReservationLuggage> luggages;
-    private List<PartnerReservationCancelationRule> cancelationRules;
+    private List<PartnerReservationCancellationRule> cancellationRules;
     private List<PartnerReservationChangeRule> changeRules;
 }

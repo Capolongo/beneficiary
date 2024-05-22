@@ -1,6 +1,7 @@
 package br.com.livelo.orderflight.mappers;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.*;
+import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmDocumentRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
@@ -29,13 +30,25 @@ public interface ConfirmOrderMapper {
     ConfirmOrderResponse orderEntityToConfirmOrderResponse(OrderEntity orderEntity);
 
     @Mapping(target = "commerceItemId", expression = "java(getFlightItemCommerceItemId(orderEntity))")
+    @Mapping(target = "partnerOrderLinkId", expression = "java(getFlightItemPartnerOrderLinkId(orderEntity))")
     @Mapping(target = "paxs", expression = "java(reducePaxs(orderEntity))")
+    @Mapping(target = "segmentsPartnerIds", expression = "java(setSegmentsPartnersIds(orderEntity))")
     ConnectorConfirmOrderRequest orderEntityToConnectorConfirmOrderRequest(OrderEntity orderEntity);
 
-    @Mapping(target = "phone", source = "phoneNumber")
     ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
+    @Mapping(target = "number", source = "documentNumber")
+    ConnectorConfirmDocumentRequest documentEntityToConnectorConfirmDocumentRequest(DocumentEntity document);
+
     OrderStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
+
+    default String getFlightItemPartnerOrderLinkId(OrderEntity orderEntity) {
+        return orderEntity.getItems().stream()
+                .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
+                .findFirst()
+                .map(OrderItemEntity::getPartnerOrderLinkId)
+                .orElse("");
+    }
 
     default String getFlightItemCommerceItemId(OrderEntity orderEntity) {
         return orderEntity.getItems().stream()
@@ -52,6 +65,15 @@ public interface ConfirmOrderMapper {
                 .map(item -> item.getTravelInfo().getPaxs().stream()
                         .map(this::paxEntityToConnectorConfirmOrderPaxRequest)
                         .toList())
+                .orElse(Collections.emptyList());
+    }
+
+    default List<String> setSegmentsPartnersIds(OrderEntity orderEntity) {
+        return orderEntity.getItems().stream()
+                .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
+                .findFirst()
+                .map(item -> item.getSegments().stream()
+                        .map(SegmentEntity::getPartnerId).toList())
                 .orElse(Collections.emptyList());
     }
 }

@@ -50,7 +50,7 @@ public class SegmentEntity extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "SEGMENT_ID")
-    private Set<CancelationRuleEntity> cancelationRules;
+    private Set<CancellationRuleEntity> cancellationRules;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "SEGMENT_ID")

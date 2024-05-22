@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PartnerReservationCancelationRule {
+public class PartnerReservationCancellationRule {
 	private String type;
 	private String description;
 }

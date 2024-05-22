@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.domain.dto;
 
-import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponseCancelationRule;
+import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponseCancellationRule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -8,11 +8,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class ReservationResponseCancelationRuleTest {
+class ReservationResponseCancellationRuleTest {
 
     @Test
     void buildObject() {
-        var object = new ReservationResponseCancelationRule("", "");
+        var object = new ReservationResponseCancellationRule("", "");
         assertNotNull(object);
     }
 }

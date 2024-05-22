@@ -29,7 +29,7 @@ class ReservationItemMapperTest {
                 .segments(
                         List.of(PartnerReservationSegment.builder()
                                 .luggages(List.of(PartnerReservationLuggage.builder().build()))
-                                .cancelationRules(List.of(PartnerReservationCancelationRule.builder().build()))
+                                .cancellationRules(List.of(PartnerReservationCancellationRule.builder().build()))
                                 .changeRules(List.of(PartnerReservationChangeRule.builder().build()))
                                 .flightLegs(List.of(PartnerReservationFlightsLeg.builder().build()))
                                 .build())

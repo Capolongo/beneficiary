@@ -16,7 +16,7 @@ public record ReservationResponseSegment(String partnerId,
                                          LocalDateTime departureDate,
                                          LocalDateTime arrivalDate,
                                          Set<ReservationResponseLuggage> luggages,
-                                         Set<ReservationResponseCancelationRule> cancelationRules,
+                                         Set<ReservationResponseCancellationRule> cancellationRules,
                                          Set<ReservationResponseChangeRule> changeRules,
                                          Set<ReservationResponseFlightLeg> flightsLegs) {
 }

@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Validated
+@ToString
 public class ReservationRequest {
     @NotNull
     @NotBlank
