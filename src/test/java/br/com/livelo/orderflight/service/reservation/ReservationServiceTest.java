@@ -377,6 +377,7 @@ class ReservationServiceTest {
                 .id(id)
                 .skuId(skuId)
                 .productId("flight")
+                .productType("FLIGHT")
                 .travelInfo(TravelInfoEntity.builder()
                         .adt(1)
                         .chd(0)

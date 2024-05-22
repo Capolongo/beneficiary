@@ -2,6 +2,8 @@ package br.com.livelo.orderflight.service.reservation.impl;
 
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationItem;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
+import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationOrdersPriceDescriptionFlight;
+import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationOrdersPriceDescriptionTaxes;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateFlight;
@@ -370,9 +372,33 @@ public class ReservationServiceImpl implements ReservationService {
             partnerReservationResponse.setAmount(order.getPrice().getPartnerAmount());
         }
 
+        this.validateAmountOrderPriceDescriptionNullable(partnerReservationResponse, order);
+
 
         for (OrderItemEntity item : order.getItems()) {
             this.validateAmountPartnerNullable(item, partnerReservationResponse);
+        }
+    }
+
+    private void validateAmountOrderPriceDescriptionNullable(PartnerReservationResponse partnerReservationResponse, OrderEntity orderEntity) {
+        for (PartnerReservationOrdersPriceDescriptionFlight flightPriceDescription : partnerReservationResponse.getOrdersPriceDescription().getFlights()) {
+            if (Objects.isNull(flightPriceDescription.getAmount())) {
+                var orderPrices = orderEntity.getPrice().getOrdersPriceDescription().stream().filter(price -> !price.getType().contains("TAX")).toList();
+                orderPrices.stream()
+                        .filter(orderPrice -> flightPriceDescription.getPassengerType().equals(orderPrice.getType()))
+                        .findFirst()
+                        .ifPresent(orderPrice -> flightPriceDescription.setAmount(orderPrice.getAmount()));
+            }
+        }
+
+        for (PartnerReservationOrdersPriceDescriptionTaxes taxesDescription : partnerReservationResponse.getOrdersPriceDescription().getTaxes()) {
+            if (Objects.isNull(taxesDescription.getAmount())) {
+                var orderPrices = orderEntity.getPrice().getOrdersPriceDescription().stream().filter(price -> price.getType().contains("TAX")).toList();
+                orderPrices.stream()
+                        .filter(orderPrice -> taxesDescription.getType().equals(orderPrice.getType()))
+                        .findFirst()
+                        .ifPresent(orderPrice -> taxesDescription.setAmount(orderPrice.getAmount()));
+            }
         }
     }
 
