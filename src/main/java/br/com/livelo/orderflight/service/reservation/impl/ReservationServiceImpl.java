@@ -70,6 +70,7 @@ public class ReservationServiceImpl implements ReservationService {
                     }
 
                     order.setCommerceOrderId(request.getCommerceOrderId());
+                    this.validateAndSetAmounts(partnerReservationResponse, order);
                     log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
                 } else {
                     this.orderService.delete(order);
@@ -130,7 +131,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     private List<PricingCalculatePrice> priceOrder(ReservationRequest request, PartnerReservationResponse partnerReservationResponse, String transactionId, String userId) {
         var pricingCalculateRequest = pricingCalculateRequestMapper.toPricingCalculateRequest(partnerReservationResponse, request.getCommerceOrderId());
-        
+
         log.info("ReservationServiceImpl.priceOrder - {} isInternational", pricingCalculateRequest.getTravelInfo().getIsInternational());
         var pricingCalculateResponse = pricingProxy.calculate(pricingCalculateRequest, transactionId, userId);
 
@@ -362,5 +363,27 @@ public class ReservationServiceImpl implements ReservationService {
         String linkIndex = "00" + index;
         String partnerOrderLink = partnerCode.toUpperCase() + "-" + orderId + linkIndex;
         item.setPartnerOrderLinkId(partnerOrderLink);
+    }
+
+    private void validateAndSetAmounts(PartnerReservationResponse partnerReservationResponse, OrderEntity order) {
+        if (partnerReservationResponse.getAmount() == null || BigDecimal.ZERO.equals(partnerReservationResponse.getAmount())) {
+            partnerReservationResponse.setAmount(order.getPrice().getPartnerAmount());
+        }
+
+
+        for (OrderItemEntity item : order.getItems()) {
+            this.validateAmountPartnerNullable(item, partnerReservationResponse);
+        }
+    }
+
+    private void validateAmountPartnerNullable(OrderItemEntity orderItem, PartnerReservationResponse partnerReservationResponse) {
+        partnerReservationResponse.getItems().stream()
+                .filter(item -> orderItem.getProductType().equals(item.getType()))
+                .findFirst()
+                .ifPresent(item -> {
+                    if (Objects.isNull(item.getAmount()) || BigDecimal.ZERO.equals(item.getAmount())) {
+                        item.setAmount(orderItem.getPrice().getPartnerAmount());
+                    }
+                });
     }
 }
