@@ -29,13 +29,13 @@ public interface PartnerConnectorClient {
             @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER) String transactionId,
             @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId);
 
-    @GetMapping
+    @PostMapping
     ResponseEntity<PartnerReservationResponse> getReservation(
             URI baseUri,
             @RequestHeader(value = "id") String id,
             @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER, required = false) String transactionId,
             @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId,
-            @RequestHeader(value = "segmentsPartnerIds") List<String> segmentsPartnerIds
+            @RequestBody  List<String> segmentsPartnerIds
     );
 
     @GetMapping
