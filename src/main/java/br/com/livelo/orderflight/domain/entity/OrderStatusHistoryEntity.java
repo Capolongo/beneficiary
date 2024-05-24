@@ -5,13 +5,13 @@ import lombok.*;
 
 @Getter
 @Setter
-@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ORDERS_STATUS_HISTORY")
 @EqualsAndHashCode(callSuper = false)
 @ToString
+@Entity
+@Table(name = "ORDERS_STATUS_HISTORY")
 public class OrderStatusHistoryEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_STATUS_SEQ")
     @SequenceGenerator(name = "ORDERS_STATUS_SEQ", sequenceName = "ORDERS_STATUS_SEQ", allocationSize = 1)
