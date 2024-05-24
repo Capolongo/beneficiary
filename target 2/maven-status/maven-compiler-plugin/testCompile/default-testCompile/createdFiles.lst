@@ -1,8 +1,0 @@
-br/com/livelo/orderflight/domain/dto/ReservationResponseFlightLegTest.class
-br/com/livelo/orderflight/mock/MockBuilder.class
-br/com/livelo/orderflight/service/installment/InstallmentServiceImplTest.class
-br/com/livelo/orderflight/listener/GetConfirmationListenerTest.class
-br/com/livelo/orderflight/utils/OrderItemUtilsTest.class
-br/com/livelo/orderflight/service/shipment/ShipmentServiceImplTest.class
-br/com/livelo/orderflight/client/PartnerConnectorClientTest.class
-br/com/livelo/orderflight/mappers/ReservationStatusMapperTest.class
