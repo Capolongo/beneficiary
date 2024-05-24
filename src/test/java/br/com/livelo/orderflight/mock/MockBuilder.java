@@ -235,8 +235,8 @@ public class MockBuilder {
         Set<OrderItemEntity> items = new HashSet<>();
         items.add(orderItemEntity());
 
-        Set<OrderStatusEntity> statusHistory = new HashSet<>();
-        statusHistory.add(statusInitial());
+        Set<OrderStatusHistoryEntity> statusHistory = new HashSet<>();
+        statusHistory.add(statusHistoryInitial());
 
         Set<ProcessCounterEntity> processCounter = new HashSet<>();
         processCounter.add(ProcessCounterEntity.builder().process("getConfirmation")
@@ -269,8 +269,8 @@ public class MockBuilder {
         items.add(orderItemEntity());
         items.add(orderItemEntity());
 
-        Set<OrderStatusEntity> statusHistory = new HashSet<>();
-        statusHistory.add(statusInitial());
+        Set<OrderStatusHistoryEntity> statusHistory = new HashSet<>();
+        statusHistory.add(statusHistoryInitial());
 
         Set<ProcessCounterEntity> processCounter = new HashSet<>();
         processCounter.add(ProcessCounterEntity.builder().process("getConfirmation")
@@ -303,9 +303,10 @@ public class MockBuilder {
         Set<OrderItemEntity> items = new HashSet<>();
         items.add(orderItemEntity());
 
-        Set<OrderStatusEntity> statusHistory = new HashSet<>();
-        statusHistory.add(statusInitial());
-        statusHistory.add(statusProcessing());
+        Set<OrderStatusHistoryEntity> statusHistory = new HashSet<>();
+        statusHistory.add(statusHistoryInitial());
+        statusHistory.add(statusHistoryProcessing());
+
 
         return OrderEntity.builder()
                 .id("id")
@@ -418,53 +419,69 @@ public class MockBuilder {
                 .build();
     }
 
-    public static OrderStatusEntity statusInitial() {
-        return OrderStatusEntity.builder()
+    public static OrderCurrentStatusEntity statusInitial() {
+        return OrderCurrentStatusEntity.builder()
                 .id(1L)
                 .code(StatusLivelo.INITIAL.getCode())
                 .description(StatusLivelo.INITIAL.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("partnerResponse")
-                .statusDate(LocalDateTime.now())
+                .build();
+    }
+    public static OrderStatusHistoryEntity statusHistoryInitial() {
+        return OrderStatusHistoryEntity.builder()
+                .id(1L)
+                .code(StatusLivelo.INITIAL.getCode())
+                .description(StatusLivelo.INITIAL.getDescription())
+                .partnerCode("partnerCode")
+                .partnerDescription("partnerDescription")
+                .partnerResponse("partnerResponse")
                 .build();
     }
 
-    public static OrderStatusEntity statusFaill() {
-        return OrderStatusEntity.builder()
+    public static OrderCurrentStatusEntity statusFaill() {
+        return OrderCurrentStatusEntity.builder()
                 .id(1L)
                 .code(StatusLivelo.FAILED.getCode())
                 .description(StatusLivelo.FAILED.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("partnerResponse")
-                .statusDate(LocalDateTime.now())
                 .build();
     }
 
 
 
-    public static OrderStatusEntity statusProcessing() {
-        return OrderStatusEntity.builder()
+    public static OrderCurrentStatusEntity statusProcessing() {
+        return OrderCurrentStatusEntity.builder()
                 .id(1L)
                 .code(StatusLivelo.PROCESSING.getCode())
                 .description(StatusLivelo.PROCESSING.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("response")
-                .statusDate(LocalDateTime.now())
+                .build();
+    }
+    public static OrderStatusHistoryEntity statusHistoryProcessing() {
+        return OrderStatusHistoryEntity.builder()
+                .id(1L)
+                .code(StatusLivelo.PROCESSING.getCode())
+                .description(StatusLivelo.PROCESSING.getDescription())
+                .partnerCode("partnerCode")
+                .partnerDescription("partnerDescription")
+                .partnerResponse("response")
                 .build();
     }
 
-    public static OrderStatusEntity statusFailed() {
-        return OrderStatusEntity.builder()
+    public static OrderCurrentStatusEntity statusFailed() {
+        return OrderCurrentStatusEntity.builder()
                 .id(1L)
                 .code(StatusLivelo.FAILED.getCode())
                 .description(StatusLivelo.FAILED.getDescription())
                 .partnerCode("partnerCode")
                 .partnerDescription("partnerDescription")
                 .partnerResponse("response")
-                .statusDate(LocalDateTime.now())
                 .build();
     }
 

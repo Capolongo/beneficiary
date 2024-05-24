@@ -1,11 +1,11 @@
 package br.com.livelo.orderflight.service.completed.impl;
 
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.OrderCurrentStatusEntity;
+import br.com.livelo.orderflight.domain.entity.OrderStatusHistoryEntity;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.service.completed.CompletedService;
 import br.com.livelo.orderflight.service.order.impl.OrderServiceImpl;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,11 +28,10 @@ public class CompletedServiceImpl implements CompletedService {
             return;
         }
 
-        var newStatus = OrderStatusEntity.builder()
+        var newStatus = OrderCurrentStatusEntity.builder()
                 .code(StatusLivelo.COMPLETED.getCode())
                 .description(StatusLivelo.COMPLETED.getDescription())
                 .partnerCode(currentStatus.getPartnerCode())
-                .statusDate(LocalDateTime.now())
                 .partnerResponse(currentStatus.getPartnerResponse())
                 .partnerDescription(currentStatus.getPartnerDescription())
                 .build();

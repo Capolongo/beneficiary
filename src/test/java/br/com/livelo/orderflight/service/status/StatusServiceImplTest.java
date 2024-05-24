@@ -4,8 +4,9 @@ package br.com.livelo.orderflight.service.status;
 import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusDTO;
 import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusItemDTO;
 import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusRequest;
+import br.com.livelo.orderflight.domain.entity.OrderCurrentStatusEntity;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.OrderStatusHistoryEntity;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
@@ -18,7 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.time.LocalDateTime;
+
+import java.time.ZonedDateTime;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -48,10 +50,11 @@ public class StatusServiceImplTest {
 
         String id = "lf20";
 
-        OrderStatusEntity orderStatus =  mockOrderStatus();
-
+        OrderCurrentStatusEntity orderStatus =  mockOrderStatus();
         OrderEntity mockedOrder = MockBuilder.orderEntity();
         mockedOrder.setCurrentStatus(MockBuilder.statusFaill());
+        mockedOrder.getCurrentStatus().setCreateDate(ZonedDateTime.now());
+
         UpdateStatusDTO updateStatus = mockBuildUpdateStatusDTO(StatusLivelo.PROCESSING.getCode(), StatusLivelo.PROCESSING.getDescription(), StatusLivelo.PROCESSING.getDescription());
 
         UpdateStatusItemDTO items = mockBuildStatusItemDTO(updateStatus, "commerceItemId");
@@ -62,7 +65,7 @@ public class StatusServiceImplTest {
 
         when(statusMapper.convert(any(UpdateStatusDTO.class))).thenReturn(orderStatus);
 
-        doNothing().when(orderService).addNewOrderStatus(any(OrderEntity.class), any(OrderStatusEntity.class));
+        doNothing().when(orderService).addNewOrderStatus(any(OrderEntity.class), any(OrderCurrentStatusEntity.class));
 
         when(orderService.save(any(OrderEntity.class))).thenReturn(mock(OrderEntity.class));
 
@@ -134,13 +137,12 @@ public class StatusServiceImplTest {
         });
     }
 
-    private OrderStatusEntity mockOrderStatus() {
-        return OrderStatusEntity.builder()
+    private OrderCurrentStatusEntity mockOrderStatus() {
+        return OrderCurrentStatusEntity.builder()
                 .id(1L)
                 .partnerCode("")
                 .partnerDescription("")
                 .partnerResponse("")
-                .statusDate(LocalDateTime.now())
                 .code("LIVPNR-9001")
                 .description("CANCELED")
                 .build();

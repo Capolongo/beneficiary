@@ -4,10 +4,7 @@ import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
 import br.com.livelo.orderflight.domain.dtos.update.UpdateOrderDTO;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
+import br.com.livelo.orderflight.domain.entity.*;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
@@ -59,12 +56,14 @@ public class OrderServiceImpl implements OrderService {
         return order.get();
     }
 
-    public void addNewOrderStatus(OrderEntity order, OrderStatusEntity status) {
+    public void addNewOrderStatus(OrderEntity order, OrderCurrentStatusEntity status) {
         if (isSameStatus(status.getCode(), order.getCurrentStatus().getCode())) {
             return;
         }
 
-        order.getStatusHistory().add(status);
+        var statusHistory = orderMapper.statusHistoryToCurrentStatus(status);
+
+        order.getStatusHistory().add(statusHistory);
         order.setCurrentStatus(status);
     }
 
@@ -104,14 +103,13 @@ public class OrderServiceImpl implements OrderService {
         return currentStatus.equals(newStatus);
     }
 
-    public OrderStatusEntity buildOrderStatusFailed(String cause) {
-        return OrderStatusEntity.builder()
+    public OrderCurrentStatusEntity buildOrderStatusFailed(String cause) {
+        return OrderCurrentStatusEntity.builder()
                 .partnerCode(String.valueOf(500))
                 .code(StatusLivelo.FAILED.getCode())
                 .partnerResponse(cause)
                 .partnerDescription("failed")
                 .description(StatusLivelo.FAILED.getDescription())
-                .statusDate(LocalDateTime.now())
                 .build();
     }
 

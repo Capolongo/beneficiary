@@ -35,12 +35,15 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "segmentsPartnerIds", expression = "java(setSegmentsPartnersIds(orderEntity))")
     ConnectorConfirmOrderRequest orderEntityToConnectorConfirmOrderRequest(OrderEntity orderEntity);
 
+    OrderStatusHistoryEntity statusHistoryToCurrentStatus(OrderCurrentStatusEntity orderCurrentStatusEntity);
+
     ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
     @Mapping(target = "number", source = "documentNumber")
     ConnectorConfirmDocumentRequest documentEntityToConnectorConfirmDocumentRequest(DocumentEntity document);
 
-    OrderStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
+//    OrderStatusHistoryEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
+    OrderCurrentStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
 
     default String getFlightItemPartnerOrderLinkId(OrderEntity orderEntity) {
         return orderEntity.getItems().stream()

@@ -1,5 +1,7 @@
 package br.com.livelo.orderflight.service.confirmation.impl;
 
+import br.com.livelo.orderflight.domain.entity.OrderCurrentStatusEntity;
+import br.com.livelo.orderflight.domain.entity.OrderStatusHistoryEntity;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
@@ -8,7 +10,6 @@ import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirm
 import br.com.livelo.orderflight.domain.dtos.headers.RequiredHeaders;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
@@ -40,7 +41,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
 
     public ConfirmOrderResponse confirmOrder(String id, ConfirmOrderRequest orderRequest, RequiredHeaders headers) throws OrderFlightException {
         OrderEntity order = null;
-        OrderStatusEntity status = null;
+        OrderCurrentStatusEntity status = null;
 
         try {
             log.info("ConfirmationService.confirmOrder - Start - id: [{}]", id);
@@ -85,7 +86,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
     }
 
     public void orderProcess(OrderProcess orderProcess) {
-        OrderStatusEntity status = null;
+        OrderCurrentStatusEntity status = null;
 
         var order = orderService.getOrderById(orderProcess.getId());
         var oldStatusCode = order.getCurrentStatus().getCode();
@@ -117,7 +118,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         orderService.orderDetailLog("orderProcess", status.getCode(), order);
     }
 
-    private OrderStatusEntity processGetConfirmation(OrderEntity order) {
+    private OrderCurrentStatusEntity processGetConfirmation(OrderEntity order) {
         try {
             var connectorConfirmOrderResponse = connectorPartnersProxy.getConfirmationOnPartner(order.getPartnerCode(), order.getPartnerOrderId(), order.getId());
             var mappedStatus = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderResponse.getCurrentStatus());

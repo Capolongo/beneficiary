@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: order-flight
+  cloud:
+    bus:
+      enabled: false
+  main:
+    allow-bean-definition-overriding: true
+
+  config:
+    import: "optional:configserver:https://fake-url.com?max-attempts=1"
+
+  rabbitmq:
+    enabled: true
+    custom:
+      livelo-audit:
+        exchange: audit.exchange
+        queueRoutingKey: audit.routingkey
+
+  jpa:
+    open-in-view: false
+  datasource:
+    url: jdbc:h2:mem:mydb;NON_KEYWORDS=user
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+
+
+management:
+  observations:
+    http:
+      client:
+        requests:
+          name: test
+      server:
+        requests:
+          name: test
