@@ -108,7 +108,7 @@ public class ConnectorPartnersProxy {
 
     private static OrderFlightException handleFeignException(FeignException e, String format) {
         var status = HttpStatus.valueOf(e.status());
-        var message = String.format(format, e.status(), e.responseBody());
+        var message = String.format(format, e.status(), e.contentUTF8());
 
         if (status.is4xxClientError()) {
             log.warn("Business error on connector call url: {} status: {} body: {}", e.request().url(), e.status(), e.responseBody(), e);
