@@ -48,7 +48,7 @@ public class OrderEntity extends BaseEntity {
         @OrderBy("createDate ASC")
         private Set<OrderStatusHistoryEntity> statusHistory;
         @OneToOne(cascade = CascadeType.ALL)
-        @JoinColumn(name = "STATUS")
+        @JoinColumn(name = "CURRENT_STATUS")
         private OrderCurrentStatusEntity currentStatus;
         @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
         @JoinColumn(name = "ORDER_ID")
