@@ -41,8 +41,6 @@ public interface ConfirmOrderMapper {
 
     @Mapping(target = "number", source = "documentNumber")
     ConnectorConfirmDocumentRequest documentEntityToConnectorConfirmDocumentRequest(DocumentEntity document);
-
-//    OrderStatusHistoryEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
     OrderCurrentStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
 
     default String getFlightItemPartnerOrderLinkId(OrderEntity orderEntity) {
