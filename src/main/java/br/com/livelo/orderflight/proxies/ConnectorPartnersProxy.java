@@ -43,7 +43,8 @@ public class ConnectorPartnersProxy {
         try {
             log.info("ConnectorPartnersProxy.confirmOnPartner - start - id: [{}], commerceOrderId: [{}], connectorConfirmOrderRequest [{}], partnerCode: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), connectorConfirmOrderRequest, partnerCode);
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
-            final var connectorUri = URI.create(webhook.getConnectorUrl());
+            var connectorUrl = webhook.getConnectorUrl().replace("{id}", connectorConfirmOrderRequest.getPartnerOrderId());
+            final var connectorUri = URI.create(connectorUrl);
 
             ResponseEntity<ConnectorConfirmOrderResponse> response = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest, headers.getTransactionId(), headers.getUserId());
             var connectorConfirmOrderResponse = response.getBody();
