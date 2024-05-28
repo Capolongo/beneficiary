@@ -12,19 +12,19 @@ import java.util.List;
 @UtilityClass
 public class ConfirmOrderValidation {
     public static void validateOrderPayload(ConfirmOrderRequest orderRequest, OrderEntity order) throws OrderFlightException {
-        List<Boolean> validationList = List.of(
+        var validationList = List.of(
                 orderRequest.getCommerceOrderId().equals(order.getCommerceOrderId()),
                 orderRequest.getPrice().getPointsAmount().equals(order.getPrice().getPointsAmount()),
                 PayloadComparison.compareItems(orderRequest.getItems(), order.getItems()));
 
         if (validationList.contains(false)) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_OBJECTS_NOT_EQUAL;
-            throw new OrderFlightException(errorType, errorType.getTitle(), null);
+            OrderFlightErrorType errorType = OrderFlightErrorType.ORDER_FLIGHT_CONFIRMATION_ORDER_VALIDATION_ERROR;
+            throw new OrderFlightException(errorType, errorType.getTitle(), "Error on validate order to confirmation. id: " + order.getId());
         }
 
-        if (!StatusLivelo.INITIAL.getCode().equals(order.getCurrentStatus().getCode()) && !orderRequest.getResubmission().booleanValue()) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ALREADY_CONFIRMED;
-            throw new OrderFlightException(errorType, errorType.getTitle(), null);
+        if (!StatusLivelo.INITIAL.getCode().equals(order.getCurrentStatus().getCode()) && Boolean.TRUE.equals(!orderRequest.getResubmission())) {
+            OrderFlightErrorType errorType = OrderFlightErrorType.ORDER_FLIGHT_CONFIRMATION_ALREADY_CONFIRMED_ERROR;
+            throw new OrderFlightException(errorType, errorType.getTitle(), "Error on validate order to confirmation! Order already validated id: " + order.getId());
         }
     }
 }

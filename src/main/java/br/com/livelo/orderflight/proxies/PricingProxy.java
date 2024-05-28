@@ -34,7 +34,7 @@ public class PricingProxy {
                     .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_PRICING_INTERNAL_ERROR, null, "PricingProxy.calculate - body pricing is null!"));
         } catch (FeignException e) {
             var status = HttpStatus.valueOf(e.status());
-            var message = String.format("PricingProxy.calculate - Error on pricing call, HttpStatus: %s", status);
+            var message = String.format("PricingProxy.calculate - Error on pricing call, HttpStatus: %s Body: %s", status, e.contentUTF8());
             var errorType = status.is4xxClientError() ? ORDER_FLIGHT_PRICING_BUSINESS_ERROR : ORDER_FLIGHT_PRICING_INTERNAL_ERROR;
             throw new OrderFlightException(errorType, e.getMessage(), message, e);
         } catch (OrderFlightException e) {

@@ -43,7 +43,8 @@ public class ConnectorPartnersProxy {
         try {
             log.info("ConnectorPartnersProxy.confirmOnPartner - start - id: [{}], commerceOrderId: [{}], connectorConfirmOrderRequest [{}], partnerCode: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), connectorConfirmOrderRequest, partnerCode);
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
-            final var connectorUri = URI.create(webhook.getConnectorUrl());
+            var connectorUrl = webhook.getConnectorUrl().replace("{id}", connectorConfirmOrderRequest.getPartnerOrderId());
+            final var connectorUri = URI.create(connectorUrl);
 
             ResponseEntity<ConnectorConfirmOrderResponse> response = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest, headers.getTransactionId(), headers.getUserId());
             var connectorConfirmOrderResponse = response.getBody();
@@ -108,7 +109,7 @@ public class ConnectorPartnersProxy {
 
     private static OrderFlightException handleFeignException(FeignException e, String format) {
         var status = HttpStatus.valueOf(e.status());
-        var message = String.format(format, e.status(), e.responseBody());
+        var message = String.format(format, e.status(), e.contentUTF8());
 
         if (status.is4xxClientError()) {
             log.warn("Business error on connector call url: {} status: {} body: {}", e.request().url(), e.status(), e.responseBody(), e);

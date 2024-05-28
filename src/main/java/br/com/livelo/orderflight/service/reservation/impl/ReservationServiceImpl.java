@@ -67,7 +67,8 @@ public class ReservationServiceImpl implements ReservationService {
 
                     if (!INITIAL.getCode().equals(partnerReservationResponse.getCurrentStatus().getCode())) {
                         this.updateStatus(order, partnerReservationResponse);
-                        throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, null, null);
+                        var message = String.format("Reservation not valid in partner. partnerStatus: %s", partnerReservationResponse.getCurrentStatus().getCode());
+                        throw new OrderFlightException(OrderFlightErrorType.ORDER_FLIGHT_PARTNER_RESERVATION_EXPIRED_BUSINESS_ERROR, null, message);
                     }
 
                     order.setCommerceOrderId(request.getCommerceOrderId());

@@ -23,12 +23,14 @@ public class SkuServiceImpl implements SkuService {
 
     @Override
     public SkuItemResponse getSku(final String skuId, final String commerceItemId, final String currency){
-        log.debug("SkuServiceImpl.getSku - start. [skuId]: {}, [commerceItemId]: {}, [currency]: {}", skuId, commerceItemId, currency);
+        log.info("SkuServiceImpl.getSku - start. [skuId]: {}, [commerceItemId]: {}, [currency]: {}", skuId, commerceItemId, currency);
 
         SkuItemResponse skuItemResponseDTOBase = buildSku(skuId);
 
         if(currencyAndCommerceItemIdIsPresent(currency, commerceItemId)){
+            log.info("SkuServiceImpl.getSku - if currencyAndCommerceItemIdIsPresent - id: [{}]", commerceItemId);
             OrderItemEntity orderItem = orderService.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTOBase);
+            log.info("SkuServiceImpl.getSku - id: [{}], orderItem: [{}]", commerceItemId, orderItem);
             skuItemResponseDTOBase = buildSkuCommerceItem(commerceItemId, skuItemResponseDTOBase, orderItem);
         }
 
@@ -40,7 +42,7 @@ public class SkuServiceImpl implements SkuService {
     }
 
     private SkuItemResponse buildSku(String skuId){
-        log.debug("SkuServiceImpl.buildSku - start [skuId]: {}, [skuConstants]: {}", skuId, skuConstant);
+        log.info("SkuServiceImpl.buildSku - start [skuId]: {}, [skuConstants]: {}", skuId, skuConstant);
 
         return SkuItemResponse
                 .builder()

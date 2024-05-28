@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
+import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -46,14 +48,7 @@ public class OrderServiceImpl implements OrderService {
     private int orderProcessMaxRows;
 
     public OrderEntity getOrderById(String id) throws OrderFlightException {
-        Optional<OrderEntity> order = orderRepository.findById(id);
-
-        if (order.isEmpty()) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;
-            throw new OrderFlightException(errorType, errorType.getTitle(), null);
-        }
-
-        return order.get();
+        return orderRepository.findById(id).orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_ORDER_NOT_FOUND, null, "Order not found with id: " + id));
     }
 
     public void addNewOrderStatus(OrderEntity order, OrderCurrentStatusEntity status) {
@@ -68,14 +63,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public OrderItemEntity getFlightFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
-        Optional<OrderItemEntity> itemFlight = orderItemsEntity.stream().filter(this::isFlightItem).findFirst();
-
-        if (itemFlight.isEmpty()) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;
-            throw new OrderFlightException(errorType, errorType.getTitle(), null);
-        }
-
-        return itemFlight.get();
+        return orderItemsEntity.stream()
+                .filter(this::isFlightItem)
+                .findFirst()
+                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, null));
     }
 
     public boolean isFlightItem(OrderItemEntity item) {
@@ -83,14 +74,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public OrderItemEntity getTaxFromOrderItems(Set<OrderItemEntity> orderItemsEntity) throws OrderFlightException {
-        Optional<OrderItemEntity> itemTax = orderItemsEntity.stream().filter(item -> !isFlightItem(item)).findFirst();
-
-        if (itemTax.isEmpty()) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_ORDER_NOT_FOUND;
-            throw new OrderFlightException(errorType, errorType.getTitle(), null);
-        }
-
-        return itemTax.get();
+        return orderItemsEntity.stream()
+                .filter(item -> !isFlightItem(item))
+                .findFirst()
+                .orElseThrow(() -> new OrderFlightException(ORDER_FLIGHT_INTERNAL_ERROR, null, "Tax item not found"));
     }
 
     public void orderDetailLog(String invokedBy, String newStatusCode, OrderEntity order) {
@@ -142,6 +129,7 @@ public class OrderServiceImpl implements OrderService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
             submitDate = LocalDateTime.parse(date, formatter);
         } catch (Exception e) {
+            log.warn("OrderService.updateSubmittedDate - error on parse submittedDate for order id: [{}]", order.getId());
             submitDate = LocalDateTime.now();
         }
 
@@ -178,9 +166,10 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderItemEntity findByCommerceItemIdAndSkuId(String commerceItemId, SkuItemResponse skuItemResponseDTO) {
         final Optional<OrderItemEntity> itemOptional = itemRepository.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO.getSkuId());
-
+        log.info("findByCommerceItemIdAndSkuId - id: [{}], item: [{}]", commerceItemId, itemOptional);
         if (itemOptional.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND;
+            log.error("findByCommerceItemIdAndSkuId - id: [{}], error: [{}]", commerceItemId, errorType);
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
 
