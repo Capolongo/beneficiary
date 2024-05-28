@@ -28,7 +28,9 @@ public class SkuServiceImpl implements SkuService {
         SkuItemResponse skuItemResponseDTOBase = buildSku(skuId);
 
         if(currencyAndCommerceItemIdIsPresent(currency, commerceItemId)){
+            log.info("SkuServiceImpl.getSku - if currencyAndCommerceItemIdIsPresent - id: [{}]", commerceItemId);
             OrderItemEntity orderItem = orderService.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTOBase);
+            log.info("SkuServiceImpl.getSku - id: [{}], orderItem: [{}]", commerceItemId, orderItem);
             skuItemResponseDTOBase = buildSkuCommerceItem(commerceItemId, skuItemResponseDTOBase, orderItem);
         }
 

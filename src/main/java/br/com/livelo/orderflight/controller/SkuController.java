@@ -24,7 +24,7 @@ public class SkuController {
                                                   @RequestParam(required= false) final String currency) {
         log.info("SkuController.getSku - start id: [{}], commerceItemId: [{}], currency: [{}]", id, commerceItemId, currency);
         SkuItemResponse response = skuService.getSku(id, commerceItemId, currency);
-        log.info("SkuController.getSku - end");
+        log.info("SkuController.getSku - end, id: [{}], response: [{}], ", commerceItemId, response);
         return ResponseEntity.ok().body(response);
     }
 }

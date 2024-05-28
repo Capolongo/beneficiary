@@ -180,9 +180,10 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderItemEntity findByCommerceItemIdAndSkuId(String commerceItemId, SkuItemResponse skuItemResponseDTO) {
         final Optional<OrderItemEntity> itemOptional = itemRepository.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO.getSkuId());
-
+        log.info("findByCommerceItemIdAndSkuId - id: [{}], item: [{}]", commerceItemId, itemOptional);
         if (itemOptional.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND;
+            log.error("findByCommerceItemIdAndSkuId - id: [{}], error: [{}]", commerceItemId, errorType);
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
 
