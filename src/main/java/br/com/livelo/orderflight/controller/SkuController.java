@@ -22,9 +22,9 @@ public class SkuController {
     public ResponseEntity<SkuItemResponse> getSku(@PathVariable("id") String id,
                                                   @RequestParam(required= false) final String commerceItemId,
                                                   @RequestParam(required= false) final String currency) {
-        log.debug("SkuController.getSku - start id: [{}], commerceItemId: [{}], currency: [{}]", id, commerceItemId, currency);
+        log.info("SkuController.getSku - start id: [{}], commerceItemId: [{}], currency: [{}]", id, commerceItemId, currency);
         SkuItemResponse response = skuService.getSku(id, commerceItemId, currency);
-        log.debug("SkuController.getSku - end");
+        log.info("SkuController.getSku - end");
         return ResponseEntity.ok().body(response);
     }
 }
