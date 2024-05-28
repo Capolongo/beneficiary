@@ -112,6 +112,13 @@ public class ReservationServiceImpl implements ReservationService {
                 .partnerCode(partnerReservationResponse.getCurrentStatus().getPartnerCode())
                 .partnerDescription(partnerReservationResponse.getCurrentStatus().getPartnerDescription())
                 .build());
+
+        order.setCurrentStatus(OrderCurrentStatusEntity.builder()
+                .code(partnerReservationResponse.getCurrentStatus().getCode())
+                .description(partnerReservationResponse.getCurrentStatus().getDescription())
+                .partnerCode(partnerReservationResponse.getCurrentStatus().getPartnerCode())
+                .partnerDescription(partnerReservationResponse.getCurrentStatus().getPartnerDescription()).build());
+
         this.orderService.save(order);
     }
 
