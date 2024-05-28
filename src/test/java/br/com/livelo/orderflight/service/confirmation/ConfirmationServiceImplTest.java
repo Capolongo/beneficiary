@@ -91,7 +91,7 @@ class ConfirmationServiceImplTest {
             when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest(), new RequiredHeaders("", ""))).thenThrow(exception);
 
         } catch (Exception exception) {
-            assertEquals(OrderFlightErrorType.VALIDATION_ALREADY_CONFIRMED.getTitle(), exception.getMessage());
+            assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONFIRMATION_ALREADY_CONFIRMED_ERROR.getTitle(), exception.getMessage());
         }
     }
 
@@ -106,7 +106,7 @@ class ConfirmationServiceImplTest {
             when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest(), any(RequiredHeaders.class))).thenThrow(exception);
 
         } catch (Exception exception) {
-            assertEquals(OrderFlightErrorType.VALIDATION_OBJECTS_NOT_EQUAL.getTitle(), exception.getMessage());
+            assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONFIRMATION_ORDER_VALIDATION_ERROR.getTitle(), exception.getMessage());
         }
     }
 
@@ -121,7 +121,7 @@ class ConfirmationServiceImplTest {
             when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest(), any(RequiredHeaders.class))).thenThrow(exception);
 
         } catch (Exception exception) {
-            assertEquals(OrderFlightErrorType.VALIDATION_OBJECTS_NOT_EQUAL.getTitle(), exception.getMessage());
+            assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONFIRMATION_ORDER_VALIDATION_ERROR.getTitle(), exception.getMessage());
         }
     }
 
