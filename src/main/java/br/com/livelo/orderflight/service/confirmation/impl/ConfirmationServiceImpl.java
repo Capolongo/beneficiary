@@ -68,16 +68,14 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             order.setCustomerIdentifier(orderRequest.getCustomerId());
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorPartnerConfirmation.getCurrentStatus());
         } catch (OrderFlightException exception) {
-            var entries = DynatraceUtils.buildEntries(exception.getOrderFlightErrorType(), exception.getArgs());
-            DynatraceUtils.setDynatraceErrorEntries(entries);
-
             if (!exception.getOrderFlightErrorType().equals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR)) {
-                MDC.put(STATUS, "ERROR");
                 log.error("ConfirmationService.confirmOrder - error on order confirmation! id: [{}] ", id, exception);
-                MDC.clear();
                 throw exception;
             }
+
             //PMA
+            var entries = DynatraceUtils.buildEntries(exception.getOrderFlightErrorType(), exception.getArgs());
+            DynatraceUtils.setDynatraceErrorEntries(entries);
             log.warn("ConfirmationService.confirmOrder - Error on order confirmation! Sent to PMA process! id: [{}]", id, exception);
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getMessage()));
         } catch (Exception exception) {
@@ -90,9 +88,9 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(buildStatusToFailed(exception.getLocalizedMessage()));
         }
 
-        orderService.addNewOrderStatus(order, status);
-        orderService.save(order);
         if (order != null) {
+            orderService.addNewOrderStatus(order, status);
+            orderService.save(order);
             orderService.orderDetailLog("confirmOrder", status.getCode(), order);
             log.info("ConfirmationService.confirmOrder - End - id: [{}], orderId: [{}], transactionId: [{}], statusCode: [{}], partnerCode: [{}] ", id, orderRequest.getCommerceOrderId(), order.getTransactionId(), status.getCode(), order.getPartnerCode());
         }

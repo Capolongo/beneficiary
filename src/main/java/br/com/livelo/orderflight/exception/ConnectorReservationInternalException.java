@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class ConnectorReservationInternalException extends OrderFlightException {
-    public ConnectorReservationInternalException(String args, Throwable e) {
-        super(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, null, args, e);
+    public ConnectorReservationInternalException(OrderFlightErrorType errorType, String args, Throwable e) {
+        super(errorType, null, args, e);
     }
 }
