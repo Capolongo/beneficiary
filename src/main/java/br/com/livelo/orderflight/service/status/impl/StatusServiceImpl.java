@@ -4,8 +4,9 @@ import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderR
 import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusDTO;
 import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusItemDTO;
 import br.com.livelo.orderflight.domain.dtos.status.request.UpdateStatusRequest;
+import br.com.livelo.orderflight.domain.entity.OrderCurrentStatusEntity;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.OrderStatusHistoryEntity;
 import br.com.livelo.orderflight.enuns.CountStatusLivelo;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mappers.StatusMapper;
@@ -41,7 +42,7 @@ public class StatusServiceImpl implements StatusService {
 
         final UpdateStatusDTO statusDTO = getStatusFromItem(request);
 
-        Duration duration = changeStatusTimeDifference(order.getCurrentStatus().getStatusDate());
+        Duration duration = changeStatusTimeDifference(order.getCurrentStatus().getCreateDate().toLocalDateTime());
 
         updateOrderStatus(order, statusDTO);
 
@@ -64,7 +65,7 @@ public class StatusServiceImpl implements StatusService {
     }
 
     private void updateOrderStatus(OrderEntity order, UpdateStatusDTO updateStatusDTO){
-        final OrderStatusEntity statusEntity = statusMapper.convert(updateStatusDTO);
+        final OrderCurrentStatusEntity statusEntity = statusMapper.convert(updateStatusDTO);
 
         setStatusCount(order, updateStatusDTO.getCode());
 

@@ -31,7 +31,7 @@ public interface LiveloPartnersMapper {
 
     @Mapping(source = "description", target = "message")
     @Mapping(source = "partnerDescription", target = "details")
-    StatusDTO orderStatusEntityToStatusDTO(OrderStatusEntity orderStatusEntity);
+    StatusDTO orderStatusEntityToStatusDTO(OrderCurrentStatusEntity orderCurrentStatus);
 
     @Mapping(target = "managedAirline.name", source = "airlineManagedByDescription")
     @Mapping(target = "managedAirline.iata", source = "airlineManagedByIata")

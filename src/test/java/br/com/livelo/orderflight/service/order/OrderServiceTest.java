@@ -4,10 +4,7 @@ import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirm
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
+import br.com.livelo.orderflight.domain.entity.*;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
@@ -84,7 +81,7 @@ class OrderServiceTest {
     @Test
     void shouldAddNewStatusToOrder() {
         OrderEntity order = MockBuilder.orderEntity();
-        OrderStatusEntity status = MockBuilder.statusFailed();
+        OrderCurrentStatusEntity status = MockBuilder.statusFailed();
 
         when(confirmOrderMapper
                 .connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class)))
@@ -273,9 +270,9 @@ class OrderServiceTest {
 
     @Test
     void shouldReturnStatusFailed() {
-        OrderStatusEntity statusFailed = orderService.buildOrderStatusFailed("any cause");
+        OrderCurrentStatusEntity statusFailed = orderService.buildOrderStatusFailed("any cause");
 
-        assertInstanceOf(OrderStatusEntity.class, statusFailed);
+        assertInstanceOf(OrderCurrentStatusEntity.class, statusFailed);
     }
 
     @Test

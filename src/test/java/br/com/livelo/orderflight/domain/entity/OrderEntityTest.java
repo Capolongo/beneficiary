@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,11 +13,11 @@ class OrderEntityTest {
 
     @Test
     void shouldSetStatus() {
-        var data = LocalDateTime.now();
-        var orderStatus = OrderStatusEntity.builder().id(1L).statusDate(data).build();
-        var expected = OrderStatusEntity.builder().id(2L).statusDate(data.plusDays(1)).build();
+        var orderStatus = OrderCurrentStatusEntity.builder().id(1L).build();
+        var orderStatusHistory = OrderStatusHistoryEntity.builder().id(1L).build();
+        var expected = OrderStatusHistoryEntity.builder().id(2L).build();
 
-        var order = OrderEntity.builder().statusHistory(Set.of(orderStatus, expected)).build();
+        var order = OrderEntity.builder().statusHistory(Set.of(orderStatusHistory, expected)).build();
         order.setCurrentStatus(orderStatus);
         assertEquals(orderStatus, order.getCurrentStatus());
     }

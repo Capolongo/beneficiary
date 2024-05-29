@@ -2,9 +2,10 @@ package br.com.livelo.orderflight.service.order;
 
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
+import br.com.livelo.orderflight.domain.entity.OrderCurrentStatusEntity;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.OrderStatusHistoryEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface OrderService {
     PaginationOrderProcessResponse getOrdersByStatusCode(String status, Optional<String> limitArrivalDate, Integer page, Integer rows)
             throws OrderFlightException;
 
-    void addNewOrderStatus(OrderEntity order, OrderStatusEntity status);
+    void addNewOrderStatus(OrderEntity order, OrderCurrentStatusEntity status);
 
     boolean isFlightItem(OrderItemEntity item);
 

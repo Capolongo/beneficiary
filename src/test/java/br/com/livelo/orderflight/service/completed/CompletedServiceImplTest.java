@@ -9,8 +9,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
+import br.com.livelo.orderflight.domain.entity.OrderCurrentStatusEntity;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.OrderStatusHistoryEntity;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.service.completed.impl.CompletedServiceImpl;
@@ -39,13 +40,13 @@ class CompletedServiceImplTest {
         when(orderService.getOrderById(anyString())).thenReturn(order);
         when(orderService.isSameStatus(anyString(), anyString())).thenReturn(true);
 
-        doNothing().when(orderService).addNewOrderStatus(any(OrderEntity.class), any(OrderStatusEntity.class));
+        doNothing().when(orderService).addNewOrderStatus(any(OrderEntity.class), any(OrderCurrentStatusEntity.class));
         when(orderService.save(any(OrderEntity.class))).thenReturn(order);
         doNothing().when(orderService).updateOrderOnLiveloPartners(any(OrderEntity.class), anyString());
 
         completedServiceImpl.orderProcess(orderProcess);
 
-        verify(orderService, times(1)).addNewOrderStatus(any(OrderEntity.class), any(OrderStatusEntity.class));
+        verify(orderService, times(1)).addNewOrderStatus(any(OrderEntity.class), any(OrderCurrentStatusEntity.class));
         verify(orderService, times(1)).save(any(OrderEntity.class));
         verify(orderService, times(1)).updateOrderOnLiveloPartners(any(OrderEntity.class), anyString());
         verifyNoMoreInteractions(orderService);
@@ -65,7 +66,7 @@ class CompletedServiceImplTest {
 
         verify(orderService, times(1)).getOrderById(anyString());
         verify(orderService, times(1)).isSameStatus(StatusLivelo.VOUCHER_SENT.getCode(), order.getCurrentStatus().getCode());
-        verify(orderService, times(0)).addNewOrderStatus(any(OrderEntity.class), any(OrderStatusEntity.class));
+        verify(orderService, times(0)).addNewOrderStatus(any(OrderEntity.class), any(OrderCurrentStatusEntity.class));
 
         verifyNoMoreInteractions(orderService);
     }
@@ -75,7 +76,7 @@ class CompletedServiceImplTest {
                 .id("lf1")
                 .partnerCode("CVC")
                 .partnerOrderId("partnerOrderId")
-                .currentStatus(OrderStatusEntity.builder()
+                .currentStatus(OrderCurrentStatusEntity.builder()
                         .code(status)
                         .build()).build();
     }

@@ -26,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -108,13 +107,19 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void updateStatus(OrderEntity order, PartnerReservationResponse partnerReservationResponse) {
-        order.getStatusHistory().add(OrderStatusEntity.builder()
+        order.getStatusHistory().add(OrderStatusHistoryEntity.builder()
                 .code(partnerReservationResponse.getCurrentStatus().getCode())
                 .description(partnerReservationResponse.getCurrentStatus().getDescription())
                 .partnerCode(partnerReservationResponse.getCurrentStatus().getPartnerCode())
                 .partnerDescription(partnerReservationResponse.getCurrentStatus().getPartnerDescription())
-                .statusDate(LocalDateTime.now())
                 .build());
+
+        order.setCurrentStatus(OrderCurrentStatusEntity.builder()
+                .code(partnerReservationResponse.getCurrentStatus().getCode())
+                .description(partnerReservationResponse.getCurrentStatus().getDescription())
+                .partnerCode(partnerReservationResponse.getCurrentStatus().getPartnerCode())
+                .partnerDescription(partnerReservationResponse.getCurrentStatus().getPartnerDescription()).build());
+
         this.orderService.save(order);
     }
 
