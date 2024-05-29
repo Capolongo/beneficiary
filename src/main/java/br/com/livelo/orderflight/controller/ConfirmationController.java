@@ -5,6 +5,7 @@ import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRe
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.headers.RequiredHeaders;
 import br.com.livelo.orderflight.service.confirmation.impl.ConfirmationServiceImpl;
+import br.com.livelo.orderflight.utils.DynatraceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -39,8 +40,7 @@ public class ConfirmationController {
         log.info("ConfirmationController.confirmOrder() - Start - id: [{}], body: [{}]", id, order);
         var confirmOrderResponse = confirmationService.confirmOrder(id, order, requiredHeaders);
 
-        MDC.put(STATUS, "SUCCESS");
-        MDC.put(ERROR_TYPE, "SUCCESS");
+        DynatraceUtils.setDynatraceSuccessEntries();
         log.info("ConfirmationController.confirmOrder() - End - response: [{}]", confirmOrderResponse);
         MDC.clear();
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(confirmOrderResponse);

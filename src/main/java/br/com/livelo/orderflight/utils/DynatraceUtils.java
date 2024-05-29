@@ -26,4 +26,9 @@ public class DynatraceUtils {
         entries.put(ERROR_MESSAGE, errorMessage);
         return entries;
     }
+
+    public static void setDynatraceSuccessEntries() {
+        MDC.put(STATUS, "SUCCESS");
+        MDC.put(ERROR_TYPE, ofNullable(MDC.get(ERROR_TYPE)).orElse("SUCCESS"));
+    }
 }

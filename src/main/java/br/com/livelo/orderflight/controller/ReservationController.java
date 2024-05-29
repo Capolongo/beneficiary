@@ -4,6 +4,7 @@ import br.com.livelo.orderflight.constants.HeadersConstants;
 import br.com.livelo.orderflight.domain.dto.reservation.request.ReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
 import br.com.livelo.orderflight.service.reservation.impl.ReservationServiceImpl;
+import br.com.livelo.orderflight.utils.DynatraceUtils;
 import br.com.livelo.orderflight.utils.LogUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,8 +40,7 @@ public class ReservationController {
         log.info("ReservationController.createReservation - Create reservation request: [{}]", LogUtils.writeAsJson(reservationRequest));
         var response = reservationService.createOrder(reservationRequest, transactionId, customerId, channel, listPrice, userId);
 
-        MDC.put(STATUS, "SUCCESS");
-        MDC.put(ERROR_TYPE, "SUCCESS");
+        DynatraceUtils.setDynatraceSuccessEntries();
         log.info("ReservationController.createReservation - Create reservation response: [{}]", LogUtils.writeAsJson(response));
         MDC.clear();
         return ResponseEntity.ok(response);
