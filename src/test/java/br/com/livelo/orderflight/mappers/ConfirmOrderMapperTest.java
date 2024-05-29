@@ -7,8 +7,9 @@ import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmationO
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.entity.OrderCurrentStatusEntity;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.OrderStatusHistoryEntity;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -57,14 +58,11 @@ class ConfirmOrderMapperTest {
         LocalDateTime date = LocalDateTime.now();
         ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse = MockBuilder
                 .connectorConfirmOrderStatusResponse();
-        OrderStatusEntity mappedOrderStatusEntity = confirmOrderMapper
+        OrderCurrentStatusEntity mappedOrderStatusHistoryEntity = confirmOrderMapper
                 .connectorConfirmOrderStatusResponseToStatusEntity(connectorConfirmOrderStatusResponse);
-        OrderStatusEntity orderStatusEntity = MockBuilder.statusInitial();
+        OrderCurrentStatusEntity orderStatusHistoryEntity = MockBuilder.statusInitial();
 
-        orderStatusEntity.setStatusDate(date);
-        mappedOrderStatusEntity.setStatusDate(date);
-
-        assertEquals(orderStatusEntity, mappedOrderStatusEntity);
+        assertEquals(orderStatusHistoryEntity, mappedOrderStatusHistoryEntity);
     }
 
     @Test

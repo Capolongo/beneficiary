@@ -34,7 +34,7 @@ class LiveloPartnersMapperTest {
 
     @Test
     void shouldMapOrderStatusToStatusDTO() {
-        OrderStatusEntity statusEntity = MockBuilder.statusInitial();
+        OrderCurrentStatusEntity statusEntity = MockBuilder.statusInitial();
         var statusDTO = liveloPartnersMapper.orderStatusEntityToStatusDTO(statusEntity);
         assertInstanceOf(StatusDTO.class, statusDTO);
     }

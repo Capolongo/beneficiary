@@ -6,10 +6,7 @@ import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirm
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.headers.RequiredHeaders;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
+import br.com.livelo.orderflight.domain.entity.*;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
@@ -142,7 +139,7 @@ class ConfirmationServiceImplTest {
     @Test
     void shouldCallProcessOrderTimeDifference() {
         String process = Webhooks.GETCONFIRMATION.value;
-        OrderStatusEntity statusProcessing = MockBuilder.statusProcessing();
+        OrderCurrentStatusEntity statusProcessing = MockBuilder.statusProcessing();
         statusProcessing.setCreateDate(ZonedDateTime.now());
 
         OrderEntity order = MockBuilder.orderEntity();
@@ -190,7 +187,7 @@ class ConfirmationServiceImplTest {
 
         OrderProcess orderProcess = MockBuilder.listOfOrderProcess(1).get(0);
         ProcessCounterEntity processCounter = MockBuilder.processCounterEntity(48, process);
-        OrderStatusEntity statusFailed = MockBuilder.statusFailed();
+        OrderCurrentStatusEntity statusFailed = MockBuilder.statusFailed();
 
         when(orderService.getOrderById(anyString())).thenReturn(order);
         when(orderService.isSameStatus(anyString(), anyString())).thenReturn(true);
@@ -207,7 +204,7 @@ class ConfirmationServiceImplTest {
     @Test
     void shouldOrderProcessSuccess() {
         String process = Webhooks.GETCONFIRMATION.value;
-        OrderStatusEntity statusProcessing = MockBuilder.statusProcessing();
+        OrderCurrentStatusEntity statusProcessing = MockBuilder.statusProcessing();
 
         OrderEntity order = MockBuilder.orderEntity();
         order.setCurrentStatus(statusProcessing);

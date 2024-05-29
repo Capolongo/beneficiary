@@ -1,8 +1,9 @@
 package br.com.livelo.orderflight.service.voucher.impl;
 
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
+import br.com.livelo.orderflight.domain.entity.OrderCurrentStatusEntity;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.OrderStatusHistoryEntity;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
@@ -30,7 +31,7 @@ public class VoucherServiceImpl implements VoucherService {
     public void orderProcess(OrderProcess orderProcess) {
         log.info("VoucherServiceImpl.orderProcess - Confirming the voucher creation - order: [{}]", orderProcess.getId());
 
-        OrderStatusEntity status = null;
+        OrderCurrentStatusEntity status = null;
         var order = orderService.getOrderById(orderProcess.getId());
         var oldStatus = order.getCurrentStatus().getCode();
 
@@ -55,7 +56,7 @@ public class VoucherServiceImpl implements VoucherService {
 
         log.info("VoucherServiceImpl.orderProcess - status updated - order: [{}]", order.getId());
     }
-    private OrderStatusEntity processVoucher(OrderEntity order) {
+    private OrderCurrentStatusEntity processVoucher(OrderEntity order) {
         try {
             log.info("VoucherServiceImpl.processVoucher - Checking voucher at partner - order: [{}] partner: [{}]", order.getId(), order.getPartnerCode());
             var connectorVoucherOrderResponse = connectorPartnersProxy.getVoucherOnPartner(order.getPartnerCode(), order.getPartnerOrderId(), order.getId());

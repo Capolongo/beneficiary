@@ -3,10 +3,7 @@ package br.com.livelo.orderflight.service.voucher;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
-import br.com.livelo.orderflight.domain.entity.ProcessCounterEntity;
+import br.com.livelo.orderflight.domain.entity.*;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
@@ -71,16 +68,16 @@ class VoucherServiceImplTest {
                         .voucher("https://fake-url.com")
                         .build());
         when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class)))
-                .thenReturn(OrderStatusEntity.builder().code(StatusLivelo.WAIT_VOUCHER.getCode()).build());
+                .thenReturn(OrderCurrentStatusEntity.builder().code(StatusLivelo.WAIT_VOUCHER.getCode()).build());
         when(orderService.getFlightFromOrderItems(any())).thenReturn(OrderItemEntity.builder().build());
         doNothing().when(orderService).incrementProcessCounter(any(ProcessCounterEntity.class));
-        doNothing().when(orderService).addNewOrderStatus(any(OrderEntity.class), any(OrderStatusEntity.class));
+        doNothing().when(orderService).addNewOrderStatus(any(OrderEntity.class), any(OrderCurrentStatusEntity.class));
         doNothing().when(orderService).updateVoucher(any(), anyString());
         when(orderService.save(any(OrderEntity.class))).thenReturn(order);
 
         voucherService.orderProcess(orderProcess);
 
-        verify(orderService, times(1)).addNewOrderStatus(any(OrderEntity.class), any(OrderStatusEntity.class));
+        verify(orderService, times(1)).addNewOrderStatus(any(OrderEntity.class), any(OrderCurrentStatusEntity.class));
         verify(orderService, times(1)).incrementProcessCounter(any(ProcessCounterEntity.class));
         verify(orderService, times(1)).save(any(OrderEntity.class));
     }
@@ -94,7 +91,7 @@ class VoucherServiceImplTest {
                 .count(193)
                 .build();
 
-        OrderStatusEntity statusFailed = MockBuilder.statusFailed();
+        OrderCurrentStatusEntity statusFailed = MockBuilder.statusFailed();
 
         when(orderService.getOrderById(anyString())).thenReturn(order);
         when(orderService.isSameStatus(anyString(), anyString())).thenReturn(true);
@@ -150,7 +147,7 @@ class VoucherServiceImplTest {
                 .id("lf1")
                 .partnerCode("CVC")
                 .partnerOrderId("partnerOrderId")
-                .currentStatus(OrderStatusEntity.builder()
+                .currentStatus(OrderCurrentStatusEntity.builder()
                         .code(status)
                         .build()).build();
     }

@@ -1,7 +1,7 @@
 package br.com.livelo.orderflight.mappers;
 
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.OrderStatusHistoryEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,6 +16,6 @@ class ReservationStatusMapperTest {
     @Test
     void shouldBuildPartnerResposne() {
         var responseMock = mock(PartnerReservationResponse.class);
-        assertDoesNotThrow(() -> this.mapper.buildPartnerResponse(responseMock, new OrderStatusEntity()));
+        assertDoesNotThrow(() -> this.mapper.buildPartnerResponse(responseMock, new OrderStatusHistoryEntity()));
     }
 }

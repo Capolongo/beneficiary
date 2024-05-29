@@ -365,7 +365,7 @@ class ReservationServiceTest {
                 .commerceOrderId(commerceOrderId)
                 .partnerCode("CVC")
                 .transactionId(transactionId)
-                .currentStatus(OrderStatusEntity.builder().code(statusCode).build())
+                .currentStatus(OrderCurrentStatusEntity.builder().code(statusCode).build())
                 .price(OrderPriceEntity.builder().partnerAmount(BigDecimal.TEN).ordersPriceDescription(Set.of(OrderPriceDescriptionEntity.builder().build())).build())
                 .items(orderItems)
                 .statusHistory(new HashSet<>())

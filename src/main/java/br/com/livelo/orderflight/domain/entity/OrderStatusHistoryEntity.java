@@ -3,18 +3,16 @@ package br.com.livelo.orderflight.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
-@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ORDERS_STATUS")
 @EqualsAndHashCode(callSuper = false)
 @ToString
-public class OrderStatusEntity extends BaseEntity {
+@Entity
+@Table(name = "ORDERS_STATUS_HISTORY")
+public class OrderStatusHistoryEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_STATUS_SEQ")
     @SequenceGenerator(name = "ORDERS_STATUS_SEQ", sequenceName = "ORDERS_STATUS_SEQ", allocationSize = 1)
     @Id
@@ -24,5 +22,4 @@ public class OrderStatusEntity extends BaseEntity {
     private String partnerCode;
     private String partnerDescription;
     private String partnerResponse;
-    private LocalDateTime statusDate;
 }

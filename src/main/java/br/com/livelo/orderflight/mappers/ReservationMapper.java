@@ -3,10 +3,7 @@ package br.com.livelo.orderflight.mappers;
 import br.com.livelo.orderflight.domain.dto.reservation.request.*;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dto.reservation.response.ReservationResponse;
-import br.com.livelo.orderflight.domain.entity.OrderEntity;
-import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.domain.entity.OrderPriceEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusEntity;
+import br.com.livelo.orderflight.domain.entity.*;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -31,7 +28,7 @@ public interface ReservationMapper {
     @Mapping(target = "originOrder", ignore = true)
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "customerIdentifier", source = "customerId")
-    @Mapping(target = "statusHistory", expression = "java(Set.of(mapStatus(partnerReservationResponse)))")
+    @Mapping(target = "statusHistory", expression = "java(Set.of(mapStatusHistory(partnerReservationResponse)))")
     @Mapping(target = "currentStatus", expression = "java(mapStatus(partnerReservationResponse))")
     @Mapping(target = "price", expression = "java(mapPrice(partnerReservationResponse, listPrice))")
     @Mapping(target = "createDate", ignore = true)
@@ -42,9 +39,15 @@ public interface ReservationMapper {
         return reservationPriceMapper.toOrderPriceEntity(partnerReservationResponse, listPrice);
     }
 
-    default OrderStatusEntity mapStatus(PartnerReservationResponse partnerReservationResponse) {
+    default OrderCurrentStatusEntity mapStatus(PartnerReservationResponse partnerReservationResponse) {
         var reservationStatusMapper = Mappers.getMapper(ReservationStatusMapper.class);
+
         return reservationStatusMapper.toOrderStatus(partnerReservationResponse);
+    }
+    default OrderStatusHistoryEntity mapStatusHistory(PartnerReservationResponse partnerReservationResponse) {
+        var reservationStatusMapper = Mappers.getMapper(ReservationStatusMapper.class);
+
+        return reservationStatusMapper.toOrderStatusHistory(partnerReservationResponse);
     }
 
     default Set<OrderItemEntity> mapItems(ReservationRequest reservationRequest, PartnerReservationResponse partnerReservationResponse, String listPrice) {
