@@ -5,13 +5,11 @@ import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservati
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
-
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @FeignClient(value = "partner-client", url = "http://api.k8s")
 public interface PartnerConnectorClient {
@@ -20,7 +18,7 @@ public interface PartnerConnectorClient {
                                                                @RequestBody ConnectorConfirmOrderRequest connectorConfirmOrderRequest,
                                                                @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER, required = false) String transactionId,
                                                                @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId
-                                                               );
+    );
 
     @PostMapping
     ResponseEntity<PartnerReservationResponse> createReserve(
@@ -29,13 +27,12 @@ public interface PartnerConnectorClient {
             @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER) String transactionId,
             @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId);
 
-    @PostMapping
+    @GetMapping("{id}")
     ResponseEntity<PartnerReservationResponse> getReservation(
             URI baseUri,
-            @RequestHeader(value = "id") String id,
+            @PathVariable("id") String id,
             @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER, required = false) String transactionId,
-            @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId,
-            @RequestBody  List<String> segmentsPartnerIds
+            @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId
     );
 
     @GetMapping

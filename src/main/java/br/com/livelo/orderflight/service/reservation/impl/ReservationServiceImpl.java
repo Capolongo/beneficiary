@@ -63,7 +63,7 @@ public class ReservationServiceImpl implements ReservationService {
 
                 if (this.isSameOrderItems(request, orderOptional)) {
                     log.info("ReservationServiceImpl.getPartnerOrder partnerOrderId: {}, transactionId: {}, segmentsPartnerIds: {}, commerceOrderId: {}, partnerCode: {}", orderOptional.get().getPartnerOrderId(), transactionId, request.getSegmentsPartnerIds(), orderOptional.get().getCommerceOrderId(), request.getPartnerCode());
-                    partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), request.getSegmentsPartnerIds(), userId);
+                    partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), userId);
 
                     if (!INITIAL.getCode().equals(partnerReservationResponse.getCurrentStatus().getCode())) {
                         this.updateStatus(order, partnerReservationResponse);
@@ -146,8 +146,8 @@ public class ReservationServiceImpl implements ReservationService {
         return getPricingCalculateByCommerceOrderId(request.getCommerceOrderId(), pricingCalculateResponse);
     }
 
-    private PartnerReservationResponse getPartnerOrder(String partnerOrderId, String transactionId, String partnerCode, List<String> segmentsPartnerIds, String userId) {
-        return partnerConnectorProxy.getReservation(partnerOrderId, transactionId, partnerCode, segmentsPartnerIds, userId);
+    private PartnerReservationResponse getPartnerOrder(String partnerOrderId, String transactionId, String partnerCode, String userId) {
+        return partnerConnectorProxy.getReservation(partnerOrderId, transactionId, partnerCode, userId);
     }
 
     private List<PricingCalculatePrice> getPricingCalculateByCommerceOrderId(String commerceOrderId, List<PricingCalculateResponse> pricingCalculateResponses) {
