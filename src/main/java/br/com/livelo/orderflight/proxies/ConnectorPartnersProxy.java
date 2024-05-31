@@ -115,7 +115,7 @@ public class ConnectorPartnersProxy {
         try {
             log.info("ConnectorPartnersProxy.getReservation: id: [{}], transactionId: [{}], partnerCode: [{}], userId: [{}]", id, transactionId, partnerCode, userId);
             var webhook = this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.GETRESERVATION);
-            var url = URI.create(webhook.getConnectorUrl());
+            var url = URI.create(webhook.getConnectorUrl().replace("{id}", id));
             log.info("ConnectorPartnersProxy.getReservation: url: [{}]", url);
             ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId, userId);
             log.info("ConnectorPartnersProxy.getReservation: response: [{}]", response);
