@@ -99,8 +99,9 @@ public class ConnectorPartnersProxy {
             log.info("ConnectorPartnersProxy.getReservation: id: [{}], transactionId: [{}], partnerCode: [{}], segmentsPartnerIds: [{}], userId: [{}]", id, transactionId, partnerCode, segmentsPartnerIds, userId);
             var webhook = this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.GETRESERVATION);
             var url = URI.create(webhook.getConnectorUrl());
-            log.info("ConnectorPartnersProxy.getReservation: webhook: [{}], url: [{}]", webhook, url);
+            log.info("ConnectorPartnersProxy.getReservation: url: [{}]", url);
             ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId, userId, segmentsPartnerIds);
+            log.info("ConnectorPartnersProxy.getReservation: response: [{}]", response);
             return response.getBody();
         } catch (FeignException e) {
             var status = HttpStatus.valueOf(e.status());
