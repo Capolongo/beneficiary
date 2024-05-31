@@ -28,7 +28,6 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.util.List;
 
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.*;
 
@@ -39,6 +38,24 @@ public class ConnectorPartnersProxy {
     private final PartnersConfigService partnersConfigService;
     private final PartnerConnectorClient partnerConnectorClient;
     private final ObjectMapper objectMapper;
+
+    private static OrderFlightException handleFeignException(OrderFlightErrorType errorType, FeignException e, String format) {
+        var status = HttpStatus.valueOf(e.status());
+        var message = String.format(format, e.status(), e.contentUTF8());
+
+        if (status.is4xxClientError()) {
+            log.warn("Business error on connector call url: {} status: {} body: {}", e.request().url(), e.status(), e.responseBody(), e);
+            return new ConnectorReservationBusinessException(errorType, message, e);
+        }
+        log.warn("Internal error on connector call url: {} status: {} body: {}", e.request().url(), e.status(), e.responseBody(), e);
+        return new ConnectorReservationInternalException(errorType, message, e);
+    }
+
+    private static OrderFlightException handleWebhookException(WebhookException e) {
+        var orderFlightErrorType = ErrorsType.UNKNOWN.equals(e.getError()) ? ORDER_FLIGHT_CONFIG_FLIGHT_INTERNAL_ERROR : ORDER_FLIGHT_CONFIG_FLIGHT_BUSINESS_ERROR;
+        var message = String.format("Error on connector calls! error: %S", e.getError());
+        return new OrderFlightException(orderFlightErrorType, e.getMessage(), message, e);
+    }
 
     public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode, ConnectorConfirmOrderRequest connectorConfirmOrderRequest, RequiredHeaders headers) throws OrderFlightException {
         try {
@@ -94,13 +111,13 @@ public class ConnectorPartnersProxy {
         }
     }
 
-    public PartnerReservationResponse getReservation(String id, String transactionId, String partnerCode, List<String> segmentsPartnerIds, String userId) {
+    public PartnerReservationResponse getReservation(String id, String transactionId, String partnerCode, String userId) {
         try {
-            log.info("ConnectorPartnersProxy.getReservation: id: [{}], transactionId: [{}], partnerCode: [{}], segmentsPartnerIds: [{}], userId: [{}]", id, transactionId, partnerCode, segmentsPartnerIds, userId);
+            log.info("ConnectorPartnersProxy.getReservation: id: [{}], transactionId: [{}], partnerCode: [{}], userId: [{}]", id, transactionId, partnerCode, userId);
             var webhook = this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.GETRESERVATION);
-            var url = URI.create(webhook.getConnectorUrl());
+            var url = URI.create(webhook.getConnectorUrl().replace("{id}", id));
             log.info("ConnectorPartnersProxy.getReservation: url: [{}]", url);
-            ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId, userId, segmentsPartnerIds);
+            ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId, userId);
             log.info("ConnectorPartnersProxy.getReservation: response: [{}]", response);
             return response.getBody();
         } catch (FeignException e) {
@@ -117,24 +134,6 @@ public class ConnectorPartnersProxy {
                     e
             );
         }
-    }
-
-    private static OrderFlightException handleFeignException(OrderFlightErrorType errorType, FeignException e, String format) {
-        var status = HttpStatus.valueOf(e.status());
-        var message = String.format(format, e.status(), e.contentUTF8());
-
-        if (status.is4xxClientError()) {
-            log.warn("Business error on connector call url: {} status: {} body: {}", e.request().url(), e.status(), e.responseBody(), e);
-            return new ConnectorReservationBusinessException(errorType, message, e);
-        }
-        log.warn("Internal error on connector call url: {} status: {} body: {}", e.request().url(), e.status(), e.responseBody(), e);
-        return new ConnectorReservationInternalException(errorType, message, e);
-    }
-
-    private static OrderFlightException handleWebhookException(WebhookException e) {
-        var orderFlightErrorType = ErrorsType.UNKNOWN.equals(e.getError()) ? ORDER_FLIGHT_CONFIG_FLIGHT_INTERNAL_ERROR : ORDER_FLIGHT_CONFIG_FLIGHT_BUSINESS_ERROR;
-        var message = String.format("Error on connector calls! error: %S", e.getError());
-        return new OrderFlightException(orderFlightErrorType, e.getMessage(), message, e);
     }
 
     public ConnectorConfirmOrderResponse getConfirmationOnPartner(String partnerCode, String partnerOrderId, String id) throws OrderFlightException {
