@@ -55,7 +55,7 @@ public class ReservationServiceImpl implements ReservationService {
             var commerceItemsIds = request.getItems().stream().map(ReservationItem::getCommerceItemId).collect(Collectors.toList());
             commerceItemsIds.add(request.getCommerceOrderId());
 
-            var orderOptional = this.orderService.findByCommerceOrderIdIn(commerceItemsIds);
+            var orderOptional = this.orderService.findByCommerceOrderIdInAndExpirationDateAfter(commerceItemsIds);
             if (orderOptional.isPresent()) {
                 order = orderOptional.get();
                 log.info("ReservationServiceImpl.createOrder - Creating Order - orderOptional order: {}", LogUtils.writeAsJson(order));

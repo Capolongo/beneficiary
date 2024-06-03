@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, String> {
-    Optional<OrderEntity> findByCommerceOrderIdIn(List<String> commerceOrderId);
+    Optional<OrderEntity> findByCommerceOrderIdInAndExpirationDateAfter(List<String> commerceOrderId, LocalDateTime expirationDate);
 
     Page<OrderProcess> findAllByCurrentStatusCode(String statusCode, Pageable pageable);
 

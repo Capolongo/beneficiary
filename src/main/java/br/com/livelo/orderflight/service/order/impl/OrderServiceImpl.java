@@ -136,8 +136,8 @@ public class OrderServiceImpl implements OrderService {
         order.setSubmittedDate(submitDate);
     }
 
-    public Optional<OrderEntity> findByCommerceOrderIdIn(List<String> commerceOrderId) {
-        return this.orderRepository.findByCommerceOrderIdIn(commerceOrderId);
+    public Optional<OrderEntity> findByCommerceOrderIdInAndExpirationDateAfter(List<String> commerceOrderId) {
+        return this.orderRepository.findByCommerceOrderIdInAndExpirationDateAfter(commerceOrderId, LocalDateTime.now());
     }
 
     public void delete(OrderEntity order) {

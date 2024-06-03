@@ -5,7 +5,6 @@ import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
 import br.com.livelo.orderflight.domain.entity.OrderCurrentStatusEntity;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.domain.entity.OrderItemEntity;
-import br.com.livelo.orderflight.domain.entity.OrderStatusHistoryEntity;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 
 import java.util.List;
@@ -21,7 +20,7 @@ public interface OrderService {
 
     boolean isFlightItem(OrderItemEntity item);
 
-    Optional<OrderEntity> findByCommerceOrderIdIn(List<String> commerceOrderId);
+    Optional<OrderEntity> findByCommerceOrderIdInAndExpirationDateAfter(List<String> commerceOrderId);
 
     void delete(OrderEntity order);
 

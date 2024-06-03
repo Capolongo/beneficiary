@@ -63,7 +63,7 @@ class ReservationServiceTest {
         when(requestMock.getCommerceOrderId()).thenReturn("QWERT");
         when(requestMock.getPartnerCode()).thenReturn("CVC");
         when(requestMock.getSegmentsPartnerIds()).thenReturn(List.of("fdf"));
-        when(orderService.findByCommerceOrderIdIn(any())).thenReturn(Optional.empty());
+        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(any())).thenReturn(Optional.empty());
 
         when(connectorPartnersProxy.createReserve(anyString(), any(), anyString(), anyString())).thenReturn(partnerReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
@@ -107,7 +107,7 @@ class ReservationServiceTest {
                 .collect(Collectors.toList());
         ids.add(request.getCommerceOrderId());
 
-        when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
+        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(ids)).thenReturn(Optional.of(order));
         when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", "");
         assertNotNull(response);
@@ -147,7 +147,7 @@ class ReservationServiceTest {
                 .collect(Collectors.toList());
         ids.add(request.getCommerceOrderId());
 
-        when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
+        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(ids)).thenReturn(Optional.of(order));
         when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", "");
         assertNotNull(response);
@@ -189,7 +189,7 @@ class ReservationServiceTest {
                 .collect(Collectors.toList());
         ids.add(request.getCommerceOrderId());
 
-        when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
+        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(ids)).thenReturn(Optional.of(order));
         when(pricingProxy.calculate(any(), anyString(), anyString())).thenReturn(buildPricingCalculateResponse());
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", "");
         assertNotNull(response);
@@ -225,7 +225,7 @@ class ReservationServiceTest {
                 .collect(Collectors.toList());
         ids.add(request.getCommerceOrderId());
 
-        when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
+        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(ids)).thenReturn(Optional.of(order));
         when(orderService.save(any())).thenReturn(order);
         var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", ""));
         assertAll(
@@ -260,7 +260,7 @@ class ReservationServiceTest {
                 .collect(Collectors.toList());
         ids.add(request.getCommerceOrderId());
 
-        when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
+        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(ids)).thenReturn(Optional.of(order));
 
         var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", ""));
         assertEquals(ORDER_FLIGHT_ORDER_STATUS_INVALID_BUSINESS_ERROR, exception.getOrderFlightErrorType());
@@ -285,7 +285,7 @@ class ReservationServiceTest {
                 .map(ReservationItem::getCommerceItemId)
                 .collect(Collectors.toList());
         ids.add(request.getCommerceOrderId());
-        when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
+        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(ids)).thenReturn(Optional.of(order));
         when(orderService.save(any())).thenReturn(order);
         var response = this.reservationService.createOrder(request, transactionId, "123", "WEB", "price", "");
         assertAll(
@@ -321,7 +321,7 @@ class ReservationServiceTest {
                 .collect(Collectors.toList());
         ids.add(request.getCommerceOrderId());
 
-        when(orderService.findByCommerceOrderIdIn(ids)).thenReturn(Optional.of(order));
+        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(ids)).thenReturn(Optional.of(order));
         when(orderService.save(any())).thenReturn(order);
         var response = this.reservationService.createOrder(request, "123", "123", "WEB", "price", "");
 
@@ -346,7 +346,7 @@ class ReservationServiceTest {
                 .collect(Collectors.toList());
         ids.add(request.getCommerceOrderId());
 
-        when(orderService.findByCommerceOrderIdIn(ids)).thenThrow(PersistenceException.class);
+        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(ids)).thenThrow(PersistenceException.class);
         var exception = assertThrows(OrderFlightException.class, () -> this.reservationService.createOrder(request, "123", "123", "WEB", "price", ""));
         assertEquals(OrderFlightErrorType.ORDER_FLIGHT_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }

@@ -97,8 +97,8 @@ class OrderServiceTest {
     @Test
     void shouldFindOrderByCommerceOrderIdIn() {
         var orderMock = mock(OrderEntity.class);
-        when(this.orderRepository.findByCommerceOrderIdIn(any())).thenReturn(Optional.of(orderMock));
-        var response = this.orderService.findByCommerceOrderIdIn(List.of("123"));
+        when(this.orderRepository.findByCommerceOrderIdInAndExpirationDateAfter(any(), any())).thenReturn(Optional.of(orderMock));
+        var response = this.orderService.findByCommerceOrderIdInAndExpirationDateAfter(List.of("123"));
 
         assertAll(
                 () -> assertTrue(response.isPresent()),
@@ -107,8 +107,8 @@ class OrderServiceTest {
 
     @Test
     void shouldntFindOrderByCommerceOrderIdIn() {
-        when(this.orderRepository.findByCommerceOrderIdIn(any())).thenReturn(Optional.empty());
-        var response = this.orderService.findByCommerceOrderIdIn(List.of("123"));
+        when(this.orderRepository.findByCommerceOrderIdInAndExpirationDateAfter(any(), any())).thenReturn(Optional.empty());
+        var response = this.orderService.findByCommerceOrderIdInAndExpirationDateAfter(List.of("123"));
 
         assertTrue(!response.isPresent());
     }
