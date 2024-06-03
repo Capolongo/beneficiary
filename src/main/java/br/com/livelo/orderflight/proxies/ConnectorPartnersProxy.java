@@ -59,7 +59,6 @@ public class ConnectorPartnersProxy {
             DynatraceUtils.setDynatraceErrorEntries(entries);
 
             log.warn("ConnectorPartnersProxy.confirmOnPartner exception - id: [{}], commerceOrderId: [{}], partnerCode: [{}], exception response: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), partnerCode, connectorConfirmOrderResponse);
-            MDC.clear();
             return connectorConfirmOrderResponse;
         }
     }
