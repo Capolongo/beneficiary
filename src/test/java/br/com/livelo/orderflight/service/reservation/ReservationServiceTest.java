@@ -90,7 +90,7 @@ class ReservationServiceTest {
         );
         var connectorReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
 
-        when(connectorPartnersProxy.getReservation(any(), any(), any(), any(), anyString())).thenReturn(connectorReservationResponse);
+        when(connectorPartnersProxy.getReservation(any(), any(), any(), anyString())).thenReturn(connectorReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
 
 
@@ -130,7 +130,7 @@ class ReservationServiceTest {
         );
         var connectorReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
         connectorReservationResponse.getItems().getFirst().getTravelInfo().setIsInternational(true);
-        when(connectorPartnersProxy.getReservation(any(), any(), any(), any(), anyString())).thenReturn(connectorReservationResponse);
+        when(connectorPartnersProxy.getReservation(any(), any(), any(), anyString())).thenReturn(connectorReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
 
 
@@ -170,7 +170,7 @@ class ReservationServiceTest {
         );
         var connectorReservationResponse = buildPartnerReservationResponse("LIVPNR-1006", segmentsPartnersId);
 
-        when(connectorPartnersProxy.getReservation(any(), any(), any(), any(), anyString())).thenReturn(connectorReservationResponse);
+        when(connectorPartnersProxy.getReservation(any(), any(), any(), any())).thenReturn(connectorReservationResponse);
         when(orderService.save(any())).thenReturn(orderMock);
 
 
@@ -209,7 +209,7 @@ class ReservationServiceTest {
         );
         var connectorReservationResponse = buildPartnerReservationResponse("LIVPNR-9001", segmentsPartnersId);
 
-        when(connectorPartnersProxy.getReservation(any(), any(), any(), any(), anyString())).thenReturn(connectorReservationResponse);
+        when(connectorPartnersProxy.getReservation(any(), any(), any(), anyString())).thenReturn(connectorReservationResponse);
 
 
         var order = this.buildOrderEntity(
