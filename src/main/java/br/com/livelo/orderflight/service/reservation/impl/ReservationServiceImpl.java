@@ -55,14 +55,15 @@ public class ReservationServiceImpl implements ReservationService {
             var commerceItemsIds = request.getItems().stream().map(ReservationItem::getCommerceItemId).collect(Collectors.toList());
             commerceItemsIds.add(request.getCommerceOrderId());
 
+            log.info("Validating existence of order on db. ids: {}", commerceItemsIds);
             var orderOptional = this.orderService.findByCommerceOrderIdInAndExpirationDateAfter(commerceItemsIds);
             if (orderOptional.isPresent()) {
                 order = orderOptional.get();
-                log.info("ReservationServiceImpl.createOrder - Creating Order - orderOptional order: {}", LogUtils.writeAsJson(order));
+                log.info("ReservationServiceImpl.createOrder order exists in db! Validating status and reservation on partner. orderId: {}", order.getId());
                 this.isOrderStatusInitial(order);
 
                 if (this.isSameOrderItems(request, orderOptional)) {
-                    log.info("ReservationServiceImpl.getPartnerOrder partnerOrderId: {}, transactionId: {}, segmentsPartnerIds: {}, commerceOrderId: {}, partnerCode: {}", orderOptional.get().getPartnerOrderId(), transactionId, request.getSegmentsPartnerIds(), orderOptional.get().getCommerceOrderId(), request.getPartnerCode());
+                    log.info("ReservationServiceImpl.getPartnerOrder - Validating reservation status on partner. orderId: {}", order.getId());
                     partnerReservationResponse = this.getPartnerOrder(orderOptional.get().getPartnerOrderId(), transactionId, request.getPartnerCode(), userId);
 
                     if (!INITIAL.getCode().equals(partnerReservationResponse.getCurrentStatus().getCode())) {
@@ -75,8 +76,8 @@ public class ReservationServiceImpl implements ReservationService {
                     this.validateAndSetAmounts(partnerReservationResponse, order);
                     log.info("Order reserved on partner! Proceed with pricing. {}! order: {} transactionId: {}", request.getPartnerCode(), request.getCommerceOrderId(), transactionId);
                 } else {
+                    log.info("ReservationServiceImpl.createOrder - order has items differents. Deleting and recreating order. orderId: {}", order.getId());
                     this.orderService.delete(order);
-                    log.info("ReservationServiceImpl.createOrder - Creating Order - deleteOrder order: {}", LogUtils.writeAsJson(order));
                     order = null;
                 }
             }
