@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -137,7 +138,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public Optional<OrderEntity> findByCommerceOrderIdInAndExpirationDateAfter(List<String> commerceOrderId) {
-        return this.orderRepository.findByCommerceOrderIdInAndExpirationDateAfter(commerceOrderId, LocalDateTime.now());
+        var actualDate = LocalDateTime.now();
+        log.info("data atual: {}", actualDate);
+        return this.orderRepository.findByCommerceOrderIdInAndExpirationDateAfter(commerceOrderId, actualDate.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDateTime());
     }
 
     public void delete(OrderEntity order) {
