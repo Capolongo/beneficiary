@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Retryable;
@@ -91,7 +90,7 @@ public class ConnectorPartnersProxy {
                     url,
                     request,
                     transactionId, userId);
-            log.info("ConnectorPartnersProxy.createReserve: create reserve partner connector response: [{}]", LogUtils.writeAsJson(response));
+            log.info("ConnectorPartnersProxy.createReserve: reservation created on partner connector! response: [{}]", LogUtils.writeAsJson(response));
 
             return response.getBody();
         } catch (FeignException e) {
@@ -114,10 +113,10 @@ public class ConnectorPartnersProxy {
         try {
             log.info("ConnectorPartnersProxy.getReservation: id: [{}], transactionId: [{}], partnerCode: [{}], userId: [{}]", id, transactionId, partnerCode, userId);
             var webhook = this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.GETRESERVATION);
-            var url = URI.create(webhook.getConnectorUrl().replace("{id}", id));
+            var url = URI.create(webhook.getConnectorUrl());
             log.info("ConnectorPartnersProxy.getReservation: url: [{}]", url);
             ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId, userId);
-            log.info("ConnectorPartnersProxy.getReservation: response: [{}]", response);
+            log.info("ConnectorPartnersProxy.getReservation: Reservation found on connector partner! response: [{}]", response);
             return response.getBody();
         } catch (FeignException e) {
             var status = HttpStatus.valueOf(e.status());

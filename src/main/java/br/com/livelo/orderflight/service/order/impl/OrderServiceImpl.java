@@ -149,10 +149,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public Optional<OrderEntity> findByCommerceOrderIdInAndExpirationDateAfter(List<String> commerceOrderId) {
-        var actualDate = LocalDateTime.parse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        log.info("data atual UTC: {}", actualDate);
-        actualDate = actualDate.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDateTime();
-        log.info("data atual gmt-3: {}", actualDate);
+        var format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        var actualDate = LocalDateTime.now().atZone(ZoneId.of("America/Sao_Paulo")).format(format);
 
         return this.orderRepository.findByCommerceOrderIdInAndExpirationDateAfter(commerceOrderId, actualDate);
     }
