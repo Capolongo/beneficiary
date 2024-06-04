@@ -6,6 +6,7 @@ import br.com.livelo.orderflight.service.order.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +22,10 @@ public class OrderValidationController {
 
 
     @PostMapping("/validate")
-    public OrderValidateResponseDTO validateOrder(@Valid @RequestBody(required = true) final OrderValidateRequestDTO orderValidateRequest) {
+    public ResponseEntity<OrderValidateResponseDTO> validateOrder(@Valid @RequestBody(required = true) final OrderValidateRequestDTO orderValidateRequest) {
         log.debug("OrderValidationController.validateOrder() - Start - Partner retrieve with request: {}", orderValidateRequest);
         OrderValidateResponseDTO orderValidateResponse = orderService.validateOrderList(orderValidateRequest);
         log.debug("OrderValidationController.validateOrder() - End - Partner retrieve with response: {}", orderValidateResponse);
-        return orderValidateResponse;
+        return ResponseEntity.ok(orderValidateResponse);
     }
 }
