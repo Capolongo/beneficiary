@@ -1,6 +1,8 @@
 package br.com.livelo.orderflight.service.order;
 
 import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.orderValidate.request.OrderValidateRequestDTO;
+import br.com.livelo.orderflight.domain.dtos.orderValidate.response.OrderValidateResponseDTO;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
@@ -342,6 +344,30 @@ class OrderServiceTest {
         
         assertDoesNotThrow(() -> {
             orderService.updateSubmittedDate(order, date);
+        });
+    }
+
+    @Test
+    void shouldValidOrder() {
+        OrderEntity order = MockBuilder.orderEntity();
+        Optional<OrderEntity> mockedOrder = Optional.of(order);
+        OrderValidateRequestDTO orderValidateRequest = MockBuilder.orderValidateRequest();
+
+        when(orderRepository.findByCommerceOrderIdInAndExpirationDateAfter(any(), any())).thenReturn(Optional.of(order));
+        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(List.of("id"))).thenReturn(mockedOrder);
+
+        var response = orderService.validateOrderList(orderValidateRequest);
+        assertInstanceOf(OrderValidateResponseDTO.class, response);
+    }
+    @Test
+    void shouldThrowErrorWhenTryToValidOrder() {
+        OrderEntity order = null;
+        OrderValidateRequestDTO orderValidateRequest = MockBuilder.orderValidateRequest();
+
+        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(List.of("id"))).thenReturn(Optional.empty());
+
+        assertThrows(OrderFlightException.class, () -> {
+            orderService.validateOrderList(orderValidateRequest);
         });
     }
 }
