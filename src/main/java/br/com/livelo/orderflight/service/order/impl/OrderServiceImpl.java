@@ -196,15 +196,13 @@ public class OrderServiceImpl implements OrderService {
     public OrderValidateResponseDTO validateOrderList(OrderValidateRequestDTO orderValidateRequest) throws OrderFlightException {
         Optional<OrderEntity> order = this.findByCommerceOrderIdInAndExpirationDateAfter(List.of(orderValidateRequest.getId()));
         if (order.isEmpty()) {
-//            TODO: trocar VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND
-            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND;
+            OrderFlightErrorType errorType = OrderFlightErrorType.ORDER_FLIGHT_ORDER_VALIDATION_ERROR;
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
 
         List<OrderValidateItemDTO> items = order.get().getItems().stream()
                 .map(item -> validateOrder(item, order.get().getId()))
                 .collect(toList());
-
 
         boolean valid = items.stream().allMatch(OrderValidateItemDTO::getValid);
 

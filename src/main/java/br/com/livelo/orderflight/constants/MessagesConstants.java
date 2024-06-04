@@ -7,6 +7,7 @@ public class MessagesConstants {
     public static final String DEFAULT_MESSAGE_TITLE = "Erro não esperado";
     public static final String DEFAULT_MESSAGE_DESCRIPTION = "Ocorreu um erro por aqui. Entre em contato com o suporte!";
     public static final String ADD_CART_TITLE = "Erro ao adicionar pedido ao carrinho";
+    public static final String VALIDATION_ORDER_TITLE = "Erro ao validar ordem";
     public static final String RESERVATION_EXPIRED_DESCRIPTION = "O tempo de reserva para este item expirou! Realize uma nova busca.";
 
     //detailed messages command center

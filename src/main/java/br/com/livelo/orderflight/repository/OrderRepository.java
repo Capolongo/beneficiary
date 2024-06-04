@@ -19,8 +19,4 @@ public interface OrderRepository extends JpaRepository<OrderEntity, String> {
     Page<OrderProcess> findAllByCurrentStatusCode(String statusCode, Pageable pageable);
 
     Page<OrderProcess> findAllByCurrentStatusCodeAndArrivalDateLessThan(String statusCode, LocalDateTime expirationDate, Pageable pageable);
-
-//    Optional<OrderEntity> findByCommerceItemId(String commerceItemId);
-    Optional<OrderEntity> findByCommerceOrderId(String commerceItemId);
-
 }
