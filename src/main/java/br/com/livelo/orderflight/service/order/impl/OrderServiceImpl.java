@@ -1,5 +1,10 @@
 package br.com.livelo.orderflight.service.order.impl;
 
+import br.com.livelo.orderflight.domain.dtos.orderValidate.request.OrderValidateRequestDTO;
+import br.com.livelo.orderflight.domain.dtos.orderValidate.request.OrderValidateRequestItemDTO;
+import br.com.livelo.orderflight.domain.dtos.orderValidate.response.OrderValidateDetailDTO;
+import br.com.livelo.orderflight.domain.dtos.orderValidate.response.OrderValidateItemDTO;
+import br.com.livelo.orderflight.domain.dtos.orderValidate.response.OrderValidateResponseDTO;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
@@ -25,18 +30,24 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.*;
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+    private static final String VALIDATE_ORDER_RESULT_VALID = "valid";
+    private static final String VALIDATE_ORDER_RESULT_INVALID = "invalid";
+    private static final int MINUTES_BEFORE_EXPIRE = 15;
+    private static final String EXPIRED_ORDER_MESSAGE = "O tempo máximo para o resgate de viagem foi excedido. Pode tentar novamente?";
+
 
     public static final String TAX = "tax";
     private final OrderRepository orderRepository;
@@ -175,11 +186,34 @@ public class OrderServiceImpl implements OrderService {
         log.info("findByCommerceItemIdAndSkuId - id: [{}], item: [{}]", commerceItemId, itemOptional);
         if (itemOptional.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND;
-            log.error("findByCommerceItemIdAndSkuId - id: [{}], error: [{}]", commerceItemId, errorType);
+            log.warn("findByCommerceItemIdAndSkuId - id: [{}], error: [{}]", commerceItemId, errorType);
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
 
         return itemOptional.get();
+    }
+
+    public OrderValidateResponseDTO validateOrderList(OrderValidateRequestDTO orderValidateRequest) throws OrderFlightException {
+        Optional<OrderEntity> order = this.findByCommerceOrderIdInAndExpirationDateAfter(List.of(orderValidateRequest.getId()));
+        if (order.isEmpty()) {
+//            TODO: trocar VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND
+            OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND;
+            throw new OrderFlightException(errorType, errorType.getTitle(), null);
+        }
+
+        List<OrderValidateItemDTO> items = order.get().getItems().stream()
+                .map(item -> validateOrder(item, order.get().getId()))
+                .collect(toList());
+
+
+        boolean valid = items.stream().allMatch(OrderValidateItemDTO::getValid);
+
+        return OrderValidateResponseDTO
+                .builder()
+                .status(valid ? VALIDATE_ORDER_RESULT_VALID : VALIDATE_ORDER_RESULT_INVALID)
+                .id(orderValidateRequest.id)
+                .items(getDetails(items))
+                .build();
     }
 
     public void updateOrderOnLiveloPartners(OrderEntity order, String oldStatus) {
@@ -197,6 +231,51 @@ public class OrderServiceImpl implements OrderService {
                     OrderFlightErrorType.VALIDATION_INVALID_PAGINATION.getDescription(), null);
         }
         return PageRequest.of(page - 1, rows > orderProcessMaxRows ? orderProcessMaxRows : rows);
+    }
+
+
+//    private Function<OrderValidateRequestItemDTO, OrderValidateItemDTO> validateOrder() throws RuntimeException {
+//        return orderItem -> {
+//            Optional<OrderEntity> order = orderRepository.findByCommerceOrderId(orderItem.commerceItemId);
+//
+//
+////            Optional<OrderEntity> order = this.findByCommerceOrderIdInAndExpirationDateAfter();
+//
+//            if (order.isEmpty()) {
+//                throw new RuntimeException("hello");
+//            }
+//
+//            return OrderValidateItemDTO.builder()
+//                    .id(orderItem.id)
+//                    .partnerOrderId(order.get().getPartnerOrderId())
+//                    .commerceItemId(orderItem.commerceItemId)
+//                    .valid(isOrderExpirationTimeout(order.get().getCreateDate().toInstant().toEpochMilli()))
+//                    .build();
+//
+//        };
+//    }
+
+    private OrderValidateItemDTO validateOrder(OrderItemEntity orderItem, String partnerOrderId) {
+        return OrderValidateItemDTO.builder()
+                .id(orderItem.getSkuId())
+                .partnerOrderId(partnerOrderId)
+                .commerceItemId(orderItem.getCommerceItemId())
+                .valid(isOrderExpirationTimeout(orderItem.getCreateDate().toInstant().toEpochMilli()))
+                .build();
+
+    }
+
+    private boolean isOrderExpirationTimeout(long creationTime) {
+        long currentTime = new Date().getTime();
+        return TimeUnit.MILLISECONDS.toMinutes(currentTime - creationTime) < MINUTES_BEFORE_EXPIRE;
+    }
+
+    private List<OrderValidateItemDTO> getDetails(List<OrderValidateItemDTO> items) {
+        items.forEach(item -> item.setDetails(
+                Collections.singletonList(OrderValidateDetailDTO.builder().message(item.getValid() ? "" : EXPIRED_ORDER_MESSAGE).build())
+        ));
+        return items;
+
     }
 
 }
