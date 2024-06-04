@@ -201,14 +201,12 @@ public class OrderServiceImpl implements OrderService {
         }
 
         List<OrderValidateItemDTO> items = order.get().getItems().stream()
-                .map(item -> validateOrder(item, order.get().getId()))
+                .map(item -> mapToItemDTO(item, order.get().getId()))
                 .collect(toList());
-
-        boolean valid = items.stream().allMatch(OrderValidateItemDTO::getValid);
 
         return OrderValidateResponseDTO
                 .builder()
-                .status(valid ? VALIDATE_ORDER_RESULT_VALID : VALIDATE_ORDER_RESULT_INVALID)
+                .status(VALIDATE_ORDER_RESULT_VALID)
                 .id(orderValidateRequest.id)
                 .items(getDetails(items))
                 .build();
@@ -231,41 +229,13 @@ public class OrderServiceImpl implements OrderService {
         return PageRequest.of(page - 1, rows > orderProcessMaxRows ? orderProcessMaxRows : rows);
     }
 
-
-//    private Function<OrderValidateRequestItemDTO, OrderValidateItemDTO> validateOrder() throws RuntimeException {
-//        return orderItem -> {
-//            Optional<OrderEntity> order = orderRepository.findByCommerceOrderId(orderItem.commerceItemId);
-//
-//
-////            Optional<OrderEntity> order = this.findByCommerceOrderIdInAndExpirationDateAfter();
-//
-//            if (order.isEmpty()) {
-//                throw new RuntimeException("hello");
-//            }
-//
-//            return OrderValidateItemDTO.builder()
-//                    .id(orderItem.id)
-//                    .partnerOrderId(order.get().getPartnerOrderId())
-//                    .commerceItemId(orderItem.commerceItemId)
-//                    .valid(isOrderExpirationTimeout(order.get().getCreateDate().toInstant().toEpochMilli()))
-//                    .build();
-//
-//        };
-//    }
-
-    private OrderValidateItemDTO validateOrder(OrderItemEntity orderItem, String partnerOrderId) {
+    private OrderValidateItemDTO mapToItemDTO(OrderItemEntity orderItem, String partnerOrderId) {
         return OrderValidateItemDTO.builder()
                 .id(orderItem.getSkuId())
                 .partnerOrderId(partnerOrderId)
                 .commerceItemId(orderItem.getCommerceItemId())
-                .valid(isOrderExpirationTimeout(orderItem.getCreateDate().toInstant().toEpochMilli()))
+                .valid(Boolean.TRUE)
                 .build();
-
-    }
-
-    private boolean isOrderExpirationTimeout(long creationTime) {
-        long currentTime = new Date().getTime();
-        return TimeUnit.MILLISECONDS.toMinutes(currentTime - creationTime) < MINUTES_BEFORE_EXPIRE;
     }
 
     private List<OrderValidateItemDTO> getDetails(List<OrderValidateItemDTO> items) {
