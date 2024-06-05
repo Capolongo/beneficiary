@@ -346,28 +346,4 @@ class OrderServiceTest {
             orderService.updateSubmittedDate(order, date);
         });
     }
-
-    @Test
-    void shouldValidOrder() {
-        OrderEntity order = MockBuilder.orderEntity();
-        Optional<OrderEntity> mockedOrder = Optional.of(order);
-        OrderValidateRequestDTO orderValidateRequest = MockBuilder.orderValidateRequest();
-
-        when(orderRepository.findByCommerceOrderIdInAndExpirationDateAfter(any(), any())).thenReturn(Optional.of(order));
-        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(List.of("id"))).thenReturn(mockedOrder);
-
-        var response = orderService.validateOrderList(orderValidateRequest);
-        assertInstanceOf(OrderValidateResponseDTO.class, response);
-    }
-    @Test
-    void shouldThrowErrorWhenTryToValidOrder() {
-        OrderEntity order = null;
-        OrderValidateRequestDTO orderValidateRequest = MockBuilder.orderValidateRequest();
-
-        when(orderService.findByCommerceOrderIdInAndExpirationDateAfter(List.of("id"))).thenReturn(Optional.empty());
-
-        assertThrows(OrderFlightException.class, () -> {
-            orderService.validateOrderList(orderValidateRequest);
-        });
-    }
 }

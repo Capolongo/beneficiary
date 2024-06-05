@@ -43,12 +43,6 @@ import static java.util.stream.Collectors.toList;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-    private static final String VALIDATE_ORDER_RESULT_VALID = "valid";
-    private static final String VALIDATE_ORDER_RESULT_INVALID = "invalid";
-    private static final int MINUTES_BEFORE_EXPIRE = 15;
-    private static final String EXPIRED_ORDER_MESSAGE = "O tempo máximo para o resgate de viagem foi excedido. Pode tentar novamente?";
-
-
     public static final String TAX = "tax";
     private final OrderRepository orderRepository;
     private final OrderProcessMapper orderMapper;
@@ -191,25 +185,6 @@ public class OrderServiceImpl implements OrderService {
         return itemOptional.get();
     }
 
-    public OrderValidateResponseDTO validateOrderList(OrderValidateRequestDTO orderValidateRequest) throws OrderFlightException {
-        Optional<OrderEntity> order = this.findByCommerceOrderIdInAndExpirationDateAfter(List.of(orderValidateRequest.getId()));
-        if (order.isEmpty()) {
-            OrderFlightErrorType errorType = OrderFlightErrorType.ORDER_FLIGHT_ORDER_VALIDATION_ERROR;
-            throw new OrderFlightException(errorType, errorType.getTitle(), null);
-        }
-
-        List<OrderValidateItemDTO> items = order.get().getItems().stream()
-                .map(item -> mapToItemDTO(item, order.get().getId()))
-                .collect(toList());
-
-        return OrderValidateResponseDTO
-                .builder()
-                .status(VALIDATE_ORDER_RESULT_VALID)
-                .id(orderValidateRequest.id)
-                .items(getDetails(items))
-                .build();
-    }
-
     public void updateOrderOnLiveloPartners(OrderEntity order, String oldStatus) {
         if (isSameStatus(order.getCurrentStatus().getCode(), oldStatus)) {
             return;
@@ -226,22 +201,4 @@ public class OrderServiceImpl implements OrderService {
         }
         return PageRequest.of(page - 1, rows > orderProcessMaxRows ? orderProcessMaxRows : rows);
     }
-
-    private OrderValidateItemDTO mapToItemDTO(OrderItemEntity orderItem, String partnerOrderId) {
-        return OrderValidateItemDTO.builder()
-                .id(orderItem.getSkuId())
-                .partnerOrderId(partnerOrderId)
-                .commerceItemId(orderItem.getCommerceItemId())
-                .valid(Boolean.TRUE)
-                .build();
-    }
-
-    private List<OrderValidateItemDTO> getDetails(List<OrderValidateItemDTO> items) {
-        items.forEach(item -> item.setDetails(
-                Collections.singletonList(OrderValidateDetailDTO.builder().message(item.getValid() ? "" : EXPIRED_ORDER_MESSAGE).build())
-        ));
-        return items;
-
-    }
-
 }

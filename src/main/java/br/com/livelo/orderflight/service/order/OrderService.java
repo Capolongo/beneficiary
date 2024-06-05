@@ -29,6 +29,4 @@ public interface OrderService {
     OrderEntity save(OrderEntity order);
 
     OrderItemEntity findByCommerceItemIdAndSkuId(String commerceItemId, SkuItemResponse skuItemResponseDTO);
-
-    OrderValidateResponseDTO validateOrderList(OrderValidateRequestDTO orderValidateRequest) throws OrderFlightException;
 }
