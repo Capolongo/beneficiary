@@ -2,8 +2,8 @@ package br.com.livelo.orderflight.service.confirmation.impl;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.headers.RequiredHeaders;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.OrderCurrentStatusEntity;
@@ -54,7 +54,7 @@ public class ConfirmationServiceImpl implements ConfirmationService {
 
             var connectorConfirmOrderRequest = confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(order);
 
-            ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(orderRequest.getPartnerCode(), connectorConfirmOrderRequest, headers);
+            PartnerConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(orderRequest.getPartnerCode(), connectorConfirmOrderRequest, headers);
 
             var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
 
@@ -149,8 +149,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         return Duration.between(baseTime.toLocalDateTime(), LocalDateTime.now());
     }
 
-    private ConnectorConfirmOrderStatusResponse buildStatusToFailed(String cause) {
-        return ConnectorConfirmOrderStatusResponse
+    private PartnerConfirmOrderStatusResponse buildStatusToFailed(String cause) {
+        return PartnerConfirmOrderStatusResponse
                 .builder()
                 .partnerCode(String.valueOf(500))
                 .code(StatusLivelo.FAILED.getCode())

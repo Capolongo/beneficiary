@@ -1,7 +1,7 @@
 package br.com.livelo.orderflight.service.voucher;
 
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.*;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
@@ -63,11 +63,11 @@ class VoucherServiceImplTest {
                         .createDate(ZonedDateTime.now())
                 .count(0).build());
         when(connectorPartnersProxy.getVoucherOnPartner(anyString(), anyString(), anyString()))
-                .thenReturn(ConnectorConfirmOrderResponse.builder()
-                        .currentStatus(ConnectorConfirmOrderStatusResponse.builder().build())
+                .thenReturn(PartnerConfirmOrderResponse.builder()
+                        .currentStatus(PartnerConfirmOrderStatusResponse.builder().build())
                         .voucher("https://fake-url.com")
                         .build());
-        when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class)))
+        when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(PartnerConfirmOrderStatusResponse.class)))
                 .thenReturn(OrderCurrentStatusEntity.builder().code(StatusLivelo.WAIT_VOUCHER.getCode()).build());
         when(orderService.getFlightFromOrderItems(any())).thenReturn(OrderItemEntity.builder().build());
         doNothing().when(orderService).incrementProcessCounter(any(ProcessCounterEntity.class));

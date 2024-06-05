@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ConnectorConfirmOrderRequest {
+public class PartnerConfirmOrderRequest {
   private String id;
   private String commerceOrderId;
   private String commerceItemId;
@@ -16,6 +16,6 @@ public class ConnectorConfirmOrderRequest {
   private String partnerCode;
   private String submittedDate;
   private String expirationDate;
-  private List<ConnectorConfirmOrderPaxRequest> paxs;
+  private List<PartnerConfirmOrderPaxRequest> paxs;
   private List<String> segmentsPartnerIds;
 }

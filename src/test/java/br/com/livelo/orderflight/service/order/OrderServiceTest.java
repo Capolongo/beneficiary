@@ -1,6 +1,6 @@
 package br.com.livelo.orderflight.service.order;
 
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
@@ -84,7 +84,7 @@ class OrderServiceTest {
         OrderCurrentStatusEntity status = MockBuilder.statusFailed();
 
         when(confirmOrderMapper
-                .connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class)))
+                .connectorConfirmOrderStatusResponseToStatusEntity(any(PartnerConfirmOrderStatusResponse.class)))
                 .thenReturn(status);
 
         orderService.addNewOrderStatus(order,

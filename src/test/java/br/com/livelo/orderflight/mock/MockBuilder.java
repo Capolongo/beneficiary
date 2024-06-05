@@ -1,14 +1,14 @@
 package br.com.livelo.orderflight.mock;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.*;
+import br.com.livelo.orderflight.domain.dtos.connector.request.PartnerConfirmOrderPaxRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderItemRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderPriceRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.request.PartnerConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculatePrice;
 import br.com.livelo.orderflight.domain.dtos.pricing.response.PricingCalculateResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
@@ -165,8 +165,8 @@ public class MockBuilder {
                 .build();
     }
 
-    public static ConnectorConfirmOrderRequest connectorConfirmOrderRequest() {
-        return ConnectorConfirmOrderRequest
+    public static PartnerConfirmOrderRequest connectorConfirmOrderRequest() {
+        return PartnerConfirmOrderRequest
                 .builder()
                 .id("id")
                 .commerceOrderId("commerceOrderId")
@@ -181,8 +181,8 @@ public class MockBuilder {
                 .build();
     }
 
-    private static ConnectorConfirmOrderPaxRequest connectorConfirmOrderPaxRequest() {
-        return ConnectorConfirmOrderPaxRequest.builder()
+    private static PartnerConfirmOrderPaxRequest connectorConfirmOrderPaxRequest() {
+        return PartnerConfirmOrderPaxRequest.builder()
                 .type("type")
                 .firstName("firstName")
                 .lastName("lastName")
@@ -205,28 +205,28 @@ public class MockBuilder {
         return  ResponseEntity.ok().body(prices);
     }
 
-    public static ResponseEntity<ConnectorConfirmOrderResponse> connectorConfirmOrderResponse() {
-        return ResponseEntity.ok().body(ConnectorConfirmOrderResponse
+    public static ResponseEntity<PartnerConfirmOrderResponse> connectorConfirmOrderResponse() {
+        return ResponseEntity.ok().body(PartnerConfirmOrderResponse
                 .builder()
                 .partnerOrderId("partnerOrderId")
                 .partnerCode("partnerCode")
                 .submittedDate("date")
                 .expirationDate("date")
                 .transactionId("transactionId")
-                .currentStatus(ConnectorConfirmOrderStatusResponse.builder().build())
+                .currentStatus(PartnerConfirmOrderStatusResponse.builder().build())
                 .voucher(null)
                 .build());
     }
 
-    public static ResponseEntity<ConnectorConfirmOrderResponse> connectorVoucherResponse() {
-        return ResponseEntity.ok().body(ConnectorConfirmOrderResponse
+    public static ResponseEntity<PartnerConfirmOrderResponse> connectorVoucherResponse() {
+        return ResponseEntity.ok().body(PartnerConfirmOrderResponse
                 .builder()
                 .partnerOrderId("partnerOrderId")
                 .partnerCode("partnerCode")
                 .submittedDate("date")
                 .expirationDate("date")
                 .transactionId("transactionId")
-                .currentStatus(ConnectorConfirmOrderStatusResponse.builder().build())
+                .currentStatus(PartnerConfirmOrderStatusResponse.builder().build())
                 .voucher("voucher")
                 .build());
     }
@@ -485,8 +485,8 @@ public class MockBuilder {
                 .build();
     }
 
-    public static ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse() {
-        return ConnectorConfirmOrderStatusResponse.builder()
+    public static PartnerConfirmOrderStatusResponse connectorConfirmOrderStatusResponse() {
+        return PartnerConfirmOrderStatusResponse.builder()
                 .id(1L)
                 .code(StatusLivelo.INITIAL.getCode())
                 .description(StatusLivelo.INITIAL.getDescription())

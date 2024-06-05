@@ -4,8 +4,8 @@ import br.com.livelo.exceptions.WebhookException;
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.request.PartnerConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.headers.RequiredHeaders;
 import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
 import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
@@ -56,19 +56,19 @@ public class ConnectorPartnersProxy {
         return new OrderFlightException(orderFlightErrorType, e.getMessage(), message, e);
     }
 
-    public ConnectorConfirmOrderResponse confirmOnPartner(String partnerCode, ConnectorConfirmOrderRequest connectorConfirmOrderRequest, RequiredHeaders headers) throws OrderFlightException {
+    public PartnerConfirmOrderResponse confirmOnPartner(String partnerCode, PartnerConfirmOrderRequest connectorConfirmOrderRequest, RequiredHeaders headers) throws OrderFlightException {
         try {
             log.info("ConnectorPartnersProxy.confirmOnPartner - start - id: [{}], commerceOrderId: [{}], connectorConfirmOrderRequest [{}], partnerCode: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), connectorConfirmOrderRequest, partnerCode);
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
             var connectorUrl = webhook.getConnectorUrl().replace("{id}", connectorConfirmOrderRequest.getPartnerOrderId());
             final var connectorUri = URI.create(connectorUrl);
 
-            ResponseEntity<ConnectorConfirmOrderResponse> response = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest, headers.getTransactionId(), headers.getUserId());
+            ResponseEntity<PartnerConfirmOrderResponse> response = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest, headers.getTransactionId(), headers.getUserId());
             var connectorConfirmOrderResponse = response.getBody();
             log.info("ConnectorPartnersProxy.confirmOnPartner - end - id: [{}], commerceOrderId: [{}], response: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), connectorConfirmOrderResponse);
             return connectorConfirmOrderResponse;
         } catch (FeignException exception) {
-            var connectorConfirmOrderResponse = getResponseError(exception, connectorConfirmOrderRequest);
+            var connectorConfirmOrderResponse = getConfirmationResponseError(exception, connectorConfirmOrderRequest);
 
             var message = String.format("Error on confirm order on Partner [%s]!. Order [%s] sent to PMA!", partnerCode, connectorConfirmOrderRequest.getId());
             var entries = DynatraceUtils.buildEntries(ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, message);
@@ -134,13 +134,13 @@ public class ConnectorPartnersProxy {
         }
     }
 
-    public ConnectorConfirmOrderResponse getConfirmationOnPartner(String partnerCode, String partnerOrderId, String id) throws OrderFlightException {
+    public PartnerConfirmOrderResponse getConfirmationOnPartner(String partnerCode, String partnerOrderId, String id) throws OrderFlightException {
         try {
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.GETCONFIRMATION);
             final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", partnerOrderId));
             log.info("ConnectorPartnersProxy.getConfirmationOnPartner - connectorUri - partnerOrderId: [{}], uri: [{}]", id, connectorUri);
             var connectorGetConfirmation = partnerConnectorClient.getConfirmation(connectorUri);
-            ConnectorConfirmOrderResponse responseBody = connectorGetConfirmation.getBody();
+            PartnerConfirmOrderResponse responseBody = connectorGetConfirmation.getBody();
 
             log.info("ConnectorPartnersProxy.getConfirmationOnPartner - success - partnerOrderId: [{}], body: [{}]", id, responseBody);
             return responseBody;
@@ -150,7 +150,7 @@ public class ConnectorPartnersProxy {
         }
     }
 
-    public ConnectorConfirmOrderResponse getVoucherOnPartner(String partnerCode, String partnerOrderId, String orderId) {
+    public PartnerConfirmOrderResponse getVoucherOnPartner(String partnerCode, String partnerOrderId, String orderId) {
         try {
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.VOUCHER);
             final var connectorUri = URI.create(webhook.getConnectorUrl().replace("{id}", partnerOrderId));
@@ -164,11 +164,11 @@ public class ConnectorPartnersProxy {
         }
     }
 
-    private ConnectorConfirmOrderResponse getResponseError(FeignException feignException, ConnectorConfirmOrderRequest connectorConfirmOrderRequest) throws OrderFlightException {
+    private PartnerConfirmOrderResponse getConfirmationResponseError(FeignException feignException, PartnerConfirmOrderRequest connectorConfirmOrderRequest) throws OrderFlightException {
         final String content = feignException.contentUTF8();
         try {
             log.info("ConnectorPartnersProxy.getResponseError() - contentUTF8: [{}]", content);
-            var connectorConfirmOrderResponse = objectMapper.readValue(content, ConnectorConfirmOrderResponse.class);
+            var connectorConfirmOrderResponse = objectMapper.readValue(content, PartnerConfirmOrderResponse.class);
             if (connectorConfirmOrderResponse.getCurrentStatus() == null) {
                 log.error("ConnectorPartnersProxy.getResponseError - ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR - id: [{}], commerceOrderId: [{}], contentUTF8: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), content);
                 throw new OrderFlightException(ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, content, null);
