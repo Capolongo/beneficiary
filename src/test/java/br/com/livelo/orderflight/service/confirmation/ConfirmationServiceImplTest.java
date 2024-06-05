@@ -66,11 +66,10 @@ class ConfirmationServiceImplTest {
     @Test
     void shouldConfirmOrder() throws Exception {
         when(orderService.getOrderById(anyString())).thenReturn(MockBuilder.orderEntity());
-        when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class)))
-                .thenReturn(MockBuilder.connectorConfirmOrderRequest());
+
         when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(PartnerConfirmOrderStatusResponse.class)))
                 .thenReturn(MockBuilder.statusProcessing());
-        when(connectorPartnersProxy.confirmOnPartner(anyString(), any(PartnerConfirmOrderRequest.class), any(RequiredHeaders.class)))
+        when(connectorPartnersProxy.confirmOnPartner(anyString(), any(OrderEntity.class), any(RequiredHeaders.class)))
                 .thenReturn(MockBuilder.connectorConfirmOrderResponse().getBody());
         when(confirmOrderMapper.orderEntityToConfirmOrderResponse(any()))
                 .thenReturn(MockBuilder.confirmOrderResponse());
@@ -128,9 +127,9 @@ class ConfirmationServiceImplTest {
         responseWithFailedStatus.setStatus(MockBuilder.confirmOrderStatusFailed());
 
         when(orderService.getOrderById(anyString())).thenReturn(MockBuilder.orderEntity());
-        when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class))).thenReturn(MockBuilder.connectorConfirmOrderRequest());
+
         when(confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(any(PartnerConfirmOrderStatusResponse.class))).thenReturn(MockBuilder.statusProcessing());
-        when(connectorPartnersProxy.confirmOnPartner(anyString(), any(PartnerConfirmOrderRequest.class), any(RequiredHeaders.class))).thenThrow(FeignException.class);
+        when(connectorPartnersProxy.confirmOnPartner(anyString(), any(OrderEntity.class), any(RequiredHeaders.class))).thenThrow(FeignException.class);
         when(confirmOrderMapper.orderEntityToConfirmOrderResponse(any())).thenReturn(responseWithFailedStatus);
         ConfirmOrderResponse confirmOrderResponse = confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest(), new RequiredHeaders("", ""));
         assertEquals(MockBuilder.confirmOrderResponseWithFailed(), confirmOrderResponse);

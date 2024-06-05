@@ -52,19 +52,17 @@ public class ConfirmationServiceImpl implements ConfirmationService {
 
             ConfirmOrderValidation.validateOrderPayload(orderRequest, order);
 
-            var connectorConfirmOrderRequest = confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(order);
-
-            PartnerConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(orderRequest.getPartnerCode(), connectorConfirmOrderRequest, headers);
+            PartnerConfirmOrderResponse partnerPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(orderRequest.getPartnerCode(), order, headers);
 
             var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
 
-            orderService.updateVoucher(itemFlight, connectorPartnerConfirmation.getVoucher());
+            orderService.updateVoucher(itemFlight, partnerPartnerConfirmation.getVoucher());
             orderService.updateSubmittedDate(order, orderRequest.getSubmittedDate());
-            order.setPartnerOrderId(connectorPartnerConfirmation.getPartnerOrderId());
+            order.setPartnerOrderId(partnerPartnerConfirmation.getPartnerOrderId());
             order.setChannel(orderRequest.getChannel());
             order.setOriginOrder(orderRequest.getOriginOfOrder());
             order.setCustomerIdentifier(orderRequest.getCustomerId());
-            status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorPartnerConfirmation.getCurrentStatus());
+            status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(partnerPartnerConfirmation.getCurrentStatus());
         } catch (OrderFlightException exception) {
             if (!exception.getOrderFlightErrorType().equals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR)) {
                 log.error("ConfirmationService.confirmOrder - error on order confirmation! id: [{}] ", id, exception);

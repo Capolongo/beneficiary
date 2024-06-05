@@ -7,10 +7,12 @@ import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservat
 import br.com.livelo.orderflight.domain.dtos.connector.request.PartnerConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.headers.RequiredHeaders;
+import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
 import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.utils.DynatraceUtils;
 import br.com.livelo.orderflight.utils.LogUtils;
 import br.com.livelo.partnersconfigflightlibrary.dto.WebhookDTO;
@@ -37,6 +39,7 @@ public class ConnectorPartnersProxy {
     private final PartnersConfigService partnersConfigService;
     private final PartnerConnectorClient partnerConnectorClient;
     private final ObjectMapper objectMapper;
+    private final ConfirmOrderMapper confirmOrderMapper;
 
     private static OrderFlightException handleFeignException(OrderFlightErrorType errorType, FeignException e, String format) {
         var status = HttpStatus.valueOf(e.status());
@@ -56,9 +59,13 @@ public class ConnectorPartnersProxy {
         return new OrderFlightException(orderFlightErrorType, e.getMessage(), message, e);
     }
 
-    public PartnerConfirmOrderResponse confirmOnPartner(String partnerCode, PartnerConfirmOrderRequest connectorConfirmOrderRequest, RequiredHeaders headers) throws OrderFlightException {
+    public PartnerConfirmOrderResponse confirmOnPartner(String partnerCode, OrderEntity order, RequiredHeaders headers) throws OrderFlightException {
+
+        var connectorConfirmOrderRequest = confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(order);
+
         try {
             log.info("ConnectorPartnersProxy.confirmOnPartner - start - id: [{}], commerceOrderId: [{}], connectorConfirmOrderRequest [{}], partnerCode: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), connectorConfirmOrderRequest, partnerCode);
+
             WebhookDTO webhook = partnersConfigService.getPartnerWebhook(partnerCode.toUpperCase(), Webhooks.CONFIRMATION);
             var connectorUrl = webhook.getConnectorUrl().replace("{id}", connectorConfirmOrderRequest.getPartnerOrderId());
             final var connectorUri = URI.create(connectorUrl);
