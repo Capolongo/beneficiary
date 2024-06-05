@@ -3,6 +3,9 @@ package br.com.livelo.orderflight.mock;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.*;
 import br.com.livelo.orderflight.domain.dtos.connector.request.PartnerConfirmOrderPaxRequest;
 import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.orderValidate.request.OrderValidateRequestDTO;
+import br.com.livelo.orderflight.domain.dtos.orderValidate.request.OrderValidateRequestItemDTO;
+import br.com.livelo.orderflight.domain.dtos.orderValidate.response.OrderValidateResponseDTO;
 import br.com.livelo.orderflight.enuns.StatusLivelo;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderItemRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderPriceRequest;
@@ -535,5 +538,16 @@ public class MockBuilder {
                 .count(count)
                 .process(process)
                 .build();
+    }
+
+    public static OrderValidateRequestDTO orderValidateRequest() {
+        return OrderValidateRequestDTO.builder()
+                .id("id")
+                .items(List.of(OrderValidateRequestItemDTO.builder().commerceItemId("commerceItemId").id("id").build()))
+                .build();
+    }
+
+    public static OrderValidateResponseDTO orderValidateResponse() {
+        return OrderValidateResponseDTO.builder().build();
     }
 }
