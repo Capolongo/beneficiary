@@ -27,10 +27,9 @@ public interface PartnerConnectorClient {
             @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER) String transactionId,
             @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId);
 
-    @GetMapping("{id}")
+    @GetMapping
     ResponseEntity<PartnerReservationResponse> getReservation(
             URI baseUri,
-            @PathVariable("id") String id,
             @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER, required = false) String transactionId,
             @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId
     );

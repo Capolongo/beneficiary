@@ -90,7 +90,9 @@ public class ConnectorPartnersProxy {
     public PartnerReservationResponse createReserve(String partnerCode, PartnerReservationRequest request, String transactionId, String userId) {
         try {
             var webhook = this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.RESERVATION);
-            var url = URI.create(webhook.getConnectorUrl());
+            var uri = "http://api.k8s.uat.livelo.intranet/connector-flight-order-cvc/v1/orders";
+//            var url = URI.create(webhook.getConnectorUrl());
+            var url = URI.create(uri);
             log.info("ConnectorPartnersProxy.createReserve: call connector partner create reserve. partner: [{}] url: [{}] request: [{}]", partnerCode, url, LogUtils.writeAsJson(request));
 
             ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.createReserve(
@@ -120,9 +122,9 @@ public class ConnectorPartnersProxy {
         try {
             log.info("ConnectorPartnersProxy.getReservation: id: [{}], transactionId: [{}], partnerCode: [{}], userId: [{}]", id, transactionId, partnerCode, userId);
             var webhook = this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.GETRESERVATION);
-            var url = URI.create(webhook.getConnectorUrl());
+            var url = URI.create(webhook.getConnectorUrl().replace("{id}", id));
             log.info("ConnectorPartnersProxy.getReservation: url: [{}]", url);
-            ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.getReservation(url, id, transactionId, userId);
+            ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.getReservation(url, transactionId, userId);
             log.info("ConnectorPartnersProxy.getReservation: Reservation found on connector partner! response: [{}]", response);
             return response.getBody();
         } catch (FeignException e) {

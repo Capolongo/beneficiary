@@ -286,7 +286,7 @@ class ConnectorPartnersProxyTest {
         when(partnersConfigService.getPartnerWebhook(anyString(),
                 any(Webhooks.class)))
                 .thenReturn(webhook);
-        when(partnerConnectorClient.getReservation(any(), any(), any(), any()))
+        when(partnerConnectorClient.getReservation(any(), any(), any()))
                 .thenReturn(ResponseEntity.ok(expected));
         var response = this.proxy.getReservation("123", "123", "123", "123");
         assertEquals(expected, response);
