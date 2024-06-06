@@ -4,13 +4,15 @@ import br.com.livelo.exceptions.WebhookException;
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.request.PartnerConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderResponse;
 import br.com.livelo.orderflight.domain.dtos.headers.RequiredHeaders;
+import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.exception.ConnectorReservationBusinessException;
 import br.com.livelo.orderflight.exception.ConnectorReservationInternalException;
 import br.com.livelo.orderflight.exception.OrderFlightException;
 import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
+import br.com.livelo.orderflight.mappers.ConfirmOrderMapper;
 import br.com.livelo.orderflight.mock.MockBuilder;
 import br.com.livelo.partnersconfigflightlibrary.dto.WebhookDTO;
 import br.com.livelo.partnersconfigflightlibrary.services.impl.PartnersConfigServiceImpl;
@@ -47,6 +49,8 @@ class ConnectorPartnersProxyTest {
     private PartnerConnectorClient partnerConnectorClient;
     @Mock
     private ObjectMapper objectMapper;
+    @Mock
+    private ConfirmOrderMapper confirmOrderMapper;
 
     @InjectMocks
     private ConnectorPartnersProxy proxy;
@@ -58,16 +62,17 @@ class ConnectorPartnersProxyTest {
 
     @Test
     void shouldReturnConfirmOnPartner() {
-        ResponseEntity<ConnectorConfirmOrderResponse> confirmOrderResponse = MockBuilder.connectorConfirmOrderResponse();
+        ResponseEntity<PartnerConfirmOrderResponse> confirmOrderResponse = MockBuilder.connectorConfirmOrderResponse();
         setup();
-        when(partnerConnectorClient.confirmOrder(any(URI.class), any(ConnectorConfirmOrderRequest.class), anyString(), anyString()))
+        when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class))).thenReturn(MockBuilder.connectorConfirmOrderRequest());
+        when(partnerConnectorClient.confirmOrder(any(URI.class), any(PartnerConfirmOrderRequest.class), anyString(), anyString()))
                 .thenReturn(confirmOrderResponse);
 
-        ConnectorConfirmOrderResponse response = proxy.confirmOnPartner("CVC", MockBuilder.connectorConfirmOrderRequest(), new RequiredHeaders("", ""));
+        PartnerConfirmOrderResponse response = proxy.confirmOnPartner("CVC", MockBuilder.orderEntity(), new RequiredHeaders("", ""));
 
         assertEquals(confirmOrderResponse.getBody(), response);
         assertEquals(200, confirmOrderResponse.getStatusCode().value());
-        verify(partnerConnectorClient).confirmOrder(any(URI.class), any(ConnectorConfirmOrderRequest.class), anyString(), anyString());
+        verify(partnerConnectorClient).confirmOrder(any(URI.class), any(PartnerConfirmOrderRequest.class), anyString(), anyString());
         verifyNoMoreInteractions(partnerConnectorClient);
     }
 
@@ -75,20 +80,23 @@ class ConnectorPartnersProxyTest {
     void shouldReturnFailedWhenCatchFeignException() throws OrderFlightException, JsonProcessingException {
         FeignException mockException = Mockito.mock(FeignException.class);
         setup();
+
+        when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class))).thenReturn(MockBuilder.connectorConfirmOrderRequest());
+
         when(mockException.contentUTF8())
                 .thenReturn(
                         new String(MockBuilder.connectorConfirmOrderResponse().getBody().toString().getBytes(),
                                 StandardCharsets.UTF_8));
 
-        when(objectMapper.readValue(anyString(), eq(ConnectorConfirmOrderResponse.class)))
+        when(objectMapper.readValue(anyString(), eq(PartnerConfirmOrderResponse.class)))
                 .thenReturn(MockBuilder.connectorConfirmOrderResponse().getBody());
 
         when(partnerConnectorClient.confirmOrder(any(URI.class),
-                any(ConnectorConfirmOrderRequest.class), anyString(), anyString()))
+                any(PartnerConfirmOrderRequest.class), anyString(), anyString()))
                 .thenThrow(mockException);
 
-        ConnectorConfirmOrderResponse response = proxy.confirmOnPartner("CVC",
-                MockBuilder.connectorConfirmOrderRequest(), new RequiredHeaders("", ""));
+        PartnerConfirmOrderResponse response = proxy.confirmOnPartner("CVC",
+                MockBuilder.orderEntity(), new RequiredHeaders("", ""));
 
         assertEquals(MockBuilder.connectorConfirmOrderResponse().getBody(),
                 response);
@@ -98,7 +106,7 @@ class ConnectorPartnersProxyTest {
     void shouldThrowException() {
         Exception exception = assertThrows(Exception.class, () -> {
             proxy.confirmOnPartner("CVC",
-                    MockBuilder.connectorConfirmOrderRequest(), new RequiredHeaders("", ""));
+                    MockBuilder.orderEntity(), new RequiredHeaders("", ""));
         });
 
         assertTrue(exception.getMessage().contains("Cannot invoke"));
@@ -115,18 +123,20 @@ class ConnectorPartnersProxyTest {
         var mock = MockBuilder.connectorConfirmOrderResponse().getBody();
         mock.setCurrentStatus(null);
 
-        when(objectMapper.readValue(anyString(), eq(ConnectorConfirmOrderResponse.class)))
+        when(confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(any(OrderEntity.class))).thenReturn(MockBuilder.connectorConfirmOrderRequest());
+
+        when(objectMapper.readValue(anyString(), eq(PartnerConfirmOrderResponse.class)))
                 .thenReturn(mock);
 
         when(partnerConnectorClient.confirmOrder(any(URI.class),
-                any(ConnectorConfirmOrderRequest.class), anyString(), anyString()))
+                any(PartnerConfirmOrderRequest.class), anyString(), anyString()))
                 .thenThrow(mockException);
 
         when(partnersConfigService.getPartnerWebhook("CVC", Webhooks.CONFIRMATION))
                 .thenReturn(WebhookDTO.builder().connectorUrl("www").build());
 
         try {
-            proxy.confirmOnPartner("CVC", MockBuilder.connectorConfirmOrderRequest(), new RequiredHeaders("", ""));
+            proxy.confirmOnPartner("CVC", MockBuilder.orderEntity(), new RequiredHeaders("", ""));
         } catch (OrderFlightException exception) {
             assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR, exception.getOrderFlightErrorType());
         }
@@ -352,11 +362,11 @@ class ConnectorPartnersProxyTest {
 
     @Test
     void shouldReturnGetConfirmationOnPartner() throws Exception {
-        ResponseEntity<ConnectorConfirmOrderResponse> confirmOrderResponse = MockBuilder.connectorConfirmOrderResponse();
+        ResponseEntity<PartnerConfirmOrderResponse> confirmOrderResponse = MockBuilder.connectorConfirmOrderResponse();
         setup();
         when(partnerConnectorClient.getConfirmation(any(URI.class))).thenReturn(confirmOrderResponse);
 
-        ConnectorConfirmOrderResponse response = proxy.getConfirmationOnPartner("CVC", "10071014", "lf123");
+        PartnerConfirmOrderResponse response = proxy.getConfirmationOnPartner("CVC", "10071014", "lf123");
 
         assertEquals(confirmOrderResponse.getBody(), response);
         assertEquals(200, confirmOrderResponse.getStatusCode().value());
@@ -376,11 +386,11 @@ class ConnectorPartnersProxyTest {
 
     @Test
     void shouldReturnGetVoucherOnPartner() throws Exception {
-        ResponseEntity<ConnectorConfirmOrderResponse> voucherResponse = MockBuilder.connectorVoucherResponse();
+        ResponseEntity<PartnerConfirmOrderResponse> voucherResponse = MockBuilder.connectorVoucherResponse();
         setup();
         when(partnerConnectorClient.getVoucher(any(URI.class))).thenReturn(voucherResponse);
 
-        ConnectorConfirmOrderResponse response = proxy.getVoucherOnPartner("CVC", "partnerOrderId", "orderId");
+        PartnerConfirmOrderResponse response = proxy.getVoucherOnPartner("CVC", "partnerOrderId", "orderId");
 
         assertEquals(voucherResponse.getBody(), response);
         assertEquals(200, voucherResponse.getStatusCode().value());

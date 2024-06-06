@@ -1,8 +1,7 @@
 package br.com.livelo.orderflight.service.order;
 
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
-import br.com.livelo.orderflight.domain.dtos.orderValidate.request.OrderValidateRequestDTO;
-import br.com.livelo.orderflight.domain.dtos.orderValidate.response.OrderValidateResponseDTO;
+
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
@@ -33,7 +32,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -86,7 +84,7 @@ class OrderServiceTest {
         OrderCurrentStatusEntity status = MockBuilder.statusFailed();
 
         when(confirmOrderMapper
-                .connectorConfirmOrderStatusResponseToStatusEntity(any(ConnectorConfirmOrderStatusResponse.class)))
+                .connectorConfirmOrderStatusResponseToStatusEntity(any(PartnerConfirmOrderStatusResponse.class)))
                 .thenReturn(status);
 
         orderService.addNewOrderStatus(order,

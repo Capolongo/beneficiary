@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ConnectorReservationResponse {
+public class PartnerReservationResponse {
     private String commerceOrderId;
     private String partnerOrderId;
-    private ConnectorReservationStatus status;
+    private PartnerReservationStatus status;
 
 }

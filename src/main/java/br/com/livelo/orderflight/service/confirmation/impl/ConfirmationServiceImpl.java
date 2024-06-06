@@ -2,8 +2,8 @@ package br.com.livelo.orderflight.service.confirmation.impl;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.request.ConfirmOrderRequest;
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.ConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderResponse;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.dtos.headers.RequiredHeaders;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.entity.OrderCurrentStatusEntity;
@@ -52,19 +52,17 @@ public class ConfirmationServiceImpl implements ConfirmationService {
 
             ConfirmOrderValidation.validateOrderPayload(orderRequest, order);
 
-            var connectorConfirmOrderRequest = confirmOrderMapper.orderEntityToConnectorConfirmOrderRequest(order);
-
-            ConnectorConfirmOrderResponse connectorPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(orderRequest.getPartnerCode(), connectorConfirmOrderRequest, headers);
+            PartnerConfirmOrderResponse partnerPartnerConfirmation = connectorPartnersProxy.confirmOnPartner(orderRequest.getPartnerCode(), order, headers);
 
             var itemFlight = orderService.getFlightFromOrderItems(order.getItems());
 
-            orderService.updateVoucher(itemFlight, connectorPartnerConfirmation.getVoucher());
+            orderService.updateVoucher(itemFlight, partnerPartnerConfirmation.getVoucher());
             orderService.updateSubmittedDate(order, orderRequest.getSubmittedDate());
-            order.setPartnerOrderId(connectorPartnerConfirmation.getPartnerOrderId());
+            order.setPartnerOrderId(partnerPartnerConfirmation.getPartnerOrderId());
             order.setChannel(orderRequest.getChannel());
             order.setOriginOrder(orderRequest.getOriginOfOrder());
             order.setCustomerIdentifier(orderRequest.getCustomerId());
-            status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(connectorPartnerConfirmation.getCurrentStatus());
+            status = confirmOrderMapper.connectorConfirmOrderStatusResponseToStatusEntity(partnerPartnerConfirmation.getCurrentStatus());
         } catch (OrderFlightException exception) {
             if (!exception.getOrderFlightErrorType().equals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_INTERNAL_ERROR)) {
                 log.error("ConfirmationService.confirmOrder - error on order confirmation! id: [{}] ", id, exception);
@@ -149,8 +147,8 @@ public class ConfirmationServiceImpl implements ConfirmationService {
         return Duration.between(baseTime.toLocalDateTime(), LocalDateTime.now());
     }
 
-    private ConnectorConfirmOrderStatusResponse buildStatusToFailed(String cause) {
-        return ConnectorConfirmOrderStatusResponse
+    private PartnerConfirmOrderStatusResponse buildStatusToFailed(String cause) {
+        return PartnerConfirmOrderStatusResponse
                 .builder()
                 .partnerCode(String.valueOf(500))
                 .code(StatusLivelo.FAILED.getCode())

@@ -1,10 +1,10 @@
 package br.com.livelo.orderflight.mappers;
 
 import br.com.livelo.orderflight.domain.dtos.confirmation.response.*;
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmDocumentRequest;
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderPaxRequest;
-import br.com.livelo.orderflight.domain.dtos.connector.request.ConnectorConfirmOrderRequest;
-import br.com.livelo.orderflight.domain.dtos.connector.response.ConnectorConfirmOrderStatusResponse;
+import br.com.livelo.orderflight.domain.dtos.connector.request.PartnerConfirmDocumentRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.request.PartnerConfirmOrderPaxRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.request.PartnerConfirmOrderRequest;
+import br.com.livelo.orderflight.domain.dtos.connector.response.PartnerConfirmOrderStatusResponse;
 import br.com.livelo.orderflight.domain.entity.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -33,15 +33,15 @@ public interface ConfirmOrderMapper {
     @Mapping(target = "partnerOrderLinkId", expression = "java(getFlightItemPartnerOrderLinkId(orderEntity))")
     @Mapping(target = "paxs", expression = "java(reducePaxs(orderEntity))")
     @Mapping(target = "segmentsPartnerIds", expression = "java(setSegmentsPartnersIds(orderEntity))")
-    ConnectorConfirmOrderRequest orderEntityToConnectorConfirmOrderRequest(OrderEntity orderEntity);
+    PartnerConfirmOrderRequest orderEntityToConnectorConfirmOrderRequest(OrderEntity orderEntity);
 
     OrderStatusHistoryEntity statusHistoryToCurrentStatus(OrderCurrentStatusEntity orderCurrentStatusEntity);
 
-    ConnectorConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
+    PartnerConfirmOrderPaxRequest paxEntityToConnectorConfirmOrderPaxRequest(PaxEntity pax);
 
     @Mapping(target = "number", source = "documentNumber")
-    ConnectorConfirmDocumentRequest documentEntityToConnectorConfirmDocumentRequest(DocumentEntity document);
-    OrderCurrentStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(ConnectorConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
+    PartnerConfirmDocumentRequest documentEntityToConnectorConfirmDocumentRequest(DocumentEntity document);
+    OrderCurrentStatusEntity connectorConfirmOrderStatusResponseToStatusEntity(PartnerConfirmOrderStatusResponse connectorConfirmOrderStatusResponse);
 
     default String getFlightItemPartnerOrderLinkId(OrderEntity orderEntity) {
         return orderEntity.getItems().stream()
@@ -59,7 +59,7 @@ public interface ConfirmOrderMapper {
                 .orElse("");
     }
 
-    default List<ConnectorConfirmOrderPaxRequest> reducePaxs(OrderEntity orderEntity) {
+    default List<PartnerConfirmOrderPaxRequest> reducePaxs(OrderEntity orderEntity) {
         return orderEntity.getItems().stream()
                 .filter(item -> !item.getSkuId().toUpperCase().contains("TAX"))
                 .findFirst()

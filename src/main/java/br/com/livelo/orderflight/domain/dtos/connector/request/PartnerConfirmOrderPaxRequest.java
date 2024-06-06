@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ConnectorConfirmOrderPaxRequest {
+public class PartnerConfirmOrderPaxRequest {
 	private String type;
 	private String firstName;
 	private String lastName;
@@ -16,5 +16,5 @@ public class ConnectorConfirmOrderPaxRequest {
 	private String email;
 	private String areaCode;
 	private String phoneNumber;
-	private Set<ConnectorConfirmDocumentRequest> documents;
+	private Set<PartnerConfirmDocumentRequest> documents;
 }
