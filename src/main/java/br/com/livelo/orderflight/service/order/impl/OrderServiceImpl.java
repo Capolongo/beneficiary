@@ -1,10 +1,5 @@
 package br.com.livelo.orderflight.service.order.impl;
 
-import br.com.livelo.orderflight.domain.dtos.orderValidate.request.OrderValidateRequestDTO;
-import br.com.livelo.orderflight.domain.dtos.orderValidate.request.OrderValidateRequestItemDTO;
-import br.com.livelo.orderflight.domain.dtos.orderValidate.response.OrderValidateDetailDTO;
-import br.com.livelo.orderflight.domain.dtos.orderValidate.response.OrderValidateItemDTO;
-import br.com.livelo.orderflight.domain.dtos.orderValidate.response.OrderValidateResponseDTO;
 import br.com.livelo.orderflight.domain.dtos.repository.OrderProcess;
 import br.com.livelo.orderflight.domain.dtos.repository.PaginationOrderProcessResponse;
 import br.com.livelo.orderflight.domain.dtos.sku.SkuItemResponse;
@@ -30,14 +25,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.*;
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -174,7 +165,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public OrderItemEntity findByCommerceItemIdAndSkuId(String commerceItemId, SkuItemResponse skuItemResponseDTO) {
-        final Optional<OrderItemEntity> itemOptional = itemRepository.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTO.getSkuId());
+        final Optional<OrderItemEntity> itemOptional = itemRepository.findFirstByCommerceItemIdAndSkuIdOrderByCreateDateDesc(commerceItemId, skuItemResponseDTO.getSkuId());
         log.info("findByCommerceItemIdAndSkuId - id: [{}], item: [{}]", commerceItemId, itemOptional);
         if (itemOptional.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.VALIDATION_COMMERCE_ITEM_ID_OR_ID_SKU_NOT_FOUND;

@@ -250,7 +250,7 @@ class OrderServiceTest {
     @Test
     void shouldReturnSucessByCommerceItemIdAndSkuId() {
 
-        when(itemRepository.findByCommerceItemIdAndSkuId(anyString(), anyString()))
+        when(itemRepository.findFirstByCommerceItemIdAndSkuIdOrderByCreateDateDesc(anyString(), anyString()))
                 .thenReturn(Optional.of(MockBuilder.orderItemEntity()));
 
         OrderItemEntity orderItemEntity = orderService.findByCommerceItemIdAndSkuId("1",
@@ -262,7 +262,7 @@ class OrderServiceTest {
     @Test
     void shouldReturnErrorOrderFlightExceptionByCommerceItemIdAndSkuId() {
 
-        when(itemRepository.findByCommerceItemIdAndSkuId(anyString(), anyString())).thenReturn(Optional.empty());
+        when(itemRepository.findFirstByCommerceItemIdAndSkuIdOrderByCreateDateDesc(anyString(), anyString())).thenReturn(Optional.empty());
         var skuItemResponse = SkuItemResponse.builder().skuId("cvc_flight_tax").build();
 
         assertThrows(OrderFlightException.class, () -> orderService.findByCommerceItemIdAndSkuId("1", skuItemResponse));
