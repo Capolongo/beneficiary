@@ -90,9 +90,7 @@ public class ConnectorPartnersProxy {
     public PartnerReservationResponse createReserve(String partnerCode, PartnerReservationRequest request, String transactionId, String userId) {
         try {
             var webhook = this.partnersConfigService.getPartnerWebhook(partnerCode, Webhooks.RESERVATION);
-            var uri = "http://api.k8s.uat.livelo.intranet/connector-flight-order-cvc/v1/orders";
-//            var url = URI.create(webhook.getConnectorUrl());
-            var url = URI.create(uri);
+            var url = URI.create(webhook.getConnectorUrl());
             log.info("ConnectorPartnersProxy.createReserve: call connector partner create reserve. partner: [{}] url: [{}] request: [{}]", partnerCode, url, LogUtils.writeAsJson(request));
 
             ResponseEntity<PartnerReservationResponse> response = partnerConnectorClient.createReserve(
