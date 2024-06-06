@@ -17,8 +17,8 @@ public class GetCompletedListener {
     private final CompletedService completedService;
 
 
-//    @RabbitListener(queues = "${spring.rabbitmq.order-flight-commands-getcompleted.queue}",
-//            concurrency = "${spring.rabbitmq.order-flight-commands-getcompleted.concurrency}")
+    @RabbitListener(queues = "${spring.rabbitmq.order-flight-commands-getcompleted.queue}",
+            concurrency = "${spring.rabbitmq.order-flight-commands-getcompleted.concurrency}")
     public void consumer(Message payload) {
         try {
             final OrderProcess orderProcess = objectMapper.readValue(MessageUtils.extractBodyAsString(payload), OrderProcess.class);
