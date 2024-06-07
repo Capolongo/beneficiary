@@ -16,8 +16,8 @@ public interface PartnerConnectorClient {
     @PostMapping
     ResponseEntity<PartnerConfirmOrderResponse> confirmOrder(URI baseUrl,
                                                              @RequestBody PartnerConfirmOrderRequest connectorConfirmOrderRequest,
-                                                             @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER, required = false) String transactionId,
-                                                             @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false) String userId
+                                                             @RequestHeader(value = HeadersConstants.LIVELO_TRANSACTION_ID_HEADER, required = false, defaultValue = "DefaultTransactionId") String transactionId,
+                                                             @RequestHeader(value = HeadersConstants.LIVELO_USER_ID_HEADER, required = false, defaultValue = "DefaultUserIdId") String userId
     );
 
     @PostMapping
