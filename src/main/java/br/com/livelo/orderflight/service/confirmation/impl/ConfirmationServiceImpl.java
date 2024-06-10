@@ -48,11 +48,11 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             log.info("ConfirmationService.confirmOrder - Start - id: [{}]", id);
             order = orderService.getOrderById(id);
 
-            if(headers.getUserId().isEmpty()) {
+            if(headers.getUserId() == null || headers.getUserId().isEmpty()) {
                 headers.setUserId(orderRequest.getCustomerId());
             }
 
-            if(headers.getTransactionId().isEmpty()) {
+            if(headers.getTransactionId() == null || headers.getTransactionId().isEmpty()) {
                 headers.setTransactionId(order.getTransactionId());
             }
 

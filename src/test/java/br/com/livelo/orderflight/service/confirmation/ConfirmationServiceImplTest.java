@@ -99,7 +99,7 @@ class ConfirmationServiceImplTest {
             foundOrder.getPrice().setPointsAmount(BigDecimal.valueOf(2000));
 
             when(orderService.getOrderById(anyString())).thenReturn(foundOrder);
-            when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest(), any(RequiredHeaders.class))).thenThrow(exception);
+            when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest(), new RequiredHeaders())).thenThrow(exception);
 
         } catch (Exception exception) {
             assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONFIRMATION_ORDER_VALIDATION_ERROR.getTitle(), exception.getMessage());
@@ -114,7 +114,7 @@ class ConfirmationServiceImplTest {
             foundOrder.setCommerceOrderId("wrongId");
 
             when(orderService.getOrderById(anyString())).thenReturn(foundOrder);
-            when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest(), any(RequiredHeaders.class))).thenThrow(exception);
+            when(confirmationService.confirmOrder("id", MockBuilder.confirmOrderRequest(), new RequiredHeaders(null, null))).thenThrow(exception);
 
         } catch (Exception exception) {
             assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONFIRMATION_ORDER_VALIDATION_ERROR.getTitle(), exception.getMessage());
