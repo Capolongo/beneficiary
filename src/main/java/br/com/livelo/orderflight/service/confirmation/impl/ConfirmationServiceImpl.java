@@ -48,7 +48,15 @@ public class ConfirmationServiceImpl implements ConfirmationService {
             log.info("ConfirmationService.confirmOrder - Start - id: [{}]", id);
             order = orderService.getOrderById(id);
 
-            log.info("ConfirmationService.confirmOrder - id: [{}], orderId: [{}], transactionId: [{}],  order: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), order);
+            if(headers.getUserId().isEmpty()) {
+                headers.setUserId(orderRequest.getCustomerId());
+            }
+
+            if(headers.getTransactionId().isEmpty()) {
+                headers.setTransactionId(order.getTransactionId());
+            }
+
+            log.info("ConfirmationService.confirmOrder - id: [{}], orderId: [{}], transactionId: [{}],  order: [{}], headers: [{}]", id, order.getCommerceOrderId(), order.getTransactionId(), order, headers);
 
             ConfirmOrderValidation.validateOrderPayload(orderRequest, order);
 
