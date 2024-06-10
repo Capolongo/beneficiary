@@ -93,7 +93,7 @@ public class ConnectorPartnersProxy {
             var connectorUrl = webhook.getConnectorUrl().replace("{id}", connectorConfirmOrderRequest.getPartnerOrderId());
             final var connectorUri = URI.create(connectorUrl);
 
-            ResponseEntity<PartnerConfirmOrderResponse> response = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest, "order.getTransactionId()", headers.getUserId());
+            ResponseEntity<PartnerConfirmOrderResponse> response = partnerConnectorClient.confirmOrder(connectorUri, connectorConfirmOrderRequest, headers.getTransactionId(), headers.getUserId());
             var connectorConfirmOrderResponse = response.getBody();
             log.info("ConnectorPartnersProxy.confirmOnPartner - end - id: [{}], commerceOrderId: [{}], response: [{}]", connectorConfirmOrderRequest.getId(), connectorConfirmOrderRequest.getCommerceOrderId(), LogUtils.writeAsJson(connectorConfirmOrderResponse));
             return connectorConfirmOrderResponse;
