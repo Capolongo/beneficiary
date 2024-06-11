@@ -22,9 +22,9 @@ public class OrderValidationController {
 
     @PostMapping("/validate")
     public ResponseEntity<OrderValidateResponseDTO> validateOrder(@Valid @RequestBody(required = true) final OrderValidateRequestDTO orderValidateRequest) {
-        log.debug("OrderValidationController.validateOrder() - Start - Partner retrieve with request: {}", orderValidateRequest);
+        log.info("OrderValidationController.validateOrder() - Start - Partner retrieve with request: {}", orderValidateRequest);
         OrderValidateResponseDTO orderValidateResponse = orderValidatorService.validateOrder(orderValidateRequest);
-        log.debug("OrderValidationController.validateOrder() - End - Partner retrieve with response: {}", orderValidateResponse);
+        log.info("OrderValidationController.validateOrder() - End - Partner retrieve with response: {}", orderValidateResponse);
         return ResponseEntity.ok(orderValidateResponse);
     }
 }

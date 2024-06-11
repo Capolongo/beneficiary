@@ -11,6 +11,7 @@ import br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType;
 import br.com.livelo.orderflight.service.order.OrderService;
 import br.com.livelo.orderflight.service.validation.OrderValidator;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -21,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class OrderValidatorServiceImpl implements OrderValidator {
     private final OrderService orderService;
     private static final String VALIDATE_ORDER_RESULT_VALID = "valid";
@@ -28,8 +30,10 @@ public class OrderValidatorServiceImpl implements OrderValidator {
 
     public OrderValidateResponseDTO validateOrder(OrderValidateRequestDTO orderValidateRequest) throws OrderFlightException {
         Optional<OrderEntity> order = orderService.findByCommerceOrderIdInAndExpirationDateAfter(List.of(orderValidateRequest.getId()));
+        log.info("OrderValidatorService.validateOrder() - Start - id: [{}], order: [{}]", orderValidateRequest.getId(), order);
         if (order.isEmpty()) {
             OrderFlightErrorType errorType = OrderFlightErrorType.ORDER_FLIGHT_ORDER_VALIDATION_ERROR;
+            log.error("OrderValidatorService.validateOrder() - error - id: [{}], error: [{}]", orderValidateRequest.getId(), errorType);
             throw new OrderFlightException(errorType, errorType.getTitle(), null);
         }
 
@@ -46,6 +50,7 @@ public class OrderValidatorServiceImpl implements OrderValidator {
     }
 
     private OrderValidateItemDTO mapToItemDTO(OrderItemEntity orderItem, String partnerOrderId) {
+        log.info("OrderValidatorService.mapToItemDTO - orderItem: [{}], partnerOrderId: [{}]", orderItem, partnerOrderId);
         return OrderValidateItemDTO.builder()
                 .id(orderItem.getSkuId())
                 .partnerOrderId(partnerOrderId)
