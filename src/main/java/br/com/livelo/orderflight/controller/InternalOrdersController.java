@@ -4,6 +4,7 @@ import br.com.livelo.orderflight.domain.dtos.update.UpdateOrderDTO;
 import br.com.livelo.orderflight.domain.entity.OrderEntity;
 import br.com.livelo.orderflight.mappers.LiveloPartnersMapper;
 import br.com.livelo.orderflight.repository.OrderRepository;
+import br.com.livelo.orderflight.service.order.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ public class InternalOrdersController {
 
     private final OrderRepository orderRepository;
     private final LiveloPartnersMapper liveloPartnersMapper;
+    private final OrderService orderService;
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderEntity> getById(@PathVariable String id) {
@@ -35,7 +37,7 @@ public class InternalOrdersController {
 
     @GetMapping("/mapper/{orderId}")
     public UpdateOrderDTO mapOrderToUpdateOrderDTO(@PathVariable String orderId) {
-        Optional<OrderEntity> order = orderRepository.findById(orderId);
-        return liveloPartnersMapper.orderEntityToUpdateOrderDTO(order.get());
+        OrderEntity order = orderService.getOrderById(orderId);
+        return liveloPartnersMapper.orderEntityToUpdateOrderDTO(order);
     }
 }
