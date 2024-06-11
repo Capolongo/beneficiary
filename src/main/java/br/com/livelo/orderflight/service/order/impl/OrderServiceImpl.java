@@ -137,6 +137,7 @@ public class OrderServiceImpl implements OrderService {
         var format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         var actualDate = LocalDateTime.now().atZone(ZoneId.of("America/Sao_Paulo")).format(format);
 
+        log.info("findByCommerceOrderIdInAndExpirationDateAfter - commerceOrderId: [{}], actualDate: [{}]", commerceOrderId, actualDate);
         return this.orderRepository.findByCommerceOrderIdInAndExpirationDateAfter(commerceOrderId, actualDate);
     }
 
