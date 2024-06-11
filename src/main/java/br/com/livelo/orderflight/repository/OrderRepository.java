@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<OrderEntity, String> {
     @Query(nativeQuery = true, value = "SELECT * FROM ORDER_FLIGHT.ORDERS o " +
             "WHERE o.COMMERCE_ORDER_ID IN (:commerceOrderId)" +
-            "AND o.EXPIRATION_DATE > TO_TIMESTAMP_TZ(:expirationDate, 'YYYY-MM-DD HH24:MI:SS TZR')")
+            "AND o.EXPIRATION_DATE > TO_TIMESTAMP_TZ(:expirationDate GMT, 'YYYY-MM-DD HH24:MI:SS TZR')")
     Optional<OrderEntity> findByCommerceOrderIdInAndExpirationDateAfter(List<String> commerceOrderId, String expirationDate);
 
     Page<OrderProcess> findAllByCurrentStatusCode(String statusCode, Pageable pageable);
