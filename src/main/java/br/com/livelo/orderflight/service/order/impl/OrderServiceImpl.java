@@ -135,10 +135,10 @@ public class OrderServiceImpl implements OrderService {
 
     public Optional<OrderEntity> findByCommerceOrderIdInAndExpirationDateAfter(List<String> commerceOrderId) {
         var format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        var actualDate = LocalDateTime.now().atZone(ZoneId.of("America/Sao_Paulo")).format(format);
+        var actualDate = LocalDateTime.now().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("America/Sao_Paulo"));
 
         log.info("findByCommerceOrderIdInAndExpirationDateAfter - commerceOrderId: [{}], actualDate: [{}]", commerceOrderId, actualDate);
-        return this.orderRepository.findByCommerceOrderIdInAndExpirationDateAfter(commerceOrderId, actualDate + " GMT");
+        return this.orderRepository.findByCommerceOrderIdInAndExpirationDateAfter(commerceOrderId, actualDate.format(format));
     }
 
     public void delete(OrderEntity order) {
