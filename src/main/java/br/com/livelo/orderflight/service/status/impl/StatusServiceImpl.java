@@ -73,12 +73,14 @@ public class StatusServiceImpl implements StatusService {
     }
 
     private static void setStatusCount(OrderEntity order, String status) {
-        Optional.ofNullable(CountStatusLivelo.getStatus(status)).ifPresent(
-                countProcess -> {
-                    var processCounter = order.getProcessCounters().stream().filter(counter -> countProcess.getDescription().equals(counter.getProcess())).findFirst();
-                    processCounter.ifPresent(processCounterEntity -> processCounterEntity.setCount(0));
-                }
-        );
+        CountStatusLivelo countProcess = CountStatusLivelo.getStatus(status);
+
+        if (countProcess != null) {
+            order.getProcessCounters().stream()
+                    .filter(counter -> countProcess.getDescription().equals(counter.getProcess()))
+                    .findFirst()
+                    .ifPresent(processCounter -> processCounter.setCount(0));
+        }
     }
 
     private Duration changeStatusTimeDifference(LocalDateTime baseTime) {
