@@ -254,6 +254,24 @@ class ConnectorPartnersProxyTest {
     }
 
     @Test
+    void shouldThrowFlightConnectorInternalError_WhenThereIsSomeInternalErrorAndBodyIsNull() {
+        var request = mock(PartnerReservationRequest.class);
+        var feignException = makeFeignMockExceptionWithStatus(400);
+        var requestMock = mock(Request.class);
+
+        doReturn("").when(feignException).contentUTF8();
+        doReturn(requestMock).when(feignException).request();
+        doReturn("http://test").when(requestMock).url();
+        makeException(request, feignException);
+        setup();
+        var exception = assertThrows(OrderFlightException.class,
+                () -> proxy.createReserve("cvc", request, "transactionId", "userId"));
+
+        assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_CREATE_RESERVATION_BUSINESS_ERROR, exception.getOrderFlightErrorType());
+
+    }
+
+    @Test
     void shouldThrowPartnerInternalError_WhenThereIsSomePartnerInternalError() {
         var request = mock(PartnerReservationRequest.class);
         var feignException = makeFeignMockExceptionWithStatus(400);
