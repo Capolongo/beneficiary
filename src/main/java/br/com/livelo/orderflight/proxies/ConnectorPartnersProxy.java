@@ -2,6 +2,7 @@ package br.com.livelo.orderflight.proxies;
 
 import br.com.livelo.exceptions.WebhookException;
 import br.com.livelo.orderflight.client.PartnerConnectorClient;
+import br.com.livelo.orderflight.domain.dto.reservation.connector.ConnectorErrorResponse;
 import br.com.livelo.orderflight.domain.dto.reservation.request.PartnerReservationRequest;
 import br.com.livelo.orderflight.domain.dto.reservation.response.PartnerReservationResponse;
 import br.com.livelo.orderflight.domain.dtos.connector.request.PartnerConfirmOrderRequest;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 
+import static br.com.livelo.orderflight.constants.AppConstants.INTERNAL_PARTNER_ERROR;
 import static br.com.livelo.orderflight.exception.enuns.OrderFlightErrorType.*;
 
 @Slf4j
@@ -159,6 +161,12 @@ public class ConnectorPartnersProxy {
     private static OrderFlightException handleFeignException(OrderFlightErrorType errorType, FeignException e, String format) {
         var status = HttpStatus.valueOf(e.status());
         var message = String.format(format, e.status(), e.contentUTF8());
+        var errorOptional = LogUtils.readFromJson(e.contentUTF8(), ConnectorErrorResponse.class);
+
+        if(errorOptional.isPresent()) {
+            var error = errorOptional.get();
+            errorType = INTERNAL_PARTNER_ERROR.equals(error.code()) ? ORDER_FLIGHT_PARTNER_INTERNAL_ERROR : errorType;
+        }
 
         if (status.is4xxClientError()) {
             log.warn("Business error on connector call url: {} status: {} body: {}", e.request().url(), e.status(), e.responseBody(), e);

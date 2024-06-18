@@ -13,7 +13,7 @@ public class MessagesConstants {
     //detailed messages command center
     public static final String BOOKING_INTERNAL_ERROR = "Erro interno livelo. Responsável #reservando_minha_viagem_alertas";
     public static final String BOOKING_CONNECTOR_INTERNAL_ERROR = "Erro no conector. Responsável #reservando_minha_viagem_alertas";
-    public static final String BOOKING_PARTNER_INTERNAL_ERROR = "Erro no parceiro. Responsável %S";
+    public static final String BOOKING_PARTNER_INTERNAL_ERROR = "Erro no parceiro! Favor entrar em contato com o parceiro";
     public static final String BOOKING_PRICING_INTERNAL_ERROR = "Erro interno calculadora. Responsável #time_calculadora_alertas";
     public static final String BOOKING_PARTNER_CONFIG_FLIGHT = "Erro interno partners-config-flight. Responsável #time_xpto_alertas";
 }

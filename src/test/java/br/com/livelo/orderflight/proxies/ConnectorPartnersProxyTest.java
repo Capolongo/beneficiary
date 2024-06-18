@@ -163,6 +163,7 @@ class ConnectorPartnersProxyTest {
         makeException(request, feignException);
         var requestMock = mock(Request.class);
 
+        doReturn("{\"code\": \"CONNECTOR_BUSINESS_ERROR\", \"message\": \"Internal partner error\", \"details\": {\"error\": \"Error on CVC!\"}}").when(feignException).contentUTF8();
         doReturn(requestMock).when(feignException).request();
         doReturn("http://test").when(requestMock).url();
 
@@ -179,6 +180,7 @@ class ConnectorPartnersProxyTest {
 
         var requestMock = mock(Request.class);
 
+        doReturn("{\"code\": \"CONNECTOR_BUSINESS_ERROR\", \"message\": \"Internal partner error\", \"details\": {\"error\": \"Error on CVC!\"}}").when(feignException).contentUTF8();
         doReturn(requestMock).when(feignException).request();
         doReturn("http://test").when(requestMock).url();
         setup();
@@ -220,6 +222,7 @@ class ConnectorPartnersProxyTest {
         var feignException = makeFeignMockExceptionWithStatus(400);
         var requestMock = mock(Request.class);
 
+        doReturn("{\"code\": \"CONNECTOR_BUSINESS_ERROR\", \"message\": \"Internal partner error\", \"details\": {\"error\": \"Error on CVC!\"}}").when(feignException).contentUTF8();
         WebhookDTO webhook = WebhookDTO.builder().connectorUrl("http://url-mock.com").name("name").build();
         when(partnersConfigService.getPartnerWebhook(anyString(), any(Webhooks.class))).thenReturn(webhook);
         makeException(request, feignException);
@@ -238,6 +241,7 @@ class ConnectorPartnersProxyTest {
         var feignException = makeFeignMockExceptionWithStatus(400);
         var requestMock = mock(Request.class);
 
+        doReturn("{\"code\": \"CONNECTOR_BUSINESS_ERROR\", \"message\": \"Internal partner error\", \"details\": {\"error\": \"Error on CVC!\"}}").when(feignException).contentUTF8();
         doReturn(requestMock).when(feignException).request();
         doReturn("http://test").when(requestMock).url();
         makeException(request, feignException);
@@ -246,6 +250,24 @@ class ConnectorPartnersProxyTest {
                 () -> proxy.createReserve("cvc", request, "transactionId", "userId"));
 
         assertEquals(OrderFlightErrorType.ORDER_FLIGHT_CONNECTOR_CREATE_RESERVATION_BUSINESS_ERROR, exception.getOrderFlightErrorType());
+
+    }
+
+    @Test
+    void shouldThrowPartnerInternalError_WhenThereIsSomePartnerInternalError() {
+        var request = mock(PartnerReservationRequest.class);
+        var feignException = makeFeignMockExceptionWithStatus(400);
+        var requestMock = mock(Request.class);
+
+        doReturn("{\"code\": \"INTERNAL_PARTNER_ERROR\", \"message\": \"Internal partner error\", \"details\": {\"error\": \"Error on CVC!\"}}").when(feignException).contentUTF8();
+        doReturn(requestMock).when(feignException).request();
+        doReturn("http://test").when(requestMock).url();
+        makeException(request, feignException);
+        setup();
+        var exception = assertThrows(OrderFlightException.class,
+                () -> proxy.createReserve("cvc", request, "transactionId", "userId"));
+
+        assertEquals(ORDER_FLIGHT_PARTNER_INTERNAL_ERROR, exception.getOrderFlightErrorType());
 
     }
 
@@ -314,12 +336,13 @@ class ConnectorPartnersProxyTest {
     }
 
     @Test
-    void shouldThrowInternalError_WhenStatus400() {
+    void shouldThrowConnectorBusinessError_WhenStatus400() {
 
         var exceptionExpected = mock(FeignException.class);
         var requestMock = mock(Request.class);
 
         doReturn(400).when(exceptionExpected).status();
+        doReturn("{\"code\": \"CONNECTOR_BUSINESS_ERROR\", \"message\": \"Internal partner error\", \"details\": {\"error\": \"Error on CVC!\"}}").when(exceptionExpected).contentUTF8();
         doThrow(exceptionExpected).when(partnersConfigService).getPartnerWebhook(any(), any());
         doReturn(requestMock).when(exceptionExpected).request();
         doReturn("http://test").when(requestMock).url();
@@ -329,18 +352,34 @@ class ConnectorPartnersProxyTest {
     }
 
     @Test
-    void shouldThrowInternalError_WhenStatus500() {
+    void shouldThrowConnectorInternalError_WhenStatus500() {
         var segmentsPartnerIds = List.of("asdf", "fdsa");
         var exceptionExpected = mock(FeignException.class);
         var requestMock = mock(Request.class);
 
         doReturn(500).when(exceptionExpected).status();
+        doReturn("{\"code\": \"CONNECTOR_INTERNAL_ERROR\", \"message\": \"Internal partner error\", \"details\": {\"error\": \"Error on CVC!\"}}").when(exceptionExpected).contentUTF8();
         doThrow(exceptionExpected).when(partnersConfigService).getPartnerWebhook(any(), any());
         doReturn(requestMock).when(exceptionExpected).request();
         doReturn("http://test").when(requestMock).url();
         var exception = assertThrows(OrderFlightException.class,
                 () -> this.proxy.getReservation("123", "123", "123", ""));
         assertEquals(ORDER_FLIGHT_CONNECTOR_GET_RESERVATION_INTERNAL_ERROR, exception.getOrderFlightErrorType());
+    }
+
+    @Test
+    void shouldThrowPartnerInternalError_WhenStatus500() {
+        var exceptionExpected = mock(FeignException.class);
+        var requestMock = mock(Request.class);
+
+        doReturn(500).when(exceptionExpected).status();
+        doReturn("{\"code\": \"INTERNAL_PARTNER_ERROR\", \"message\": \"Internal partner error\", \"details\": {\"error\": \"Error on CVC!\"}}").when(exceptionExpected).contentUTF8();
+        doThrow(exceptionExpected).when(partnersConfigService).getPartnerWebhook(any(), any());
+        doReturn(requestMock).when(exceptionExpected).request();
+        doReturn("http://test").when(requestMock).url();
+        var exception = assertThrows(OrderFlightException.class,
+                () -> this.proxy.getReservation("123", "123", "123", ""));
+        assertEquals(ORDER_FLIGHT_PARTNER_INTERNAL_ERROR, exception.getOrderFlightErrorType());
     }
 
     @Test
