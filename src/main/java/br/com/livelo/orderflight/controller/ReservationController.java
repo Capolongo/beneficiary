@@ -41,6 +41,7 @@ public class ReservationController {
         var response = reservationService.createOrder(reservationRequest, transactionId, customerId, channel, listPrice, userId);
 
         DynatraceUtils.setDynatraceSuccessEntries();
+        MDC.put(POINTS, String.valueOf(response.price().pointsAmount()));
         log.info("ReservationController.createReservation - Create reservation response: [{}]", LogUtils.writeAsJson(response));
         MDC.clear();
         return ResponseEntity.ok(response);

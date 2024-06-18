@@ -41,6 +41,7 @@ public class ConfirmationController {
         var confirmOrderResponse = confirmationService.confirmOrder(id, order, requiredHeaders);
 
         DynatraceUtils.setDynatraceSuccessEntries();
+        MDC.put(POINTS, String.valueOf(confirmOrderResponse.getPrice().getPointsAmount()));
         log.info("ConfirmationController.confirmOrder() - End - response: [{}]", confirmOrderResponse);
         MDC.clear();
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(confirmOrderResponse);
