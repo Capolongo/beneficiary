@@ -38,6 +38,7 @@
                         "userId": "%X{userId}",
                         "transactionId": "%X{transactionId}",
                         "commerceOrderId": "%X{commerceOrderId}",
+                        "orderId": "%X{orderId}",
                         "flow": "%X{flow}",
                         "partner": "%X{partner}",
                         "points": "%X{points}",
