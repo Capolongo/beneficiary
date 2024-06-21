@@ -56,16 +56,14 @@ public class SkuServiceImpl implements SkuService {
                 .build();
     }
 
-    private SkuItemResponse buildSkuCommerceItem(String commerceItemId, SkuItemResponse skuItemResponseDTO, OrderItemEntity orderItem, String requestCurrency){
+    private SkuItemResponse buildSkuCommerceItem(String commerceItemId, SkuItemResponse skuItemResponseDTO, OrderItemEntity orderItem, String currency){
         log.debug("SkuServiceImpl.buildSkuCommerceItem - start commerceItemId and currency present start sku enrich process for [item]: {}", commerceItemId);
 
-        String currency = requestCurrency.isEmpty() ? skuConstant.getCurrency() : requestCurrency;
-
-        BigDecimal listPrice;
-        if (orderItem.getPrice() != null && orderItem.getPrice().getAmount() != null && currency.equals("BRL")) {
-            listPrice = orderItem.getPrice().getAmount();
+        BigDecimal listPrice = skuConstant.getSalePrice();
+        if ("BRL".equals(currency)) {
+            listPrice = orderItem.getPrice() == null || orderItem.getPrice().getAmount() == null ? listPrice : orderItem.getPrice().getAmount();
         } else {
-            listPrice = orderItem.getPrice() != null && orderItem.getPrice().getPointsAmount() != null ? orderItem.getPrice().getPointsAmount() : skuConstant.getSalePrice();
+            listPrice = orderItem.getPrice() == null || orderItem.getPrice().getPointsAmount() == null ? listPrice : orderItem.getPrice().getPointsAmount();
         }
 
         return skuItemResponseDTO
