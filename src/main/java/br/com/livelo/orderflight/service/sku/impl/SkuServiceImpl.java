@@ -31,13 +31,13 @@ public class SkuServiceImpl implements SkuService {
             log.info("SkuServiceImpl.getSku - if currencyAndCommerceItemIdIsPresent - id: [{}]", commerceItemId);
             OrderItemEntity orderItem = orderService.findByCommerceItemIdAndSkuId(commerceItemId, skuItemResponseDTOBase);
             log.info("SkuServiceImpl.getSku - id: [{}], orderItem: [{}]", commerceItemId, orderItem);
-            skuItemResponseDTOBase = buildSkuCommerceItem(commerceItemId, skuItemResponseDTOBase, orderItem);
+            skuItemResponseDTOBase = buildSkuCommerceItem(commerceItemId, skuItemResponseDTOBase, orderItem, currency);
         }
 
         return skuItemResponseDTOBase;
     }
 
-    private Boolean currencyAndCommerceItemIdIsPresent(String currency, String commerceItemId){
+    private boolean currencyAndCommerceItemIdIsPresent(String currency, String commerceItemId){
         return StringUtils.hasText(commerceItemId) && StringUtils.hasText(currency);
     }
 
@@ -56,16 +56,22 @@ public class SkuServiceImpl implements SkuService {
                 .build();
     }
 
-    private SkuItemResponse buildSkuCommerceItem(String commerceItemId, SkuItemResponse skuItemResponseDTO, OrderItemEntity orderItem){
+    private SkuItemResponse buildSkuCommerceItem(String commerceItemId, SkuItemResponse skuItemResponseDTO, OrderItemEntity orderItem, String currency){
         log.debug("SkuServiceImpl.buildSkuCommerceItem - start commerceItemId and currency present start sku enrich process for [item]: {}", commerceItemId);
 
-        BigDecimal listPrice = orderItem.getPrice() != null && orderItem.getPrice().getPointsAmount() != null ? orderItem.getPrice().getPointsAmount() : skuConstant.getSalePrice();
+        BigDecimal listPrice = skuConstant.getSalePrice();
+        if ("BRL".equals(currency)) {
+            listPrice = orderItem.getPrice() == null || orderItem.getPrice().getAmount() == null ? listPrice : orderItem.getPrice().getAmount();
+        } else {
+            listPrice = orderItem.getPrice() == null || orderItem.getPrice().getPointsAmount() == null ? listPrice : orderItem.getPrice().getPointsAmount();
+        }
 
         return skuItemResponseDTO
                 .toBuilder()
                 .commerceItemId(commerceItemId)
                 .listPrice(listPrice)
                 .salePrice(listPrice)
+                .currency(currency)
                 .build();
 
     }
