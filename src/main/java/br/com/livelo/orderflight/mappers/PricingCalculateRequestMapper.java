@@ -4,7 +4,6 @@ import br.com.livelo.orderflight.domain.dto.reservation.response.*;
 import br.com.livelo.orderflight.domain.dtos.pricing.request.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -14,18 +13,17 @@ import java.util.List;
 public interface PricingCalculateRequestMapper {
 
     @Mapping(target = "travelInfo", expression = "java(buildTravelInfo(getItemTypeFlight(partnerReservationResponse)))")
-    @Mapping(target = "items", expression = "java(buildListPricingCalculateItems(partnerReservationResponse, getItemTypeFlight(partnerReservationResponse), commerceOrderId))")
-    PricingCalculateRequest toPricingCalculateRequest(PartnerReservationResponse partnerReservationResponse, String commerceOrderId);
+    @Mapping(target = "items", expression = "java(buildListPricingCalculateItems(partnerReservationResponse, getItemTypeFlight(partnerReservationResponse), commerceOrderId, partnerCode))")
+    PricingCalculateRequest toPricingCalculateRequest(PartnerReservationResponse partnerReservationResponse, String commerceOrderId, String partnerCode);
 
-    @Mappings({
-            @Mapping(source = "travelInfo.type", target = "type"),
-            @Mapping(source = "travelInfo.adt", target = "adt"),
-            @Mapping(source = "travelInfo.chd", target = "chd"),
-            @Mapping(source = "travelInfo.inf", target = "inf"),
-            @Mapping(source = "travelInfo.cabinClass", target = "cabinClass"),
-            @Mapping(target = "stageJourney", constant = "RESERVATION"),
-            @Mapping(source = "travelInfo.isInternational", target = "isInternational", defaultValue = "false")
-    })
+
+    @Mapping(source = "travelInfo.type", target = "type")
+    @Mapping(source = "travelInfo.adt", target = "adt")
+    @Mapping(source = "travelInfo.chd", target = "chd")
+    @Mapping(source = "travelInfo.inf", target = "inf")
+    @Mapping(source = "travelInfo.cabinClass", target = "cabinClass")
+    @Mapping(target = "stageJourney", constant = "RESERVATION")
+    @Mapping(source = "travelInfo.isInternational", target = "isInternational", defaultValue = "false")
     PricingCalculateTravelInfo buildTravelInfo(PartnerReservationItem partnerReservationItem);
 
 
@@ -37,11 +35,11 @@ public interface PricingCalculateRequestMapper {
                 .orElse(null);
     }
 
-    default List<PricingCalculateItem> buildListPricingCalculateItems(PartnerReservationResponse partnerReservationResponse, PartnerReservationItem partnerReservationItemTypeFlight, String commerceOrderId) {
+    default List<PricingCalculateItem> buildListPricingCalculateItems(PartnerReservationResponse partnerReservationResponse, PartnerReservationItem partnerReservationItemTypeFlight, String commerceOrderId, String partnerCode) {
         var pricingCalculateItem = PricingCalculateItem.builder()
                 .id(commerceOrderId)
                 .flightType(partnerReservationItemTypeFlight.getTravelInfo().getType())
-                .partnerCode(partnerReservationResponse.getPartnerCode())
+                .partnerCode(partnerCode)
                 .price(toPricingCalculatePrice(partnerReservationResponse))
                 .segments(buildSegments(partnerReservationItemTypeFlight))
                 .build();
@@ -49,13 +47,11 @@ public interface PricingCalculateRequestMapper {
     }
 
 
-    @Mappings({
-            @Mapping(source = "amount", target = "amount"),
-            @Mapping(source = "ordersPriceDescription", target = "pricesDescription"),
-            @Mapping(target = "flight.amount", expression = "java(getTotalFlight(partnerReservationResponse))"),
-            @Mapping(target = "taxes.amount", expression = "java(getTotalTaxes(partnerReservationResponse))"),
-            @Mapping(target = "currency", constant = "BRL")
-    })
+    @Mapping(source = "amount", target = "amount")
+    @Mapping(source = "ordersPriceDescription", target = "pricesDescription")
+    @Mapping(target = "flight.amount", expression = "java(getTotalFlight(partnerReservationResponse))")
+    @Mapping(target = "taxes.amount", expression = "java(getTotalTaxes(partnerReservationResponse))")
+    @Mapping(target = "currency", constant = "BRL")
     PricingCalculatePrice toPricingCalculatePrice(PartnerReservationResponse partnerReservationResponse);
 
     default BigDecimal getTotalFlight(PartnerReservationResponse partnerReservationResponse) {
