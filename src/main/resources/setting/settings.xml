@@ -1,0 +1,26 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+    <localRepository>/Users/virtualmachine/.m2/repository</localRepository>
+    <proxies>
+        <!-- Configurações de proxy, se necessário -->
+    </proxies>
+    <mirrors>
+        <!-- Configurações de espelho, se necessário -->
+    </mirrors>
+    <profiles>
+        <profile>
+            <id>default</id>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>https://repo.maven.apache.org/maven2</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+</settings>

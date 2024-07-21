@@ -1,0 +1,364 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Beneficiary"
+  description: API responsible for maintaining the registry of beneficiaries of a health plan partners.
+  contact: {}
+securityDefinitions:
+  PassThrough:
+    type: basic
+basePath: "/v1"
+schemes:
+  - "http"
+tags:
+  - name: "Beneficiary"
+
+paths:
+  /beneficiary:
+    post:
+      tags:
+        - "Beneficiary"
+      summary: "Create Beneficiary"
+      operationId: "createBeneficiary"
+      description: "Create Beneficiary."
+      produces:
+        - "application/json"
+      parameters:
+        - name: body
+          in: body
+          description: "Beneficiary details to be created."
+          required: true
+          schema:
+            $ref: '#/definitions/BeneficiaryRequest'
+      responses:
+        '201':
+          description: "Successful creation of beneficiary"
+          schema:
+            $ref: "#/definitions/Beneficiary"
+        '400':
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/BadRequest"
+        '401':
+          description: "Not authorized, please include username and password"
+        '500':
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalServerError"
+    put:
+      tags:
+        - "Beneficiary"
+      summary: "Update Beneficiary"
+      operationId: "updateBeneficiary"
+      description: "Update Beneficiary."
+      produces:
+        - "application/json"
+      parameters:
+        - name: body
+          in: body
+          description: "Beneficiary details to be update."
+          required: true
+          schema:
+            $ref: '#/definitions/Beneficiary'
+      responses:
+        '200':
+          description: "Successful update of Beneficiary"
+          schema:
+            $ref: "#/definitions/Beneficiary"
+        '400':
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/BadRequest"
+        '401':
+          description: "Not authorized, please include username and password"
+        '500':
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalServerError"
+
+    get:
+      tags:
+        - "Beneficiary"
+      summary: "Find All Beneficiarys"
+      operationId: "findAllBeneficiary"
+      description: "Find all Beneficiarys."
+      produces:
+        - "application/json"
+      responses:
+        '200':
+          description: "Successful find all"
+          schema:
+            $ref: "#/definitions/BeneficiaryFindAllResponse"
+        '400':
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/BadRequest"
+        '401':
+          description: "Not authorized, please include username and password"
+        '500':
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalServerError"
+
+  /beneficiary/{id}:
+    delete:
+      tags:
+        - "Beneficiary"
+      summary: "Delete Beneficiary"
+      operationId: "deleteBeneficiary"
+      description: "Delete Beneficiary."
+      produces:
+        - "application/json"
+      parameters:
+        - name: id
+          in: path
+          description: "Beneficiary ID."
+          type: "integer"
+          required: true
+      responses:
+        '200':
+          description: "Successful delete of Beneficiary"
+          schema:
+            $ref: "#/definitions/DeleteResponse"
+        '400':
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/BadRequest"
+        '401':
+          description: "Not authorized, please include username and password"
+        '500':
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalServerError"
+
+    get:
+      tags:
+        - "Beneficiary"
+      summary: "Find By Id Beneficiary"
+      operationId: "findById"
+      description: "Find a Beneficiary by ID."
+      security:
+        - PassThrough: []
+      produces:
+        - "application/json"
+      parameters:
+        - name: id
+          in: path
+          description: "Beneficiary ID to be retrieved."
+          type: "integer"
+          required: true
+      responses:
+        '200':
+          description: "Successful retrieval of Beneficiary"
+          schema:
+            $ref: "#/definitions/Beneficiary"
+        '400':
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/BadRequest"
+        '401':
+          description: "Not authorized, please include username and password"
+        '500':
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalServerError"
+
+definitions:
+  BeneficiaryRequest:
+    type: "object"
+    properties:
+      beneficiary:
+        properties:
+          name:
+            description: "Name of the Beneficiary"
+            type: "string"
+            example: "Beneficiary 1"
+          telephone:
+            description: "Telephone number of the Beneficiary"
+            type: "string"
+            example: "1164365555"
+          birthDate:
+            description: "Birthdate of the Beneficiary"
+            type: "string"
+            example: "15/01/1980"
+          documents:
+            type: "array"
+            items:
+              $ref: "#/definitions/DocumentResponse"
+            example:
+              [
+                {
+                  id: 1,
+                  typeDocument: "RG",
+                  description: "477.418.348-70",
+                },{
+                id: 2,
+                typeDocument: "CPF",
+                description: "48.055.859-99",
+              }
+              ]
+
+  DeleteResponse:
+    type: "object"
+    properties:
+      code:
+        description: "Code http"
+        type: "string"
+        example: "200"
+      description:
+        description: "Description"
+        type: "string"
+        example: "Delete to sucess"
+
+
+  Beneficiary:
+    type: "object"
+    properties:
+      beneficiary:
+        properties:
+          id:
+            description: "Beneficiary ID"
+            type: "integer"
+            example: 1
+          name:
+            description: "Name of the Beneficiary"
+            type: "string"
+            example: "Beneficiary 1"
+          telephone:
+            description: "Telephone number of the Beneficiary"
+            type: "string"
+            example: "1164365555"
+          birthDate:
+            description: "Birthdate of the Beneficiary"
+            type: "string"
+            example: "15/01/1980"
+          dateInclusion:
+            description: "Date when the Beneficiary was included"
+            type: "string"
+            example: "2024-07-20T01:22:34.904173-03:00"
+          dateUpdate:
+            description: "Date when the Beneficiary was last updated"
+            type: "string"
+            example: "2024-07-20T01:22:34.904161-03:00"
+          documents:
+            type: "array"
+            items:
+              $ref: "#/definitions/DocumentResponse"
+            example:
+              [
+                {
+                  id: 1,
+                  typeDocument: "RG",
+                  description: "477.418.348-70",
+                  dateInclusion: "2024-07-20T01:22:34.904681-03:00",
+                  dateUpdate: "2024-07-20T01:22:34.904675-03:00"
+                },{
+                id: 2,
+                typeDocument: "CPF",
+                description: "48.055.859-99",
+                dateInclusion: "2024-07-20T01:22:34.904474-03:00",
+                dateUpdate: "2024-07-20T01:22:34.904467-03:00"
+              }
+              ]
+
+  BeneficiaryGetAllResponse:
+    type: "object"
+    properties:
+      id:
+        description: "Beneficiary ID"
+        type: "integer"
+        example: 1
+      name:
+        description: "Name of the Beneficiary"
+        type: "string"
+        example: "Beneficiary 1"
+      telephone:
+        description: "Telephone number of the Beneficiary"
+        type: "string"
+        example: "1164365555"
+      birthDate:
+        description: "Birthdate of the Beneficiary"
+        type: "string"
+        example: "15/01/1980"
+      dateInclusion:
+        description: "Date when the Beneficiary was included"
+        type: "string"
+        example: "2024-07-20T01:22:34.904173-03:00"
+      dateUpdate:
+        description: "Date when the Beneficiary was last updated"
+        type: "string"
+        example: "2024-07-20T01:22:34.904161-03:00"
+      documents:
+        type: "array"
+        items:
+          $ref: "#/definitions/DocumentResponse"
+        example:
+          [
+            {
+              id: 1,
+              typeDocument: "RG",
+              description: "477.418.348-70",
+              dateInclusion: "2024-07-20T01:22:34.904681-03:00",
+              dateUpdate: "2024-07-20T01:22:34.904675-03:00"
+            },{
+            id: 2,
+            typeDocument: "CPF",
+            description: "48.055.859-99",
+            dateInclusion: "2024-07-20T01:22:34.904474-03:00",
+            dateUpdate: "2024-07-20T01:22:34.904467-03:00"
+          }
+          ]
+
+
+  BeneficiaryFindAllResponse:
+    type: "object"
+    properties:
+      beneficiaries:
+        type: "array"
+        items:
+          $ref: "#/definitions/BeneficiaryGetAllResponse"
+
+  DocumentResponse:
+    type: "object"
+    properties:
+      id:
+        description: "Document ID"
+        type: "integer"
+      typeDocument:
+        description: "Type of document"
+        type: "string"
+      description:
+        description: "Document description"
+        type: "string"
+      dateInclusion:
+        description: "Date when the document was included"
+        type: "string"
+      dateUpdate:
+        description: "Date when the document was last updated"
+        type: "string"
+
+  BadRequest:
+    title: "Fault"
+    type: "object"
+    properties:
+      code:
+        description: "Error code"
+        example: "INVALID_REQUEST"
+        type: "string"
+      message:
+        description: "Error description"
+        example: "Invalid request"
+        type: "string"
+
+  InternalServerError:
+    title: "Fault"
+    type: "object"
+    properties:
+      code:
+        description: "Error code"
+        example: "INTERNAL_ERROR"
+        type: "string"
+      message:
+        description: "Error description"
+        example: "Internal Server Error"
+        type: "string"

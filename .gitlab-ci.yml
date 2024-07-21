@@ -1,9 +1,0 @@
-variables:
-  TECH_STACK: java
-  IMAGE: java21
-  DEPLOY: "KUBERNETES"
-
-include:
-  - project: 'g5156/library-pipeline/pipeline-livelo-general'
-    ref: master
-    file: '.gitlab-ci.yml'

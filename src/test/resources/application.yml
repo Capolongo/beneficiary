@@ -1,6 +1,6 @@
 spring:
   application:
-    name: order-flight
+    name: recipient
   cloud:
     bus:
       enabled: false
