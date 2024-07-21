@@ -72,6 +72,7 @@
 - Vai ter evindência de base de dados
 - Vai ter evidência de cobertura de testes
 - Vai ter evidência do data base
+- Vai ter evidência do projeto estartado
 
 ## Tratamento de exceções
 - No cadastro tem dois tipos de documentos: RG/CPF, se caso passar outro tipo vai dar erro funcional;
