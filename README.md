@@ -46,14 +46,32 @@
 - Foi utilizado também Java 21, com spring 3;
 - Foi utilizado pra montar a conversão de DTO x Entidades com mapstruct;
 - Utilizei os campos de entrada em inglês e as entidades mantendo o padrão da modelagem em portugues;
-- Foi montado um diagrama, contendo o fluxo de uma forma  
+- Foi montado um diagrama, contendo o fluxo de uma forma que ficasse simpes dentro do diretório resources/desenhoTecnico/fluxo.png
 
 ## Evidencias funcionais na pasta resources/evidencias
 - Cadastrando o beneficiário
+  - Cadastro com sucesso
+  - Error funcional
+  - Não autorizado
 - Alterando o beneficiário
+  - Alteração com sucesso
+  - Error funcional
+  - Não autorizado
 - Consultando todos os beneficiários
+  - Consulta com sucesso
+  - Error funcional
+  - Não autorizado
 - Consultando os documentos pelo id do beneficiário
+  - Consulta com sucesso
+  - Error funcional
+  - Não autorizado
 - Removendo o beneficiário
+  - Remoção com sucesso
+  - Error funcional
+  - Não autorizado
+- Vai ter evindência de base de dados
+- Vai ter evidência de cobertura de testes
+- Vai ter evidência do data base
 
 ## Tratamento de exceções
 - No cadastro tem dois tipos de documentos: RG/CPF, se caso passar outro tipo vai dar erro funcional;
@@ -61,6 +79,3 @@
 - Na consulta de todos os beneficiários, se caso não tiver nada na base dará uma mensagem que nao existe nada na base;
 - Na consulta dos documentos pelo id do beneficiário, se caso o id não tiver na base dará um erro funcional;
 - Quando for remover um beneficiário, se caso o id não existir na base de dados, dará um erro funcional;
-
-
-
