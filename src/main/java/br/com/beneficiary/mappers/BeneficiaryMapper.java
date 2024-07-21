@@ -1,9 +1,18 @@
 package br.com.beneficiary.mappers;
 
 
+import br.com.beneficiary.dto.BeneficiaryDTO;
+import br.com.beneficiary.dto.DocumentDTO;
+import br.com.beneficiary.dto.request.BeneficiaryRequest;
+import br.com.beneficiary.dto.response.BeneficiaryResponse;
+import br.com.beneficiary.entities.BeneficiarioEntity;
+import br.com.beneficiary.entities.DocumentoEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -13,18 +22,18 @@ public interface BeneficiaryMapper {
     @Mapping(target = "nome", source = "request.beneficiary.name")
     @Mapping(target = "telefone", source = "request.beneficiary.telephone")
     @Mapping(target = "dataNascimento", source = "request.beneficiary.birthDate")
-    @Mapping(target = "documentos", expression = "java(buildDocumentToDocumentos(request.getbeneficiary().getDocuments()))")
+    @Mapping(target = "documentos", expression = "java(buildDocumentToDocumentos(request.getBeneficiary().getDocuments()))")
     BeneficiarioEntity beneficiaryRequestToBeneficiarioCreate(BeneficiaryRequest request);
 
     @Mapping(target = "beneficiario.id", source = "request.beneficiary.id")
     @Mapping(target = "beneficiario.nome", source = "request.beneficiary.name")
     @Mapping(target = "beneficiario.telefone", source = "request.beneficiary.telephone")
     @Mapping(target = "beneficiario.dataNascimento", source = "request.beneficiary.birthDate")
-    @Mapping(target = "beneficiario.documentos", expression = "java(buildDocumentToDocumentos(request.getbeneficiary().getDocuments()))")
+    @Mapping(target = "beneficiario.documentos", expression = "java(buildDocumentToDocumentos(request.getBeneficiary().getDocuments()))")
     BeneficiarioEntity beneficiaryRequestToBeneficiarioUpdate(BeneficiaryRequest request, @MappingTarget BeneficiarioEntity beneficiario);
 
     @Mapping(target = "beneficiary", expression = "java(buildbeneficiaryeToBeneficiarioResponse(beneficiario))")
-    BeneficiaryResponse beneficiarioEntityTobeneficiaryResponse(BeneficiarioEntity beneficiario);
+    BeneficiaryResponse beneficiarioEntityToBeneficiaryResponse(BeneficiarioEntity beneficiario);
 
     @Mapping(target = "name", source = "beneficiario.nome")
     @Mapping(target = "telephone", source = "beneficiario.telefone")
@@ -32,7 +41,7 @@ public interface BeneficiaryMapper {
     @Mapping(target = "dateInclusion", source = "beneficiario.dataInclusao")
     @Mapping(target = "dateUpdate", source = "beneficiario.dataAtualizacao")
     @Mapping(target = "documents", expression = "java(buildDocumentsToDocumentos(beneficiario))")
-    BeneficiaryDTO beneficiarioTobeneficiary(BeneficiarioEntity beneficiario);
+    BeneficiaryDTO beneficiarioToBeneficiary(BeneficiarioEntity beneficiario);
 
     default Set<DocumentoEntity> buildDocumentToDocumentos(Set<DocumentDTO> documents) {
         return documents.stream().map(document -> DocumentoEntity.builder()

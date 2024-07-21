@@ -1,4 +1,4 @@
-package br.com.recipient.dto;
+package br.com.beneficiary.dto;
 
 import lombok.Builder;
 import lombok.Data;

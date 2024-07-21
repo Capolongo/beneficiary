@@ -1,4 +1,4 @@
-package br.com.recipient.dto.response;
+package br.com.beneficiary.dto.response;
 
 public record MessageResponse(Integer code, String description) {
 }

@@ -8,12 +8,12 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.3</version>
     </parent>
-    <artifactId>recipient</artifactId>
+    <artifactId>register-beneficiary</artifactId>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>br.com.recipient</groupId>
+    <groupId>br.com.register.beneficiary</groupId>
     <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>recipient</name>
+    <name>register-beneficiary</name>
 
     <properties>
         <annotation.version>0.0.2</annotation.version>
@@ -55,6 +55,11 @@
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-tracing-bridge-brave</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.rabbitmq</groupId>

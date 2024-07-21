@@ -1,4 +1,4 @@
-package br.com.recipient.enuns;
+package br.com.beneficiary.enuns;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

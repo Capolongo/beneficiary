@@ -1,6 +1,6 @@
-package br.com.recipient.entities;
+package br.com.beneficiary.entities;
 
-import br.com.recipient.enuns.TypeDocument;
+import br.com.beneficiary.enuns.TypeDocument;
 import jakarta.persistence.*;
 import lombok.*;
 

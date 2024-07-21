@@ -9,6 +9,6 @@ import java.util.Set;
 @Data
 @Builder
 @AllArgsConstructor
-public class RecipientListResponse {
-    private Set<BeneficiaryDTO> recipients;
+public class BeneficiaryListResponse {
+    private Set<BeneficiaryDTO> beneficiaries;
 }

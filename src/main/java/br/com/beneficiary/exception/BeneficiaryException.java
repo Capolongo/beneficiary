@@ -1,4 +1,4 @@
-package br.com.recipient.exception;
+package br.com.beneficiary.exception;
 
 import lombok.Getter;
 

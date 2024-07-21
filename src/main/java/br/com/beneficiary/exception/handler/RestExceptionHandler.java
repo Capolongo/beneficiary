@@ -1,7 +1,7 @@
-package br.com.recipient.exception.handler;
+package br.com.beneficiary.exception.handler;
 
-import br.com.recipient.dto.response.MessageResponse;
-import br.com.recipient.exception.BeneficiaryException;
+import br.com.beneficiary.dto.response.MessageResponse;
+import br.com.beneficiary.exception.BeneficiaryException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
-package br.com.recipient.exception.handler;
+package br.com.beneficiary.exception.handler;
 
-import br.com.recipient.dto.response.MessageResponse;
+import br.com.beneficiary.dto.response.MessageResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

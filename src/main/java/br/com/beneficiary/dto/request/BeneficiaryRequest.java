@@ -1,7 +1,7 @@
-package br.com.recipient.dto.request;
+package br.com.beneficiary.dto.request;
 
 
-import br.com.recipient.dto.BeneficiaryDTO;
+import br.com.beneficiary.dto.BeneficiaryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BeneficiaryRequest {
-    private BeneficiaryDTO recipient;
+    private BeneficiaryDTO beneficiary;
 }

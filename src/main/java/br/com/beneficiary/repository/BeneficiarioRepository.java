@@ -1,6 +1,6 @@
-package br.com.recipient.repository;
+package br.com.beneficiary.repository;
 
-import br.com.recipient.entities.BeneficiarioEntity;
+import br.com.beneficiary.entities.BeneficiarioEntity;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,4 +1,4 @@
-package br.com.recipient.configure;
+package br.com.beneficiary.configure;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,21 +18,22 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${security.user}")
+    @Value("${security.user.name}")
     private String userName;
 
-    @Value("${security.password}")
+    @Value("${security.user.password}")
     private String password;
 
-    @Value("${security.roles}")
+    @Value("${security.user.roles}")
     private String roles;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests(authorizeRequests ->
+                .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .anyRequest().authenticated()
+                                .requestMatchers("/h2-console/**").permitAll() // Permite acesso ao H2 Console
+                                .anyRequest().authenticated() // Requer autenticação para todas as outras requisições
                 )
                 .httpBasic(httpBasic ->
                         httpBasic
@@ -41,7 +42,18 @@ public class SecurityConfig {
                                     response.getWriter().write("Not authorized, please include username and password");
                                 })
                 )
-                .csrf(csrf -> csrf.disable());
+                .csrf(csrf ->
+                        csrf
+                                .ignoringRequestMatchers("/h2-console/**") // Ignora CSRF para o H2 Console
+                                .ignoringRequestMatchers("/v1/**") // Ajuste o caminho para suas APIs
+                )
+                .headers(headers ->
+                        headers
+                                .frameOptions(frameOptions -> frameOptions.sameOrigin()) // Configura X-Frame-Options
+                                .contentSecurityPolicy(csp ->
+                                        csp.policyDirectives("frame-ancestors 'self'") // Configura Content-Security-Policy
+                                )
+                );
 
         return http.build();
     }

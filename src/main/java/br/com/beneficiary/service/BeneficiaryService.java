@@ -1,15 +1,15 @@
-package br.com.recipient.service;
+package br.com.beneficiary.service;
 
-import br.com.recipient.dto.BeneficiaryDTO;
-import br.com.recipient.dto.request.BeneficiaryRequest;
-import br.com.recipient.dto.response.MessageResponse;
-import br.com.recipient.dto.response.RecipientListResponse;
-import br.com.recipient.dto.response.BeneficiaryResponse;
+import br.com.beneficiary.dto.BeneficiaryDTO;
+import br.com.beneficiary.dto.request.BeneficiaryRequest;
+import br.com.beneficiary.dto.response.MessageResponse;
+import br.com.beneficiary.dto.response.BeneficiaryListResponse;
+import br.com.beneficiary.dto.response.BeneficiaryResponse;
 
 public interface BeneficiaryService {
-    BeneficiaryResponse createRecipient(BeneficiaryRequest request) throws Exception;
-    RecipientListResponse getRecipientAll() throws Exception;
-    BeneficiaryDTO getRecipientById(Long id) throws Exception;
-    BeneficiaryDTO updateRecipient(BeneficiaryRequest request) throws Exception;
-    MessageResponse deleteRecipientById(Long id) throws Exception;
+    BeneficiaryResponse createBeneficiary(BeneficiaryRequest request);
+    BeneficiaryListResponse getBeneficiaryAll() throws Exception;
+    BeneficiaryDTO getBeneficiaryById(Long id) throws Exception;
+    BeneficiaryDTO updateBeneficiary(BeneficiaryRequest request) throws Exception;
+    MessageResponse deleteBeneficiaryById(Long id) throws Exception;
 }

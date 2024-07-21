@@ -1,4 +1,4 @@
-package br.com.recipient.entities;
+package br.com.beneficiary.entities;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

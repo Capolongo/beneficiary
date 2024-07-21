@@ -1,40 +1,56 @@
 spring:
-  application:
-    name: recipient
-  cloud:
-    bus:
-      enabled: false
-  main:
-    allow-bean-definition-overriding: true
-
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    name: beneficiary
   config:
     import: "optional:configserver:https://fake-url.com?max-attempts=1"
 
-  rabbitmq:
-    enabled: true
-    custom:
-      livelo-audit:
-        exchange: audit.exchange
-        queueRoutingKey: audit.routingkey
-
-  jpa:
-    open-in-view: false
   datasource:
-    url: jdbc:h2:mem:mydb;NON_KEYWORDS=user
+    url: jdbc:h2:mem:testdb
     username: sa
     password: password
-    driverClassName: org.h2.Driver
+    driver-class-name: org.h2.Driver
 
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
+security:
+  user:
+    name: beneficiary
+    password: 123
+    roles: USER
 
 management:
-  observations:
-    http:
-      client:
-        requests:
-          name: test
-      server:
-        requests:
-          name: test
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include:
+            - readinessState
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
